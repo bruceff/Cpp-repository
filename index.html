@@ -41,7 +41,9 @@ body {
 }
 
 body {
+
     padding-bottom: 80px;
+
 }
 
 
@@ -72,6 +74,7 @@ body {
     top: 0;
 
     z-index: 100;
+
 }
 
 
@@ -94,12 +97,14 @@ body {
     overflow-x: auto;
 
     -webkit-overflow-scrolling: touch;
+
 }
 
 .navigation::-webkit-scrollbar {
-    display: none;
-}
 
+    display: none;
+
+}
 
 .nav-button {
 
@@ -111,7 +116,9 @@ body {
         8px
         12px;
 
-    border: 1px solid #292929;
+    border:
+        1px solid
+        #292929;
 
     border-radius: 9px;
 
@@ -122,6 +129,7 @@ body {
     font-size: 12px;
 
     font-weight: 700;
+
 }
 
 .nav-button.active {
@@ -131,6 +139,7 @@ body {
     border-color: #2878ff;
 
     color: white;
+
 }
 
 
@@ -142,22 +151,11 @@ body {
 
     display: none;
 
-    animation: aparecer 0.15s ease;
 }
 
 .page.active {
+
     display: block;
-}
-
-@keyframes aparecer {
-
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
 
 }
 
@@ -169,6 +167,7 @@ body {
 .home {
 
     padding: 20px;
+
 }
 
 .hero {
@@ -183,11 +182,13 @@ body {
         );
 
     border:
-        1px solid #292929;
+        1px solid
+        #292929;
 
     border-radius: 16px;
 
     margin-bottom: 15px;
+
 }
 
 .hero h1 {
@@ -198,6 +199,7 @@ body {
         8px;
 
     font-size: 28px;
+
 }
 
 .hero p {
@@ -209,6 +211,7 @@ body {
     line-height: 1.5;
 
     font-size: 14px;
+
 }
 
 
@@ -227,6 +230,7 @@ body {
         );
 
     gap: 10px;
+
 }
 
 .card {
@@ -237,16 +241,11 @@ body {
 
     background: #171717;
 
-    border: 1px solid #292929;
+    border:
+        1px solid
+        #292929;
 
     border-radius: 14px;
-
-    cursor: pointer;
-}
-
-.card:active {
-
-    transform: scale(0.98);
 
 }
 
@@ -255,6 +254,7 @@ body {
     font-size: 26px;
 
     margin-bottom: 8px;
+
 }
 
 .card-title {
@@ -262,6 +262,7 @@ body {
     font-size: 14px;
 
     font-weight: 800;
+
 }
 
 .card-description {
@@ -273,16 +274,18 @@ body {
     font-size: 11px;
 
     line-height: 1.4;
+
 }
 
 
 /* =========================================================
-   SEÇÕES
+   EDITOR C++
 ========================================================= */
 
 .editor-area {
 
     padding: 15px;
+
 }
 
 .label {
@@ -294,12 +297,8 @@ body {
     font-size: 13px;
 
     font-weight: 700;
+
 }
-
-
-/* =========================================================
-   EDITOR
-========================================================= */
 
 .editor-wrapper {
 
@@ -315,15 +314,13 @@ body {
 
     background: #181818;
 
-    border: 1px solid #333;
+    border:
+        1px solid
+        #333;
 
     border-radius: 10px;
+
 }
-
-
-/* =========================================================
-   LINHAS
-========================================================= */
 
 .line-numbers {
 
@@ -354,12 +351,8 @@ body {
     user-select: none;
 
     overflow: hidden;
+
 }
-
-
-/* =========================================================
-   TEXTAREA
-========================================================= */
 
 .editor {
 
@@ -401,17 +394,7 @@ body {
 
     overflow: auto;
 
-    -webkit-overflow-scrolling: touch;
 }
-
-.editor::selection {
-    background: #444;
-}
-
-
-/* =========================================================
-   BOTÕES
-========================================================= */
 
 .buttons {
 
@@ -423,13 +406,16 @@ body {
         0
         15px
         15px;
+
 }
 
 button {
 
     min-height: 46px;
 
-    padding: 12px 8px;
+    padding:
+        12px
+        8px;
 
     border: none;
 
@@ -441,15 +427,6 @@ button {
 
     font-weight: 700;
 
-    cursor: pointer;
-}
-
-button:active {
-    transform: scale(0.97);
-}
-
-button:disabled {
-    opacity: 0.5;
 }
 
 .run {
@@ -457,6 +434,7 @@ button:disabled {
     flex: 1;
 
     background: #20c968;
+
 }
 
 .input-button {
@@ -464,6 +442,7 @@ button:disabled {
     flex: 1;
 
     background: #8e44ad;
+
 }
 
 .save {
@@ -471,6 +450,7 @@ button:disabled {
     flex: 1;
 
     background: #2878ff;
+
 }
 
 .clear {
@@ -478,6 +458,7 @@ button:disabled {
     flex: 1;
 
     background: #292929;
+
 }
 
 
@@ -491,6 +472,7 @@ button:disabled {
         0
         15px
         20px;
+
 }
 
 .terminal {
@@ -501,7 +483,9 @@ button:disabled {
 
     background: #050505;
 
-    border: 1px solid #222;
+    border:
+        1px solid
+        #222;
 
     border-radius: 10px;
 
@@ -520,12 +504,8 @@ button:disabled {
     white-space: pre-wrap;
 
     overflow-x: auto;
+
 }
-
-
-/* =========================================================
-   STDIN
-========================================================= */
 
 .input-area {
 
@@ -537,20 +517,12 @@ button:disabled {
 
     background: #151515;
 
-    border: 1px solid #292929;
+    border:
+        1px solid
+        #292929;
 
     border-radius: 10px;
-}
 
-.input-title {
-
-    margin-bottom: 8px;
-
-    color: #aaa;
-
-    font-size: 12px;
-
-    font-weight: 700;
 }
 
 .stdin-input {
@@ -567,7 +539,9 @@ button:disabled {
 
     color: white;
 
-    border: 1px solid #333;
+    border:
+        1px solid
+        #333;
 
     border-radius: 8px;
 
@@ -581,13 +555,7 @@ button:disabled {
 
     font-size: 15px;
 
-    line-height: 1.4;
 }
-
-
-/* =========================================================
-   STATUS
-========================================================= */
 
 .status {
 
@@ -596,16 +564,342 @@ button:disabled {
     color: #777;
 
     font-size: 12px;
+
 }
 
 
 /* =========================================================
-   PLACEHOLDER DOS MÓDULOS
+   ARTE — CABEÇALHO
+========================================================= */
+
+.art-page {
+
+    padding: 10px;
+
+}
+
+.art-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+}
+
+.art-title {
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+}
+
+.art-size {
+
+    color: #777;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   BARRA DE FERRAMENTAS
+========================================================= */
+
+.art-toolbar {
+
+    display: flex;
+
+    gap: 6px;
+
+    padding: 7px;
+
+    background: #151515;
+
+    border:
+        1px solid
+        #292929;
+
+    border-radius: 12px;
+
+    overflow-x: auto;
+
+    margin-bottom: 8px;
+
+}
+
+.art-toolbar::-webkit-scrollbar {
+
+    display: none;
+
+}
+
+.tool {
+
+    flex:
+        0 0
+        48px;
+
+    height: 44px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #202020;
+
+    border:
+        1px solid
+        #333;
+
+    border-radius: 9px;
+
+    font-size: 20px;
+
+}
+
+.tool.active {
+
+    background: #2878ff;
+
+    border-color: #2878ff;
+
+}
+
+
+/* =========================================================
+   ÁREA DO CANVAS
+========================================================= */
+
+.canvas-area {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 58vh;
+
+    min-height: 380px;
+
+    overflow: hidden;
+
+    background:
+        #080808;
+
+    border:
+        1px solid
+        #292929;
+
+    border-radius: 14px;
+
+    touch-action: none;
+
+}
+
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+#artCanvas {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform-origin: center center;
+
+    image-rendering: pixelated;
+
+    image-rendering: crisp-edges;
+
+    background:
+        repeating-conic-gradient(
+            #222 0% 25%,
+            #151515 0% 50%
+        )
+        0 0 /
+        20px 20px;
+
+    touch-action: none;
+
+}
+
+
+/* =========================================================
+   INFORMAÇÕES DO CANVAS
+========================================================= */
+
+.canvas-info {
+
+    position: absolute;
+
+    left: 8px;
+
+    bottom: 8px;
+
+    padding:
+        6px
+        9px;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.7
+        );
+
+    border-radius: 7px;
+
+    color: #aaa;
+
+    font-family: monospace;
+
+    font-size: 11px;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   CONTROLES
+========================================================= */
+
+.art-controls {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 8px;
+
+    margin-top: 8px;
+
+}
+
+.control-box {
+
+    padding: 10px;
+
+    background: #151515;
+
+    border:
+        1px solid
+        #292929;
+
+    border-radius: 10px;
+
+}
+
+.control-label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #888;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+input[type="range"] {
+
+    width: 100%;
+
+}
+
+input[type="color"] {
+
+    width: 100%;
+
+    height: 40px;
+
+    padding: 2px;
+
+    border:
+        1px solid
+        #333;
+
+    border-radius: 8px;
+
+    background: #111;
+
+}
+
+
+/* =========================================================
+   BOTÕES DO CANVAS
+========================================================= */
+
+.art-actions {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 6px;
+
+    margin-top: 8px;
+
+}
+
+.art-action {
+
+    min-height: 42px;
+
+    background: #202020;
+
+    border:
+        1px solid
+        #333;
+
+    font-size: 12px;
+
+}
+
+.art-action.primary {
+
+    background: #2878ff;
+
+    border-color: #2878ff;
+
+}
+
+
+/* =========================================================
+   MÓDULOS FUTUROS
 ========================================================= */
 
 .module-page {
 
     padding: 20px;
+
 }
 
 .module-header {
@@ -614,18 +908,25 @@ button:disabled {
 
     background: #171717;
 
-    border: 1px solid #292929;
+    border:
+        1px solid
+        #292929;
 
     border-radius: 14px;
 
     margin-bottom: 15px;
+
 }
 
 .module-header h1 {
 
-    margin: 0 0 8px;
+    margin:
+        0
+        0
+        8px;
 
     font-size: 24px;
+
 }
 
 .module-header p {
@@ -637,6 +938,7 @@ button:disabled {
     font-size: 13px;
 
     line-height: 1.5;
+
 }
 
 .coming-soon {
@@ -647,11 +949,14 @@ button:disabled {
 
     background: #121212;
 
-    border: 1px dashed #333;
+    border:
+        1px dashed
+        #333;
 
     border-radius: 14px;
 
     color: #777;
+
 }
 
 .coming-soon-icon {
@@ -659,6 +964,7 @@ button:disabled {
     font-size: 40px;
 
     margin-bottom: 10px;
+
 }
 
 .coming-soon strong {
@@ -668,6 +974,7 @@ button:disabled {
     color: #aaa;
 
     margin-bottom: 5px;
+
 }
 
 
@@ -681,6 +988,7 @@ button:disabled {
         0
         15px
         20px;
+
 }
 
 .saved-title {
@@ -696,6 +1004,7 @@ button:disabled {
     font-size: 13px;
 
     font-weight: 700;
+
 }
 
 .saved-list {
@@ -705,6 +1014,7 @@ button:disabled {
     flex-direction: column;
 
     gap: 8px;
+
 }
 
 .saved-item {
@@ -721,9 +1031,12 @@ button:disabled {
 
     background: #181818;
 
-    border: 1px solid #2b2b2b;
+    border:
+        1px solid
+        #2b2b2b;
 
     border-radius: 10px;
+
 }
 
 .saved-name {
@@ -737,6 +1050,7 @@ button:disabled {
     text-overflow: ellipsis;
 
     font-size: 14px;
+
 }
 
 .saved-actions {
@@ -744,6 +1058,7 @@ button:disabled {
     display: flex;
 
     gap: 6px;
+
 }
 
 .saved-actions button {
@@ -755,14 +1070,19 @@ button:disabled {
         10px;
 
     font-size: 12px;
+
 }
 
 .open-btn {
+
     background: #333;
+
 }
 
 .delete-btn {
+
     background: #8f2525;
+
 }
 
 
@@ -778,7 +1098,13 @@ button:disabled {
 
     inset: 0;
 
-    background: rgba(0,0,0,0.75);
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.75
+        );
 
     align-items: center;
 
@@ -787,6 +1113,7 @@ button:disabled {
     padding: 20px;
 
     z-index: 1000;
+
 }
 
 .modal-box {
@@ -799,14 +1126,18 @@ button:disabled {
 
     background: #181818;
 
-    border: 1px solid #333;
+    border:
+        1px solid
+        #333;
 
     border-radius: 14px;
+
 }
 
 .modal-box h2 {
 
     margin-top: 0;
+
 }
 
 .modal-box input {
@@ -820,7 +1151,9 @@ button:disabled {
         0
         15px;
 
-    border: 1px solid #444;
+    border:
+        1px solid
+        #444;
 
     border-radius: 8px;
 
@@ -831,6 +1164,7 @@ button:disabled {
     color: white;
 
     font-size: 16px;
+
 }
 
 .modal-buttons {
@@ -838,19 +1172,25 @@ button:disabled {
     display: flex;
 
     gap: 8px;
+
 }
 
 .modal-buttons button {
 
     flex: 1;
+
 }
 
 .cancel {
+
     background: #333;
+
 }
 
 .confirm {
+
     background: #2878ff;
+
 }
 
 </style>
@@ -957,9 +1297,8 @@ button:disabled {
 ===================================================== -->
 
 <section
-    id="home"
-    class="page active home">
-
+id="home"
+class="page active home">
 
     <div class="hero">
 
@@ -970,11 +1309,7 @@ button:disabled {
         <p>
 
             Ambiente de desenvolvimento
-            para criação de jogos 2D.
-
-            O projeto começará pelo editor
-            C++ e evoluirá para uma engine
-            completa.
+            mobile para criação de jogos 2D.
 
         </p>
 
@@ -982,7 +1317,6 @@ button:disabled {
 
 
     <div class="cards">
-
 
         <div
             class="card"
@@ -1016,7 +1350,7 @@ button:disabled {
             </div>
 
             <div class="card-description">
-                Editor de sprites e arte.
+                Crie sprites diretamente no celular.
             </div>
 
         </div>
@@ -1035,7 +1369,7 @@ button:disabled {
             </div>
 
             <div class="card-description">
-                Criação visual de mundos.
+                Construa seus mundos.
             </div>
 
         </div>
@@ -1054,7 +1388,7 @@ button:disabled {
             </div>
 
             <div class="card-description">
-                Construção de mapas 2D.
+                Construa mapas 2D.
             </div>
 
         </div>
@@ -1073,7 +1407,7 @@ button:disabled {
             </div>
 
             <div class="card-description">
-                Gerenciamento de recursos.
+                Gerencie recursos.
             </div>
 
         </div>
@@ -1092,7 +1426,7 @@ button:disabled {
             </div>
 
             <div class="card-description">
-                Música e efeitos sonoros.
+                Controle músicas e efeitos.
             </div>
 
         </div>
@@ -1107,9 +1441,8 @@ button:disabled {
 ===================================================== -->
 
 <section
-    id="codePage"
-    class="page">
-
+id="codePage"
+class="page">
 
     <div class="editor-area">
 
@@ -1119,7 +1452,6 @@ button:disabled {
 
 
         <div class="editor-wrapper">
-
 
             <div
                 class="line-numbers"
@@ -1143,14 +1475,12 @@ int main() {
 
 }</textarea>
 
-
         </div>
 
     </div>
 
 
     <div class="buttons">
-
 
         <button
             class="run"
@@ -1164,7 +1494,6 @@ int main() {
 
         <button
             class="input-button"
-            id="inputButton"
             onclick="alternarEntrada()">
 
             ⌨ ENTRADA
@@ -1189,7 +1518,6 @@ int main() {
 
         </button>
 
-
     </div>
 
 
@@ -1213,20 +1541,10 @@ int main() {
             class="input-area"
             id="inputArea">
 
-
-            <div class="input-title">
-
-                ENTRADA DO PROGRAMA — STDIN
-
-            </div>
-
-
             <textarea
                 class="stdin-input"
                 id="stdinInput"
-                spellcheck="false"
-                placeholder="Digite aqui a entrada do programa..."></textarea>
-
+                placeholder="Digite a entrada do programa..."></textarea>
 
         </div>
 
@@ -1241,13 +1559,11 @@ int main() {
 
     <div class="saved-area">
 
-
         <div class="saved-title">
 
             <span>
                 MEUS CÓDIGOS
             </span>
-
 
             <span id="savedCount">
                 0
@@ -1271,38 +1587,208 @@ int main() {
 ===================================================== -->
 
 <section
-    id="artPage"
-    class="page module-page">
+id="artPage"
+class="page art-page">
 
 
-    <div class="module-header">
+    <div class="art-top">
 
-        <h1>
-            🎨 Arte
-        </h1>
+        <div class="art-title">
+            🎨 Editor de Arte
+        </div>
 
-        <p>
+        <div
+            class="art-size"
+            id="artSize">
 
-            Futuro editor de sprites,
-            pixel art, animações e recursos
-            visuais da engine.
+            32 × 32
 
-        </p>
+        </div>
 
     </div>
 
 
-    <div class="coming-soon">
+    <!-- FERRAMENTAS -->
 
-        <div class="coming-soon-icon">
-            🎨
+    <div class="art-toolbar">
+
+
+        <button
+            class="tool active"
+            id="pencilTool"
+            onclick="selecionarFerramenta('pencil')">
+
+            ✏️
+
+        </button>
+
+
+        <button
+            class="tool"
+            id="eraserTool"
+            onclick="selecionarFerramenta('eraser')">
+
+            🧽
+
+        </button>
+
+
+        <button
+            class="tool"
+            onclick="limparCanvas()">
+
+            🗑️
+
+        </button>
+
+
+        <button
+            class="tool"
+            onclick="desfazer()">
+
+            ↩️
+
+        </button>
+
+
+        <button
+            class="tool"
+            onclick="refazer()">
+
+            ↪️
+
+        </button>
+
+
+        <button
+            class="tool"
+            onclick="alternarGrade()">
+
+            🔲
+
+        </button>
+
+
+        <button
+            class="tool"
+            onclick="resetZoom()">
+
+            1:1
+
+        </button>
+
+
+    </div>
+
+
+    <!-- CANVAS -->
+
+    <div
+        class="canvas-area"
+        id="canvasArea">
+
+
+        <canvas
+            id="artCanvas"
+            width="32"
+            height="32">
+        </canvas>
+
+
+        <div
+            class="canvas-info"
+            id="canvasInfo">
+
+            Zoom: 100%
+
         </div>
 
-        <strong>
-            Editor de Arte
-        </strong>
 
-        Em desenvolvimento.
+    </div>
+
+
+    <!-- CONTROLES -->
+
+    <div class="art-controls">
+
+
+        <div class="control-box">
+
+            <span class="control-label">
+
+                COR
+
+            </span>
+
+
+            <input
+                type="color"
+                id="colorPicker"
+                value="#ffffff">
+
+        </div>
+
+
+        <div class="control-box">
+
+            <span class="control-label">
+
+                TAMANHO DO PINCEL
+
+            </span>
+
+
+            <input
+                type="range"
+                id="brushSize"
+                min="1"
+                max="8"
+                value="1">
+
+        </div>
+
+    </div>
+
+
+    <!-- AÇÕES -->
+
+    <div class="art-actions">
+
+
+        <button
+            class="art-action primary"
+            onclick="novoCanvas()">
+
+            🆕 NOVO
+
+        </button>
+
+
+        <button
+            class="art-action"
+            onclick="salvarArte()">
+
+            💾 SALVAR
+
+        </button>
+
+
+        <button
+            class="art-action"
+            onclick="carregarArte()">
+
+            📂 ABRIR
+
+        </button>
+
+
+        <button
+            class="art-action"
+            onclick="resetZoom()">
+
+            🔍 ZOOM
+
+        </button>
 
     </div>
 
@@ -1310,13 +1796,12 @@ int main() {
 
 
 <!-- =====================================================
-     CENA
+     MÓDULOS FUTUROS
 ===================================================== -->
 
 <section
-    id="scenePage"
-    class="page module-page">
-
+id="scenePage"
+class="page module-page">
 
     <div class="module-header">
 
@@ -1325,11 +1810,8 @@ int main() {
         </h1>
 
         <p>
-
-            Futuro editor visual para
-            construir mundos, posicionar
-            entidades, props e objetos.
-
+            Editor visual de mundos,
+            objetos, personagens e props.
         </p>
 
     </div>
@@ -1352,14 +1834,9 @@ int main() {
 </section>
 
 
-<!-- =====================================================
-     TILEMAP
-===================================================== -->
-
 <section
-    id="tilemapPage"
-    class="page module-page">
-
+id="tilemapPage"
+class="page module-page">
 
     <div class="module-header">
 
@@ -1368,10 +1845,8 @@ int main() {
         </h1>
 
         <p>
-
-            Futuro sistema de criação
+            Ferramenta para construção
             de mapas baseados em tiles.
-
         </p>
 
     </div>
@@ -1394,14 +1869,9 @@ int main() {
 </section>
 
 
-<!-- =====================================================
-     ASSETS
-===================================================== -->
-
 <section
-    id="assetsPage"
-    class="page module-page">
-
+id="assetsPage"
+class="page module-page">
 
     <div class="module-header">
 
@@ -1410,11 +1880,8 @@ int main() {
         </h1>
 
         <p>
-
-            Futuro gerenciador de sprites,
-            sons, mapas, fontes e outros
-            recursos do projeto.
-
+            Gerenciamento de sprites,
+            mapas, sons e recursos.
         </p>
 
     </div>
@@ -1437,14 +1904,9 @@ int main() {
 </section>
 
 
-<!-- =====================================================
-     ÁUDIO
-===================================================== -->
-
 <section
-    id="audioPage"
-    class="page module-page">
-
+id="audioPage"
+class="page module-page">
 
     <div class="module-header">
 
@@ -1453,11 +1915,8 @@ int main() {
         </h1>
 
         <p>
-
-            Futuro sistema de música,
-            efeitos sonoros e controle
-            de áudio do jogo.
-
+            Música, efeitos sonoros
+            e gerenciamento de áudio.
         </p>
 
     </div>
@@ -1480,14 +1939,9 @@ int main() {
 </section>
 
 
-<!-- =====================================================
-     PROJETO
-===================================================== -->
-
 <section
-    id="projectPage"
-    class="page module-page">
-
+id="projectPage"
+class="page module-page">
 
     <div class="module-header">
 
@@ -1496,11 +1950,8 @@ int main() {
         </h1>
 
         <p>
-
-            Configurações, informações,
-            versões e gerenciamento
-            do projeto.
-
+            Configurações e gerenciamento
+            do projeto da engine.
         </p>
 
     </div>
@@ -1528,12 +1979,10 @@ int main() {
 ===================================================== -->
 
 <div
-    class="modal"
-    id="saveModal">
-
+class="modal"
+id="saveModal">
 
     <div class="modal-box">
-
 
         <h2>
             Salvar código
@@ -1543,12 +1992,10 @@ int main() {
         <input
             id="codeName"
             type="text"
-            placeholder="Nome do código"
-            autocomplete="off">
+            placeholder="Nome do código">
 
 
         <div class="modal-buttons">
-
 
             <button
                 class="cancel"
@@ -1567,7 +2014,6 @@ int main() {
 
             </button>
 
-
         </div>
 
     </div>
@@ -1583,16 +2029,12 @@ int main() {
 
 function abrirPagina(id, botao) {
 
-    const paginas =
-        document.querySelectorAll(".page");
-
-    paginas.forEach(
-        function(pagina) {
-
-            pagina.classList.remove("active");
-
-        }
-    );
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            p =>
+            p.classList.remove("active")
+        );
 
 
     const pagina =
@@ -1606,17 +2048,12 @@ function abrirPagina(id, botao) {
     }
 
 
-    const botoes =
-        document.querySelectorAll(".nav-button");
-
-
-    botoes.forEach(
-        function(item) {
-
-            item.classList.remove("active");
-
-        }
-    );
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(
+            b =>
+            b.classList.remove("active")
+        );
 
 
     if (botao) {
@@ -1637,25 +2074,25 @@ function abrirPagina(id, botao) {
 function abrirPorId(id) {
 
     const botoes =
-        document.querySelectorAll(".nav-button");
+        document.querySelectorAll(
+            ".nav-button"
+        );
 
 
-    let botaoEncontrado =
+    let encontrado =
         null;
 
 
     botoes.forEach(
-        function(botao) {
+        b => {
 
             if (
-                botao.getAttribute("onclick") &&
-                botao.getAttribute("onclick").includes(
-                    "'" + id + "'"
-                )
+                b.getAttribute("onclick") &&
+                b.getAttribute("onclick")
+                .includes("'" + id + "'")
             ) {
 
-                botaoEncontrado =
-                    botao;
+                encontrado = b;
 
             }
 
@@ -1665,14 +2102,14 @@ function abrirPorId(id) {
 
     abrirPagina(
         id,
-        botaoEncontrado
+        encontrado
     );
 
 }
 
 
 /* =========================================================
-   ELEMENTOS DO EDITOR
+   C++ EDITOR
 ========================================================= */
 
 const editor =
@@ -1702,23 +2139,20 @@ const savedCount =
 const runButton =
     document.getElementById("runButton");
 
-const inputButton =
-    document.getElementById("inputButton");
-
 let executando =
     false;
 
 
-/* =========================================================
-   LINHAS
-========================================================= */
-
 function atualizarLinhas() {
 
     const quantidade =
-        editor.value.split("\n").length;
+        editor.value
+        .split("\n")
+        .length;
+
 
     let numeros = "";
+
 
     for (
         let i = 1;
@@ -1731,24 +2165,18 @@ function atualizarLinhas() {
 
     }
 
+
     lineNumbers.innerHTML =
         numeros;
+
 }
 
-
-/* =========================================================
-   DIGITAÇÃO
-========================================================= */
 
 editor.addEventListener(
     "input",
     atualizarLinhas
 );
 
-
-/* =========================================================
-   SCROLL
-========================================================= */
 
 editor.addEventListener(
     "scroll",
@@ -1761,23 +2189,23 @@ editor.addEventListener(
 );
 
 
-/* =========================================================
-   TAB
-========================================================= */
-
 editor.addEventListener(
     "keydown",
     function(event) {
 
-        if (event.key === "Tab") {
+        if (
+            event.key === "Tab"
+        ) {
 
             event.preventDefault();
+
 
             const inicio =
                 editor.selectionStart;
 
             const fim =
                 editor.selectionEnd;
+
 
             editor.value =
 
@@ -1796,11 +2224,13 @@ editor.addEventListener(
                     fim
                 );
 
+
             editor.selectionStart =
                 inicio + 4;
 
             editor.selectionEnd =
                 inicio + 4;
+
 
             atualizarLinhas();
 
@@ -1810,52 +2240,23 @@ editor.addEventListener(
 );
 
 
-/* =========================================================
-   ENTRADA
-========================================================= */
-
 function alternarEntrada() {
 
-    if (
+    inputArea.style.display =
+
         inputArea.style.display === "block"
-    ) {
 
-        inputArea.style.display =
-            "none";
+        ? "none"
 
-        inputButton.textContent =
-            "⌨ ENTRADA";
-
-    }
-
-    else {
-
-        inputArea.style.display =
-            "block";
-
-        inputButton.textContent =
-            "⌨ OCULTAR";
-
-        stdinInput.focus();
-
-    }
+        : "block";
 
 }
 
 
-/* =========================================================
-   EXECUTAR
-========================================================= */
-
 async function executar() {
 
     if (executando) {
-
-        terminal.textContent =
-            "> Já existe uma execução em andamento.";
-
         return;
-
     }
 
 
@@ -1880,9 +2281,6 @@ async function executar() {
     runButton.disabled =
         true;
 
-    inputButton.disabled =
-        true;
-
 
     runButton.textContent =
         "⏳ EXECUTANDO";
@@ -1897,7 +2295,6 @@ async function executar() {
 
 
     try {
-
 
         const codigoBase64 =
 
@@ -1918,7 +2315,7 @@ async function executar() {
             "";
 
 
-        if (stdin.length > 0) {
+        if (stdin) {
 
             stdinBase64 =
 
@@ -1992,7 +2389,6 @@ async function executar() {
         if (resultado.stdout) {
 
             saida +=
-
                 decodificarBase64(
                     resultado.stdout
                 );
@@ -2007,7 +2403,6 @@ async function executar() {
             }
 
             saida +=
-
                 decodificarBase64(
                     resultado.stderr
                 );
@@ -2022,7 +2417,6 @@ async function executar() {
             }
 
             saida +=
-
                 decodificarBase64(
                     resultado.compile_output
                 );
@@ -2032,23 +2426,12 @@ async function executar() {
 
         if (!saida.trim()) {
 
-            if (
-                resultado.status &&
-                resultado.status.description
-            ) {
-
-                saida =
-                    "> " +
-                    resultado.status.description;
-
-            }
-
-            else {
-
-                saida =
-                    "> Programa executado sem saída.";
-
-            }
+            saida =
+                "> " +
+                (
+                    resultado.status?.description ||
+                    "Programa executado sem saída."
+                );
 
         }
 
@@ -2057,51 +2440,13 @@ async function executar() {
             saida;
 
 
-        let info =
-            "";
-
-
-        if (resultado.time) {
-
-            info =
-                "Tempo: " +
-                resultado.time +
-                "s";
-
-        }
-
-
-        if (resultado.memory) {
-
-            if (info) {
-                info += "  •  ";
-            }
-
-            info +=
-                "Memória: " +
-                resultado.memory +
-                " KB";
-
-        }
-
-
-        if (
-            resultado.status &&
-            resultado.status.id === 3
-        ) {
-
-            if (info) {
-                info += "  •  ";
-            }
-
-            info +=
-                "✓ Execução concluída";
-
-        }
-
-
         status.textContent =
-            info;
+
+            resultado.time
+                ? "Tempo: " +
+                  resultado.time +
+                  "s"
+                : "";
 
     }
 
@@ -2109,12 +2454,11 @@ async function executar() {
     catch (erro) {
 
         terminal.textContent =
-
             "> ERRO\n\n" +
             erro.message;
 
         status.textContent =
-            "Falha na comunicação com o Judge0.";
+            "Falha na comunicação com Judge0.";
 
     }
 
@@ -2127,9 +2471,6 @@ async function executar() {
         runButton.disabled =
             false;
 
-        inputButton.disabled =
-            false;
-
         runButton.textContent =
             "▶ EXECUTAR";
 
@@ -2137,10 +2478,6 @@ async function executar() {
 
 }
 
-
-/* =========================================================
-   BASE64
-========================================================= */
 
 function decodificarBase64(texto) {
 
@@ -2154,7 +2491,7 @@ function decodificarBase64(texto) {
 
     }
 
-    catch (erro) {
+    catch {
 
         return atob(texto);
 
@@ -2162,10 +2499,6 @@ function decodificarBase64(texto) {
 
 }
 
-
-/* =========================================================
-   LIMPAR
-========================================================= */
 
 function limpar() {
 
@@ -2187,7 +2520,7 @@ function limpar() {
 
 
 /* =========================================================
-   SALVAR
+   CÓDIGOS SALVOS
 ========================================================= */
 
 function abrirSalvar() {
@@ -2196,17 +2529,6 @@ function abrirSalvar() {
         "saveModal"
     ).style.display =
         "flex";
-
-
-    document.getElementById(
-        "codeName"
-    ).value =
-        "";
-
-
-    document.getElementById(
-        "codeName"
-    ).focus();
 
 }
 
@@ -2223,14 +2545,14 @@ function fecharSalvar() {
 
 function salvarCodigo() {
 
-    const input =
+    const nomeInput =
         document.getElementById(
             "codeName"
         );
 
 
     let nome =
-        input.value.trim();
+        nomeInput.value.trim();
 
 
     if (!nome) {
@@ -2259,12 +2581,7 @@ function salvarCodigo() {
             nome,
 
         codigo:
-            editor.value,
-
-        data:
-            new Date().toLocaleString(
-                "pt-BR"
-            )
+            editor.value
 
     });
 
@@ -2284,19 +2601,8 @@ function salvarCodigo() {
 
     carregarCodigos();
 
-
-    terminal.textContent =
-
-        "> Código '" +
-        nome +
-        "' salvo.";
-
 }
 
-
-/* =========================================================
-   CARREGAR CÓDIGOS
-========================================================= */
 
 function carregarCodigos() {
 
@@ -2317,26 +2623,8 @@ function carregarCodigos() {
         codigos.length;
 
 
-    if (
-        codigos.length === 0
-    ) {
-
-        savedList.innerHTML =
-
-            '<div style="color:#666;font-size:13px;">' +
-
-            'Nenhum código salvo.' +
-
-            '</div>';
-
-        return;
-
-    }
-
-
     codigos.forEach(
-        function(item) {
-
+        item => {
 
             const div =
                 document.createElement(
@@ -2387,10 +2675,15 @@ function carregarCodigos() {
 
 
             abrir.onclick =
-                function() {
+                () => {
 
-                    abrirCodigo(
-                        item.id
+                    editor.value =
+                        item.codigo;
+
+                    atualizarLinhas();
+
+                    abrirPorId(
+                        "codePage"
                     );
 
                 };
@@ -2411,11 +2704,24 @@ function carregarCodigos() {
 
 
             excluir.onclick =
-                function() {
+                () => {
 
-                    excluirCodigo(
-                        item.id
+                    codigos =
+                        codigos.filter(
+                            x =>
+                            x.id !== item.id
+                        );
+
+
+                    localStorage.setItem(
+                        "cpp_codigos",
+                        JSON.stringify(
+                            codigos
+                        )
                     );
+
+
+                    carregarCodigos();
 
                 };
 
@@ -2449,66 +2755,114 @@ function carregarCodigos() {
 
 
 /* =========================================================
-   ABRIR
+   EDITOR DE ARTE
 ========================================================= */
 
-function abrirCodigo(id) {
+const artCanvas =
+    document.getElementById(
+        "artCanvas"
+    );
 
-    const codigos =
+const canvasArea =
+    document.getElementById(
+        "canvasArea"
+    );
 
-        JSON.parse(
-            localStorage.getItem(
-                "cpp_codigos"
-            ) || "[]"
-        );
+const colorPicker =
+    document.getElementById(
+        "colorPicker"
+    );
+
+const brushSize =
+    document.getElementById(
+        "brushSize"
+    );
+
+const artSize =
+    document.getElementById(
+        "artSize"
+    );
+
+const canvasInfo =
+    document.getElementById(
+        "canvasInfo"
+    );
 
 
-    const codigo =
-        codigos.find(
-            function(item) {
-
-                return item.id === id;
-
-            }
-        );
+const ctx =
+    artCanvas.getContext(
+        "2d"
+    );
 
 
-    if (!codigo) {
-        return;
+ctx.imageSmoothingEnabled =
+    false;
+
+
+let ferramenta =
+    "pencil";
+
+let gridVisivel =
+    true;
+
+let tamanhoCanvas =
+    32;
+
+let zoom =
+    12;
+
+let offsetX =
+    0;
+
+let offsetY =
+    0;
+
+let desenhando =
+    false;
+
+let historico = [];
+
+let futuro = [];
+
+
+/* =========================================================
+   HISTÓRICO
+========================================================= */
+
+function salvarEstado() {
+
+    historico.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
+
+
+    if (
+        historico.length > 40
+    ) {
+
+        historico.shift();
+
     }
 
 
-    editor.value =
-        codigo.codigo;
-
-
-    atualizarLinhas();
-
-
-    terminal.textContent =
-
-        "> Código '" +
-        codigo.nome +
-        "' carregado.";
-
-
-    abrirPorId(
-        "codePage"
-    );
+    futuro = [];
 
 }
 
 
 /* =========================================================
-   EXCLUIR
+   DESFAZER
 ========================================================= */
 
-function excluirCodigo(id) {
+function desfazer() {
 
     if (
-        !confirm(
-            "Excluir este código?"
-        )
+        historico.length === 0
     ) {
 
         return;
@@ -2516,64 +2870,562 @@ function excluirCodigo(id) {
     }
 
 
-    let codigos =
-
-        JSON.parse(
-            localStorage.getItem(
-                "cpp_codigos"
-            ) || "[]"
-        );
-
-
-    codigos =
-
-        codigos.filter(
-            function(item) {
-
-                return item.id !== id;
-
-            }
-        );
-
-
-    localStorage.setItem(
-
-        "cpp_codigos",
-
-        JSON.stringify(
-            codigos
+    futuro.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
         )
-
     );
 
 
-    carregarCodigos();
+    const estado =
+        historico.pop();
+
+
+    ctx.putImageData(
+        estado,
+        0,
+        0
+    );
 
 }
 
 
 /* =========================================================
-   ENTER NO NOME
+   REFAZER
 ========================================================= */
 
-document
-    .getElementById("codeName")
-    .addEventListener(
-        "keydown",
-        function(event) {
+function refazer() {
 
-            if (
-                event.key === "Enter"
-            ) {
+    if (
+        futuro.length === 0
+    ) {
 
-                event.preventDefault();
+        return;
 
-                salvarCodigo();
+    }
 
-            }
+
+    historico.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
+
+
+    const estado =
+        futuro.pop();
+
+
+    ctx.putImageData(
+        estado,
+        0,
+        0
+    );
+
+}
+
+
+/* =========================================================
+   NOVO CANVAS
+========================================================= */
+
+function novoCanvas() {
+
+    const tamanho =
+        prompt(
+            "Tamanho do canvas:\n\n16\n32\n64\n128",
+            tamanhoCanvas
+        );
+
+
+    if (!tamanho) {
+        return;
+    }
+
+
+    const numero =
+        parseInt(
+            tamanho
+        );
+
+
+    if (
+        ![16,32,64,128]
+        .includes(numero)
+    ) {
+
+        alert(
+            "Use 16, 32, 64 ou 128."
+        );
+
+        return;
+
+    }
+
+
+    tamanhoCanvas =
+        numero;
+
+
+    artCanvas.width =
+        numero;
+
+    artCanvas.height =
+        numero;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        numero,
+        numero
+    );
+
+
+    artSize.textContent =
+        numero +
+        " × " +
+        numero;
+
+
+    historico = [];
+
+    futuro = [];
+
+
+    atualizarCanvasVisual();
+
+}
+
+
+/* =========================================================
+   LIMPAR
+========================================================= */
+
+function limparCanvas() {
+
+    salvarEstado();
+
+
+    ctx.clearRect(
+        0,
+        0,
+        artCanvas.width,
+        artCanvas.height
+    );
+
+}
+
+
+/* =========================================================
+   FERRAMENTA
+========================================================= */
+
+function selecionarFerramenta(nome) {
+
+    ferramenta =
+        nome;
+
+
+    document
+        .querySelectorAll(".tool")
+        .forEach(
+            b =>
+            b.classList.remove(
+                "active"
+            )
+        );
+
+
+    if (
+        nome === "pencil"
+    ) {
+
+        document
+            .getElementById(
+                "pencilTool"
+            )
+            .classList.add(
+                "active"
+            );
+
+    }
+
+    else {
+
+        document
+            .getElementById(
+                "eraserTool"
+            )
+            .classList.add(
+                "active"
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   DESENHO
+========================================================= */
+
+function obterPixel(event) {
+
+    const rect =
+        artCanvas.getBoundingClientRect();
+
+
+    const x =
+        Math.floor(
+            (
+                event.clientX -
+                rect.left
+            )
+            /
+            rect.width
+            *
+            artCanvas.width
+        );
+
+
+    const y =
+        Math.floor(
+            (
+                event.clientY -
+                rect.top
+            )
+            /
+            rect.height
+            *
+            artCanvas.height
+        );
+
+
+    return {
+        x,
+        y
+    };
+
+}
+
+
+function pintar(event) {
+
+    const pixel =
+        obterPixel(event);
+
+
+    const tamanho =
+        parseInt(
+            brushSize.value
+        );
+
+
+    ctx.fillStyle =
+        ferramenta === "eraser"
+
+        ? "rgba(0,0,0,0)"
+
+        : colorPicker.value;
+
+
+    if (
+        ferramenta === "eraser"
+    ) {
+
+        ctx.globalCompositeOperation =
+            "destination-out";
+
+    }
+
+    else {
+
+        ctx.globalCompositeOperation =
+            "source-over";
+
+    }
+
+
+    ctx.fillRect(
+
+        pixel.x -
+        Math.floor(tamanho / 2),
+
+        pixel.y -
+        Math.floor(tamanho / 2),
+
+        tamanho,
+
+        tamanho
+
+    );
+
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+}
+
+
+artCanvas.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        event.preventDefault();
+
+        salvarEstado();
+
+        desenhando = true;
+
+        artCanvas.setPointerCapture(
+            event.pointerId
+        );
+
+        pintar(event);
+
+    }
+);
+
+
+artCanvas.addEventListener(
+    "pointermove",
+    function(event) {
+
+        if (!desenhando) {
+            return;
+        }
+
+        event.preventDefault();
+
+        pintar(event);
+
+    }
+);
+
+
+artCanvas.addEventListener(
+    "pointerup",
+    function(event) {
+
+        desenhando =
+            false;
+
+        try {
+
+            artCanvas.releasePointerCapture(
+                event.pointerId
+            );
 
         }
-    );
+
+        catch {}
+
+    }
+);
+
+
+/* =========================================================
+   GRADE
+========================================================= */
+
+function alternarGrade() {
+
+    gridVisivel =
+        !gridVisivel;
+
+    atualizarCanvasVisual();
+
+}
+
+
+function atualizarCanvasVisual() {
+
+    const tamanho =
+        Math.min(
+            canvasArea.clientWidth,
+            canvasArea.clientHeight
+        );
+
+
+    zoom =
+        tamanho /
+        tamanhoCanvas;
+
+
+    artCanvas.style.width =
+        tamanho +
+        "px";
+
+
+    artCanvas.style.height =
+        tamanho +
+        "px";
+
+
+    desenharGrade();
+
+
+    atualizarInfo();
+
+}
+
+
+/* =========================================================
+   GRADE VISUAL
+========================================================= */
+
+function desenharGrade() {
+
+    const old =
+        artCanvas.style.backgroundImage;
+
+
+    if (gridVisivel) {
+
+        artCanvas.style.backgroundImage =
+
+            "linear-gradient(#333 1px, transparent 1px)," +
+
+            "linear-gradient(90deg, #333 1px, transparent 1px)";
+
+        artCanvas.style.backgroundSize =
+            "calc(100% / " +
+            tamanhoCanvas +
+            ") calc(100% / " +
+            tamanhoCanvas +
+            ")";
+
+    }
+
+    else {
+
+        artCanvas.style.backgroundImage =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   ZOOM
+========================================================= */
+
+function resetZoom() {
+
+    atualizarCanvasVisual();
+
+    canvasInfo.textContent =
+        "Zoom: 100%";
+
+}
+
+
+function atualizarInfo() {
+
+    canvasInfo.textContent =
+        "Zoom: 100%";
+
+}
+
+
+/* =========================================================
+   SALVAR ARTE
+========================================================= */
+
+function salvarArte() {
+
+    try {
+
+        const imagem =
+            artCanvas.toDataURL(
+                "image/png"
+            );
+
+
+        localStorage.setItem(
+            "engine_arte",
+            imagem
+        );
+
+
+        alert(
+            "Arte salva no dispositivo."
+        );
+
+    }
+
+    catch {
+
+        alert(
+            "Não foi possível salvar."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CARREGAR ARTE
+========================================================= */
+
+function carregarArte() {
+
+    const imagem =
+        localStorage.getItem(
+            "engine_arte"
+        );
+
+
+    if (!imagem) {
+
+        alert(
+            "Nenhuma arte salva."
+        );
+
+        return;
+
+    }
+
+
+    const img =
+        new Image();
+
+
+    img.onload =
+        function() {
+
+            ctx.clearRect(
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
+            );
+
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
+            );
+
+        };
+
+
+    img.src =
+        imagem;
+
+}
 
 
 /* =========================================================
@@ -2583,6 +3435,28 @@ document
 atualizarLinhas();
 
 carregarCodigos();
+
+atualizarCanvasVisual();
+
+
+window.addEventListener(
+    "resize",
+    function() {
+
+        if (
+            document.getElementById(
+                "artPage"
+            ).classList.contains(
+                "active"
+            )
+        ) {
+
+            atualizarCanvasVisual();
+
+        }
+
+    }
+);
 
 </script>
 
