@@ -511,7 +511,6 @@ button:active {
 
 int main() {
 
-    int idade = 18;
 
     std::cout << "Olá!";
 
@@ -581,7 +580,44 @@ int main() {
 
 </div>
 
+<div id="inputArea" style="display:none; margin-top:10px;">
 
+    <input
+        id="stdinInput"
+        type="text"
+        placeholder="Digite a entrada..."
+        style="
+            width:100%;
+            padding:14px;
+            box-sizing:border-box;
+            background:#111;
+            color:white;
+            border:1px solid #333;
+            border-radius:10px;
+            font-family:Menlo,monospace;
+            font-size:15px;
+            outline:none;
+        "
+    >
+
+    <button
+        onclick="enviarEntrada()"
+        style="
+            width:100%;
+            margin-top:8px;
+            padding:14px;
+            background:#2878ff;
+            color:white;
+            border:none;
+            border-radius:10px;
+            font-size:15px;
+            font-weight:bold;
+        "
+    >
+        ENVIAR
+    </button>
+
+</div>
 
 <!-- CÓDIGOS SALVOS -->
 
