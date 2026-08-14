@@ -181,19 +181,79 @@ int main() {
 
 <script>
 
-function executar() {
+async function executar() {
 
-    const codigo =
-        document.getElementById("code").value;
+    const codigo = document.getElementById("code").value;
+    const terminal = document.getElementById("terminal");
 
     if (!codigo.trim()) {
-
-        document.getElementById("terminal").textContent =
-            "> Erro: nenhum código foi inserido.";
-
+        terminal.textContent = "> Erro: nenhum código foi inserido.";
         return;
     }
 
+    terminal.textContent = "> Enviando para o Judge0...";
+
+    try {
+
+        const resposta = await fetch(
+            "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    language_id: 54,
+
+                    source_code: btoa(
+                        unescape(
+                            encodeURIComponent(codigo)
+                        )
+                    ),
+
+                    stdin: ""
+
+                })
+            }
+        );
+
+        if (!resposta.ok) {
+            throw new Error(
+                "HTTP " + resposta.status
+            );
+        }
+
+        const resultado = await resposta.json();
+
+        let saida = "";
+
+        if (resultado.stdout) {
+            saida +=
+                atob(resultado.stdout);
+        }
+
+        if (resultado.stderr) {
+            saida +=
+                "\n" + atob(resultado.stderr);
+        }
+
+        if (!saida) {
+            saida = "> Programa executado sem saída.";
+        }
+
+        terminal.textContent = saida;
+
+    } catch (erro) {
+
+        terminal.textContent =
+            "> Erro ao conectar ao Judge0:\n\n" +
+            erro.message;
+
+    }
+}
 
     document.getElementById("terminal").textContent =
         "> Enviando código para Executor c++...";
