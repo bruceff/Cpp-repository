@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>My Engine</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100%;
     min-height: 100%;
     background: #0d0d0d;
     color: white;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
 body {
@@ -117,6 +128,10 @@ body {
     border-radius: 14px;
 }
 
+.card:active {
+    transform: scale(.98);
+}
+
 .card-icon {
     font-size: 26px;
     margin-bottom: 8px;
@@ -134,9 +149,10 @@ body {
     line-height: 1.4;
 }
 
-/* ==============================
+
+/* =========================================================
    EDITOR
-============================== */
+========================================================= */
 
 .editor-area {
     padding: 15px;
@@ -211,6 +227,14 @@ button {
     font-weight: 700;
 }
 
+button:active {
+    transform: scale(.97);
+}
+
+button:disabled {
+    opacity: .55;
+}
+
 .run {
     flex: 1;
     background: #20c968;
@@ -278,42 +302,49 @@ button {
     font-size: 12px;
 }
 
-/* ==============================
-   LINGUAGEM
-============================== */
 
-.language-box {
+/* =========================================================
+   TRADUTOR
+========================================================= */
+
+.translator-box {
     margin: 0 15px 15px;
-    padding: 15px;
-    background: #151515;
+    padding: 12px;
+    background: #121212;
     border: 1px solid #292929;
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
-.language-title {
+.translator-title {
+    color: #aaa;
+    font-size: 12px;
     font-weight: 800;
     margin-bottom: 8px;
 }
 
-.language-info {
-    color: #888;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.language-example {
-    margin-top: 10px;
-    padding: 12px;
-    background: #080808;
-    border-radius: 8px;
-    color: #00ff66;
+.translator-status {
+    color: #777;
     font-family: monospace;
+    font-size: 11px;
     white-space: pre-wrap;
 }
 
-/* ==============================
-   SALVOS
-============================== */
+.translator-status.ok {
+    color: #20c968;
+}
+
+.translator-status.warning {
+    color: #ffbd45;
+}
+
+.translator-status.error {
+    color: #ff5555;
+}
+
+
+/* =========================================================
+   CÓDIGOS SALVOS
+========================================================= */
 
 .saved-area {
     padding: 0 15px 20px;
@@ -372,9 +403,10 @@ button {
     background: #8f2525;
 }
 
-/* ==============================
+
+/* =========================================================
    ARTE
-============================== */
+========================================================= */
 
 .art-page {
     padding: 10px;
@@ -449,11 +481,10 @@ button {
     top: 50%;
     width: 512px;
     height: 512px;
-    transform: translate(-50%, -50%);
     transform-origin: center center;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    background: transparent;
+    background-color: transparent;
     touch-action: none;
 }
 
@@ -472,7 +503,7 @@ button {
 
 .art-controls {
     display: grid;
-    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     margin-top: 8px;
 }
@@ -492,11 +523,11 @@ button {
     font-weight: 700;
 }
 
-input[type=range] {
+input[type="range"] {
     width: 100%;
 }
 
-input[type=color] {
+input[type="color"] {
     width: 100%;
     height: 40px;
     padding: 2px;
@@ -507,7 +538,7 @@ input[type=color] {
 
 .art-actions {
     display: grid;
-    grid-template-columns: repeat(4,minmax(0,1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
     margin-top: 8px;
 }
@@ -524,9 +555,10 @@ input[type=color] {
     border-color: #2878ff;
 }
 
-/* ==============================
+
+/* =========================================================
    MÓDULOS
-============================== */
+========================================================= */
 
 .module-page {
     padding: 20px;
@@ -572,9 +604,10 @@ input[type=color] {
     margin-bottom: 5px;
 }
 
-/* ==============================
+
+/* =========================================================
    MODAL
-============================== */
+========================================================= */
 
 .modal {
     display: none;
@@ -628,352 +661,663 @@ input[type=color] {
 .confirm {
     background: #2878ff;
 }
+
 </style>
+
 </head>
 
 <body>
 
-<div class="header">MY ENGINE</div>
+
+<div class="header">
+    MY ENGINE
+</div>
+
 
 <div class="navigation">
 
-<button class="nav-button active" onclick="abrirPagina('home',this)">🏠 Início</button>
-<button class="nav-button" onclick="abrirPagina('codePage',this)">📝 Código</button>
-<button class="nav-button" onclick="abrirPagina('artPage',this)">🎨 Arte</button>
-<button class="nav-button" onclick="abrirPagina('scenePage',this)">🗺️ Cena</button>
-<button class="nav-button" onclick="abrirPagina('tilemapPage',this)">🧱 Tilemap</button>
-<button class="nav-button" onclick="abrirPagina('assetsPage',this)">📦 Assets</button>
-<button class="nav-button" onclick="abrirPagina('audioPage',this)">🎵 Áudio</button>
-<button class="nav-button" onclick="abrirPagina('projectPage',this)">⚙️ Projeto</button>
+    <button class="nav-button active"
+        onclick="abrirPagina('home', this)">
+        🏠 Início
+    </button>
+
+    <button class="nav-button"
+        onclick="abrirPagina('codePage', this)">
+        📝 Código
+    </button>
+
+    <button class="nav-button"
+        onclick="abrirPagina('artPage', this)">
+        🎨 Arte
+    </button>
+
+    <button class="nav-button"
+        onclick="abrirPagina('scenePage', this)">
+        🗺️ Cena
+    </button>
+
+    <button class="nav-button"
+        onclick="abrirPagina('tilemapPage', this)">
+        🧱 Tilemap
+    </button>
+
+    <button class="nav-button"
+        onclick="abrirPagina('assetsPage', this)">
+        📦 Assets
+    </button>
+
+    <button class="nav-button"
+        onclick="abrirPagina('audioPage', this)">
+        🎵 Áudio
+    </button>
+
+    <button class="nav-button"
+        onclick="abrirPagina('projectPage', this)">
+        ⚙️ Projeto
+    </button>
 
 </div>
 
-<!-- INÍCIO -->
+
+<!-- =====================================================
+     INÍCIO
+===================================================== -->
 
 <section id="home" class="page active home">
 
-<div class="hero">
-<h1>Minha Engine</h1>
-<p>Ambiente de desenvolvimento mobile para criação de jogos 2D.</p>
-</div>
+    <div class="hero">
 
-<div class="cards">
+        <h1>Minha Engine</h1>
 
-<div class="card" onclick="abrirPorId('codePage')">
-<div class="card-icon">📝</div>
-<div class="card-title">Código</div>
-<div class="card-description">Programe usando a My Engine Language.</div>
-</div>
+        <p>
+            Ambiente de desenvolvimento
+            mobile para criação de jogos 2D.
+        </p>
 
-<div class="card" onclick="abrirPorId('artPage')">
-<div class="card-icon">🎨</div>
-<div class="card-title">Arte</div>
-<div class="card-description">Crie sprites diretamente no celular.</div>
-</div>
+    </div>
 
-<div class="card" onclick="abrirPorId('scenePage')">
-<div class="card-icon">🗺️</div>
-<div class="card-title">Cena</div>
-<div class="card-description">Construa seus mundos.</div>
-</div>
 
-<div class="card" onclick="abrirPorId('tilemapPage')">
-<div class="card-icon">🧱</div>
-<div class="card-title">Tilemap</div>
-<div class="card-description">Construa mapas 2D.</div>
-</div>
+    <div class="cards">
 
-<div class="card" onclick="abrirPorId('assetsPage')">
-<div class="card-icon">📦</div>
-<div class="card-title">Assets</div>
-<div class="card-description">Gerencie recursos.</div>
-</div>
+        <div class="card"
+            onclick="abrirPorId('codePage')">
 
-<div class="card" onclick="abrirPorId('audioPage')">
-<div class="card-icon">🎵</div>
-<div class="card-title">Áudio</div>
-<div class="card-description">Controle músicas e efeitos.</div>
-</div>
+            <div class="card-icon">📝</div>
 
-</div>
+            <div class="card-title">
+                Código
+            </div>
+
+            <div class="card-description">
+                Escreva C++ ou use a linguagem
+                personalizada da My Engine.
+            </div>
+
+        </div>
+
+
+        <div class="card"
+            onclick="abrirPorId('artPage')">
+
+            <div class="card-icon">🎨</div>
+
+            <div class="card-title">
+                Arte
+            </div>
+
+            <div class="card-description">
+                Crie sprites diretamente no celular.
+            </div>
+
+        </div>
+
+
+        <div class="card"
+            onclick="abrirPorId('scenePage')">
+
+            <div class="card-icon">🗺️</div>
+
+            <div class="card-title">
+                Cena
+            </div>
+
+            <div class="card-description">
+                Construa seus mundos.
+            </div>
+
+        </div>
+
+
+        <div class="card"
+            onclick="abrirPorId('tilemapPage')">
+
+            <div class="card-icon">🧱</div>
+
+            <div class="card-title">
+                Tilemap
+            </div>
+
+            <div class="card-description">
+                Construa mapas 2D.
+            </div>
+
+        </div>
+
+
+        <div class="card"
+            onclick="abrirPorId('assetsPage')">
+
+            <div class="card-icon">📦</div>
+
+            <div class="card-title">
+                Assets
+            </div>
+
+            <div class="card-description">
+                Gerencie recursos.
+            </div>
+
+        </div>
+
+
+        <div class="card"
+            onclick="abrirPorId('audioPage')">
+
+            <div class="card-icon">🎵</div>
+
+            <div class="card-title">
+                Áudio
+            </div>
+
+            <div class="card-description">
+                Controle músicas e efeitos.
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
 
-<!-- CÓDIGO -->
+
+<!-- =====================================================
+     CÓDIGO
+===================================================== -->
 
 <section id="codePage" class="page">
 
-<div class="editor-area">
+    <div class="editor-area">
 
-<div class="label">MY ENGINE LANGUAGE</div>
+        <div class="label">
+            CÓDIGO
+        </div>
 
-<div class="editor-wrapper">
 
-<div class="line-numbers" id="lineNumbers"></div>
+        <div class="editor-wrapper">
 
-<textarea
-class="editor"
-id="code"
-spellcheck="false"
-autocapitalize="off"
-autocomplete="off"
-autocorrect="off">txt nome = "Alan"
+            <div class="line-numbers"
+                id="lineNumbers"></div>
 
-manda o papo "Olá, "
-manda o papo nome
 
-numero idade = 18
+            <textarea
+                class="editor"
+                id="code"
+                spellcheck="false"
+                autocapitalize="off"
+                autocomplete="off"
+                autocorrect="off">manda o papo "Olá, mundo!" endl;</textarea>
 
-se idade >= 18 {
-    manda o papo "Maior de idade"
-}</textarea>
+        </div>
 
-</div>
+    </div>
 
-</div>
 
-<div class="language-box">
+    <div class="buttons">
 
-<div class="language-title">
-🧠 Tradutor My Engine → C++
-</div>
+        <button
+            class="run"
+            id="runButton"
+            onclick="executar()">
+            ▶ EXECUTAR
+        </button>
 
-<div class="language-info">
-Seu código é convertido automaticamente para C++ antes de ser enviado ao Judge0.
-</div>
+        <button
+            class="input-button"
+            onclick="alternarEntrada()">
+            ⌨ ENTRADA
+        </button>
 
-<div class="language-example">
-manda o papo "Olá!"
+        <button
+            class="save"
+            onclick="abrirSalvar()">
+            💾 SALVAR
+        </button>
 
-↓
-cout &lt;&lt; "Olá!";
-</div>
+        <button
+            class="clear"
+            onclick="limpar()">
+            LIMPAR
+        </button>
 
-</div>
+    </div>
 
-<div class="buttons">
 
-<button class="run" id="runButton" onclick="executar()">
-▶ EXECUTAR
-</button>
+    <div class="translator-box">
 
-<button class="input-button" onclick="alternarEntrada()">
-⌨ ENTRADA
-</button>
+        <div class="translator-title">
+            🔄 TRADUTOR MY ENGINE
+        </div>
 
-<button class="save" onclick="abrirSalvar()">
-💾 SALVAR
-</button>
+        <div
+            id="translatorStatus"
+            class="translator-status">
+            Aguardando código...
+        </div>
 
-<button class="clear" onclick="limpar()">
-LIMPAR
-</button>
+    </div>
 
-</div>
 
-<div class="terminal-area">
+    <div class="terminal-area">
 
-<div class="label">TERMINAL</div>
+        <div class="label">
+            TERMINAL
+        </div>
 
-<div class="terminal" id="terminal">
-> Aguardando execução...
-</div>
+        <div
+            class="terminal"
+            id="terminal">
+            &gt; Aguardando execução...
+        </div>
 
-<div class="input-area" id="inputArea">
 
-<textarea
-class="stdin-input"
-id="stdinInput"
-placeholder="Digite a entrada do programa..."></textarea>
+        <div
+            class="input-area"
+            id="inputArea">
 
-</div>
+            <textarea
+                class="stdin-input"
+                id="stdinInput"
+                placeholder="Digite a entrada do programa..."></textarea>
 
-<div class="status" id="status"></div>
+        </div>
 
-</div>
 
-<div class="saved-area">
+        <div
+            class="status"
+            id="status">
+        </div>
 
-<div class="saved-title">
-<span>MEUS CÓDIGOS</span>
-<span id="savedCount">0</span>
-</div>
+    </div>
 
-<div class="saved-list" id="savedList"></div>
 
-</div>
+    <div class="saved-area">
+
+        <div class="saved-title">
+
+            <span>
+                MEUS CÓDIGOS
+            </span>
+
+            <span id="savedCount">
+                0
+            </span>
+
+        </div>
+
+
+        <div
+            class="saved-list"
+            id="savedList">
+        </div>
+
+    </div>
 
 </section>
 
-<!-- ARTE -->
+
+<!-- =====================================================
+     ARTE
+===================================================== -->
 
 <section id="artPage" class="page art-page">
 
-<div class="art-top">
+    <div class="art-top">
 
-<div class="art-title">🎨 Editor de Arte</div>
+        <div class="art-title">
+            🎨 Editor de Arte
+        </div>
 
-<div class="art-size" id="artSize">32 × 32</div>
+        <div class="art-size" id="artSize">
+            32 × 32
+        </div>
 
-</div>
+    </div>
 
-<div class="art-toolbar">
 
-<button class="tool active" id="pencilTool" onclick="selecionarFerramenta('pencil')">✏️</button>
+    <div class="art-toolbar">
 
-<button class="tool" id="eraserTool" onclick="selecionarFerramenta('eraser')">🧽</button>
+        <button
+            class="tool active"
+            id="pencilTool"
+            onclick="selecionarFerramenta('pencil')">
+            ✏️
+        </button>
 
-<button class="tool" onclick="limparCanvas()">🗑️</button>
+        <button
+            class="tool"
+            id="eraserTool"
+            onclick="selecionarFerramenta('eraser')">
+            🧽
+        </button>
 
-<button class="tool" onclick="desfazer()">↩️</button>
+        <button
+            class="tool"
+            onclick="limparCanvas()">
+            🗑️
+        </button>
 
-<button class="tool" onclick="refazer()">↪️</button>
+        <button
+            class="tool"
+            onclick="desfazer()">
+            ↩️
+        </button>
 
-<button class="tool" onclick="alternarGrade()">🔲</button>
+        <button
+            class="tool"
+            onclick="refazer()">
+            ↪️
+        </button>
 
-<button class="tool" onclick="resetZoom()">1:1</button>
+        <button
+            class="tool"
+            onclick="alternarGrade()">
+            🔲
+        </button>
 
-</div>
+        <button
+            class="tool"
+            onclick="resetZoom()">
+            1:1
+        </button>
 
-<div class="canvas-area" id="canvasArea">
+    </div>
 
-<canvas id="artCanvas" width="32" height="32"></canvas>
 
-<div class="canvas-info" id="canvasInfo">
-Zoom: 100%
-</div>
+    <div
+        class="canvas-area"
+        id="canvasArea">
 
-</div>
+        <canvas
+            id="artCanvas"
+            width="32"
+            height="32">
+        </canvas>
 
-<div class="art-controls">
+        <div
+            class="canvas-info"
+            id="canvasInfo">
+            Zoom: 100%
+        </div>
 
-<div class="control-box">
+    </div>
 
-<span class="control-label">COR</span>
 
-<input type="color" id="colorPicker" value="#ffffff">
+    <div class="art-controls">
 
-</div>
+        <div class="control-box">
 
-<div class="control-box">
+            <span class="control-label">
+                COR
+            </span>
 
-<span class="control-label">TAMANHO DO PINCEL</span>
+            <input
+                type="color"
+                id="colorPicker"
+                value="#ffffff">
 
-<input type="range" id="brushSize" min="1" max="8" value="1">
+        </div>
 
-</div>
 
-</div>
+        <div class="control-box">
 
-<div class="art-actions">
+            <span class="control-label">
+                TAMANHO DO PINCEL
+            </span>
 
-<button class="art-action primary" onclick="novoCanvas()">🆕 NOVO</button>
-<button class="art-action" onclick="salvarArte()">💾 SALVAR</button>
-<button class="art-action" onclick="carregarArte()">📂 ABRIR</button>
-<button class="art-action" onclick="resetZoom()">🔍 ZOOM</button>
+            <input
+                type="range"
+                id="brushSize"
+                min="1"
+                max="8"
+                value="1">
 
-</div>
+        </div>
+
+    </div>
+
+
+    <div class="art-actions">
+
+        <button
+            class="art-action primary"
+            onclick="novoCanvas()">
+            🆕 NOVO
+        </button>
+
+        <button
+            class="art-action"
+            onclick="salvarArte()">
+            💾 SALVAR
+        </button>
+
+        <button
+            class="art-action"
+            onclick="carregarArte()">
+            📂 ABRIR
+        </button>
+
+        <button
+            class="art-action"
+            onclick="resetZoom()">
+            🔍 ZOOM
+        </button>
+
+    </div>
 
 </section>
 
-<!-- MÓDULOS -->
+
+<!-- =====================================================
+     MÓDULOS
+===================================================== -->
 
 <section id="scenePage" class="page module-page">
 
-<div class="module-header">
-<h1>🗺️ Cena</h1>
-<p>Editor visual de mundos, objetos, personagens e props.</p>
-</div>
+    <div class="module-header">
 
-<div class="coming-soon">
-<div class="coming-soon-icon">🗺️</div>
-<strong>Editor de Cenas</strong>
-Em desenvolvimento.
-</div>
+        <h1>🗺️ Cena</h1>
+
+        <p>
+            Editor visual de mundos,
+            objetos, personagens e props.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            🗺️
+        </div>
+
+        <strong>
+            Editor de Cenas
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
 
 </section>
+
 
 <section id="tilemapPage" class="page module-page">
 
-<div class="module-header">
-<h1>🧱 Tilemap</h1>
-<p>Ferramenta para construção de mapas baseados em tiles.</p>
-</div>
+    <div class="module-header">
 
-<div class="coming-soon">
-<div class="coming-soon-icon">🧱</div>
-<strong>Editor de Tilemap</strong>
-Em desenvolvimento.
-</div>
+        <h1>🧱 Tilemap</h1>
+
+        <p>
+            Ferramenta para construção
+            de mapas baseados em tiles.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            🧱
+        </div>
+
+        <strong>
+            Editor de Tilemap
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
 
 </section>
+
 
 <section id="assetsPage" class="page module-page">
 
-<div class="module-header">
-<h1>📦 Assets</h1>
-<p>Gerenciamento de sprites, mapas, sons e recursos.</p>
-</div>
+    <div class="module-header">
 
-<div class="coming-soon">
-<div class="coming-soon-icon">📦</div>
-<strong>Gerenciador de Assets</strong>
-Em desenvolvimento.
-</div>
+        <h1>📦 Assets</h1>
+
+        <p>
+            Gerenciamento de sprites,
+            mapas, sons e recursos.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            📦
+        </div>
+
+        <strong>
+            Gerenciador de Assets
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
 
 </section>
+
 
 <section id="audioPage" class="page module-page">
 
-<div class="module-header">
-<h1>🎵 Áudio</h1>
-<p>Música, efeitos sonoros e gerenciamento de áudio.</p>
-</div>
+    <div class="module-header">
 
-<div class="coming-soon">
-<div class="coming-soon-icon">🎵</div>
-<strong>Sistema de Áudio</strong>
-Em desenvolvimento.
-</div>
+        <h1>🎵 Áudio</h1>
+
+        <p>
+            Música, efeitos sonoros
+            e gerenciamento de áudio.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            🎵
+        </div>
+
+        <strong>
+            Sistema de Áudio
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
 
 </section>
+
 
 <section id="projectPage" class="page module-page">
 
-<div class="module-header">
-<h1>⚙️ Projeto</h1>
-<p>Configurações e gerenciamento do projeto da engine.</p>
-</div>
+    <div class="module-header">
 
-<div class="coming-soon">
-<div class="coming-soon-icon">⚙️</div>
-<strong>Gerenciamento do Projeto</strong>
-Em desenvolvimento.
-</div>
+        <h1>⚙️ Projeto</h1>
+
+        <p>
+            Configurações e gerenciamento
+            do projeto da engine.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            ⚙️
+        </div>
+
+        <strong>
+            Gerenciamento do Projeto
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
 
 </section>
 
-<!-- MODAL -->
+
+<!-- =====================================================
+     MODAL
+===================================================== -->
 
 <div class="modal" id="saveModal">
 
-<div class="modal-box">
+    <div class="modal-box">
 
-<h2>Salvar código</h2>
+        <h2>
+            Salvar código
+        </h2>
 
-<input id="codeName" type="text" placeholder="Nome do código">
+        <input
+            id="codeName"
+            type="text"
+            placeholder="Nome do código">
 
-<div class="modal-buttons">
+        <div class="modal-buttons">
 
-<button class="cancel" onclick="fecharSalvar()">CANCELAR</button>
+            <button
+                class="cancel"
+                onclick="fecharSalvar()">
+                CANCELAR
+            </button>
 
-<button class="confirm" onclick="salvarCodigo()">SALVAR</button>
+            <button
+                class="confirm"
+                onclick="salvarCodigo()">
+                SALVAR
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
-</div>
-
-</div>
 
 <script>
 
@@ -983,478 +1327,1569 @@ Em desenvolvimento.
 
 function abrirPagina(id, botao) {
 
-document.querySelectorAll(".page").forEach(
-p => p.classList.remove("active")
-);
+    document
+        .querySelectorAll(".page")
+        .forEach(p =>
+            p.classList.remove("active")
+        );
 
-const pagina = document.getElementById(id);
+    const pagina =
+        document.getElementById(id);
 
-if (pagina) {
-pagina.classList.add("active");
+    if (pagina) {
+        pagina.classList.add("active");
+    }
+
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(b =>
+            b.classList.remove("active")
+        );
+
+    if (botao) {
+        botao.classList.add("active");
+    }
+
+    window.scrollTo(0, 0);
+
+    if (id === "artPage") {
+        setTimeout(
+            atualizarCanvasVisual,
+            30
+        );
+    }
 }
 
-document.querySelectorAll(".nav-button").forEach(
-b => b.classList.remove("active")
-);
-
-if (botao) {
-botao.classList.add("active");
-}
-
-window.scrollTo(0,0);
-
-}
 
 function abrirPorId(id) {
 
-const botoes = document.querySelectorAll(".nav-button");
+    const botoes =
+        document.querySelectorAll(
+            ".nav-button"
+        );
 
-let encontrado = null;
+    let encontrado = null;
 
-botoes.forEach(b => {
+    botoes.forEach(b => {
 
-if (
-b.getAttribute("onclick") &&
-b.getAttribute("onclick").includes("'" + id + "'")
-) {
-encontrado = b;
+        const onclick =
+            b.getAttribute("onclick") || "";
+
+        if (
+            onclick.includes(
+                "'" + id + "'"
+            )
+        ) {
+            encontrado = b;
+        }
+
+    });
+
+    abrirPagina(id, encontrado);
 }
 
-});
-
-abrirPagina(id,encontrado);
-
-}
 
 /* =========================================================
-   EDITOR
+   ELEMENTOS DO EDITOR
 ========================================================= */
 
-const editor = document.getElementById("code");
-const lineNumbers = document.getElementById("lineNumbers");
-const terminal = document.getElementById("terminal");
-const inputArea = document.getElementById("inputArea");
-const stdinInput = document.getElementById("stdinInput");
-const status = document.getElementById("status");
-const savedList = document.getElementById("savedList");
-const savedCount = document.getElementById("savedCount");
-const runButton = document.getElementById("runButton");
+const editor =
+    document.getElementById("code");
+
+const lineNumbers =
+    document.getElementById("lineNumbers");
+
+const terminal =
+    document.getElementById("terminal");
+
+const inputArea =
+    document.getElementById("inputArea");
+
+const stdinInput =
+    document.getElementById("stdinInput");
+
+const status =
+    document.getElementById("status");
+
+const savedList =
+    document.getElementById("savedList");
+
+const savedCount =
+    document.getElementById("savedCount");
+
+const runButton =
+    document.getElementById("runButton");
+
+const translatorStatus =
+    document.getElementById(
+        "translatorStatus"
+    );
 
 let executando = false;
 
+
+/* =========================================================
+   LINHAS
+========================================================= */
+
 function atualizarLinhas() {
 
-const quantidade = editor.value.split("\n").length;
+    const quantidade =
+        editor.value.split("\n").length;
 
-let numeros = "";
+    let numeros = "";
 
-for (let i=1;i<=quantidade;i++) {
-numeros += i + "<br>";
+    for (
+        let i = 1;
+        i <= quantidade;
+        i++
+    ) {
+        numeros += i + "<br>";
+    }
+
+    lineNumbers.innerHTML =
+        numeros;
 }
 
-lineNumbers.innerHTML = numeros;
 
-}
+editor.addEventListener(
+    "input",
+    atualizarLinhas
+);
 
-editor.addEventListener("input",atualizarLinhas);
 
-editor.addEventListener("scroll",function() {
-lineNumbers.scrollTop = editor.scrollTop;
-});
+editor.addEventListener(
+    "scroll",
+    function() {
 
-editor.addEventListener("keydown",function(event) {
+        lineNumbers.scrollTop =
+            editor.scrollTop;
 
-if (event.key === "Tab") {
+    }
+);
 
-event.preventDefault();
 
-const inicio = editor.selectionStart;
-const fim = editor.selectionEnd;
+editor.addEventListener(
+    "keydown",
+    function(event) {
 
-editor.value =
-editor.value.substring(0,inicio) +
-"    " +
-editor.value.substring(fim);
+        if (event.key === "Tab") {
 
-editor.selectionStart = inicio + 4;
-editor.selectionEnd = inicio + 4;
+            event.preventDefault();
 
-atualizarLinhas();
+            const inicio =
+                editor.selectionStart;
 
-}
+            const fim =
+                editor.selectionEnd;
 
-});
+            editor.value =
+                editor.value.substring(
+                    0,
+                    inicio
+                ) +
+                "    " +
+                editor.value.substring(
+                    fim
+                );
+
+            editor.selectionStart =
+                inicio + 4;
+
+            editor.selectionEnd =
+                inicio + 4;
+
+            atualizarLinhas();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ENTRADA
+========================================================= */
 
 function alternarEntrada() {
 
-inputArea.style.display =
-inputArea.style.display === "block"
-? "none"
-: "block";
+    inputArea.style.display =
+        inputArea.style.display === "block"
+            ? "none"
+            : "block";
 
 }
 
+
 /* =========================================================
-   TRADUTOR MY ENGINE → C++
+   =========================================================
+   TRADUTOR MY ENGINE
+   =========================================================
+   ========================================================= */
+
+
+/*
+    IMPORTANTE:
+
+    O tradutor trabalha em cima do C++.
+
+    Tudo que for C++ normal continua funcionando.
+
+    Os comandos personalizados são convertidos
+    somente quando aparecem como comandos.
+
+    Strings e comentários são protegidos.
+*/
+
+
+const COMANDOS_MY_ENGINE = {
+
+    /* -------------------------
+       SAÍDA
+    ------------------------- */
+
+    "manda o papo":
+        "std::cout <<",
+
+    "qual foi":
+        "std::cerr <<",
+
+    "endl":
+        "std::endl",
+
+
+    /* -------------------------
+       ENTRADA
+    ------------------------- */
+
+    "visao":
+        "std::cin >>",
+
+    "abraça o papo":
+        "std::getline",
+
+
+    /* -------------------------
+       TIPOS
+    ------------------------- */
+
+    "numero":
+        "int",
+
+    "decimal":
+        "float",
+
+    "decimal^":
+        "double",
+
+    "letra":
+        "char",
+
+    "txt":
+        "std::string",
+
+    "tlgd":
+        "bool",
+
+    "auto":
+        "auto"
+
+};
+
+
+/*
+    Palavras que NÃO devem ser tratadas
+    como comandos desconhecidos.
+*/
+
+const PALAVRAS_CPP = new Set([
+
+    "alignas",
+    "alignof",
+    "and",
+    "and_eq",
+    "asm",
+    "atomic_cancel",
+    "atomic_commit",
+    "atomic_noexcept",
+    "bitand",
+    "bitor",
+    "break",
+    "case",
+    "catch",
+    "class",
+    "compl",
+    "concept",
+    "const",
+    "consteval",
+    "constexpr",
+    "constinit",
+    "const_cast",
+    "continue",
+    "co_await",
+    "co_return",
+    "co_yield",
+    "decltype",
+    "default",
+    "delete",
+    "do",
+    "dynamic_cast",
+    "else",
+    "enum",
+    "explicit",
+    "export",
+    "extern",
+    "false",
+    "for",
+    "friend",
+    "goto",
+    "if",
+    "inline",
+    "mutable",
+    "namespace",
+    "new",
+    "noexcept",
+    "not",
+    "not_eq",
+    "nullptr",
+    "operator",
+    "or",
+    "or_eq",
+    "private",
+    "protected",
+    "public",
+    "reflexpr",
+    "register",
+    "reinterpret_cast",
+    "requires",
+    "return",
+    "sizeof",
+    "static",
+    "static_assert",
+    "static_cast",
+    "struct",
+    "switch",
+    "synchronized",
+    "template",
+    "this",
+    "thread_local",
+    "throw",
+    "true",
+    "try",
+    "typedef",
+    "typeid",
+    "typename",
+    "union",
+    "using",
+    "virtual",
+    "volatile",
+    "while",
+    "xor",
+    "xor_eq",
+
+    "bool",
+    "char",
+    "char8_t",
+    "char16_t",
+    "char32_t",
+    "double",
+    "float",
+    "int",
+    "long",
+    "short",
+    "signed",
+    "unsigned",
+    "void",
+    "wchar_t",
+
+    "string",
+    "vector",
+    "map",
+    "set",
+    "array",
+    "deque",
+    "list",
+    "queue",
+    "stack",
+    "pair",
+    "tuple",
+
+    "cout",
+    "cerr",
+    "cin",
+    "endl",
+
+    "std",
+    "main",
+
+    "include",
+    "define",
+    "ifdef",
+    "ifndef",
+    "endif",
+    "pragma",
+
+    "using",
+    "namespace"
+
+]);
+
+
+/*
+    Protege strings e comentários.
+
+    Isso impede que:
+
+    "cout"
+
+    seja traduzido acidentalmente.
+*/
+
+function protegerCodigo(codigo) {
+
+    const protegidos = [];
+
+    let resultado = "";
+
+    let i = 0;
+
+    while (i < codigo.length) {
+
+        /* STRING */
+
+        if (
+            codigo[i] === '"' ||
+            codigo[i] === "'"
+        ) {
+
+            const quote =
+                codigo[i];
+
+            let trecho =
+                quote;
+
+            i++;
+
+            while (
+                i < codigo.length
+            ) {
+
+                trecho +=
+                    codigo[i];
+
+                if (
+                    codigo[i] === "\\" &&
+                    i + 1 < codigo.length
+                ) {
+
+                    i++;
+
+                    trecho +=
+                        codigo[i];
+
+                }
+
+                else if (
+                    codigo[i] === quote
+                ) {
+
+                    i++;
+
+                    break;
+
+                }
+
+                i++;
+
+            }
+
+            const token =
+                `___MYENGINE_PROTECTED_${protegidos.length}___`;
+
+            protegidos.push(trecho);
+
+            resultado += token;
+
+            continue;
+        }
+
+
+        /* COMENTÁRIO DE LINHA */
+
+        if (
+            codigo[i] === "/" &&
+            codigo[i + 1] === "/"
+        ) {
+
+            let trecho = "";
+
+            while (
+                i < codigo.length &&
+                codigo[i] !== "\n"
+            ) {
+
+                trecho +=
+                    codigo[i];
+
+                i++;
+
+            }
+
+            const token =
+                `___MYENGINE_PROTECTED_${protegidos.length}___`;
+
+            protegidos.push(trecho);
+
+            resultado += token;
+
+            continue;
+        }
+
+
+        /* COMENTÁRIO DE BLOCO */
+
+        if (
+            codigo[i] === "/" &&
+            codigo[i + 1] === "*"
+        ) {
+
+            let trecho =
+                "/*";
+
+            i += 2;
+
+            while (
+                i < codigo.length
+            ) {
+
+                trecho +=
+                    codigo[i];
+
+                if (
+                    codigo[i] === "*" &&
+                    codigo[i + 1] === "/"
+                ) {
+
+                    i++;
+
+                    trecho +=
+                        codigo[i];
+
+                    i++;
+
+                    break;
+
+                }
+
+                i++;
+
+            }
+
+            const token =
+                `___MYENGINE_PROTECTED_${protegidos.length}___`;
+
+            protegidos.push(trecho);
+
+            resultado += token;
+
+            continue;
+        }
+
+
+        resultado +=
+            codigo[i];
+
+        i++;
+
+    }
+
+    return {
+        codigo: resultado,
+        protegidos
+    };
+
+}
+
+
+function restaurarCodigo(
+    codigo,
+    protegidos
+) {
+
+    protegidos.forEach(
+        (trecho, index) => {
+
+            codigo =
+                codigo.replace(
+                    new RegExp(
+                        `___MYENGINE_PROTECTED_${index}___`,
+                        "g"
+                    ),
+                    trecho
+                );
+
+        }
+    );
+
+    return codigo;
+}
+
+
+/*
+    Escapa caracteres especiais para regex.
+*/
+
+function escaparRegex(texto) {
+
+    return texto.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+    );
+
+}
+
+
+/*
+    Traduz uma linha que começa com:
+
+    manda o papo
+    qual foi
+    visao
+    etc.
+*/
+
+function traduzirComandosDeLinha(
+    linha
+) {
+
+    let resultado =
+        linha;
+
+    const indentacao =
+        linha.match(/^\s*/)?.[0] || "";
+
+    let conteudo =
+        linha.trim();
+
+
+    /*
+        MANDA O PAPO
+
+        Exemplo:
+
+        manda o papo "Olá"
+
+        vira:
+
+        std::cout << "Olá";
+    */
+
+    if (
+        conteudo.startsWith(
+            "manda o papo"
+        )
+    ) {
+
+        const resto =
+            conteudo
+                .slice(
+                    "manda o papo".length
+                )
+                .trim();
+
+        resultado =
+            indentacao +
+            "std::cout << " +
+            resto;
+
+        if (
+            !/[;{}]\s*$/.test(
+                resultado
+            )
+        ) {
+
+            resultado += ";";
+
+        }
+
+        return resultado;
+    }
+
+
+    /*
+        QUAL FOI
+    */
+
+    if (
+        conteudo.startsWith(
+            "qual foi"
+        )
+    ) {
+
+        const resto =
+            conteudo
+                .slice(
+                    "qual foi".length
+                )
+                .trim();
+
+        resultado =
+            indentacao +
+            "std::cerr << " +
+            resto;
+
+        if (
+            !/[;{}]\s*$/.test(
+                resultado
+            )
+        ) {
+
+            resultado += ";";
+
+        }
+
+        return resultado;
+    }
+
+
+    /*
+        VISÃO
+
+        visao idade
+
+        vira:
+
+        std::cin >> idade;
+    */
+
+    if (
+        conteudo.startsWith(
+            "visao "
+        )
+    ) {
+
+        const resto =
+            conteudo
+                .slice(
+                    "visao".length
+                )
+                .trim();
+
+        resultado =
+            indentacao +
+            "std::cin >> " +
+            resto;
+
+        if (
+            !/[;{}]\s*$/.test(
+                resultado
+            )
+        ) {
+
+            resultado += ";";
+
+        }
+
+        return resultado;
+    }
+
+
+    /*
+        ABRAÇA O PAPO
+
+        abraça o papo(nome)
+
+        vira:
+
+        std::getline(nome)
+    */
+
+    if (
+        conteudo.startsWith(
+            "abraça o papo"
+        )
+    ) {
+
+        resultado =
+            indentacao +
+            conteudo.replace(
+                /^abraça o papo/,
+                "std::getline"
+            );
+
+        return resultado;
+    }
+
+
+    return resultado;
+}
+
+
+/*
+    Tradução geral.
+*/
+
+function traduzirCodigo(codigo) {
+
+    const protecao =
+        protegerCodigo(codigo);
+
+    let resultado =
+        protecao.codigo;
+
+
+    /*
+        Primeiro tratamos comandos de múltiplas
+        palavras.
+    */
+
+    const linhas =
+        resultado.split("\n");
+
+    const novasLinhas = [];
+
+
+    linhas.forEach(linha => {
+
+        let atual =
+            traduzirComandosDeLinha(
+                linha
+            );
+
+        novasLinhas.push(atual);
+
+    });
+
+
+    resultado =
+        novasLinhas.join("\n");
+
+
+    /*
+        Tipos personalizados.
+
+        Usamos limites de palavra para não modificar
+        nomes como:
+
+        numeroDaCasa
+
+        por exemplo.
+    */
+
+    resultado =
+        resultado.replace(
+            /\bdecimal\^\b/g,
+            "double"
+        );
+
+
+    resultado =
+        resultado.replace(
+            /\bdecimal\b/g,
+            "float"
+        );
+
+
+    resultado =
+        resultado.replace(
+            /\bnumero\b/g,
+            "int"
+        );
+
+
+    resultado =
+        resultado.replace(
+            /\bletra\b/g,
+            "char"
+        );
+
+
+    resultado =
+        resultado.replace(
+            /\btxt\b/g,
+            "std::string"
+        );
+
+
+    resultado =
+        resultado.replace(
+            /\btlgd\b/g,
+            "bool"
+        );
+
+
+    /*
+        endl independente.
+    */
+
+    resultado =
+        resultado.replace(
+            /\bendl\b/g,
+            "std::endl"
+        );
+
+
+    /*
+        Caso o usuário escreva cout/cerr/cin
+        normalmente, também garantimos std::.
+    */
+
+    resultado =
+        resultado.replace(
+            /(?<![\w:])cout\s*<</g,
+            "std::cout <<"
+        );
+
+    resultado =
+        resultado.replace(
+            /(?<![\w:])cerr\s*<</g,
+            "std::cerr <<"
+        );
+
+    resultado =
+        resultado.replace(
+            /(?<![\w:])cin\s*>>/g,
+            "std::cin >>"
+        );
+
+
+    /*
+        Include automático.
+
+        Como usamos std::cout/std::cin/std::string,
+        garantimos os headers necessários.
+    */
+
+    const precisaIO =
+        /std::(cout|cin|cerr|endl|getline)\b/
+            .test(resultado);
+
+    const precisaString =
+        /std::string\b/
+            .test(resultado);
+
+
+    if (
+        precisaIO &&
+        !/#include\s*<iostream>/
+            .test(resultado)
+    ) {
+
+        resultado =
+            "#include <iostream>\n" +
+            resultado;
+
+    }
+
+
+    if (
+        precisaString &&
+        !/#include\s*<string>/
+            .test(resultado)
+    ) {
+
+        resultado =
+            "#include <string>\n" +
+            resultado;
+
+    }
+
+
+    /*
+        Restauramos strings e comentários.
+    */
+
+    resultado =
+        restaurarCodigo(
+            resultado,
+            protecao.protegidos
+        );
+
+
+    return resultado;
+}
+
+
+/* =========================================================
+   DETECTOR DE COMANDOS NÃO BATIZADOS
 ========================================================= */
 
-function traduzirMyEngine(codigo) {
+function detectarComandosNaoBatizados(
+    codigoOriginal
+) {
 
-let linhas = codigo.split("\n");
+    const encontrados = [];
 
-let resultado = [];
+    const protecao =
+        protegerCodigo(
+            codigoOriginal
+        );
 
-let possuiString = false;
-let possuiVector = false;
-let possuiCmath = false;
+    const linhas =
+        protecao.codigo.split("\n");
 
-for (let linha of linhas) {
 
-let original = linha;
+    linhas.forEach(
+        (linha, indice) => {
 
-/*
-   Ignora comentários.
-*/
+            const texto =
+                linha.trim();
 
-if (linha.trim().startsWith("//")) {
-resultado.push(linha);
-continue;
+
+            if (!texto) {
+                return;
+            }
+
+
+            if (
+                texto.startsWith("#") ||
+                texto.startsWith("//") ||
+                texto.startsWith("/*") ||
+                texto.startsWith("*")
+            ) {
+                return;
+            }
+
+
+            /*
+                Comandos personalizados possuem
+                palavras separadas por espaço.
+
+                Procuramos frases que claramente
+                parecem comandos da nossa linguagem.
+            */
+
+            const candidatos = [
+                ...texto.matchAll(
+                    /(^|[;{}])\s*([A-Za-zÀ-ÿ_][A-Za-zÀ-ÿ0-9_]*(?:\s+[A-Za-zÀ-ÿ_][A-Za-zÀ-ÿ0-9_]*){1,4})/g
+                )
+            ];
+
+
+            candidatos.forEach(match => {
+
+                let frase =
+                    match[2]
+                        .trim();
+
+
+                /*
+                    Se começa com tipo C++,
+                    não é comando desconhecido.
+                */
+
+                const primeira =
+                    frase
+                        .split(/\s+/)[0];
+
+
+                if (
+                    PALAVRAS_CPP.has(
+                        primeira
+                    )
+                ) {
+                    return;
+                }
+
+
+                /*
+                    Se começa com comando conhecido,
+                    está tudo certo.
+                */
+
+                const conhecido =
+                    Object.keys(
+                        COMANDOS_MY_ENGINE
+                    ).some(
+                        comando =>
+                            frase === comando ||
+                            frase.startsWith(
+                                comando + " "
+                            )
+                    );
+
+
+                if (conhecido) {
+                    return;
+                }
+
+
+                /*
+                    Só sinalizamos frases que parecem
+                    intencionalmente ser comandos.
+
+                    Não acusamos nomes simples de variáveis
+                    automaticamente.
+                */
+
+                if (
+                    frase.includes(" ") &&
+                    !/[=()<>+\-*/]/.test(frase)
+                ) {
+
+                    if (
+                        !encontrados.some(
+                            x =>
+                            x.comando === frase
+                        )
+                    ) {
+
+                        encontrados.push({
+
+                            comando:
+                                frase,
+
+                            linha:
+                                indice + 1
+
+                        });
+
+                    }
+
+                }
+
+            });
+
+        }
+    );
+
+
+    return encontrados;
 }
 
-/*
-   Detecta string.
-*/
-
-if (/\btxt\b/.test(linha)) {
-possuiString = true;
-}
-
-/*
-   Tipos personalizados.
-*/
-
-linha = linha.replace(/\bdecimal\^\b/g,"double");
-linha = linha.replace(/\bdecimal\b/g,"float");
-linha = linha.replace(/\bnumero\b/g,"int");
-linha = linha.replace(/\bletra\b/g,"char");
-linha = linha.replace(/\btxt\b/g,"string");
-linha = linha.replace(/\btlgd\b/g,"bool");
-
-/*
-   Entrada.
-*/
-
-linha = linha.replace(/\babraça o papo\s*\(/g,"getline(");
-linha = linha.replace(/\bvisao\b/g,"cin");
-
-/*
-   Saída.
-*/
-
-linha = linha.replace(/\bmanda o papo\b/g,"cout");
-linha = linha.replace(/\bqual foi\b/g,"cerr");
-
-/*
-   Nova linha.
-*/
-
-linha = linha.replace(/\bnova linha\b/g,"\\n");
-
-/*
-   Operadores compostos personalizados.
-
-   A tradução acontece apenas quando
-   existe uma atribuição composta.
-*/
-
-linha = linha.replace(/(\b[\wÀ-ÿ]+\b)\s+x\s*=/g,"$1 *= ");
-linha = linha.replace(/(\b[\wÀ-ÿ]+\b)\s+:\s*=/g,"$1 /= ");
-linha = linha.replace(
-/(\b[\wÀ-ÿ]+\b)\s+resto da divisao\s*=/g,
-"$1 %= "
-);
-
-/*
-   Mantém + e - como operadores normais
-   por enquanto.
-*/
-
-/*
-   endl permanece endl.
-*/
-
-resultado.push(linha);
-
-}
-
-let codigoFinal = resultado.join("\n");
-
-/*
-   Inclui bibliotecas necessárias.
-*/
-
-let includes = "#include <iostream>\n";
-
-if (possuiString) {
-includes += "#include <string>\n";
-}
-
-if (possuiVector) {
-includes += "#include <vector>\n";
-}
-
-if (possuiCmath) {
-includes += "#include <cmath>\n";
-}
-
-includes += "using namespace std;\n\n";
-
-/*
-   Se o usuário já escreveu #include,
-   não duplica nosso include principal.
-*/
-
-if (!codigoFinal.includes("#include")) {
-
-codigoFinal =
-includes +
-"int main() {\n" +
-codigoFinal +
-"\n    return 0;\n" +
-"}";
-
-}
-
-else {
-
-/*
-   Se já existe código C++ tradicional,
-   não envolve em main novamente.
-*/
-
-codigoFinal =
-codigoFinal;
-
-}
-
-return codigoFinal;
-
-}
 
 /* =========================================================
-   EXECUÇÃO
+   PREVIEW DO TRADUTOR
+========================================================= */
+
+function atualizarTradutor() {
+
+    const codigo =
+        editor.value;
+
+    if (!codigo.trim()) {
+
+        translatorStatus.textContent =
+            "Aguardando código...";
+
+        translatorStatus.className =
+            "translator-status";
+
+        return;
+
+    }
+
+
+    const desconhecidos =
+        detectarComandosNaoBatizados(
+            codigo
+        );
+
+
+    if (
+        desconhecidos.length > 0
+    ) {
+
+        translatorStatus.className =
+            "translator-status warning";
+
+
+        translatorStatus.textContent =
+            "⚠️ COMANDO(S) NÃO BATIZADO(S):\n\n" +
+
+            desconhecidos
+                .map(
+                    x =>
+                    `Linha ${x.linha}: ${x.comando}`
+                )
+                .join("\n") +
+
+            "\n\nO tradutor não vai inventar uma tradução.";
+
+        return;
+    }
+
+
+    try {
+
+        const traduzido =
+            traduzirCodigo(
+                codigo
+            );
+
+
+        translatorStatus.className =
+            "translator-status ok";
+
+
+        translatorStatus.textContent =
+            "✓ Linguagem My Engine reconhecida.\n" +
+            "✓ Código pronto para C++.";
+
+    }
+
+    catch (erro) {
+
+        translatorStatus.className =
+            "translator-status error";
+
+        translatorStatus.textContent =
+            "⚠️ Erro no tradutor:\n" +
+            erro.message;
+
+    }
+
+}
+
+
+editor.addEventListener(
+    "input",
+    atualizarTradutor
+);
+
+
+/* =========================================================
+   BASE64
+========================================================= */
+
+function codificarBase64(texto) {
+
+    return btoa(
+        unescape(
+            encodeURIComponent(
+                texto
+            )
+        )
+    );
+
+}
+
+
+function decodificarBase64(texto) {
+
+    try {
+
+        return decodeURIComponent(
+            escape(
+                atob(texto)
+            )
+        );
+
+    }
+
+    catch {
+
+        return atob(texto);
+
+    }
+
+}
+
+
+/* =========================================================
+   EXECUTAR
 ========================================================= */
 
 async function executar() {
 
-if (executando) {
-return;
+    if (executando) {
+        return;
+    }
+
+
+    const codigoOriginal =
+        editor.value;
+
+
+    if (
+        !codigoOriginal.trim()
+    ) {
+
+        terminal.textContent =
+            "> Nenhum código foi inserido.";
+
+        return;
+
+    }
+
+
+    const desconhecidos =
+        detectarComandosNaoBatizados(
+            codigoOriginal
+        );
+
+
+    if (
+        desconhecidos.length > 0
+    ) {
+
+        terminal.textContent =
+            "⚠️ COMANDO NÃO BATIZADO\n\n" +
+
+            desconhecidos
+                .map(
+                    x =>
+                    `Linha ${x.linha}: ${x.comando}`
+                )
+                .join("\n") +
+
+            "\n\n" +
+
+            "Esse comando ainda não possui tradução.\n" +
+            "Dê um nome/significado a ele para adicionarmos ao tradutor.";
+
+        atualizarTradutor();
+
+        return;
+    }
+
+
+    let codigo;
+
+    try {
+
+        codigo =
+            traduzirCodigo(
+                codigoOriginal
+            );
+
+    }
+
+    catch (erro) {
+
+        terminal.textContent =
+            "⚠️ ERRO NO TRADUTOR\n\n" +
+            erro.message;
+
+        return;
+
+    }
+
+
+    executando =
+        true;
+
+    runButton.disabled =
+        true;
+
+    runButton.textContent =
+        "⏳ EXECUTANDO";
+
+    terminal.textContent =
+        "> Traduzindo My Engine → C++...\n";
+
+    status.textContent =
+        "";
+
+
+    try {
+
+        const codigoBase64 =
+            codificarBase64(
+                codigo
+            );
+
+
+        const stdin =
+            stdinInput.value;
+
+
+        let stdinBase64 = "";
+
+
+        if (stdin) {
+
+            stdinBase64 =
+                codificarBase64(
+                    stdin
+                );
+
+        }
+
+
+        terminal.textContent =
+            "> Código traduzido.\n" +
+            "> Enviando para Judge0...\n";
+
+
+        const resposta =
+            await fetch(
+
+                "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            language_id:
+                                54,
+
+                            source_code:
+                                codigoBase64,
+
+                            stdin:
+                                stdinBase64
+
+                        })
+
+                }
+
+            );
+
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                "Erro HTTP " +
+                resposta.status
+            );
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        let saida = "";
+
+
+        if (
+            resultado.stdout
+        ) {
+
+            saida +=
+                decodificarBase64(
+                    resultado.stdout
+                );
+
+        }
+
+
+        if (
+            resultado.stderr
+        ) {
+
+            if (saida) {
+                saida += "\n";
+            }
+
+            saida +=
+                decodificarBase64(
+                    resultado.stderr
+                );
+
+        }
+
+
+        if (
+            resultado.compile_output
+        ) {
+
+            if (saida) {
+                saida += "\n";
+            }
+
+            saida +=
+                decodificarBase64(
+                    resultado.compile_output
+                );
+
+        }
+
+
+        if (!saida.trim()) {
+
+            saida =
+                "> " +
+                (
+                    resultado.status?.description ||
+                    "Programa executado sem saída."
+                );
+
+        }
+
+
+        terminal.textContent =
+            saida;
+
+
+        status.textContent =
+            resultado.time
+                ? "Tempo: " +
+                  resultado.time +
+                  "s"
+                : "";
+
+
+        atualizarTradutor();
+
+    }
+
+
+    catch (erro) {
+
+        terminal.textContent =
+            "> ERRO\n\n" +
+            erro.message;
+
+        status.textContent =
+            "Falha na comunicação com Judge0.";
+
+    }
+
+
+    finally {
+
+        executando =
+            false;
+
+        runButton.disabled =
+            false;
+
+        runButton.textContent =
+            "▶ EXECUTAR";
+
+    }
+
 }
 
-const codigo = editor.value;
 
-if (!codigo.trim()) {
-
-terminal.textContent =
-"> Nenhum código foi inserido.";
-
-return;
-
-}
-
-executando = true;
-
-runButton.disabled = true;
-runButton.textContent = "⏳ EXECUTANDO";
-
-terminal.textContent =
-"> Traduzindo My Engine Language...\n";
-
-status.textContent = "";
-
-try {
-
-const codigoCpp = traduzirMyEngine(codigo);
-
-terminal.textContent =
-"> Código traduzido para C++.\n" +
-"> Enviando para Judge0...\n";
-
-/*
-   UTF-8 → Base64
-*/
-
-const codigoBase64 =
-btoa(
-unescape(
-encodeURIComponent(codigoCpp)
-)
-);
-
-const stdin = stdinInput.value;
-
-let stdinBase64 = "";
-
-if (stdin) {
-
-stdinBase64 =
-btoa(
-unescape(
-encodeURIComponent(stdin)
-)
-);
-
-}
-
-const resposta =
-await fetch(
-"https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
-{
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-language_id:54,
-
-source_code:codigoBase64,
-
-stdin:stdinBase64
-
-})
-
-}
-);
-
-if (!resposta.ok) {
-
-throw new Error(
-"Erro HTTP " + resposta.status
-);
-
-}
-
-const resultado =
-await resposta.json();
-
-let saida = "";
-
-if (resultado.stdout) {
-
-saida +=
-decodificarBase64(
-resultado.stdout
-);
-
-}
-
-if (resultado.stderr) {
-
-if (saida) {
-saida += "\n";
-}
-
-saida +=
-decodificarBase64(
-resultado.stderr
-);
-
-}
-
-if (resultado.compile_output) {
-
-if (saida) {
-saida += "\n";
-}
-
-saida +=
-decodificarBase64(
-resultado.compile_output
-);
-
-}
-
-if (!saida.trim()) {
-
-saida =
-"> " +
-(
-resultado.status?.description ||
-"Programa executado sem saída."
-);
-
-}
-
-terminal.textContent = saida;
-
-status.textContent =
-resultado.time
-? "Tempo: " + resultado.time + "s"
-: "";
-
-}
-
-catch (erro) {
-
-terminal.textContent =
-"> ERRO\n\n" +
-erro.message;
-
-status.textContent =
-"Falha na comunicação com Judge0.";
-
-}
-
-finally {
-
-executando = false;
-
-runButton.disabled = false;
-
-runButton.textContent =
-"▶ EXECUTAR";
-
-}
-
-}
-
-function decodificarBase64(texto) {
-
-try {
-
-return decodeURIComponent(
-escape(
-atob(texto)
-)
-);
-
-}
-
-catch {
-
-return atob(texto);
-
-}
-
-}
+/* =========================================================
+   LIMPAR
+========================================================= */
 
 function limpar() {
 
-editor.value = "";
+    editor.value =
+        "";
 
-stdinInput.value = "";
+    stdinInput.value =
+        "";
 
-atualizarLinhas();
+    atualizarLinhas();
 
-terminal.textContent =
-"> Terminal limpo.";
+    atualizarTradutor();
 
-status.textContent = "";
+    terminal.textContent =
+        "> Terminal limpo.";
+
+    status.textContent =
+        "";
 
 }
+
 
 /* =========================================================
    SALVAMENTO
@@ -1462,639 +2897,1333 @@ status.textContent = "";
 
 function abrirSalvar() {
 
-document.getElementById("saveModal").style.display =
-"flex";
+    document.getElementById(
+        "saveModal"
+    ).style.display =
+        "flex";
 
 }
+
 
 function fecharSalvar() {
 
-document.getElementById("saveModal").style.display =
-"none";
+    document.getElementById(
+        "saveModal"
+    ).style.display =
+        "none";
 
 }
+
 
 function salvarCodigo() {
 
-const nomeInput =
-document.getElementById("codeName");
+    const nomeInput =
+        document.getElementById(
+            "codeName"
+        );
 
-let nome =
-nomeInput.value.trim();
 
-if (!nome) {
-nome = "Código sem nome";
+    let nome =
+        nomeInput.value.trim();
+
+
+    if (!nome) {
+
+        nome =
+            "Código sem nome";
+
+    }
+
+
+    let codigos =
+        JSON.parse(
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+        );
+
+
+    codigos.push({
+
+        id:
+            Date.now(),
+
+        nome:
+            nome,
+
+        codigo:
+            editor.value
+
+    });
+
+
+    localStorage.setItem(
+        "cpp_codigos",
+        JSON.stringify(
+            codigos
+        )
+    );
+
+
+    nomeInput.value =
+        "";
+
+    fecharSalvar();
+
+    carregarCodigos();
+
 }
 
-let codigos =
-JSON.parse(
-localStorage.getItem("cpp_codigos") || "[]"
-);
-
-codigos.push({
-
-id:Date.now(),
-nome:nome,
-codigo:editor.value
-
-});
-
-localStorage.setItem(
-"cpp_codigos",
-JSON.stringify(codigos)
-);
-
-nomeInput.value = "";
-
-fecharSalvar();
-
-carregarCodigos();
-
-}
 
 function carregarCodigos() {
 
-const codigos =
-JSON.parse(
-localStorage.getItem("cpp_codigos") || "[]"
-);
+    const codigos =
+        JSON.parse(
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+        );
 
-savedList.innerHTML = "";
 
-savedCount.textContent =
-codigos.length;
+    savedList.innerHTML =
+        "";
 
-codigos.forEach(item => {
+    savedCount.textContent =
+        codigos.length;
 
-const div =
-document.createElement("div");
 
-div.className =
-"saved-item";
+    codigos.forEach(
+        item => {
 
-const nome =
-document.createElement("div");
+            const div =
+                document.createElement(
+                    "div"
+                );
 
-nome.className =
-"saved-name";
+            div.className =
+                "saved-item";
 
-nome.textContent =
-item.nome;
 
-const actions =
-document.createElement("div");
+            const nome =
+                document.createElement(
+                    "div"
+                );
 
-actions.className =
-"saved-actions";
+            nome.className =
+                "saved-name";
 
-const abrir =
-document.createElement("button");
+            nome.textContent =
+                item.nome;
 
-abrir.className =
-"open-btn";
 
-abrir.textContent =
-"ABRIR";
+            const actions =
+                document.createElement(
+                    "div"
+                );
 
-abrir.onclick = () => {
+            actions.className =
+                "saved-actions";
 
-editor.value =
-item.codigo;
 
-atualizarLinhas();
+            const abrir =
+                document.createElement(
+                    "button"
+                );
 
-abrirPorId("codePage");
+            abrir.className =
+                "open-btn";
 
-};
+            abrir.textContent =
+                "ABRIR";
 
-const excluir =
-document.createElement("button");
 
-excluir.className =
-"delete-btn";
+            abrir.onclick =
+                () => {
 
-excluir.textContent =
-"X";
+                    editor.value =
+                        item.codigo;
 
-excluir.onclick = () => {
+                    atualizarLinhas();
 
-const novos =
-codigos.filter(
-x => x.id !== item.id
-);
+                    atualizarTradutor();
 
-localStorage.setItem(
-"cpp_codigos",
-JSON.stringify(novos)
-);
+                    abrirPorId(
+                        "codePage"
+                    );
 
-carregarCodigos();
+                };
 
-};
 
-actions.appendChild(abrir);
-actions.appendChild(excluir);
+            const excluir =
+                document.createElement(
+                    "button"
+                );
 
-div.appendChild(nome);
-div.appendChild(actions);
+            excluir.className =
+                "delete-btn";
 
-savedList.appendChild(div);
+            excluir.textContent =
+                "X";
 
-});
+
+            excluir.onclick =
+                () => {
+
+                    codigos =
+                        codigos.filter(
+                            x =>
+                            x.id !== item.id
+                        );
+
+
+                    localStorage.setItem(
+                        "cpp_codigos",
+                        JSON.stringify(
+                            codigos
+                        )
+                    );
+
+
+                    carregarCodigos();
+
+                };
+
+
+            actions.appendChild(
+                abrir
+            );
+
+            actions.appendChild(
+                excluir
+            );
+
+
+            div.appendChild(
+                nome
+            );
+
+            div.appendChild(
+                actions
+            );
+
+
+            savedList.appendChild(
+                div
+            );
+
+        }
+    );
 
 }
 
+
 /* =========================================================
-   CANVAS
+   EDITOR DE ARTE
 ========================================================= */
 
 const artCanvas =
-document.getElementById("artCanvas");
+    document.getElementById(
+        "artCanvas"
+    );
 
 const canvasArea =
-document.getElementById("canvasArea");
+    document.getElementById(
+        "canvasArea"
+    );
 
 const colorPicker =
-document.getElementById("colorPicker");
+    document.getElementById(
+        "colorPicker"
+    );
 
 const brushSize =
-document.getElementById("brushSize");
+    document.getElementById(
+        "brushSize"
+    );
 
 const artSize =
-document.getElementById("artSize");
+    document.getElementById(
+        "artSize"
+    );
 
 const canvasInfo =
-document.getElementById("canvasInfo");
+    document.getElementById(
+        "canvasInfo"
+    );
+
 
 const ctx =
-artCanvas.getContext("2d");
+    artCanvas.getContext(
+        "2d"
+    );
 
-ctx.imageSmoothingEnabled = false;
 
-let ferramenta = "pencil";
-let gridVisivel = true;
-let tamanhoCanvas = 32;
+ctx.imageSmoothingEnabled =
+    false;
 
-let zoom = 1;
-let offsetX = 0;
-let offsetY = 0;
 
-let desenhando = false;
+let ferramenta =
+    "pencil";
+
+let gridVisivel =
+    true;
+
+let tamanhoCanvas =
+    32;
+
+let zoom =
+    1;
+
+let offsetX =
+    0;
+
+let offsetY =
+    0;
+
+let desenhando =
+    false;
 
 let historico = [];
+
 let futuro = [];
 
-let cameraInicializada = false;
+let cameraInicializada =
+    false;
+
+let doisDedos =
+    false;
+
+let distanciaInicial =
+    0;
+
+let zoomInicial =
+    1;
+
+let centroInicialX =
+    0;
+
+let centroInicialY =
+    0;
+
+let offsetInicialX =
+    0;
+
+let offsetInicialY =
+    0;
+
+
+/* =========================================================
+   HISTÓRICO
+========================================================= */
 
 function salvarEstado() {
 
-historico.push(
-ctx.getImageData(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-)
-);
+    historico.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
 
-if (historico.length > 40) {
-historico.shift();
+
+    if (
+        historico.length > 40
+    ) {
+
+        historico.shift();
+
+    }
+
+
+    futuro = [];
+
 }
 
-futuro = [];
-
-}
 
 function desfazer() {
 
-if (!historico.length) return;
+    if (
+        historico.length === 0
+    ) {
+        return;
+    }
 
-futuro.push(
-ctx.getImageData(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-)
-);
 
-ctx.putImageData(
-historico.pop(),
-0,
-0
-);
+    futuro.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
+
+
+    ctx.putImageData(
+        historico.pop(),
+        0,
+        0
+    );
 
 }
+
 
 function refazer() {
 
-if (!futuro.length) return;
+    if (
+        futuro.length === 0
+    ) {
+        return;
+    }
 
-historico.push(
-ctx.getImageData(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-)
-);
 
-ctx.putImageData(
-futuro.pop(),
-0,
-0
-);
+    historico.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
 
-}
 
-function novoCanvas() {
-
-const tamanho =
-prompt(
-"Tamanho do canvas:\n\n16\n32\n64\n128",
-tamanhoCanvas
-);
-
-if (!tamanho) return;
-
-const numero =
-parseInt(tamanho);
-
-if (![16,32,64,128].includes(numero)) {
-
-alert(
-"Use 16, 32, 64 ou 128."
-);
-
-return;
+    ctx.putImageData(
+        futuro.pop(),
+        0,
+        0
+    );
 
 }
 
-tamanhoCanvas = numero;
 
-artCanvas.width = numero;
-artCanvas.height = numero;
+/* =========================================================
+   CÂMERA
+========================================================= */
 
-ctx.clearRect(
-0,
-0,
-numero,
-numero
-);
+function limitarCamera() {
 
-artSize.textContent =
-numero + " × " + numero;
+    const area =
+        canvasArea.getBoundingClientRect();
 
-historico = [];
-futuro = [];
+    const tamanho =
+        parseFloat(
+            artCanvas.style.width
+        ) || 256;
 
-atualizarCanvasVisual();
 
-}
+    const metade =
+        tamanho * zoom / 2;
 
-function limparCanvas() {
 
-salvarEstado();
+    const limiteX =
+        Math.max(
+            0,
+            (area.width / 2) +
+            metade
+        );
 
-ctx.clearRect(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-);
+    const limiteY =
+        Math.max(
+            0,
+            (area.height / 2) +
+            metade
+        );
 
-}
 
-function selecionarFerramenta(nome) {
+    offsetX =
+        Math.max(
+            -limiteX,
+            Math.min(
+                limiteX,
+                offsetX
+            )
+        );
 
-ferramenta = nome;
 
-document
-.querySelectorAll(".tool")
-.forEach(
-b => b.classList.remove("active")
-);
-
-if (nome === "pencil") {
-
-document
-.getElementById("pencilTool")
-.classList.add("active");
-
-}
-
-else {
-
-document
-.getElementById("eraserTool")
-.classList.add("active");
+    offsetY =
+        Math.max(
+            -limiteY,
+            Math.min(
+                limiteY,
+                offsetY
+            )
+        );
 
 }
 
-}
-
-function obterPixel(event) {
-
-const rect =
-artCanvas.getBoundingClientRect();
-
-const x =
-Math.floor(
-(
-event.clientX -
-rect.left
-) /
-rect.width *
-artCanvas.width
-);
-
-const y =
-Math.floor(
-(
-event.clientY -
-rect.top
-) /
-rect.height *
-artCanvas.height
-);
-
-return {x,y};
-
-}
-
-function pintar(event) {
-
-const pixel =
-obterPixel(event);
-
-const tamanho =
-parseInt(brushSize.value);
-
-ctx.fillStyle =
-ferramenta === "eraser"
-? "rgba(0,0,0,0)"
-: colorPicker.value;
-
-ctx.globalCompositeOperation =
-ferramenta === "eraser"
-? "destination-out"
-: "source-over";
-
-ctx.fillRect(
-pixel.x - Math.floor(tamanho/2),
-pixel.y - Math.floor(tamanho/2),
-tamanho,
-tamanho
-);
-
-ctx.globalCompositeOperation =
-"source-over";
-
-}
-
-artCanvas.addEventListener(
-"pointerdown",
-function(event) {
-
-event.preventDefault();
-
-salvarEstado();
-
-desenhando = true;
-
-artCanvas.setPointerCapture(
-event.pointerId
-);
-
-pintar(event);
-
-}
-);
-
-artCanvas.addEventListener(
-"pointermove",
-function(event) {
-
-if (!desenhando) return;
-
-event.preventDefault();
-
-pintar(event);
-
-}
-);
-
-artCanvas.addEventListener(
-"pointerup",
-function(event) {
-
-desenhando = false;
-
-try {
-
-artCanvas.releasePointerCapture(
-event.pointerId
-);
-
-}
-catch {}
-
-}
-);
-
-function alternarGrade() {
-
-gridVisivel =
-!gridVisivel;
-
-atualizarCanvasVisual();
-
-}
-
-function atualizarCanvasVisual() {
-
-const tamanho =
-Math.min(
-canvasArea.clientWidth,
-canvasArea.clientHeight
-);
-
-const tamanhoBase =
-Math.max(
-256,
-Math.min(
-512,
-tamanho
-)
-);
-
-artCanvas.style.width =
-tamanhoBase + "px";
-
-artCanvas.style.height =
-tamanhoBase + "px";
-
-if (!cameraInicializada) {
-
-zoom = 1;
-offsetX = 0;
-offsetY = 0;
-
-cameraInicializada = true;
-
-}
-
-aplicarCamera();
-
-desenharGrade();
-
-}
 
 function aplicarCamera() {
 
-artCanvas.style.transform =
-"translate(-50%, -50%) " +
-"translate(" +
-offsetX +
-"px," +
-offsetY +
-"px) " +
-"scale(" +
-zoom +
-")";
+    limitarCamera();
 
-canvasInfo.textContent =
-"Zoom: " +
-Math.round(zoom * 100) +
-"%";
 
-}
+    artCanvas.style.transform =
+        "translate(-50%, -50%) " +
+        "translate(" +
+        offsetX +
+        "px, " +
+        offsetY +
+        "px) " +
+        "scale(" +
+        zoom +
+        ")";
 
-function desenharGrade() {
 
-if (gridVisivel) {
-
-artCanvas.style.backgroundImage =
-"linear-gradient(#333 1px, transparent 1px)," +
-"linear-gradient(90deg,#333 1px,transparent 1px)";
-
-artCanvas.style.backgroundSize =
-"calc(100% / " +
-tamanhoCanvas +
-") calc(100% / " +
-tamanhoCanvas +
-")";
+    canvasInfo.textContent =
+        "Zoom: " +
+        Math.round(
+            zoom * 100
+        ) +
+        "%";
 
 }
 
-else {
-
-artCanvas.style.backgroundImage =
-"none";
-
-}
-
-}
 
 function resetZoom() {
 
-zoom = 1;
-offsetX = 0;
-offsetY = 0;
+    zoom =
+        1;
 
-aplicarCamera();
+    offsetX =
+        0;
+
+    offsetY =
+        0;
+
+    aplicarCamera();
 
 }
+
+
+/* =========================================================
+   NOVO CANVAS
+========================================================= */
+
+function novoCanvas() {
+
+    const tamanho =
+        prompt(
+            "Tamanho do canvas:\n\n16\n32\n64\n128",
+            tamanhoCanvas
+        );
+
+
+    if (!tamanho) {
+        return;
+    }
+
+
+    const numero =
+        parseInt(
+            tamanho
+        );
+
+
+    if (
+        ![16,32,64,128]
+            .includes(numero)
+    ) {
+
+        alert(
+            "Use 16, 32, 64 ou 128."
+        );
+
+        return;
+
+    }
+
+
+    tamanhoCanvas =
+        numero;
+
+    artCanvas.width =
+        numero;
+
+    artCanvas.height =
+        numero;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        numero,
+        numero
+    );
+
+
+    artSize.textContent =
+        numero +
+        " × " +
+        numero;
+
+
+    historico = [];
+
+    futuro = [];
+
+    zoom =
+        1;
+
+    offsetX =
+        0;
+
+    offsetY =
+        0;
+
+    atualizarCanvasVisual();
+
+}
+
+
+/* =========================================================
+   LIMPAR CANVAS
+========================================================= */
+
+function limparCanvas() {
+
+    salvarEstado();
+
+    ctx.clearRect(
+        0,
+        0,
+        artCanvas.width,
+        artCanvas.height
+    );
+
+}
+
+
+/* =========================================================
+   FERRAMENTAS
+========================================================= */
+
+function selecionarFerramenta(nome) {
+
+    ferramenta =
+        nome;
+
+
+    document
+        .querySelectorAll(".tool")
+        .forEach(
+            b =>
+            b.classList.remove(
+                "active"
+            )
+        );
+
+
+    if (
+        nome === "pencil"
+    ) {
+
+        document
+            .getElementById(
+                "pencilTool"
+            )
+            .classList.add(
+                "active"
+            );
+
+    }
+
+    else {
+
+        document
+            .getElementById(
+                "eraserTool"
+            )
+            .classList.add(
+                "active"
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   PIXEL
+========================================================= */
+
+function obterPixel(event) {
+
+    const rect =
+        artCanvas.getBoundingClientRect();
+
+
+    const x =
+        Math.floor(
+            (
+                event.clientX -
+                rect.left
+            ) /
+            rect.width *
+            artCanvas.width
+        );
+
+
+    const y =
+        Math.floor(
+            (
+                event.clientY -
+                rect.top
+            ) /
+            rect.height *
+            artCanvas.height
+        );
+
+
+    return {
+        x,
+        y
+    };
+
+}
+
+
+function pintar(event) {
+
+    const pixel =
+        obterPixel(event);
+
+
+    if (
+        pixel.x < 0 ||
+        pixel.y < 0 ||
+        pixel.x >= artCanvas.width ||
+        pixel.y >= artCanvas.height
+    ) {
+        return;
+    }
+
+
+    const tamanho =
+        parseInt(
+            brushSize.value
+        );
+
+
+    if (
+        ferramenta === "eraser"
+    ) {
+
+        ctx.globalCompositeOperation =
+            "destination-out";
+
+    }
+
+    else {
+
+        ctx.globalCompositeOperation =
+            "source-over";
+
+        ctx.fillStyle =
+            colorPicker.value;
+
+    }
+
+
+    ctx.fillRect(
+
+        pixel.x -
+        Math.floor(
+            tamanho / 2
+        ),
+
+        pixel.y -
+        Math.floor(
+            tamanho / 2
+        ),
+
+        tamanho,
+        tamanho
+
+    );
+
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+}
+
+
+/* =========================================================
+   DESENHO + PINÇA
+========================================================= */
+
+function distanciaDedos(touches) {
+
+    const dx =
+        touches[0].clientX -
+        touches[1].clientX;
+
+    const dy =
+        touches[0].clientY -
+        touches[1].clientY;
+
+    return Math.sqrt(
+        dx * dx +
+        dy * dy
+    );
+
+}
+
+
+function centroDedos(touches) {
+
+    return {
+
+        x:
+            (
+                touches[0].clientX +
+                touches[1].clientX
+            ) / 2,
+
+        y:
+            (
+                touches[0].clientY +
+                touches[1].clientY
+            ) / 2
+
+    };
+
+}
+
+
+artCanvas.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        event.preventDefault();
+
+        /*
+            Se dois dedos estão envolvidos,
+            não começamos a desenhar.
+        */
+
+        if (
+            event.pointerType === "touch"
+        ) {
+
+            if (
+                doisDedos
+            ) {
+                return;
+            }
+
+        }
+
+
+        salvarEstado();
+
+        desenhando =
+            true;
+
+        artCanvas.setPointerCapture(
+            event.pointerId
+        );
+
+        pintar(event);
+
+    }
+);
+
+
+artCanvas.addEventListener(
+    "pointermove",
+    function(event) {
+
+        if (
+            !desenhando ||
+            doisDedos
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+
+        pintar(event);
+
+    }
+);
+
+
+artCanvas.addEventListener(
+    "pointerup",
+    function(event) {
+
+        desenhando =
+            false;
+
+        try {
+
+            artCanvas.releasePointerCapture(
+                event.pointerId
+            );
+
+        }
+
+        catch {}
+
+    }
+);
+
+
+/*
+    Touch nativo para pinça.
+
+    Quando dois dedos aparecem:
+
+    - cancela desenho
+    - calcula distância
+    - guarda zoom inicial
+    - guarda posição inicial
+*/
+
+canvasArea.addEventListener(
+    "touchstart",
+    function(event) {
+
+        if (
+            event.touches.length >= 2
+        ) {
+
+            event.preventDefault();
+
+            doisDedos =
+                true;
+
+            desenhando =
+                false;
+
+            distanciaInicial =
+                distanciaDedos(
+                    event.touches
+                );
+
+            zoomInicial =
+                zoom;
+
+            const centro =
+                centroDedos(
+                    event.touches
+                );
+
+            centroInicialX =
+                centro.x;
+
+            centroInicialY =
+                centro.y;
+
+            offsetInicialX =
+                offsetX;
+
+            offsetInicialY =
+                offsetY;
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+canvasArea.addEventListener(
+    "touchmove",
+    function(event) {
+
+        if (
+            event.touches.length >= 2
+        ) {
+
+            event.preventDefault();
+
+            doisDedos =
+                true;
+
+            desenhando =
+                false;
+
+
+            const distancia =
+                distanciaDedos(
+                    event.touches
+                );
+
+
+            if (
+                distanciaInicial > 0
+            ) {
+
+                const fator =
+                    distancia /
+                    distanciaInicial;
+
+
+                zoom =
+                    Math.max(
+                        0.5,
+                        Math.min(
+                            20,
+                            zoomInicial *
+                            fator
+                        )
+                    );
+
+            }
+
+
+            const centro =
+                centroDedos(
+                    event.touches
+                );
+
+
+            offsetX =
+                offsetInicialX +
+                (
+                    centro.x -
+                    centroInicialX
+                );
+
+
+            offsetY =
+                offsetInicialY +
+                (
+                    centro.y -
+                    centroInicialY
+                );
+
+
+            aplicarCamera();
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+canvasArea.addEventListener(
+    "touchend",
+    function(event) {
+
+        if (
+            event.touches.length < 2
+        ) {
+
+            distanciaInicial =
+                0;
+
+            setTimeout(
+                () => {
+
+                    doisDedos =
+                        false;
+
+                },
+                40
+            );
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+/*
+    Evita que o pointerdown do segundo dedo
+    transforme o gesto de pinça em rabisco.
+*/
+
+canvasArea.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        if (
+            event.pointerType === "touch" &&
+            doisDedos
+        ) {
+
+            event.preventDefault();
+
+            desenhando =
+                false;
+
+        }
+
+    },
+    true
+);
+
+
+/* =========================================================
+   GRADE
+========================================================= */
+
+function alternarGrade() {
+
+    gridVisivel =
+        !gridVisivel;
+
+    atualizarCanvasVisual();
+
+}
+
+
+function atualizarCanvasVisual() {
+
+    if (
+        !canvasArea
+    ) {
+        return;
+    }
+
+
+    const tamanho =
+        Math.min(
+            canvasArea.clientWidth,
+            canvasArea.clientHeight
+        );
+
+
+    const tamanhoBase =
+        Math.max(
+            256,
+            Math.min(
+                512,
+                tamanho
+            )
+        );
+
+
+    artCanvas.style.width =
+        tamanhoBase +
+        "px";
+
+    artCanvas.style.height =
+        tamanhoBase +
+        "px";
+
+
+    if (
+        !cameraInicializada
+    ) {
+
+        zoom =
+            1;
+
+        offsetX =
+            0;
+
+        offsetY =
+            0;
+
+        cameraInicializada =
+            true;
+
+    }
+
+
+    aplicarCamera();
+
+    desenharGrade();
+
+}
+
+
+function desenharGrade() {
+
+    if (
+        gridVisivel
+    ) {
+
+        artCanvas.style.backgroundImage =
+
+            "linear-gradient(#333 1px, transparent 1px)," +
+
+            "linear-gradient(90deg, #333 1px, transparent 1px)";
+
+
+        artCanvas.style.backgroundSize =
+            "calc(100% / " +
+            tamanhoCanvas +
+            ") calc(100% / " +
+            tamanhoCanvas +
+            ")";
+
+    }
+
+    else {
+
+        artCanvas.style.backgroundImage =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   SALVAR ARTE
+========================================================= */
 
 function salvarArte() {
 
-try {
+    try {
 
-const imagem =
-artCanvas.toDataURL("image/png");
+        const imagem =
+            artCanvas.toDataURL(
+                "image/png"
+            );
 
-localStorage.setItem(
-"engine_arte",
-imagem
-);
 
-alert("Arte salva no dispositivo.");
+        localStorage.setItem(
+            "engine_arte",
+            imagem
+        );
+
+
+        alert(
+            "Arte salva no dispositivo."
+        );
+
+    }
+
+    catch {
+
+        alert(
+            "Não foi possível salvar."
+        );
+
+    }
 
 }
 
-catch {
 
-alert("Não foi possível salvar.");
-
-}
-
-}
+/* =========================================================
+   CARREGAR ARTE
+========================================================= */
 
 function carregarArte() {
 
-const imagem =
-localStorage.getItem("engine_arte");
+    const imagem =
+        localStorage.getItem(
+            "engine_arte"
+        );
 
-if (!imagem) {
 
-alert("Nenhuma arte salva.");
+    if (!imagem) {
 
-return;
+        alert(
+            "Nenhuma arte salva."
+        );
+
+        return;
+
+    }
+
+
+    const img =
+        new Image();
+
+
+    img.onload =
+        function() {
+
+            ctx.clearRect(
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
+            );
+
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
+            );
+
+        };
+
+
+    img.src =
+        imagem;
 
 }
 
-const img =
-new Image();
-
-img.onload =
-function() {
-
-ctx.clearRect(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-);
-
-ctx.drawImage(
-img,
-0,
-0,
-artCanvas.width,
-artCanvas.height
-);
-
-};
-
-img.src = imagem;
-
-}
 
 /* =========================================================
    INICIALIZAÇÃO
 ========================================================= */
 
 atualizarLinhas();
+
 carregarCodigos();
-atualizarCanvasVisual();
+
+atualizarTradutor();
+
+setTimeout(
+    atualizarCanvasVisual,
+    50
+);
+
 
 window.addEventListener(
-"resize",
-function() {
+    "resize",
+    function() {
 
-if (
-document
-.getElementById("artPage")
-.classList
-.contains("active")
-) {
+        if (
+            document
+                .getElementById(
+                    "artPage"
+                )
+                .classList.contains(
+                    "active"
+                )
+        ) {
 
-atualizarCanvasVisual();
+            atualizarCanvasVisual();
 
-}
+        }
 
-}
+    }
 );
+
+
+/* =========================================================
+   FECHAR MODAL AO TOCAR FORA
+========================================================= */
+
+document
+    .getElementById("saveModal")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target === this
+            ) {
+
+                fecharSalvar();
+
+            }
+
+        }
+    );
 
 </script>
 
