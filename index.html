@@ -717,27 +717,26 @@ button {
     position: absolute;
 
     left: 50%;
-
     top: 50%;
+
+    width: 512px;
+    height: 512px;
+
+    transform:
+        translate(-50%, -50%)
+        translate(0px, 0px)
+        scale(1);
 
     transform-origin: center center;
 
     image-rendering: pixelated;
-
     image-rendering: crisp-edges;
 
-    background:
-        repeating-conic-gradient(
-            #222 0% 25%,
-            #151515 0% 50%
-        )
-        0 0 /
-        20px 20px;
+    background: transparent;
 
     touch-action: none;
 
 }
-
 
 /* =========================================================
    INFORMAÇÕES DO CANVAS
@@ -3318,22 +3317,26 @@ function desenharGrade() {
    ZOOM
 ========================================================= */
 
-function resetZoom() {
+let zoom = 16;
 
-    atualizarCanvasVisual();
+let offsetX = 0;
+let offsetY = 0;
 
-    canvasInfo.textContent =
-        "Zoom: 100%";
+let zoomMin = 2;
+let zoomMax = 40;
 
-}
+let cameraInicializada = false;
 
+let doisDedos = false;
 
-function atualizarInfo() {
+let distanciaInicial = 0;
+let zoomInicial = 1;
 
-    canvasInfo.textContent =
-        "Zoom: 100%";
+let centroInicialX = 0;
+let centroInicialY = 0;
 
-}
+let offsetInicialX = 0;
+let offsetInicialY = 0;
 
 
 /* =========================================================
