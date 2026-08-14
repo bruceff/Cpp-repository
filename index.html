@@ -22,12 +22,10 @@ html,body{
 }
 
 body{
-    padding-bottom:40px;
+    padding-bottom:30px;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 .header{
     height:60px;
@@ -48,27 +46,34 @@ body{
 .menu-button{
     position:absolute;
     left:10px;
-    top:8px;
-    width:44px;
-    height:44px;
+    top:9px;
+    width:42px;
+    height:42px;
+    padding:0;
+    background:#202020;
     border:1px solid #333;
     border-radius:10px;
-    background:#1c1c1c;
+    font-size:22px;
     color:white;
-    font-size:23px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:1200;
 }
 
-.menu-button:active{
-    background:#2878ff;
+.side-menu{
+    position:fixed;
+    left:-290px;
+    top:0;
+    width:280px;
+    height:100%;
+    background:#111;
+    border-right:1px solid #333;
+    z-index:1000;
+    transition:left .25s ease;
+    padding-top:70px;
+    box-shadow:10px 0 30px rgba(0,0,0,.5);
 }
 
-/* =========================
-   MENU LATERAL
-========================= */
+.side-menu.open{
+    left:0;
+}
 
 .menu-overlay{
     display:none;
@@ -78,71 +83,40 @@ body{
     z-index:999;
 }
 
-.menu-overlay.active{
+.menu-overlay.open{
     display:block;
 }
 
-.side-menu{
-    position:fixed;
-    left:0;
-    top:0;
-    bottom:0;
-    width:280px;
-    max-width:82vw;
-    background:#111;
-    border-right:1px solid #333;
-    transform:translateX(-100%);
-    transition:transform .25s ease;
-    z-index:1100;
-    overflow-y:auto;
-    box-shadow:8px 0 30px rgba(0,0,0,.45);
-}
-
-.side-menu.active{
-    transform:translateX(0);
-}
-
-.menu-header{
-    height:70px;
-    display:flex;
-    align-items:center;
-    padding:0 18px;
-    font-size:21px;
+.menu-title{
+    padding:15px 20px;
+    color:#666;
+    font-size:11px;
     font-weight:800;
-    border-bottom:1px solid #292929;
+    letter-spacing:1px;
 }
 
 .menu-item{
     width:100%;
-    min-height:54px;
-    padding:0 18px;
+    min-height:52px;
+    padding:0 20px;
     display:flex;
     align-items:center;
-    gap:13px;
-    border:0;
-    border-bottom:1px solid #242424;
-    background:#151515;
-    color:#ddd;
+    gap:14px;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid #222;
+    color:#aaa;
     text-align:left;
-    font-size:15px;
+    font-size:14px;
     font-weight:700;
 }
 
-.menu-item:active,
 .menu-item.active{
     background:#2878ff;
     color:white;
 }
 
-.menu-icon{
-    width:25px;
-    text-align:center;
-    font-size:19px;
-}
-
-/* =========================
-   PÁGINAS
-========================= */
+/* PAGES */
 
 .page{
     display:none;
@@ -152,9 +126,7 @@ body{
     display:block;
 }
 
-/* =========================
-   INÍCIO
-========================= */
+/* HOME */
 
 .home{
     padding:20px;
@@ -211,9 +183,7 @@ body{
     line-height:1.4;
 }
 
-/* =========================
-   EDITOR C++
-========================= */
+/* EDITOR */
 
 .editor-area{
     padding:15px;
@@ -229,8 +199,8 @@ body{
 .editor-wrapper{
     display:flex;
     width:100%;
-    height:48vh;
-    min-height:300px;
+    height:42vh;
+    min-height:280px;
     overflow:hidden;
     background:#181818;
     border:1px solid #333;
@@ -257,7 +227,6 @@ body{
     width:100%;
     height:100%;
     padding:15px;
-    margin:0;
     resize:none;
     outline:none;
     border:none;
@@ -288,29 +257,37 @@ button{
     font-weight:700;
 }
 
-.run{
-    flex:1;
-    background:#20c968;
+.run{flex:1;background:#20c968;}
+.input-button{flex:1;background:#8e44ad;}
+.save{flex:1;background:#2878ff;}
+.clear{flex:1;background:#292929;}
+
+button:disabled{
+    opacity:.5;
 }
 
-.input-button{
-    flex:1;
-    background:#8e44ad;
+/* TRADUZIDO */
+
+.translation-area{
+    padding:0 15px 15px;
 }
 
-.save{
-    flex:1;
-    background:#2878ff;
+.translation{
+    min-height:140px;
+    max-height:300px;
+    overflow:auto;
+    padding:15px;
+    background:#0b0b0b;
+    border:1px solid #292929;
+    border-radius:10px;
+    color:#8ab4ff;
+    font-family:Menlo,Monaco,Consolas,monospace;
+    font-size:13px;
+    line-height:1.5;
+    white-space:pre-wrap;
 }
 
-.clear{
-    flex:1;
-    background:#292929;
-}
-
-/* =========================
-   TERMINAL
-========================= */
+/* TERMINAL */
 
 .terminal-area{
     padding:0 15px 20px;
@@ -359,9 +336,7 @@ button{
     font-size:12px;
 }
 
-/* =========================
-   CÓDIGOS SALVOS
-========================= */
+/* SAVED */
 
 .saved-area{
     padding:0 15px 20px;
@@ -412,17 +387,10 @@ button{
     font-size:12px;
 }
 
-.open-btn{
-    background:#333;
-}
+.open-btn{background:#333;}
+.delete-btn{background:#8f2525;}
 
-.delete-btn{
-    background:#8f2525;
-}
-
-/* =========================
-   ARTE
-========================= */
+/* ARTE */
 
 .art-page{
     padding:10px;
@@ -479,7 +447,7 @@ button{
     border-color:#2878ff;
 }
 
-/* FUNDO BRANCO */
+/* ÁREA BRANCA */
 
 .canvas-area{
     position:relative;
@@ -499,10 +467,7 @@ button{
     top:50%;
     width:512px;
     height:512px;
-    transform:
-        translate(-50%,-50%)
-        translate(0px,0px)
-        scale(1);
+    transform:translate(-50%,-50%);
     transform-origin:center center;
     image-rendering:pixelated;
     image-rendering:crisp-edges;
@@ -545,11 +510,11 @@ button{
     font-weight:700;
 }
 
-input[type="range"]{
+input[type=range]{
     width:100%;
 }
 
-input[type="color"]{
+input[type=color]{
     width:100%;
     height:40px;
     padding:2px;
@@ -577,9 +542,7 @@ input[type="color"]{
     border-color:#2878ff;
 }
 
-/* =========================
-   MÓDULOS
-========================= */
+/* MÓDULOS */
 
 .module-page{
     padding:20px;
@@ -625,9 +588,78 @@ input[type="color"]{
     margin-bottom:5px;
 }
 
-/* =========================
-   MODAL
-========================= */
+/* DICIONÁRIO */
+
+.dictionary-page{
+    padding:15px;
+}
+
+.dictionary-header{
+    padding:20px;
+    background:#171717;
+    border:1px solid #292929;
+    border-radius:14px;
+    margin-bottom:12px;
+}
+
+.dictionary-header h1{
+    margin:0 0 7px;
+    font-size:24px;
+}
+
+.dictionary-header p{
+    margin:0;
+    color:#777;
+    font-size:13px;
+}
+
+.dictionary-search{
+    width:100%;
+    padding:14px;
+    background:#111;
+    color:white;
+    border:1px solid #333;
+    border-radius:10px;
+    outline:none;
+    font-size:15px;
+    margin-bottom:10px;
+}
+
+.dictionary-category{
+    margin-top:15px;
+    margin-bottom:7px;
+    color:#2878ff;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+}
+
+.dictionary-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px;
+    margin-bottom:6px;
+    background:#181818;
+    border:1px solid #292929;
+    border-radius:9px;
+}
+
+.dictionary-command{
+    color:#20c968;
+    font-family:monospace;
+    font-weight:800;
+}
+
+.dictionary-arrow{
+    color:#555;
+}
+
+.dictionary-name{
+    color:#ddd;
+}
+
+/* MODAL */
 
 .modal{
     display:none;
@@ -674,99 +706,83 @@ input[type="color"]{
     flex:1;
 }
 
-.cancel{
-    background:#333;
-}
-
-.confirm{
-    background:#2878ff;
-}
+.cancel{background:#333;}
+.confirm{background:#2878ff;}
 </style>
 </head>
 
 <body>
 
 <!-- MENU -->
-
-<button class="menu-button" onclick="alternarMenu()">☰</button>
-
 <div class="menu-overlay" id="menuOverlay" onclick="fecharMenu()"></div>
 
-<aside class="side-menu" id="sideMenu">
+<div class="side-menu" id="sideMenu">
 
-    <div class="menu-header">
-        MY ENGINE
-    </div>
+    <div class="menu-title">MY ENGINE</div>
 
-    <button class="menu-item active" onclick="abrirMenuPagina('home',this)">
-        <span class="menu-icon">🏠</span>
-        Início
+    <button class="menu-item active" onclick="abrirPagina('home')">
+        🏠 Início
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('codePage',this)">
-        <span class="menu-icon">📝</span>
-        Código
+    <button class="menu-item" onclick="abrirPagina('codePage')">
+        📝 Código
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('artPage',this)">
-        <span class="menu-icon">🎨</span>
-        Arte
+    <button class="menu-item" onclick="abrirPagina('artPage')">
+        🎨 Arte
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('scenePage',this)">
-        <span class="menu-icon">🗺️</span>
-        Cena
+    <button class="menu-item" onclick="abrirPagina('scenePage')">
+        🗺️ Cena
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('tilemapPage',this)">
-        <span class="menu-icon">🧱</span>
-        Tilemap
+    <button class="menu-item" onclick="abrirPagina('tilemapPage')">
+        🧱 Tilemap
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('assetsPage',this)">
-        <span class="menu-icon">📦</span>
-        Assets
+    <button class="menu-item" onclick="abrirPagina('assetsPage')">
+        📦 Assets
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('audioPage',this)">
-        <span class="menu-icon">🎵</span>
-        Áudio
+    <button class="menu-item" onclick="abrirPagina('audioPage')">
+        🎵 Áudio
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('dictionaryPage',this)">
-        <span class="menu-icon">📖</span>
-        Dicionário
+    <button class="menu-item" onclick="abrirPagina('projectPage')">
+        ⚙️ Projeto
     </button>
 
-    <button class="menu-item" onclick="abrirMenuPagina('projectPage',this)">
-        <span class="menu-icon">⚙️</span>
-        Projeto
+    <button class="menu-item" onclick="abrirPagina('dictionaryPage')">
+        📖 Dicionário
     </button>
 
-</aside>
-
-<!-- HEADER -->
-
-<div class="header">
-    MY ENGINE
 </div>
 
-<!-- INÍCIO -->
+<header class="header">
 
+    <button class="menu-button" onclick="abrirMenu()">☰</button>
+
+    MY ENGINE
+
+</header>
+
+<!-- INÍCIO -->
 <section id="home" class="page active home">
 
     <div class="hero">
+
         <h1>Minha Engine</h1>
 
         <p>
             Ambiente de desenvolvimento
             mobile para criação de jogos 2D.
         </p>
+
     </div>
 
     <div class="cards">
 
-        <div class="card" onclick="abrirPorId('codePage')">
+        <div class="card" onclick="abrirPagina('codePage')">
             <div class="card-icon">📝</div>
             <div class="card-title">Código</div>
             <div class="card-description">
@@ -774,7 +790,7 @@ input[type="color"]{
             </div>
         </div>
 
-        <div class="card" onclick="abrirPorId('artPage')">
+        <div class="card" onclick="abrirPagina('artPage')">
             <div class="card-icon">🎨</div>
             <div class="card-title">Arte</div>
             <div class="card-description">
@@ -782,7 +798,7 @@ input[type="color"]{
             </div>
         </div>
 
-        <div class="card" onclick="abrirPorId('scenePage')">
+        <div class="card" onclick="abrirPagina('scenePage')">
             <div class="card-icon">🗺️</div>
             <div class="card-title">Cena</div>
             <div class="card-description">
@@ -790,7 +806,7 @@ input[type="color"]{
             </div>
         </div>
 
-        <div class="card" onclick="abrirPorId('tilemapPage')">
+        <div class="card" onclick="abrirPagina('tilemapPage')">
             <div class="card-icon">🧱</div>
             <div class="card-title">Tilemap</div>
             <div class="card-description">
@@ -798,19 +814,19 @@ input[type="color"]{
             </div>
         </div>
 
-        <div class="card" onclick="abrirPorId('dictionaryPage')">
+        <div class="card" onclick="abrirPagina('dictionaryPage')">
             <div class="card-icon">📖</div>
             <div class="card-title">Dicionário</div>
             <div class="card-description">
-                Personalize os comandos da sua linguagem.
+                Personalize os comandos da engine.
             </div>
         </div>
 
-        <div class="card" onclick="abrirPorId('projectPage')">
+        <div class="card" onclick="abrirPagina('projectPage')">
             <div class="card-icon">⚙️</div>
             <div class="card-title">Projeto</div>
             <div class="card-description">
-                Configurações da Engine.
+                Configurações da engine.
             </div>
         </div>
 
@@ -819,14 +835,11 @@ input[type="color"]{
 </section>
 
 <!-- CÓDIGO -->
-
 <section id="codePage" class="page">
 
     <div class="editor-area">
 
-        <div class="label">
-            CÓDIGO C++
-        </div>
+        <div class="label">CÓDIGO MY ENGINE / C++</div>
 
         <div class="editor-wrapper">
 
@@ -842,7 +855,7 @@ input[type="color"]{
 
 int main() {
 
-    std::cout << "Olá, mundo!";
+    cout "Olá, mundo!";
 
     return 0;
 
@@ -872,11 +885,21 @@ int main() {
 
     </div>
 
-    <div class="terminal-area">
+    <div class="translation-area">
 
         <div class="label">
-            TERMINAL
+            CÓDIGO TRADUZIDO
         </div>
+
+        <div class="translation" id="translatedCode">
+            > O código traduzido aparecerá aqui antes da execução.
+        </div>
+
+    </div>
+
+    <div class="terminal-area">
+
+        <div class="label">TERMINAL</div>
 
         <div class="terminal" id="terminal">
             > Aguardando execução...
@@ -898,8 +921,11 @@ int main() {
     <div class="saved-area">
 
         <div class="saved-title">
+
             <span>MEUS CÓDIGOS</span>
+
             <span id="savedCount">0</span>
+
         </div>
 
         <div class="saved-list" id="savedList"></div>
@@ -909,7 +935,6 @@ int main() {
 </section>
 
 <!-- ARTE -->
-
 <section id="artPage" class="page art-page">
 
     <div class="art-top">
@@ -960,11 +985,7 @@ int main() {
 
     <div class="canvas-area" id="canvasArea">
 
-        <canvas
-            id="artCanvas"
-            width="32"
-            height="32">
-        </canvas>
+        <canvas id="artCanvas" width="32" height="32"></canvas>
 
         <div class="canvas-info" id="canvasInfo">
             Zoom: 100%
@@ -983,7 +1004,7 @@ int main() {
             <input
                 type="color"
                 id="colorPicker"
-                value="#ffffff">
+                value="#000000">
 
         </div>
 
@@ -1027,7 +1048,6 @@ int main() {
 </section>
 
 <!-- CENA -->
-
 <section id="scenePage" class="page module-page">
 
     <div class="module-header">
@@ -1054,7 +1074,6 @@ int main() {
 </section>
 
 <!-- TILEMAP -->
-
 <section id="tilemapPage" class="page module-page">
 
     <div class="module-header">
@@ -1081,7 +1100,6 @@ int main() {
 </section>
 
 <!-- ASSETS -->
-
 <section id="assetsPage" class="page module-page">
 
     <div class="module-header">
@@ -1107,8 +1125,7 @@ int main() {
 
 </section>
 
-<!-- ÁUDIO -->
-
+<!-- AUDIO -->
 <section id="audioPage" class="page module-page">
 
     <div class="module-header">
@@ -1134,36 +1151,7 @@ int main() {
 
 </section>
 
-<!-- DICIONÁRIO -->
-
-<section id="dictionaryPage" class="page module-page">
-
-    <div class="module-header">
-
-        <h1>📖 Dicionário</h1>
-
-        <p>
-            Personalize os comandos utilizados
-            pela linguagem da My Engine.
-        </p>
-
-    </div>
-
-    <div class="coming-soon">
-
-        <div class="coming-soon-icon">📖</div>
-
-        <strong>Tradutor</strong>
-
-        Sistema de comandos personalizados
-        da My Engine.
-
-    </div>
-
-</section>
-
 <!-- PROJETO -->
-
 <section id="projectPage" class="page module-page">
 
     <div class="module-header">
@@ -1172,7 +1160,7 @@ int main() {
 
         <p>
             Configurações e gerenciamento
-            do projeto da Engine.
+            do projeto da engine.
         </p>
 
     </div>
@@ -1189,8 +1177,31 @@ int main() {
 
 </section>
 
-<!-- MODAL -->
+<!-- DICIONÁRIO -->
+<section id="dictionaryPage" class="page dictionary-page">
 
+    <div class="dictionary-header">
+
+        <h1>📖 Dicionário</h1>
+
+        <p>
+            Aqui você poderá personalizar
+            os comandos usados pela My Engine.
+        </p>
+
+    </div>
+
+    <input
+        id="dictionarySearch"
+        class="dictionary-search"
+        placeholder="Pesquisar comando..."
+        oninput="filtrarDicionario()">
+
+    <div id="dictionaryList"></div>
+
+</section>
+
+<!-- MODAL -->
 <div class="modal" id="saveModal">
 
     <div class="modal-box">
@@ -1224,44 +1235,27 @@ int main() {
    MENU
 ========================================================= */
 
-function alternarMenu(){
+function abrirMenu(){
 
-    const menu =
-        document.getElementById("sideMenu");
+    document
+        .getElementById("sideMenu")
+        .classList.add("open");
 
-    const overlay =
-        document.getElementById("menuOverlay");
+    document
+        .getElementById("menuOverlay")
+        .classList.add("open");
 
-    menu.classList.toggle("active");
-    overlay.classList.toggle("active");
 }
 
 function fecharMenu(){
 
     document
         .getElementById("sideMenu")
-        .classList.remove("active");
+        .classList.remove("open");
 
     document
         .getElementById("menuOverlay")
-        .classList.remove("active");
-}
-
-function abrirMenuPagina(id,botao){
-
-    abrirPagina(id);
-
-    document
-        .querySelectorAll(".menu-item")
-        .forEach(
-            b => b.classList.remove("active")
-        );
-
-    if(botao){
-        botao.classList.add("active");
-    }
-
-    fecharMenu();
+        .classList.remove("open");
 
 }
 
@@ -1273,8 +1267,8 @@ function abrirPagina(id){
 
     document
         .querySelectorAll(".page")
-        .forEach(
-            p => p.classList.remove("active")
+        .forEach(p =>
+            p.classList.remove("active")
         );
 
     const pagina =
@@ -1284,13 +1278,40 @@ function abrirPagina(id){
         pagina.classList.add("active");
     }
 
+    document
+        .querySelectorAll(".menu-item")
+        .forEach(b =>
+            b.classList.remove("active")
+        );
+
+    document
+        .querySelectorAll(".menu-item")
+        .forEach(b => {
+
+            if(
+                b.getAttribute("onclick") &&
+                b.getAttribute("onclick")
+                .includes("'" + id + "'")
+            ){
+
+                b.classList.add("active");
+
+            }
+
+        });
+
+    fecharMenu();
+
     window.scrollTo(0,0);
 
-}
+    if(id === "artPage"){
 
-function abrirPorId(id){
+        setTimeout(
+            atualizarCanvasVisual,
+            50
+        );
 
-    abrirPagina(id);
+    }
 
 }
 
@@ -1325,6 +1346,9 @@ const savedCount =
 const runButton =
     document.getElementById("runButton");
 
+const translatedCode =
+    document.getElementById("translatedCode");
+
 let executando = false;
 
 function atualizarLinhas(){
@@ -1334,18 +1358,13 @@ function atualizarLinhas(){
 
     let numeros = "";
 
-    for(
-        let i=1;
-        i<=quantidade;
-        i++
-    ){
+    for(let i=1;i<=quantidade;i++){
 
         numeros += i + "<br>";
 
     }
 
-    lineNumbers.innerHTML =
-        numeros;
+    lineNumbers.innerHTML = numeros;
 
 }
 
@@ -1379,10 +1398,8 @@ editor.addEventListener(
                 editor.selectionEnd;
 
             editor.value =
-                editor.value.substring(0,inicio)
-                +
-                "    "
-                +
+                editor.value.substring(0,inicio) +
+                "    " +
                 editor.value.substring(fim);
 
             editor.selectionStart =
@@ -1407,33 +1424,136 @@ function alternarEntrada(){
 
 }
 
-function encodeBase64UTF8(texto){
+/* =========================================================
+   TRADUTOR MY ENGINE → C++
+========================================================= */
 
-    return btoa(
-        unescape(
-            encodeURIComponent(texto)
-        )
+const tradutorPadrao = {
+
+    "manda o papo":"std::cout <<",
+    "qual foi":"std::cerr <<",
+    "endl":"std::endl",
+    "nova linha":"\\n",
+
+    "visao":"std::cin",
+    "abraça o papo":"std::getline",
+
+    "numero":"int",
+    "decimal":"float",
+    "decimal^":"double",
+    "letra":"char",
+    "txt":"std::string",
+    "tlgd":"bool",
+    "auto":"auto",
+
+    "+=":"+=",
+    "-=":"-=",
+    "*=":"*=",
+    "/=":"/=",
+    "resto da divisao":"%"
+
+};
+
+function obterDicionario(){
+
+    const salvo =
+        localStorage.getItem(
+            "myengine_dicionario"
+        );
+
+    if(salvo){
+
+        try{
+
+            return JSON.parse(salvo);
+
+        }
+
+        catch{}
+
+    }
+
+    return {...tradutorPadrao};
+
+}
+
+function escaparRegex(texto){
+
+    return texto.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
     );
 
 }
 
-function decodificarBase64(texto){
+function traduzirCodigo(codigo){
 
-    try{
+    const dicionario =
+        obterDicionario();
 
-        return decodeURIComponent(
-            escape(atob(texto))
+    let resultado =
+        codigo;
+
+    const entradas =
+        Object.entries(dicionario)
+        .sort(
+            (a,b) =>
+                b[0].length -
+                a[0].length
         );
 
+    for(
+        const [original, traducao]
+        of entradas
+    ){
+
+        if(!original.trim()){
+            continue;
+        }
+
+        const regex =
+            new RegExp(
+                escaparRegex(original),
+                "gi"
+            );
+
+        resultado =
+            resultado.replace(
+                regex,
+                traducao
+            );
+
     }
 
-    catch{
+    /*
+       Correção especial para:
 
-        return atob(texto);
+       manda o papo "Olá";
 
-    }
+       virar:
+
+       std::cout << "Olá";
+    */
+
+    resultado =
+        resultado.replace(
+            /std::cout\s+"([^"]*)"/g,
+            'std::cout << "$1"'
+        );
+
+    resultado =
+        resultado.replace(
+            /std::cerr\s+"([^"]*)"/g,
+            'std::cerr << "$1"'
+        );
+
+    return resultado;
 
 }
+
+/* =========================================================
+   EXECUÇÃO
+========================================================= */
 
 async function executar(){
 
@@ -1453,6 +1573,12 @@ async function executar(){
 
     }
 
+    const codigoTraduzido =
+        traduzirCodigo(codigo);
+
+    translatedCode.textContent =
+        codigoTraduzido;
+
     executando = true;
 
     runButton.disabled = true;
@@ -1461,22 +1587,36 @@ async function executar(){
         "⏳ EXECUTANDO";
 
     terminal.textContent =
-        "> Enviando código para Judge0...\n";
+        "> Enviando código traduzido para Judge0...\n";
 
     status.textContent = "";
 
     try{
 
         const codigoBase64 =
-            encodeBase64UTF8(codigo);
+            btoa(
+                unescape(
+                    encodeURIComponent(
+                        codigoTraduzido
+                    )
+                )
+            );
 
         const stdin =
             stdinInput.value;
 
-        const stdinBase64 =
-            stdin
-            ? encodeBase64UTF8(stdin)
-            : "";
+        let stdinBase64 = "";
+
+        if(stdin){
+
+            stdinBase64 =
+                btoa(
+                    unescape(
+                        encodeURIComponent(stdin)
+                    )
+                );
+
+        }
 
         const resposta =
             await fetch(
@@ -1500,6 +1640,7 @@ async function executar(){
                             stdinBase64
 
                     })
+
                 }
             );
 
@@ -1597,11 +1738,34 @@ async function executar(){
 
 }
 
+function decodificarBase64(texto){
+
+    try{
+
+        return decodeURIComponent(
+            escape(
+                atob(texto)
+            )
+        );
+
+    }
+
+    catch{
+
+        return atob(texto);
+
+    }
+
+}
+
 function limpar(){
 
     editor.value = "";
 
     stdinInput.value = "";
+
+    translatedCode.textContent =
+        "> O código traduzido aparecerá aqui antes da execução.";
 
     atualizarLinhas();
 
@@ -1618,17 +1782,17 @@ function limpar(){
 
 function abrirSalvar(){
 
-    document.getElementById(
-        "saveModal"
-    ).style.display = "flex";
+    document
+        .getElementById("saveModal")
+        .style.display = "flex";
 
 }
 
 function fecharSalvar(){
 
-    document.getElementById(
-        "saveModal"
-    ).style.display = "none";
+    document
+        .getElementById("saveModal")
+        .style.display = "none";
 
 }
 
@@ -1676,7 +1840,7 @@ function salvarCodigo(){
 
 function carregarCodigos(){
 
-    const codigos =
+    let codigos =
         JSON.parse(
             localStorage.getItem(
                 "cpp_codigos"
@@ -1688,7 +1852,7 @@ function carregarCodigos(){
     savedCount.textContent =
         codigos.length;
 
-    codigos.forEach(item=>{
+    codigos.forEach(item => {
 
         const div =
             document.createElement("div");
@@ -1720,7 +1884,7 @@ function carregarCodigos(){
         abrir.textContent =
             "ABRIR";
 
-        abrir.onclick = ()=>{
+        abrir.onclick = () => {
 
             editor.value =
                 item.codigo;
@@ -1740,16 +1904,17 @@ function carregarCodigos(){
         excluir.textContent =
             "X";
 
-        excluir.onclick = ()=>{
+        excluir.onclick = () => {
 
-            const novos =
+            codigos =
                 codigos.filter(
-                    x => x.id !== item.id
+                    x =>
+                    x.id !== item.id
                 );
 
             localStorage.setItem(
                 "cpp_codigos",
-                JSON.stringify(novos)
+                JSON.stringify(codigos)
             );
 
             carregarCodigos();
@@ -1757,14 +1922,129 @@ function carregarCodigos(){
         };
 
         actions.appendChild(abrir);
+
         actions.appendChild(excluir);
 
         div.appendChild(nome);
+
         div.appendChild(actions);
 
         savedList.appendChild(div);
 
     });
+
+}
+
+/* =========================================================
+   DICIONÁRIO
+========================================================= */
+
+const comandosDicionario = [
+
+    ["Saída","manda o papo","std::cout"],
+    ["Saída","qual foi","std::cerr"],
+    ["Saída","endl","std::endl"],
+    ["Entrada","visao","std::cin"],
+    ["Entrada","abraça o papo","std::getline"],
+    ["Tipos","numero","int"],
+    ["Tipos","decimal","float"],
+    ["Tipos","decimal^","double"],
+    ["Tipos","letra","char"],
+    ["Tipos","txt","std::string"],
+    ["Tipos","tlgd","bool"],
+    ["Tipos","auto","auto"],
+    ["Operadores","+=","+="],
+    ["Operadores","-=","-="],
+    ["Operadores","*=","*="],
+    ["Operadores","/=","/="],
+    ["Operadores","resto da divisao","%"]
+
+];
+
+function renderizarDicionario(filtro=""){
+
+    const lista =
+        document.getElementById(
+            "dictionaryList"
+        );
+
+    lista.innerHTML = "";
+
+    let categoriaAtual = "";
+
+    comandosDicionario
+        .filter(item => {
+
+            const texto =
+                (
+                    item[1] +
+                    " " +
+                    item[2]
+                ).toLowerCase();
+
+            return texto.includes(
+                filtro.toLowerCase()
+            );
+
+        })
+        .forEach(item => {
+
+            const categoria =
+                item[0];
+
+            if(categoria !== categoriaAtual){
+
+                categoriaAtual =
+                    categoria;
+
+                const titulo =
+                    document.createElement("div");
+
+                titulo.className =
+                    "dictionary-category";
+
+                titulo.textContent =
+                    categoria;
+
+                lista.appendChild(titulo);
+
+            }
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "dictionary-item";
+
+            div.innerHTML =
+                `
+                <span class="dictionary-command">
+                    ${item[1]}
+                </span>
+
+                <span class="dictionary-arrow">
+                    →
+                </span>
+
+                <span class="dictionary-name">
+                    ${item[2]}
+                </span>
+                `;
+
+            lista.appendChild(div);
+
+        });
+
+}
+
+function filtrarDicionario(){
+
+    const busca =
+        document.getElementById(
+            "dictionarySearch"
+        ).value;
+
+    renderizarDicionario(busca);
 
 }
 
@@ -1801,11 +2081,15 @@ let gridVisivel = true;
 
 let tamanhoCanvas = 32;
 
-let zoom = 16;
+let zoom = 1;
 
 let offsetX = 0;
 
 let offsetY = 0;
+
+let zoomMin = 0.5;
+
+let zoomMax = 8;
 
 let desenhando = false;
 
@@ -1813,7 +2097,9 @@ let historico = [];
 
 let futuro = [];
 
-let cameraInicializada = false;
+/* =========================================================
+   HISTÓRICO
+========================================================= */
 
 function salvarEstado(){
 
@@ -1880,6 +2166,10 @@ function refazer(){
 
 }
 
+/* =========================================================
+   NOVO CANVAS
+========================================================= */
+
 function novoCanvas(){
 
     const tamanho =
@@ -1925,9 +2215,19 @@ function novoCanvas(){
 
     futuro = [];
 
+    zoom = 1;
+
+    offsetX = 0;
+
+    offsetY = 0;
+
     atualizarCanvasVisual();
 
 }
+
+/* =========================================================
+   LIMPAR
+========================================================= */
 
 function limparCanvas(){
 
@@ -1942,6 +2242,10 @@ function limparCanvas(){
 
 }
 
+/* =========================================================
+   FERRAMENTA
+========================================================= */
+
 function selecionarFerramenta(nome){
 
     ferramenta = nome;
@@ -1949,7 +2253,8 @@ function selecionarFerramenta(nome){
     document
         .querySelectorAll(".tool")
         .forEach(
-            b => b.classList.remove("active")
+            b =>
+            b.classList.remove("active")
         );
 
     if(nome === "pencil"){
@@ -1970,132 +2275,11 @@ function selecionarFerramenta(nome){
 
 }
 
-function obterPixel(event){
+/* =========================================================
+   CÂMERA
+========================================================= */
 
-    const rect =
-        artCanvas.getBoundingClientRect();
-
-    const x =
-        Math.floor(
-            (
-                event.clientX -
-                rect.left
-            )
-            /
-            rect.width
-            *
-            artCanvas.width
-        );
-
-    const y =
-        Math.floor(
-            (
-                event.clientY -
-                rect.top
-            )
-            /
-            rect.height
-            *
-            artCanvas.height
-        );
-
-    return {x,y};
-
-}
-
-function pintar(event){
-
-    const pixel =
-        obterPixel(event);
-
-    const tamanho =
-        parseInt(brushSize.value);
-
-    ctx.fillStyle =
-        ferramenta === "eraser"
-        ? "rgba(0,0,0,0)"
-        : colorPicker.value;
-
-    ctx.globalCompositeOperation =
-        ferramenta === "eraser"
-        ? "destination-out"
-        : "source-over";
-
-    ctx.fillRect(
-        pixel.x - Math.floor(tamanho/2),
-        pixel.y - Math.floor(tamanho/2),
-        tamanho,
-        tamanho
-    );
-
-    ctx.globalCompositeOperation =
-        "source-over";
-
-}
-
-artCanvas.addEventListener(
-    "pointerdown",
-    function(event){
-
-        event.preventDefault();
-
-        salvarEstado();
-
-        desenhando = true;
-
-        artCanvas.setPointerCapture(
-            event.pointerId
-        );
-
-        pintar(event);
-
-    }
-);
-
-artCanvas.addEventListener(
-    "pointermove",
-    function(event){
-
-        if(!desenhando){
-            return;
-        }
-
-        event.preventDefault();
-
-        pintar(event);
-
-    }
-);
-
-artCanvas.addEventListener(
-    "pointerup",
-    function(event){
-
-        desenhando = false;
-
-        try{
-
-            artCanvas.releasePointerCapture(
-                event.pointerId
-            );
-
-        }
-
-        catch{}
-
-    }
-);
-
-function alternarGrade(){
-
-    gridVisivel =
-        !gridVisivel;
-
-    atualizarCanvasVisual();
-
-}
-
-function atualizarCanvasVisual(){
+function aplicarCamera(){
 
     const tamanho =
         Math.min(
@@ -2103,53 +2287,51 @@ function atualizarCanvasVisual(){
             canvasArea.clientHeight
         );
 
-    const tamanhoBase =
+    const base =
         Math.max(
             256,
             Math.min(512,tamanho)
         );
 
     artCanvas.style.width =
-        tamanhoBase + "px";
+        base * zoom + "px";
 
     artCanvas.style.height =
-        tamanhoBase + "px";
-
-    if(!cameraInicializada){
-
-        zoom = 1;
-
-        offsetX = 0;
-
-        offsetY = 0;
-
-        cameraInicializada = true;
-
-    }
-
-    aplicarCamera();
-
-    desenharGrade();
-
-}
-
-function aplicarCamera(){
+        base * zoom + "px";
 
     artCanvas.style.transform =
-        "translate(-50%,-50%) " +
+        "translate(-50%, -50%) " +
         "translate(" +
         offsetX +
         "px," +
         offsetY +
-        "px) " +
-        "scale(" +
-        zoom +
-        ")";
+        "px)";
 
     canvasInfo.textContent =
         "Zoom: " +
         Math.round(zoom * 100) +
         "%";
+
+    desenharGrade();
+
+}
+
+function atualizarCanvasVisual(){
+
+    aplicarCamera();
+
+}
+
+/* =========================================================
+   GRADE
+========================================================= */
+
+function alternarGrade(){
+
+    gridVisivel =
+        !gridVisivel;
+
+    desenharGrade();
 
 }
 
@@ -2158,8 +2340,8 @@ function desenharGrade(){
     if(gridVisivel){
 
         artCanvas.style.backgroundImage =
-            "linear-gradient(#333 1px, transparent 1px)," +
-            "linear-gradient(90deg,#333 1px,transparent 1px)";
+            "linear-gradient(#bbb 1px, transparent 1px)," +
+            "linear-gradient(90deg,#bbb 1px,transparent 1px)";
 
         artCanvas.style.backgroundSize =
             "calc(100% / " +
@@ -2179,6 +2361,328 @@ function desenharGrade(){
 
 }
 
+/* =========================================================
+   PIXEL
+========================================================= */
+
+function obterPixel(event){
+
+    const rect =
+        artCanvas.getBoundingClientRect();
+
+    const x =
+        Math.floor(
+            (
+                event.clientX -
+                rect.left
+            ) /
+            rect.width *
+            artCanvas.width
+        );
+
+    const y =
+        Math.floor(
+            (
+                event.clientY -
+                rect.top
+            ) /
+            rect.height *
+            artCanvas.height
+        );
+
+    return {x,y};
+
+}
+
+function pintar(event){
+
+    const pixel =
+        obterPixel(event);
+
+    if(
+        pixel.x < 0 ||
+        pixel.y < 0 ||
+        pixel.x >= artCanvas.width ||
+        pixel.y >= artCanvas.height
+    ){
+        return;
+    }
+
+    const tamanho =
+        parseInt(
+            brushSize.value
+        );
+
+    if(ferramenta === "eraser"){
+
+        ctx.globalCompositeOperation =
+            "destination-out";
+
+    }
+
+    else{
+
+        ctx.globalCompositeOperation =
+            "source-over";
+
+        ctx.fillStyle =
+            colorPicker.value;
+
+    }
+
+    ctx.fillRect(
+
+        pixel.x -
+        Math.floor(tamanho / 2),
+
+        pixel.y -
+        Math.floor(tamanho / 2),
+
+        tamanho,
+        tamanho
+
+    );
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+}
+
+/* =========================================================
+   CONTROLE DE TOQUE
+========================================================= */
+
+let ponteiros = new Map();
+
+let modoGestual = false;
+
+let ultimoX = 0;
+
+let ultimoY = 0;
+
+let distanciaAnterior = 0;
+
+let zoomAnterior = 1;
+
+let offsetAnteriorX = 0;
+
+let offsetAnteriorY = 0;
+
+function distancia(a,b){
+
+    return Math.hypot(
+        a.clientX - b.clientX,
+        a.clientY - b.clientY
+    );
+
+}
+
+function centro(a,b){
+
+    return {
+
+        x:
+            (a.clientX + b.clientX) / 2,
+
+        y:
+            (a.clientY + b.clientY) / 2
+
+    };
+
+}
+
+artCanvas.addEventListener(
+    "pointerdown",
+    function(event){
+
+        event.preventDefault();
+
+        ponteiros.set(
+            event.pointerId,
+            event
+        );
+
+        artCanvas.setPointerCapture(
+            event.pointerId
+        );
+
+        if(ponteiros.size >= 2){
+
+            modoGestual = true;
+
+            desenhando = false;
+
+            const pontos =
+                [...ponteiros.values()];
+
+            distanciaAnterior =
+                distancia(
+                    pontos[0],
+                    pontos[1]
+                );
+
+            zoomAnterior = zoom;
+
+            offsetAnteriorX = offsetX;
+
+            offsetAnteriorY = offsetY;
+
+            return;
+
+        }
+
+        modoGestual = false;
+
+        desenhando = true;
+
+        salvarEstado();
+
+        pintar(event);
+
+    }
+);
+
+artCanvas.addEventListener(
+    "pointermove",
+    function(event){
+
+        if(!ponteiros.has(event.pointerId)){
+            return;
+        }
+
+        ponteiros.set(
+            event.pointerId,
+            event
+        );
+
+        if(ponteiros.size >= 2){
+
+            event.preventDefault();
+
+            modoGestual = true;
+
+            desenhando = false;
+
+            const pontos =
+                [...ponteiros.values()];
+
+            const atual =
+                distancia(
+                    pontos[0],
+                    pontos[1]
+                );
+
+            if(distanciaAnterior > 0){
+
+                const fator =
+                    atual /
+                    distanciaAnterior;
+
+                zoom =
+                    zoomAnterior *
+                    fator;
+
+                zoom =
+                    Math.max(
+                        zoomMin,
+                        Math.min(
+                            zoomMax,
+                            zoom
+                        )
+                    );
+
+            }
+
+            const c =
+                centro(
+                    pontos[0],
+                    pontos[1]
+                );
+
+            const dx =
+                c.x -
+                canvasArea.getBoundingClientRect().left -
+                canvasArea.clientWidth / 2;
+
+            const dy =
+                c.y -
+                canvasArea.getBoundingClientRect().top -
+                canvasArea.clientHeight / 2;
+
+            offsetX =
+                offsetAnteriorX + dx;
+
+            offsetY =
+                offsetAnteriorY + dy;
+
+            aplicarCamera();
+
+            return;
+
+        }
+
+        if(
+            desenhando &&
+            !modoGestual
+        ){
+
+            event.preventDefault();
+
+            pintar(event);
+
+        }
+
+    }
+);
+
+function finalizarPonteiro(event){
+
+    ponteiros.delete(
+        event.pointerId
+    );
+
+    try{
+
+        artCanvas.releasePointerCapture(
+            event.pointerId
+        );
+
+    }
+
+    catch{}
+
+    if(ponteiros.size === 0){
+
+        desenhando = false;
+
+        modoGestual = false;
+
+    }
+
+    else if(ponteiros.size === 1){
+
+        desenhando = false;
+
+        modoGestual = false;
+
+    }
+
+}
+
+artCanvas.addEventListener(
+    "pointerup",
+    finalizarPonteiro
+);
+
+artCanvas.addEventListener(
+    "pointercancel",
+    finalizarPonteiro
+);
+
+/* =========================================================
+   ZOOM
+========================================================= */
+
 function resetZoom(){
 
     zoom = 1;
@@ -2190,6 +2694,10 @@ function resetZoom(){
     aplicarCamera();
 
 }
+
+/* =========================================================
+   SALVAR ARTE
+========================================================= */
 
 function salvarArte(){
 
@@ -2219,7 +2727,9 @@ function salvarArte(){
 function carregarArte(){
 
     const imagem =
-        localStorage.getItem("engine_arte");
+        localStorage.getItem(
+            "engine_arte"
+        );
 
     if(!imagem){
 
@@ -2234,24 +2744,25 @@ function carregarArte(){
     const img =
         new Image();
 
-    img.onload = function(){
+    img.onload =
+        function(){
 
-        ctx.clearRect(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
+            ctx.clearRect(
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
+            );
 
-        ctx.drawImage(
-            img,
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
+            );
 
-    };
+        };
 
     img.src = imagem;
 
@@ -2265,6 +2776,8 @@ atualizarLinhas();
 
 carregarCodigos();
 
+renderizarDicionario();
+
 atualizarCanvasVisual();
 
 window.addEventListener(
@@ -2274,7 +2787,8 @@ window.addEventListener(
         if(
             document
                 .getElementById("artPage")
-                .classList.contains("active")
+                .classList
+                .contains("active")
         ){
 
             atualizarCanvasVisual();
@@ -2287,4 +2801,3 @@ window.addEventListener(
 </script>
 
 </body>
-</html>
