@@ -6,15 +6,11 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>C++ Executor</title>
 
 <style>
-
-/* =========================================================
-   BASE
-========================================================= */
 
 * {
     box-sizing: border-box;
@@ -41,9 +37,7 @@ body {
 }
 
 body {
-
     padding-bottom: 40px;
-
 }
 
 
@@ -56,9 +50,7 @@ body {
     height: 60px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     background: #111;
@@ -66,20 +58,16 @@ body {
     border-bottom: 1px solid #292929;
 
     font-size: 21px;
-
     font-weight: 700;
-
 }
 
 
 /* =========================================================
-   ÁREA DO EDITOR
+   EDITOR
 ========================================================= */
 
 .editor-area {
-
     padding: 15px;
-
 }
 
 .label {
@@ -89,24 +77,15 @@ body {
     color: #888;
 
     font-size: 13px;
-
     font-weight: 700;
-
 }
-
-
-/* =========================================================
-   EDITOR
-========================================================= */
 
 .editor-wrapper {
 
     display: flex;
 
     width: 100%;
-
     height: 48vh;
-
     min-height: 300px;
 
     overflow: hidden;
@@ -114,9 +93,7 @@ body {
     background: #181818;
 
     border: 1px solid #333;
-
     border-radius: 10px;
-
 }
 
 
@@ -131,7 +108,6 @@ body {
     flex-shrink: 0;
 
     padding-top: 15px;
-
     padding-right: 9px;
 
     background: #151515;
@@ -153,12 +129,11 @@ body {
     user-select: none;
 
     overflow: hidden;
-
 }
 
 
 /* =========================================================
-   TEXTAREA
+   EDITOR DE CÓDIGO
 ========================================================= */
 
 .editor {
@@ -166,7 +141,6 @@ body {
     flex: 1;
 
     width: 100%;
-
     height: 100%;
 
     padding: 15px;
@@ -176,7 +150,6 @@ body {
     resize: none;
 
     outline: none;
-
     border: none;
 
     background: #181818;
@@ -202,18 +175,15 @@ body {
     overflow: auto;
 
     -webkit-overflow-scrolling: touch;
-
 }
 
 .editor::selection {
-
     background: #444;
-
 }
 
 
 /* =========================================================
-   BOTÕES PRINCIPAIS
+   BOTÕES
 ========================================================= */
 
 .buttons {
@@ -226,7 +196,6 @@ body {
         0
         15px
         15px;
-
 }
 
 button {
@@ -244,40 +213,50 @@ button {
     color: white;
 
     font-size: 14px;
-
     font-weight: 700;
 
     cursor: pointer;
-
 }
 
 button:active {
-
     transform: scale(0.97);
-
 }
+
+button:disabled {
+    opacity: 0.5;
+}
+
+
+/* EXECUTAR */
 
 .run {
-
     background: #20c968;
-
 }
+
+
+/* ENTRADA */
+
+.input-button {
+    background: #8e44ad;
+}
+
+
+/* SALVAR */
 
 .save {
-
     background: #2878ff;
-
 }
 
+
+/* LIMPAR */
+
 .clear {
-
     background: #292929;
-
 }
 
 
 /* =========================================================
-   TERMINAL
+   ÁREA DO TERMINAL
 ========================================================= */
 
 .terminal-area {
@@ -286,7 +265,6 @@ button:active {
         0
         15px
         20px;
-
 }
 
 .terminal {
@@ -316,12 +294,11 @@ button:active {
     white-space: pre-wrap;
 
     overflow-x: auto;
-
 }
 
 
 /* =========================================================
-   ENTRADA STDIN
+   STDIN
 ========================================================= */
 
 .input-area {
@@ -330,23 +307,43 @@ button:active {
 
     margin-top: 10px;
 
+    padding: 12px;
+
+    background: #151515;
+
+    border: 1px solid #292929;
+
+    border-radius: 10px;
+}
+
+.input-title {
+
+    margin-bottom: 8px;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    font-weight: 700;
 }
 
 .stdin-input {
 
     width: 100%;
 
-    min-height: 48px;
+    min-height: 90px;
 
     padding: 13px;
 
-    background: #111;
+    resize: vertical;
+
+    background: #0b0b0b;
 
     color: white;
 
     border: 1px solid #333;
 
-    border-radius: 10px;
+    border-radius: 8px;
 
     outline: none;
 
@@ -358,22 +355,20 @@ button:active {
 
     font-size: 15px;
 
+    line-height: 1.4;
 }
 
 .stdin-input:focus {
-
-    border-color: #2878ff;
-
+    border-color: #8e44ad;
 }
 
-.send-input {
+.input-help {
 
-    width: 100%;
+    margin-top: 7px;
 
-    margin-top: 8px;
+    color: #666;
 
-    background: #2878ff;
-
+    font-size: 11px;
 }
 
 
@@ -388,7 +383,6 @@ button:active {
     color: #777;
 
     font-size: 12px;
-
 }
 
 
@@ -402,7 +396,6 @@ button:active {
         0
         15px
         20px;
-
 }
 
 .saved-title {
@@ -410,7 +403,6 @@ button:active {
     display: flex;
 
     justify-content: space-between;
-
     align-items: center;
 
     margin-bottom: 10px;
@@ -418,9 +410,7 @@ button:active {
     color: #888;
 
     font-size: 13px;
-
     font-weight: 700;
-
 }
 
 .saved-list {
@@ -430,7 +420,6 @@ button:active {
     flex-direction: column;
 
     gap: 8px;
-
 }
 
 .saved-item {
@@ -438,7 +427,6 @@ button:active {
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 10px;
@@ -450,7 +438,6 @@ button:active {
     border: 1px solid #2b2b2b;
 
     border-radius: 10px;
-
 }
 
 .saved-name {
@@ -468,7 +455,6 @@ button:active {
     color: white;
 
     font-size: 14px;
-
 }
 
 .saved-actions {
@@ -476,7 +462,6 @@ button:active {
     display: flex;
 
     gap: 6px;
-
 }
 
 .saved-actions button {
@@ -492,19 +477,14 @@ button:active {
         10px;
 
     font-size: 12px;
-
 }
 
 .open-btn {
-
     background: #333;
-
 }
 
 .delete-btn {
-
     background: #8f2525;
-
 }
 
 
@@ -529,7 +509,6 @@ button:active {
     padding: 20px;
 
     z-index: 1000;
-
 }
 
 .modal-box {
@@ -545,7 +524,6 @@ button:active {
     border: 1px solid #333;
 
     border-radius: 14px;
-
 }
 
 .modal-box h2 {
@@ -553,7 +531,6 @@ button:active {
     margin-top: 0;
 
     font-size: 19px;
-
 }
 
 .modal-box input {
@@ -578,7 +555,6 @@ button:active {
     color: white;
 
     font-size: 16px;
-
 }
 
 .modal-buttons {
@@ -586,46 +562,18 @@ button:active {
     display: flex;
 
     gap: 8px;
-
 }
 
 .modal-buttons button {
-
     padding: 13px;
-
 }
 
 .cancel {
-
     background: #333;
-
 }
 
 .confirm {
-
     background: #2878ff;
-
-}
-
-
-/* =========================================================
-   AVISO
-========================================================= */
-
-.notice {
-
-    margin-top: 10px;
-
-    padding: 10px;
-
-    background: #151515;
-
-    border-radius: 8px;
-
-    color: #777;
-
-    font-size: 12px;
-
 }
 
 </style>
@@ -654,9 +602,7 @@ button:active {
 <div class="editor-area">
 
     <div class="label">
-
         CÓDIGO C++
-
     </div>
 
 
@@ -709,6 +655,16 @@ int main() {
 
 
     <button
+        class="input-button"
+        id="inputButton"
+        onclick="alternarEntrada()">
+
+        ⌨ ENTRADA
+
+    </button>
+
+
+    <button
         class="save"
         onclick="abrirSalvar()">
 
@@ -736,9 +692,7 @@ int main() {
 <div class="terminal-area">
 
     <div class="label">
-
         TERMINAL
-
     </div>
 
 
@@ -752,7 +706,7 @@ int main() {
 
 
     <!-- =================================================
-         ENTRADA
+         ENTRADA DO PROGRAMA
     ================================================== -->
 
     <div
@@ -760,21 +714,29 @@ int main() {
         id="inputArea">
 
 
-        <input
+        <div class="input-title">
+
+            ENTRADA DO PROGRAMA — STDIN
+
+        </div>
+
+
+        <textarea
             class="stdin-input"
             id="stdinInput"
-            type="text"
-            placeholder="Digite a entrada do programa..."
-            autocomplete="off">
+            spellcheck="false"
+            autocapitalize="off"
+            autocomplete="off"
+            autocorrect="off"
+            placeholder="Digite aqui a entrada do programa..."></textarea>
 
 
-        <button
-            class="send-input"
-            onclick="enviarEntrada()">
+        <div class="input-help">
 
-            ENVIAR ENTRADA
+            Você pode colocar várias entradas,
+            uma por linha.
 
-        </button>
+        </div>
 
 
     </div>
@@ -783,15 +745,6 @@ int main() {
     <div
         class="status"
         id="status">
-
-    </div>
-
-
-    <div class="notice">
-
-        Dica: programas que utilizam
-        <b>cin</b> podem receber entrada pelo campo acima.
-
     </div>
 
 </div>
@@ -807,16 +760,12 @@ int main() {
     <div class="saved-title">
 
         <span>
-
             MEUS CÓDIGOS
-
         </span>
 
 
         <span id="savedCount">
-
             0
-
         </span>
 
     </div>
@@ -825,14 +774,13 @@ int main() {
     <div
         class="saved-list"
         id="savedList">
-
     </div>
 
 </div>
 
 
 <!-- =====================================================
-     MODAL DE SALVAMENTO
+     MODAL SALVAR
 ===================================================== -->
 
 <div
@@ -844,9 +792,7 @@ int main() {
 
 
         <h2>
-
             Salvar código
-
         </h2>
 
 
@@ -920,34 +866,27 @@ const savedCount =
 const runButton =
     document.getElementById("runButton");
 
+const inputButton =
+    document.getElementById("inputButton");
+
 
 /* =========================================================
    ESTADO
 ========================================================= */
 
-let executando =
-    false;
-
-let stdinAtual =
-    "";
-
-let aguardandoEntrada =
-    false;
+let executando = false;
 
 
 /* =========================================================
-   NUMERAÇÃO
+   LINHAS
 ========================================================= */
 
 function atualizarLinhas() {
 
-
     const quantidade =
         editor.value.split("\n").length;
 
-
     let numeros = "";
-
 
     for (
         let i = 1;
@@ -955,20 +894,17 @@ function atualizarLinhas() {
         i++
     ) {
 
-        numeros +=
-            i + "<br>";
+        numeros += i + "<br>";
 
     }
 
-
     lineNumbers.innerHTML =
         numeros;
-
 }
 
 
 /* =========================================================
-   DIGITAÇÃO
+   INPUT DO EDITOR
 ========================================================= */
 
 editor.addEventListener(
@@ -1004,20 +940,15 @@ editor.addEventListener(
     "keydown",
     function(event) {
 
-
-        if (
-            event.key === "Tab"
-        ) {
+        if (event.key === "Tab") {
 
             event.preventDefault();
-
 
             const inicio =
                 editor.selectionStart;
 
             const fim =
                 editor.selectionEnd;
-
 
             editor.value =
 
@@ -1036,13 +967,11 @@ editor.addEventListener(
                     fim
                 );
 
-
             editor.selectionStart =
                 inicio + 4;
 
             editor.selectionEnd =
                 inicio + 4;
-
 
             atualizarLinhas();
 
@@ -1053,68 +982,41 @@ editor.addEventListener(
 
 
 /* =========================================================
-   MOSTRAR ENTRADA
+   MOSTRAR / ESCONDER ENTRADA
 ========================================================= */
 
-function mostrarEntrada() {
+function alternarEntrada() {
 
+    if (
+        inputArea.style.display === "block"
+    ) {
 
-    inputArea.style.display =
-        "block";
+        inputArea.style.display =
+            "none";
 
+        inputButton.textContent =
+            "⌨ ENTRADA";
 
-    aguardandoEntrada =
-        true;
+    }
 
+    else {
 
-    stdinInput.value =
-        "";
+        inputArea.style.display =
+            "block";
 
+        inputButton.textContent =
+            "⌨ OCULTAR";
 
-    setTimeout(
-        function() {
+        setTimeout(
+            function() {
 
-            stdinInput.focus();
+                stdinInput.focus();
 
-        },
-        100
-    );
+            },
+            100
+        );
 
-}
-
-
-/* =========================================================
-   ESCONDER ENTRADA
-========================================================= */
-
-function esconderEntrada() {
-
-
-    inputArea.style.display =
-        "none";
-
-
-    aguardandoEntrada =
-        false;
-
-}
-
-
-/* =========================================================
-   ENVIAR ENTRADA
-========================================================= */
-
-function enviarEntrada() {
-
-
-    stdinAtual =
-        stdinInput.value;
-
-
-    esconderEntrada();
-
-
-    executar();
+    }
 
 }
 
@@ -1157,6 +1059,9 @@ async function executar() {
     runButton.disabled =
         true;
 
+    inputButton.disabled =
+        true;
+
 
     runButton.textContent =
         "⏳ EXECUTANDO";
@@ -1173,54 +1078,50 @@ async function executar() {
     try {
 
 
-        /* ============================================
-           BASE64 DO CÓDIGO
-        ============================================ */
+        /* =================================================
+           CÓDIGO → BASE64
+        ================================================= */
 
         const codigoBase64 =
 
             btoa(
-
                 unescape(
-
                     encodeURIComponent(
                         codigo
                     )
-
                 )
-
             );
 
 
-        /* ============================================
-           BASE64 DO STDIN
-        ============================================ */
+        /* =================================================
+           STDIN → BASE64
+        ================================================= */
+
+        const stdin =
+            stdinInput.value;
+
 
         let stdinBase64 = "";
 
 
-        if (stdinAtual) {
+        if (stdin.length > 0) {
 
             stdinBase64 =
 
                 btoa(
-
                     unescape(
-
                         encodeURIComponent(
-                            stdinAtual
+                            stdin
                         )
-
                     )
-
                 );
 
         }
 
 
-        /* ============================================
-           ENVIO
-        ============================================ */
+        /* =================================================
+           ENVIA AO JUDGE0
+        ================================================= */
 
         const resposta =
 
@@ -1230,8 +1131,7 @@ async function executar() {
 
                 {
 
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
 
@@ -1240,29 +1140,26 @@ async function executar() {
 
                     },
 
-                    body:
+                    body: JSON.stringify({
 
-                        JSON.stringify({
+                        language_id: 54,
 
-                            language_id:
-                                54,
+                        source_code:
+                            codigoBase64,
 
-                            source_code:
-                                codigoBase64,
+                        stdin:
+                            stdinBase64
 
-                            stdin:
-                                stdinBase64
-
-                        })
+                    })
 
                 }
 
             );
 
 
-        /* ============================================
-           HTTP
-        ============================================ */
+        /* =================================================
+           VERIFICA HTTP
+        ================================================= */
 
         if (!resposta.ok) {
 
@@ -1274,21 +1171,20 @@ async function executar() {
         }
 
 
-        /* ============================================
+        /* =================================================
            RESULTADO
-        ============================================ */
+        ================================================= */
 
         const resultado =
             await resposta.json();
 
 
-        let saida =
-            "";
+        let saida = "";
 
 
-        /* ============================================
+        /* =================================================
            STDOUT
-        ============================================ */
+        ================================================= */
 
         if (resultado.stdout) {
 
@@ -1301,20 +1197,15 @@ async function executar() {
         }
 
 
-        /* ============================================
+        /* =================================================
            STDERR
-        ============================================ */
+        ================================================= */
 
         if (resultado.stderr) {
 
-
             if (saida) {
-
-                saida +=
-                    "\n";
-
+                saida += "\n";
             }
-
 
             saida +=
 
@@ -1325,22 +1216,15 @@ async function executar() {
         }
 
 
-        /* ============================================
+        /* =================================================
            ERRO DE COMPILAÇÃO
-        ============================================ */
+        ================================================= */
 
-        if (
-            resultado.compile_output
-        ) {
-
+        if (resultado.compile_output) {
 
             if (saida) {
-
-                saida +=
-                    "\n";
-
+                saida += "\n";
             }
-
 
             saida +=
 
@@ -1351,33 +1235,42 @@ async function executar() {
         }
 
 
-        /* ============================================
+        /* =================================================
            STATUS
-        ============================================ */
-
-        let descricao =
-            "";
-
+        ================================================= */
 
         if (
             resultado.status &&
             resultado.status.description
         ) {
 
-            descricao =
+            const descricao =
                 resultado.status.description;
+
+
+            if (
+                resultado.status.id !== 3 &&
+                !saida.trim()
+            ) {
+
+                saida =
+                    "> " + descricao;
+
+            }
 
         }
 
 
-        /* ============================================
-           TEMPO
-        ============================================ */
+        /* =================================================
+           TEMPO / MEMÓRIA
+        ================================================= */
+
+        let informacoes = "";
+
 
         if (resultado.time) {
 
-            status.textContent =
-
+            informacoes +=
                 "Tempo: " +
                 resultado.time +
                 "s";
@@ -1385,21 +1278,13 @@ async function executar() {
         }
 
 
-        /* ============================================
-           MEMÓRIA
-        ============================================ */
-
         if (resultado.memory) {
 
-            if (status.textContent) {
-
-                status.textContent +=
-                    "  •  ";
-
+            if (informacoes) {
+                informacoes += "  •  ";
             }
 
-            status.textContent +=
-
+            informacoes +=
                 "Memória: " +
                 resultado.memory +
                 " KB";
@@ -1407,90 +1292,88 @@ async function executar() {
         }
 
 
-        /* ============================================
-           SEM SAÍDA
-        ============================================ */
-
-        if (!saida.trim()) {
-
-
-            if (descricao) {
-
-                saida =
-                    "> " +
-                    descricao;
-
-            }
-
-            else {
-
-                saida =
-                    "> Programa executado sem saída.";
-
-            }
-
-        }
-
-
-        /* ============================================
-           TERMINAL
-        ============================================ */
-
-        terminal.textContent =
-            saida;
-
-
-        /* ============================================
-           STATUS VISUAL
-        ============================================ */
+        /* =================================================
+           STATUS FINAL
+        ================================================= */
 
         if (
             resultado.status &&
             resultado.status.id === 3
         ) {
 
-            status.textContent +=
-                "  •  ✓ Execução concluída";
+            if (informacoes) {
+                informacoes += "  •  ";
+            }
+
+            informacoes +=
+                "✓ Execução concluída";
 
         }
+
 
         else if (
             resultado.status &&
             resultado.status.id === 6
         ) {
 
-            status.textContent +=
-                "  •  ❌ Erro de compilação";
+            if (informacoes) {
+                informacoes += "  •  ";
+            }
+
+            informacoes +=
+                "❌ Erro de compilação";
 
         }
+
 
         else if (
             resultado.status &&
             resultado.status.id === 5
         ) {
 
-            status.textContent +=
-                "  •  ⏱️ Tempo limite excedido";
+            if (informacoes) {
+                informacoes += "  •  ";
+            }
+
+            informacoes +=
+                "⏱️ Tempo limite excedido";
 
         }
 
 
-        /* ============================================
-           LIMPA STDIN
-        ============================================ */
+        /* =================================================
+           SEM SAÍDA
+        ================================================= */
 
-        stdinAtual =
-            "";
+        if (!saida.trim()) {
+
+            saida =
+                "> Programa executado sem saída.";
+
+        }
+
+
+        /* =================================================
+           TERMINAL
+        ================================================= */
+
+        terminal.textContent =
+            saida;
+
+
+        status.textContent =
+            informacoes;
 
 
     }
+
 
     catch (erro) {
 
 
         terminal.textContent =
 
-            "> ERRO:\n\n" +
+            "> ERRO\n\n" +
             erro.message;
 
 
@@ -1510,6 +1393,9 @@ async function executar() {
         runButton.disabled =
             false;
 
+        inputButton.disabled =
+            false;
+
 
         runButton.textContent =
             "▶ EXECUTAR";
@@ -1524,7 +1410,6 @@ async function executar() {
 ========================================================= */
 
 function decodificarBase64(texto) {
-
 
     try {
 
@@ -1551,27 +1436,19 @@ function decodificarBase64(texto) {
 
 function limpar() {
 
-
     editor.value =
         "";
 
+    stdinInput.value =
+        "";
 
     atualizarLinhas();
-
 
     terminal.textContent =
         "> Terminal limpo.";
 
-
     status.textContent =
         "";
-
-
-    stdinAtual =
-        "";
-
-
-    esconderEntrada();
 
 }
 
@@ -1581,7 +1458,6 @@ function limpar() {
 ========================================================= */
 
 function abrirSalvar() {
-
 
     document.getElementById(
         "saveModal"
@@ -1611,7 +1487,6 @@ function abrirSalvar() {
 
 function fecharSalvar() {
 
-
     document.getElementById(
         "saveModal"
     ).style.display =
@@ -1621,7 +1496,6 @@ function fecharSalvar() {
 
 
 function salvarCodigo() {
-
 
     const input =
         document.getElementById(
@@ -1648,11 +1522,9 @@ function salvarCodigo() {
     let codigos =
 
         JSON.parse(
-
             localStorage.getItem(
                 "cpp_codigos"
             ) || "[]"
-
         );
 
 
@@ -1688,7 +1560,6 @@ function salvarCodigo() {
 
     fecharSalvar();
 
-
     carregarCodigos();
 
 
@@ -1707,15 +1578,12 @@ function salvarCodigo() {
 
 function carregarCodigos() {
 
-
     const codigos =
 
         JSON.parse(
-
             localStorage.getItem(
                 "cpp_codigos"
             ) || "[]"
-
         );
 
 
@@ -1731,7 +1599,6 @@ function carregarCodigos() {
         codigos.length === 0
     ) {
 
-
         savedList.innerHTML =
 
             '<div style="color:#666;font-size:13px;">' +
@@ -1739,7 +1606,6 @@ function carregarCodigos() {
             'Nenhum código salvo.' +
 
             '</div>';
-
 
         return;
 
@@ -1836,7 +1702,6 @@ function carregarCodigos() {
                 abrir
             );
 
-
             actions.appendChild(
                 excluir
             );
@@ -1845,7 +1710,6 @@ function carregarCodigos() {
             div.appendChild(
                 nome
             );
-
 
             div.appendChild(
                 actions
@@ -1868,15 +1732,12 @@ function carregarCodigos() {
 
 function abrirCodigo(id) {
 
-
     const codigos =
 
         JSON.parse(
-
             localStorage.getItem(
                 "cpp_codigos"
             ) || "[]"
-
         );
 
 
@@ -1891,9 +1752,7 @@ function abrirCodigo(id) {
 
 
     if (!codigo) {
-
         return;
-
     }
 
 
@@ -1944,11 +1803,9 @@ function excluirCodigo(id) {
     let codigos =
 
         JSON.parse(
-
             localStorage.getItem(
                 "cpp_codigos"
             ) || "[]"
-
         );
 
 
@@ -1980,43 +1837,14 @@ function excluirCodigo(id) {
 
 
 /* =========================================================
-   ENTER NO CAMPO STDIN
-========================================================= */
-
-stdinInput.addEventListener(
-
-    "keydown",
-
-    function(event) {
-
-
-        if (
-            event.key === "Enter"
-        ) {
-
-            event.preventDefault();
-
-            enviarEntrada();
-
-        }
-
-    }
-
-);
-
-
-/* =========================================================
    ENTER NO NOME DO ARQUIVO
 ========================================================= */
 
 document
     .getElementById("codeName")
     .addEventListener(
-
         "keydown",
-
         function(event) {
-
 
             if (
                 event.key === "Enter"
@@ -2029,7 +1857,6 @@ document
             }
 
         }
-
     );
 
 
@@ -2040,9 +1867,6 @@ document
 atualizarLinhas();
 
 carregarCodigos();
-
-esconderEntrada();
-
 
 </script>
 
