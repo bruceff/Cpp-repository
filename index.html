@@ -19,10 +19,8 @@ content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 html,
 body {
-
     margin: 0;
     padding: 0;
-
     width: 100%;
     min-height: 100%;
 
@@ -33,7 +31,6 @@ body {
         -apple-system,
         BlinkMacSystemFont,
         sans-serif;
-
 }
 
 body {
@@ -46,7 +43,6 @@ body {
 ========================= */
 
 .header {
-
     height: 60px;
 
     display: flex;
@@ -59,7 +55,6 @@ body {
 
     font-size: 21px;
     font-weight: 700;
-
 }
 
 
@@ -68,26 +63,21 @@ body {
 ========================= */
 
 .editor-area {
-
     padding: 15px;
-
 }
 
 .label {
-
     margin-bottom: 8px;
 
     color: #888;
 
     font-size: 13px;
-
     font-weight: 700;
-
 }
 
 
 /* =========================
-   EDITOR + LINHAS
+   EDITOR WRAPPER
 ========================= */
 
 .editor-wrapper {
@@ -95,7 +85,6 @@ body {
     display: flex;
 
     width: 100%;
-
     height: 48vh;
 
     overflow: hidden;
@@ -103,10 +92,13 @@ body {
     background: #181818;
 
     border: 1px solid #333;
-
     border-radius: 10px;
-
 }
+
+
+/* =========================
+   NÚMEROS
+========================= */
 
 .line-numbers {
 
@@ -115,7 +107,6 @@ body {
     flex-shrink: 0;
 
     padding-top: 15px;
-
     padding-right: 10px;
 
     background: #151515;
@@ -137,18 +128,82 @@ body {
     user-select: none;
 
     overflow: hidden;
-
 }
 
-textarea {
+
+/* =========================
+   ÁREA DE CÓDIGO
+========================= */
+
+.code-area {
+
+    position: relative;
 
     flex: 1;
 
-    width: 100%;
+    height: 100%;
 
+    overflow: hidden;
+}
+
+
+/* =========================
+   CÓDIGO COLORIDO
+========================= */
+
+.highlight {
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
     height: 100%;
 
     padding: 15px;
+
+    margin: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    white-space: pre;
+
+    font-family:
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
+
+    font-size: 15px;
+
+    line-height: 1.5;
+
+    color: #f5f5f5;
+
+    tab-size: 4;
+}
+
+
+/* =========================
+   ÁREA DE DIGITAÇÃO
+========================= */
+
+textarea {
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 15px;
+
+    margin: 0;
 
     resize: none;
 
@@ -156,9 +211,11 @@ textarea {
 
     border: none;
 
-    background: #181818;
+    background: transparent;
 
-    color: #f5f5f5;
+    color: transparent;
+
+    caret-color: white;
 
     font-family:
         Menlo,
@@ -172,6 +229,44 @@ textarea {
 
     tab-size: 4;
 
+    white-space: pre;
+
+    overflow: auto;
+
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* =========================
+   CORES C++
+========================= */
+
+.token-keyword {
+    color: #ff79c6;
+}
+
+.token-type {
+    color: #8be9fd;
+}
+
+.token-function {
+    color: #50fa7b;
+}
+
+.token-number {
+    color: #bd93f9;
+}
+
+.token-string {
+    color: #f1fa8c;
+}
+
+.token-comment {
+    color: #6272a4;
+}
+
+.token-preprocessor {
+    color: #ffb86c;
 }
 
 
@@ -189,7 +284,6 @@ textarea {
         0
         15px
         15px;
-
 }
 
 button {
@@ -207,7 +301,6 @@ button {
     font-size: 14px;
 
     font-weight: 700;
-
 }
 
 .run {
@@ -222,6 +315,10 @@ button {
     background: #292929;
 }
 
+button:active {
+    transform: scale(0.98);
+}
+
 
 /* =========================
    TERMINAL
@@ -233,7 +330,6 @@ button {
         0
         15px
         20px;
-
 }
 
 .terminal {
@@ -263,7 +359,6 @@ button {
     white-space: pre-wrap;
 
     overflow-x: auto;
-
 }
 
 
@@ -277,7 +372,6 @@ button {
         0
         15px
         20px;
-
 }
 
 .saved-title {
@@ -295,7 +389,6 @@ button {
     font-size: 13px;
 
     font-weight: 700;
-
 }
 
 .saved-list {
@@ -305,7 +398,6 @@ button {
     flex-direction: column;
 
     gap: 8px;
-
 }
 
 .saved-item {
@@ -323,7 +415,6 @@ button {
     border: 1px solid #2b2b2b;
 
     border-radius: 10px;
-
 }
 
 .saved-name {
@@ -339,7 +430,6 @@ button {
     color: white;
 
     font-size: 14px;
-
 }
 
 .saved-actions {
@@ -347,7 +437,6 @@ button {
     display: flex;
 
     gap: 6px;
-
 }
 
 .saved-actions button {
@@ -361,19 +450,14 @@ button {
         10px;
 
     font-size: 12px;
-
 }
 
 .open-btn {
-
     background: #333;
-
 }
 
 .delete-btn {
-
     background: #8f2525;
-
 }
 
 
@@ -398,7 +482,6 @@ button {
     padding: 20px;
 
     z-index: 1000;
-
 }
 
 .modal-box {
@@ -414,7 +497,6 @@ button {
     border: 1px solid #333;
 
     border-radius: 14px;
-
 }
 
 .modal-box h2 {
@@ -422,7 +504,6 @@ button {
     margin-top: 0;
 
     font-size: 19px;
-
 }
 
 .modal-box input {
@@ -447,7 +528,6 @@ button {
     color: white;
 
     font-size: 16px;
-
 }
 
 .modal-buttons {
@@ -455,25 +535,18 @@ button {
     display: flex;
 
     gap: 8px;
-
 }
 
 .modal-buttons button {
-
     padding: 13px;
-
 }
 
 .cancel {
-
     background: #333;
-
 }
 
 .confirm {
-
     background: #2878ff;
-
 }
 
 </style>
@@ -484,21 +557,10 @@ button {
 <body>
 
 
-<!-- =========================
-     CABEÇALHO
-========================= -->
-
 <div class="header">
-
     C++ EXECUTOR
-
 </div>
 
-
-
-<!-- =========================
-     EDITOR
-========================= -->
 
 <div class="editor-area">
 
@@ -516,11 +578,21 @@ button {
         </div>
 
 
-        <textarea
-            id="code"
-            spellcheck="false">#include <iostream>
+        <div class="code-area">
+
+
+            <pre
+                class="highlight"
+                id="highlight"></pre>
+
+
+            <textarea
+                id="code"
+                spellcheck="false">#include <iostream>
 
 int main() {
+
+    int idade = 18;
 
     std::cout << "Olá!";
 
@@ -529,18 +601,16 @@ int main() {
 }</textarea>
 
 
+        </div>
+
+
     </div>
 
 </div>
 
 
 
-<!-- =========================
-     BOTÕES
-========================= -->
-
 <div class="buttons">
-
 
     <button
         class="run"
@@ -568,14 +638,9 @@ int main() {
 
     </button>
 
-
 </div>
 
 
-
-<!-- =========================
-     TERMINAL
-========================= -->
 
 <div class="terminal-area">
 
@@ -596,12 +661,7 @@ int main() {
 
 
 
-<!-- =========================
-     CÓDIGOS SALVOS
-========================= -->
-
 <div class="saved-area">
-
 
     <div class="saved-title">
 
@@ -619,14 +679,9 @@ int main() {
         id="savedList">
     </div>
 
-
 </div>
 
 
-
-<!-- =========================
-     MODAL SALVAR
-========================= -->
 
 <div
     class="modal"
@@ -687,6 +742,9 @@ int main() {
 const editor =
     document.getElementById("code");
 
+const highlight =
+    document.getElementById("highlight");
+
 const lineNumbers =
     document.getElementById("lineNumbers");
 
@@ -697,9 +755,184 @@ const savedCount =
     document.getElementById("savedCount");
 
 
+/* ==================================================
+   ESCAPAR HTML
+================================================== */
+
+function escaparHTML(texto) {
+
+    return texto
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
 
 /* ==================================================
-   NUMERAÇÃO DAS LINHAS
+   COLORIR C++
+================================================== */
+
+function colorirCodigo(codigo) {
+
+
+    let texto =
+        escaparHTML(codigo);
+
+
+    /*
+       Comentários
+    */
+
+    texto = texto.replace(
+        /(\/\/.*)/g,
+        '<span class="token-comment">$1</span>'
+    );
+
+
+    /*
+       Strings
+    */
+
+    texto = texto.replace(
+        /(&quot;.*?&quot;)/g,
+        '<span class="token-string">$1</span>'
+    );
+
+
+    /*
+       Pré-processadores
+    */
+
+    texto = texto.replace(
+        /(^|\n)(#(?:include|define|if|ifdef|ifndef|endif|pragma).*?)(?=\n|$)/g,
+        '$1<span class="token-preprocessor">$2</span>'
+    );
+
+
+    /*
+       Palavras-chave
+    */
+
+    const keywords = [
+
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "switch",
+        "case",
+        "break",
+        "continue",
+        "return",
+        "class",
+        "struct",
+        "public",
+        "private",
+        "protected",
+        "virtual",
+        "override",
+        "const",
+        "static",
+        "using",
+        "namespace",
+        "new",
+        "delete",
+        "try",
+        "catch",
+        "throw",
+        "this",
+        "true",
+        "false",
+        "nullptr"
+
+    ];
+
+
+    const keywordRegex =
+        new RegExp(
+            "\\b(" +
+            keywords.join("|") +
+            ")\\b",
+            "g"
+        );
+
+
+    texto = texto.replace(
+        keywordRegex,
+        '<span class="token-keyword">$1</span>'
+    );
+
+
+    /*
+       Tipos
+    */
+
+    const types = [
+
+        "int",
+        "float",
+        "double",
+        "char",
+        "bool",
+        "void",
+        "long",
+        "short",
+        "unsigned",
+        "signed",
+        "auto",
+        "string"
+
+    ];
+
+
+    const typeRegex =
+        new RegExp(
+            "\\b(" +
+            types.join("|") +
+            ")\\b",
+            "g"
+        );
+
+
+    texto = texto.replace(
+        typeRegex,
+        '<span class="token-type">$1</span>'
+    );
+
+
+    /*
+       Números
+    */
+
+    texto = texto.replace(
+        /\b\d+(\.\d+)?\b/g,
+        '<span class="token-number">$&</span>'
+    );
+
+
+    /*
+       Funções
+    */
+
+    texto = texto.replace(
+        /\b([a-zA-Z_]\w*)(?=\s*\()/g,
+        '<span class="token-function">$1</span>'
+    );
+
+
+    highlight.innerHTML =
+        texto || " ";
+
+
+}
+
+
+/* ==================================================
+   LINHAS
 ================================================== */
 
 function atualizarLinhas() {
@@ -730,24 +963,50 @@ function atualizarLinhas() {
 }
 
 
+/* ==================================================
+   ATUALIZAR EDITOR
+================================================== */
+
+function atualizarEditor() {
+
+    colorirCodigo(
+        editor.value
+    );
+
+    atualizarLinhas();
+
+}
+
+
+/* ==================================================
+   DIGITAÇÃO
+================================================== */
 
 editor.addEventListener(
     "input",
-    atualizarLinhas
+    atualizarEditor
 );
 
 
+/* ==================================================
+   ROLAGEM
+================================================== */
 
 editor.addEventListener(
     "scroll",
     function() {
+
+        highlight.scrollTop =
+            editor.scrollTop;
+
+        highlight.scrollLeft =
+            editor.scrollLeft;
 
         lineNumbers.scrollTop =
             editor.scrollTop;
 
     }
 );
-
 
 
 /* ==================================================
@@ -762,7 +1021,9 @@ async function executar() {
 
 
     const terminal =
-        document.getElementById("terminal");
+        document.getElementById(
+            "terminal"
+        );
 
 
     if (!codigo.trim()) {
@@ -928,9 +1189,8 @@ async function executar() {
 }
 
 
-
 /* ==================================================
-   DECODIFICAR BASE64
+   BASE64
 ================================================== */
 
 function decodificarBase64(texto) {
@@ -938,7 +1198,9 @@ function decodificarBase64(texto) {
     try {
 
         return decodeURIComponent(
-            escape(atob(texto))
+            escape(
+                atob(texto)
+            )
         );
 
     }
@@ -952,7 +1214,6 @@ function decodificarBase64(texto) {
 }
 
 
-
 /* ==================================================
    LIMPAR
 ================================================== */
@@ -963,7 +1224,7 @@ function limpar() {
     editor.value = "";
 
 
-    atualizarLinhas();
+    atualizarEditor();
 
 
     document.getElementById(
@@ -974,47 +1235,37 @@ function limpar() {
 }
 
 
-
 /* ==================================================
-   ABRIR JANELA DE SALVAR
+   SALVAR
 ================================================== */
 
 function abrirSalvar() {
 
 
-    const modal =
-        document.getElementById(
-            "saveModal"
-        );
-
-
-    const input =
-        document.getElementById(
-            "codeName"
-        );
-
-
-    modal.style.display =
+    document.getElementById(
+        "saveModal"
+    ).style.display =
         "flex";
 
 
-    input.value = "";
+    document.getElementById(
+        "codeName"
+    ).value = "";
 
 
     setTimeout(
         function() {
-            input.focus();
+
+            document.getElementById(
+                "codeName"
+            ).focus();
+
         },
         100
     );
 
 }
 
-
-
-/* ==================================================
-   FECHAR JANELA
-================================================== */
 
 function fecharSalvar() {
 
@@ -1026,22 +1277,17 @@ function fecharSalvar() {
 }
 
 
-
-/* ==================================================
-   SALVAR CÓDIGO
-================================================== */
-
 function salvarCodigo() {
 
 
-    const nomeInput =
+    const input =
         document.getElementById(
             "codeName"
         );
 
 
     let nome =
-        nomeInput.value.trim();
+        input.value.trim();
 
 
     if (!nome) {
@@ -1057,14 +1303,17 @@ function salvarCodigo() {
 
 
     let codigos =
+
         JSON.parse(
+
             localStorage.getItem(
                 "cpp_codigos"
             ) || "[]"
+
         );
 
 
-    const novoCodigo = {
+    codigos.push({
 
         id:
             Date.now(),
@@ -1080,12 +1329,7 @@ function salvarCodigo() {
                 "pt-BR"
             )
 
-    };
-
-
-    codigos.push(
-        novoCodigo
-    );
+    });
 
 
     localStorage.setItem(
@@ -1113,9 +1357,7 @@ function salvarCodigo() {
         nome +
         "' salvo.";
 
-
 }
-
 
 
 /* ==================================================
@@ -1146,7 +1388,6 @@ function carregarCodigos() {
 
     if (codigos.length === 0) {
 
-
         savedList.innerHTML =
 
             '<div style="color:#666;font-size:13px;">' +
@@ -1154,7 +1395,6 @@ function carregarCodigos() {
             'Nenhum código salvo.' +
 
             '</div>';
-
 
         return;
 
@@ -1271,16 +1511,14 @@ function carregarCodigos() {
                 div
             );
 
-
         }
     );
 
 }
 
 
-
 /* ==================================================
-   ABRIR CÓDIGO
+   ABRIR
 ================================================== */
 
 function abrirCodigo(id) {
@@ -1300,7 +1538,9 @@ function abrirCodigo(id) {
     const codigo =
         codigos.find(
             function(item) {
+
                 return item.id === id;
+
             }
         );
 
@@ -1314,7 +1554,7 @@ function abrirCodigo(id) {
         codigo.codigo;
 
 
-    atualizarLinhas();
+    atualizarEditor();
 
 
     document.getElementById(
@@ -1334,22 +1574,21 @@ function abrirCodigo(id) {
 }
 
 
-
 /* ==================================================
-   EXCLUIR CÓDIGO
+   EXCLUIR
 ================================================== */
 
 function excluirCodigo(id) {
 
 
-    const confirmar =
-        confirm(
+    if (
+        !confirm(
             "Excluir este código?"
-        );
+        )
+    ) {
 
-
-    if (!confirmar) {
         return;
+
     }
 
 
@@ -1367,7 +1606,9 @@ function excluirCodigo(id) {
     codigos =
         codigos.filter(
             function(item) {
+
                 return item.id !== id;
+
             }
         );
 
@@ -1388,15 +1629,13 @@ function excluirCodigo(id) {
 }
 
 
-
 /* ==================================================
    INICIALIZAÇÃO
 ================================================== */
 
-atualizarLinhas();
+atualizarEditor();
 
 carregarCodigos();
-
 
 </script>
 
