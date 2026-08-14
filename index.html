@@ -3,10 +3,14 @@
 
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>My Engine</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
@@ -20,11 +24,19 @@ body {
     min-height: 100%;
     background: #0d0d0d;
     color: white;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
 body {
     padding-bottom: 80px;
+}
+
+button {
+    cursor: pointer;
 }
 
 .header {
@@ -81,6 +93,11 @@ body {
     display: block;
 }
 
+
+/* =========================
+   INÍCIO
+========================= */
+
 .home {
     padding: 20px;
 }
@@ -135,6 +152,11 @@ body {
     font-size: 11px;
     line-height: 1.4;
 }
+
+
+/* =========================
+   EDITOR C++
+========================= */
 
 .editor-area {
     padding: 15px;
@@ -207,11 +229,6 @@ button {
     color: white;
     font-size: 13px;
     font-weight: 700;
-    cursor: pointer;
-}
-
-button:disabled {
-    opacity: 0.6;
 }
 
 .run {
@@ -280,6 +297,68 @@ button:disabled {
     color: #777;
     font-size: 12px;
 }
+
+.saved-area {
+    padding: 0 15px 20px;
+}
+
+.saved-title {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #888;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.saved-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    background: #181818;
+    border: 1px solid #2b2b2b;
+    border-radius: 10px;
+}
+
+.saved-name {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
+}
+
+.saved-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.saved-actions button {
+    min-height: auto;
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
+.open-btn {
+    background: #333;
+}
+
+.delete-btn {
+    background: #8f2525;
+}
+
+
+/* =========================
+   EDITOR DE ARTE
+========================= */
 
 .art-page {
     padding: 10px;
@@ -354,7 +433,6 @@ button:disabled {
     top: 50%;
     width: 512px;
     height: 512px;
-    transform: translate(-50%, -50%);
     transform-origin: center center;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
@@ -367,7 +445,7 @@ button:disabled {
     left: 8px;
     bottom: 8px;
     padding: 6px 9px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0,0,0,.7);
     border-radius: 7px;
     color: #aaa;
     font-family: monospace;
@@ -429,6 +507,189 @@ input[type="color"] {
     border-color: #2878ff;
 }
 
+
+/* =========================
+   GERENCIADOR DE CENAS
+========================= */
+
+.scene-page {
+    padding: 10px;
+}
+
+.scene-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.scene-title {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.scene-size {
+    color: #777;
+    font-size: 11px;
+}
+
+.scene-toolbar {
+    display: flex;
+    gap: 6px;
+    padding: 7px;
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    overflow-x: auto;
+}
+
+.scene-toolbar::-webkit-scrollbar {
+    display: none;
+}
+
+.scene-tool {
+    flex: 0 0 auto;
+    min-width: 48px;
+    height: 42px;
+    padding: 0 10px;
+    background: #202020;
+    border: 1px solid #333;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.scene-tool.active {
+    background: #2878ff;
+    border-color: #2878ff;
+}
+
+.scene-workspace {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.scene-canvas-wrap {
+    position: relative;
+    height: 58vh;
+    min-height: 400px;
+    overflow: hidden;
+    background: #080808;
+    border: 1px solid #292929;
+    border-radius: 14px;
+    touch-action: none;
+}
+
+#sceneCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+.scene-info {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    padding: 6px 9px;
+    background: rgba(0,0,0,.72);
+    color: #aaa;
+    border-radius: 7px;
+    font-family: monospace;
+    font-size: 11px;
+    pointer-events: none;
+}
+
+.scene-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.scene-box {
+    padding: 10px;
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 10px;
+}
+
+.scene-box h3 {
+    margin: 0 0 9px;
+    font-size: 12px;
+}
+
+.scene-box select,
+.scene-box input {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px;
+    background: #0c0c0c;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 7px;
+    outline: none;
+}
+
+.scene-layers {
+    grid-column: 1 / -1;
+}
+
+.layer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.layer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px;
+    background: #202020;
+    border: 1px solid #333;
+    border-radius: 7px;
+    font-size: 12px;
+}
+
+.layer-item.active {
+    border-color: #2878ff;
+    background: #202b3d;
+}
+
+.layer-item button {
+    min-height: 28px;
+    padding: 4px 8px;
+    background: #333;
+    font-size: 10px;
+}
+
+.scene-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.scene-action {
+    min-height: 42px;
+    background: #202020;
+    border: 1px solid #333;
+    font-size: 11px;
+}
+
+.scene-action.primary {
+    background: #2878ff;
+    border-color: #2878ff;
+}
+
+
+/* =========================
+   MÓDULOS
+========================= */
+
 .module-page {
     padding: 20px;
 }
@@ -473,68 +734,16 @@ input[type="color"] {
     margin-bottom: 5px;
 }
 
-.saved-area {
-    padding: 0 15px 20px;
-}
 
-.saved-title {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    color: #888;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.saved-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.saved-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px;
-    background: #181818;
-    border: 1px solid #2b2b2b;
-    border-radius: 10px;
-}
-
-.saved-name {
-    flex: 1;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 14px;
-}
-
-.saved-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.saved-actions button {
-    min-height: auto;
-    padding: 8px 10px;
-    font-size: 12px;
-}
-
-.open-btn {
-    background: #333;
-}
-
-.delete-btn {
-    background: #8f2525;
-}
+/* =========================
+   MODAL
+========================= */
 
 .modal {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0,0,0,.75);
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -582,8 +791,10 @@ input[type="color"] {
 .confirm {
     background: #2878ff;
 }
+
 </style>
 </head>
+
 
 <body>
 
@@ -591,41 +802,55 @@ input[type="color"] {
     MY ENGINE
 </div>
 
+
 <div class="navigation">
 
-    <button class="nav-button active" onclick="abrirPagina('home', this)">
+    <button class="nav-button active"
+        onclick="abrirPagina('home', this)">
         🏠 Início
     </button>
 
-    <button class="nav-button" onclick="abrirPagina('codePage', this)">
+    <button class="nav-button"
+        onclick="abrirPagina('codePage', this)">
         📝 Código
     </button>
 
-    <button class="nav-button" onclick="abrirPagina('artPage', this)">
+    <button class="nav-button"
+        onclick="abrirPagina('artPage', this)">
         🎨 Arte
     </button>
 
-    <button class="nav-button" onclick="abrirPagina('scenePage', this)">
+    <button class="nav-button"
+        onclick="abrirPagina('scenePage', this)">
         🗺️ Cena
     </button>
 
-    <button class="nav-button" onclick="abrirPagina('tilemapPage', this)">
+    <button class="nav-button"
+        onclick="abrirPagina('tilemapPage', this)">
         🧱 Tilemap
     </button>
 
-    <button class="nav-button" onclick="abrirPagina('assetsPage', this)">
+    <button class="nav-button"
+        onclick="abrirPagina('assetsPage', this)">
         📦 Assets
     </button>
 
-    <button class="nav-button" onclick="abrirPagina('audioPage', this)">
+    <button class="nav-button"
+        onclick="abrirPagina('audioPage', this)">
         🎵 Áudio
     </button>
 
-    <button class="nav-button" onclick="abrirPagina('projectPage', this)">
+    <button class="nav-button"
+        onclick="abrirPagina('projectPage', this)">
         ⚙️ Projeto
     </button>
 
 </div>
+
+
+<!-- =========================
+     INÍCIO
+========================= -->
 
 <section id="home" class="page active home">
 
@@ -640,59 +865,112 @@ input[type="color"] {
 
     </div>
 
+
     <div class="cards">
 
-        <div class="card" onclick="abrirPorId('codePage')">
+        <div class="card"
+            onclick="abrirPorId('codePage')">
+
             <div class="card-icon">📝</div>
-            <div class="card-title">Código</div>
+
+            <div class="card-title">
+                Código
+            </div>
+
             <div class="card-description">
                 Escreva e execute C++.
             </div>
+
         </div>
 
-        <div class="card" onclick="abrirPorId('artPage')">
+
+        <div class="card"
+            onclick="abrirPorId('artPage')">
+
             <div class="card-icon">🎨</div>
-            <div class="card-title">Arte</div>
+
+            <div class="card-title">
+                Arte
+            </div>
+
             <div class="card-description">
                 Crie sprites diretamente no celular.
             </div>
+
         </div>
 
-        <div class="card" onclick="abrirPorId('scenePage')">
+
+        <div class="card"
+            onclick="abrirPorId('scenePage')">
+
             <div class="card-icon">🗺️</div>
-            <div class="card-title">Cena</div>
+
+            <div class="card-title">
+                Cena
+            </div>
+
             <div class="card-description">
                 Construa seus mundos.
             </div>
+
         </div>
 
-        <div class="card" onclick="abrirPorId('tilemapPage')">
+
+        <div class="card"
+            onclick="abrirPorId('tilemapPage')">
+
             <div class="card-icon">🧱</div>
-            <div class="card-title">Tilemap</div>
+
+            <div class="card-title">
+                Tilemap
+            </div>
+
             <div class="card-description">
                 Construa mapas 2D.
             </div>
+
         </div>
 
-        <div class="card" onclick="abrirPorId('assetsPage')">
+
+        <div class="card"
+            onclick="abrirPorId('assetsPage')">
+
             <div class="card-icon">📦</div>
-            <div class="card-title">Assets</div>
+
+            <div class="card-title">
+                Assets
+            </div>
+
             <div class="card-description">
                 Gerencie recursos.
             </div>
+
         </div>
 
-        <div class="card" onclick="abrirPorId('audioPage')">
+
+        <div class="card"
+            onclick="abrirPorId('audioPage')">
+
             <div class="card-icon">🎵</div>
-            <div class="card-title">Áudio</div>
+
+            <div class="card-title">
+                Áudio
+            </div>
+
             <div class="card-description">
                 Controle músicas e efeitos.
             </div>
+
         </div>
 
     </div>
 
 </section>
+
+
+<!-- =========================
+     CÓDIGO
+========================= -->
 
 <section id="codePage" class="page">
 
@@ -704,7 +982,9 @@ input[type="color"] {
 
         <div class="editor-wrapper">
 
-            <div class="line-numbers" id="lineNumbers"></div>
+            <div class="line-numbers"
+                id="lineNumbers">
+            </div>
 
             <textarea
                 class="editor"
@@ -726,25 +1006,32 @@ int main() {
 
     </div>
 
+
     <div class="buttons">
 
-        <button class="run" id="runButton" onclick="executar()">
+        <button class="run"
+            id="runButton"
+            onclick="executar()">
             ▶ EXECUTAR
         </button>
 
-        <button class="input-button" onclick="alternarEntrada()">
+        <button class="input-button"
+            onclick="alternarEntrada()">
             ⌨ ENTRADA
         </button>
 
-        <button class="save" onclick="abrirSalvar()">
+        <button class="save"
+            onclick="abrirSalvar()">
             💾 SALVAR
         </button>
 
-        <button class="clear" onclick="limpar()">
+        <button class="clear"
+            onclick="limpar()">
             LIMPAR
         </button>
 
     </div>
+
 
     <div class="terminal-area">
 
@@ -769,6 +1056,7 @@ int main() {
 
     </div>
 
+
     <div class="saved-area">
 
         <div class="saved-title">
@@ -779,11 +1067,18 @@ int main() {
 
         </div>
 
-        <div class="saved-list" id="savedList"></div>
+        <div class="saved-list"
+            id="savedList">
+        </div>
 
     </div>
 
 </section>
+
+
+<!-- =========================
+     ARTE
+========================= -->
 
 <section id="artPage" class="page art-page">
 
@@ -793,61 +1088,58 @@ int main() {
             🎨 Editor de Arte
         </div>
 
-        <div class="art-size" id="artSize">
+        <div class="art-size"
+            id="artSize">
             32 × 32
         </div>
 
     </div>
 
+
     <div class="art-toolbar">
 
-        <button
-            class="tool active"
+        <button class="tool active"
             id="pencilTool"
             onclick="selecionarFerramenta('pencil')">
             ✏️
         </button>
 
-        <button
-            class="tool"
+        <button class="tool"
             id="eraserTool"
             onclick="selecionarFerramenta('eraser')">
             🧽
         </button>
 
-        <button
-            class="tool"
+        <button class="tool"
             onclick="limparCanvas()">
             🗑️
         </button>
 
-        <button
-            class="tool"
+        <button class="tool"
             onclick="desfazer()">
             ↩️
         </button>
 
-        <button
-            class="tool"
+        <button class="tool"
             onclick="refazer()">
             ↪️
         </button>
 
-        <button
-            class="tool"
+        <button class="tool"
             onclick="alternarGrade()">
             🔲
         </button>
 
-        <button
-            class="tool"
+        <button class="tool"
             onclick="resetZoom()">
             1:1
         </button>
 
     </div>
 
-    <div class="canvas-area" id="canvasArea">
+
+    <div class="canvas-area"
+        id="canvasArea">
 
         <canvas
             id="artCanvas"
@@ -855,11 +1147,13 @@ int main() {
             height="32">
         </canvas>
 
-        <div class="canvas-info" id="canvasInfo">
+        <div class="canvas-info"
+            id="canvasInfo">
             Zoom: 100%
         </div>
 
     </div>
+
 
     <div class="art-controls">
 
@@ -875,6 +1169,7 @@ int main() {
                 value="#ffffff">
 
         </div>
+
 
         <div class="control-box">
 
@@ -893,28 +1188,25 @@ int main() {
 
     </div>
 
+
     <div class="art-actions">
 
-        <button
-            class="art-action primary"
+        <button class="art-action primary"
             onclick="novoCanvas()">
             🆕 NOVO
         </button>
 
-        <button
-            class="art-action"
+        <button class="art-action"
             onclick="salvarArte()">
             💾 SALVAR
         </button>
 
-        <button
-            class="art-action"
+        <button class="art-action"
             onclick="carregarArte()">
             📂 ABRIR
         </button>
 
-        <button
-            class="art-action"
+        <button class="art-action"
             onclick="resetZoom()">
             🔍 ZOOM
         </button>
@@ -923,30 +1215,271 @@ int main() {
 
 </section>
 
-<section id="scenePage" class="page module-page">
 
-    <div class="module-header">
+<!-- =========================
+     GERENCIADOR DE CENAS
+========================= -->
 
-        <h1>🗺️ Cena</h1>
+<section id="scenePage" class="page scene-page">
 
-        <p>
-            Editor visual de mundos,
-            objetos, personagens e props.
-        </p>
+    <div class="scene-header">
+
+        <div class="scene-title">
+            🗺️ Gerenciador de Cenas
+        </div>
+
+        <div class="scene-size"
+            id="sceneSize">
+            2000 × 1200
+        </div>
 
     </div>
 
-    <div class="coming-soon">
 
-        <div class="coming-soon-icon">🗺️</div>
+    <div class="scene-toolbar">
 
-        <strong>Editor de Cenas</strong>
+        <button
+            class="scene-tool active"
+            id="sceneSelectTool"
+            onclick="selecionarFerramentaCena('select')">
+            🖐 Selecionar
+        </button>
 
-        Em desenvolvimento.
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('terrain')">
+            🟩 Terreno
+        </button>
+
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('platform')">
+            🟫 Plataforma
+        </button>
+
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('tree')">
+            🌳 Árvore
+        </button>
+
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('player')">
+            🧍 Player
+        </button>
+
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('enemy')">
+            👾 Inimigo
+        </button>
+
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('npc')">
+            🧑 NPC
+        </button>
+
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('spawn')">
+            🚩 Spawn
+        </button>
+
+        <button
+            class="scene-tool"
+            onclick="selecionarFerramentaCena('erase')">
+            🗑️ Apagar
+        </button>
+
+    </div>
+
+
+    <div class="scene-workspace">
+
+        <div class="scene-canvas-wrap"
+            id="sceneCanvasWrap">
+
+            <canvas id="sceneCanvas"></canvas>
+
+            <div class="scene-info"
+                id="sceneInfo">
+                Zoom: 100% | Objetos: 0
+            </div>
+
+        </div>
+
+
+        <div class="scene-panel">
+
+            <div class="scene-box">
+
+                <h3>
+                    OBJETO
+                </h3>
+
+                <select id="sceneObjectType">
+
+                    <option value="terrain">
+                        🟩 Terreno
+                    </option>
+
+                    <option value="platform">
+                        🟫 Plataforma
+                    </option>
+
+                    <option value="tree">
+                        🌳 Árvore
+                    </option>
+
+                    <option value="player">
+                        🧍 Player
+                    </option>
+
+                    <option value="enemy">
+                        👾 Inimigo
+                    </option>
+
+                    <option value="npc">
+                        🧑 NPC
+                    </option>
+
+                    <option value="spawn">
+                        🚩 Spawn
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="scene-box">
+
+                <h3>
+                    TAMANHO
+                </h3>
+
+                <input
+                    id="sceneObjectSize"
+                    type="range"
+                    min="20"
+                    max="300"
+                    value="80">
+
+            </div>
+
+
+            <div class="scene-box scene-layers">
+
+                <h3>
+                    CAMADAS
+                </h3>
+
+                <div class="layer-list">
+
+                    <div class="layer-item active">
+                        <span>
+                            🌄 Background
+                        </span>
+
+                        <button
+                            onclick="selecionarCamada('background')">
+                            ATIVAR
+                        </button>
+                    </div>
+
+
+                    <div class="layer-item">
+                        <span>
+                            🟩 Terrain
+                        </span>
+
+                        <button
+                            onclick="selecionarCamada('terrain')">
+                            ATIVAR
+                        </button>
+                    </div>
+
+
+                    <div class="layer-item">
+                        <span>
+                            📦 Props
+                        </span>
+
+                        <button
+                            onclick="selecionarCamada('props')">
+                            ATIVAR
+                        </button>
+                    </div>
+
+
+                    <div class="layer-item">
+                        <span>
+                            🧍 Entities
+                        </span>
+
+                        <button
+                            onclick="selecionarCamada('entities')">
+                            ATIVAR
+                        </button>
+                    </div>
+
+
+                    <div class="layer-item">
+                        <span>
+                            🚧 Collision
+                        </span>
+
+                        <button
+                            onclick="selecionarCamada('collision')">
+                            ATIVAR
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="scene-actions">
+
+        <button
+            class="scene-action primary"
+            onclick="novaCena()">
+            🆕 NOVA
+        </button>
+
+        <button
+            class="scene-action"
+            onclick="salvarCena()">
+            💾 SALVAR
+        </button>
+
+        <button
+            class="scene-action"
+            onclick="carregarCena()">
+            📂 ABRIR
+        </button>
+
+        <button
+            class="scene-action"
+            onclick="limparCena()">
+            🗑️ LIMPAR
+        </button>
 
     </div>
 
 </section>
+
+
+<!-- =========================
+     MÓDULOS FUTUROS
+========================= -->
 
 <section id="tilemapPage" class="page module-page">
 
@@ -963,15 +1496,20 @@ int main() {
 
     <div class="coming-soon">
 
-        <div class="coming-soon-icon">🧱</div>
+        <div class="coming-soon-icon">
+            🧱
+        </div>
 
-        <strong>Editor de Tilemap</strong>
+        <strong>
+            Editor de Tilemap
+        </strong>
 
         Em desenvolvimento.
 
     </div>
 
 </section>
+
 
 <section id="assetsPage" class="page module-page">
 
@@ -988,15 +1526,20 @@ int main() {
 
     <div class="coming-soon">
 
-        <div class="coming-soon-icon">📦</div>
+        <div class="coming-soon-icon">
+            📦
+        </div>
 
-        <strong>Gerenciador de Assets</strong>
+        <strong>
+            Gerenciador de Assets
+        </strong>
 
         Em desenvolvimento.
 
     </div>
 
 </section>
+
 
 <section id="audioPage" class="page module-page">
 
@@ -1013,15 +1556,20 @@ int main() {
 
     <div class="coming-soon">
 
-        <div class="coming-soon-icon">🎵</div>
+        <div class="coming-soon-icon">
+            🎵
+        </div>
 
-        <strong>Sistema de Áudio</strong>
+        <strong>
+            Sistema de Áudio
+        </strong>
 
         Em desenvolvimento.
 
     </div>
 
 </section>
+
 
 <section id="projectPage" class="page module-page">
 
@@ -1038,9 +1586,13 @@ int main() {
 
     <div class="coming-soon">
 
-        <div class="coming-soon-icon">⚙️</div>
+        <div class="coming-soon-icon">
+            ⚙️
+        </div>
 
-        <strong>Gerenciamento do Projeto</strong>
+        <strong>
+            Gerenciamento do Projeto
+        </strong>
 
         Em desenvolvimento.
 
@@ -1048,11 +1600,18 @@ int main() {
 
 </section>
 
+
+<!-- =========================
+     MODAL
+========================= -->
+
 <div class="modal" id="saveModal">
 
     <div class="modal-box">
 
-        <h2>Salvar código</h2>
+        <h2>
+            Salvar código
+        </h2>
 
         <input
             id="codeName"
@@ -1079,6 +1638,7 @@ int main() {
 
 </div>
 
+
 <script>
 
 /* =========================================================
@@ -1087,19 +1647,24 @@ int main() {
 
 function abrirPagina(id, botao) {
 
-    document.querySelectorAll(".page").forEach(function(pagina) {
-        pagina.classList.remove("active");
-    });
+    document
+        .querySelectorAll(".page")
+        .forEach(p =>
+            p.classList.remove("active")
+        );
 
-    const pagina = document.getElementById(id);
+    const pagina =
+        document.getElementById(id);
 
     if (pagina) {
         pagina.classList.add("active");
     }
 
-    document.querySelectorAll(".nav-button").forEach(function(b) {
-        b.classList.remove("active");
-    });
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(b =>
+            b.classList.remove("active")
+        );
 
     if (botao) {
         botao.classList.add("active");
@@ -1107,22 +1672,27 @@ function abrirPagina(id, botao) {
 
     window.scrollTo(0, 0);
 
+    if (id === "scenePage") {
+        setTimeout(inicializarCenaVisual, 30);
+    }
+
     if (id === "artPage") {
-        setTimeout(function() {
-            atualizarCanvasVisual();
-        }, 0);
+        setTimeout(atualizarCanvasVisual, 30);
     }
 }
 
+
 function abrirPorId(id) {
 
-    const botoes = document.querySelectorAll(".nav-button");
+    const botoes =
+        document.querySelectorAll(".nav-button");
 
     let encontrado = null;
 
-    botoes.forEach(function(b) {
+    botoes.forEach(b => {
 
-        const onclick = b.getAttribute("onclick") || "";
+        const onclick =
+            b.getAttribute("onclick") || "";
 
         if (onclick.includes("'" + id + "'")) {
             encontrado = b;
@@ -1138,57 +1708,100 @@ function abrirPorId(id) {
    EDITOR C++
 ========================================================= */
 
-const editor = document.getElementById("code");
-const lineNumbers = document.getElementById("lineNumbers");
-const terminal = document.getElementById("terminal");
-const inputArea = document.getElementById("inputArea");
-const stdinInput = document.getElementById("stdinInput");
-const status = document.getElementById("status");
-const savedList = document.getElementById("savedList");
-const savedCount = document.getElementById("savedCount");
-const runButton = document.getElementById("runButton");
+const editor =
+    document.getElementById("code");
+
+const lineNumbers =
+    document.getElementById("lineNumbers");
+
+const terminal =
+    document.getElementById("terminal");
+
+const inputArea =
+    document.getElementById("inputArea");
+
+const stdinInput =
+    document.getElementById("stdinInput");
+
+const status =
+    document.getElementById("status");
+
+const savedList =
+    document.getElementById("savedList");
+
+const savedCount =
+    document.getElementById("savedCount");
+
+const runButton =
+    document.getElementById("runButton");
 
 let executando = false;
 
+
 function atualizarLinhas() {
 
-    const quantidade = editor.value.split("\n").length;
+    const quantidade =
+        editor.value.split("\n").length;
 
     let numeros = "";
 
-    for (let i = 1; i <= quantidade; i++) {
+    for (
+        let i = 1;
+        i <= quantidade;
+        i++
+    ) {
         numeros += i + "<br>";
     }
 
     lineNumbers.innerHTML = numeros;
 }
 
-editor.addEventListener("input", atualizarLinhas);
 
-editor.addEventListener("scroll", function() {
-    lineNumbers.scrollTop = editor.scrollTop;
-});
+editor.addEventListener(
+    "input",
+    atualizarLinhas
+);
 
-editor.addEventListener("keydown", function(event) {
 
-    if (event.key === "Tab") {
-
-        event.preventDefault();
-
-        const inicio = editor.selectionStart;
-        const fim = editor.selectionEnd;
-
-        editor.value =
-            editor.value.substring(0, inicio) +
-            "    " +
-            editor.value.substring(fim);
-
-        editor.selectionStart = inicio + 4;
-        editor.selectionEnd = inicio + 4;
-
-        atualizarLinhas();
+editor.addEventListener(
+    "scroll",
+    function() {
+        lineNumbers.scrollTop =
+            editor.scrollTop;
     }
-});
+);
+
+
+editor.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Tab") {
+
+            event.preventDefault();
+
+            const inicio =
+                editor.selectionStart;
+
+            const fim =
+                editor.selectionEnd;
+
+            editor.value =
+                editor.value.substring(0, inicio) +
+                "    " +
+                editor.value.substring(fim);
+
+            editor.selectionStart =
+                inicio + 4;
+
+            editor.selectionEnd =
+                inicio + 4;
+
+            atualizarLinhas();
+        }
+    }
+);
+
 
 function alternarEntrada() {
 
@@ -1197,6 +1810,7 @@ function alternarEntrada() {
         ? "none"
         : "block";
 }
+
 
 async function executar() {
 
@@ -1217,7 +1831,9 @@ async function executar() {
     executando = true;
 
     runButton.disabled = true;
-    runButton.textContent = "⏳ EXECUTANDO";
+
+    runButton.textContent =
+        "⏳ EXECUTANDO";
 
     terminal.textContent =
         "> Enviando código para Judge0...\n";
@@ -1226,54 +1842,64 @@ async function executar() {
 
     try {
 
-        const codigoBase64 = btoa(
-            unescape(
-                encodeURIComponent(codigo)
-            )
-        );
+        const codigoBase64 =
+            btoa(
+                unescape(
+                    encodeURIComponent(codigo)
+                )
+            );
 
-        const stdin = stdinInput.value;
+        const stdin =
+            stdinInput.value;
 
         let stdinBase64 = "";
 
         if (stdin) {
 
-            stdinBase64 = btoa(
-                unescape(
-                    encodeURIComponent(stdin)
-                )
-            );
+            stdinBase64 =
+                btoa(
+                    unescape(
+                        encodeURIComponent(stdin)
+                    )
+                );
         }
 
-        const resposta = await fetch(
-            "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
-            {
-                method: "POST",
+        const resposta =
+            await fetch(
+                "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body: JSON.stringify({
-                    language_id: 54,
-                    source_code: codigoBase64,
-                    stdin: stdinBase64
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        language_id: 54,
+                        source_code: codigoBase64,
+                        stdin: stdinBase64
+                    })
+                }
+            );
 
         if (!resposta.ok) {
             throw new Error(
-                "Erro HTTP " + resposta.status
+                "Erro HTTP " +
+                resposta.status
             );
         }
 
-        const resultado = await resposta.json();
+        const resultado =
+            await resposta.json();
 
         let saida = "";
 
         if (resultado.stdout) {
-            saida += decodificarBase64(resultado.stdout);
+            saida +=
+                decodificarBase64(
+                    resultado.stdout
+                );
         }
 
         if (resultado.stderr) {
@@ -1282,9 +1908,10 @@ async function executar() {
                 saida += "\n";
             }
 
-            saida += decodificarBase64(
-                resultado.stderr
-            );
+            saida +=
+                decodificarBase64(
+                    resultado.stderr
+                );
         }
 
         if (resultado.compile_output) {
@@ -1293,9 +1920,10 @@ async function executar() {
                 saida += "\n";
             }
 
-            saida += decodificarBase64(
-                resultado.compile_output
-            );
+            saida +=
+                decodificarBase64(
+                    resultado.compile_output
+                );
         }
 
         if (!saida.trim()) {
@@ -1315,7 +1943,9 @@ async function executar() {
             ? "Tempo: " + resultado.time + "s"
             : "";
 
-    } catch (erro) {
+    }
+
+    catch (erro) {
 
         terminal.textContent =
             "> ERRO\n\n" +
@@ -1323,15 +1953,19 @@ async function executar() {
 
         status.textContent =
             "Falha na comunicação com Judge0.";
+    }
 
-    } finally {
+    finally {
 
         executando = false;
 
         runButton.disabled = false;
-        runButton.textContent = "▶ EXECUTAR";
+
+        runButton.textContent =
+            "▶ EXECUTAR";
     }
 }
+
 
 function decodificarBase64(texto) {
 
@@ -1343,15 +1977,18 @@ function decodificarBase64(texto) {
             )
         );
 
-    } catch {
+    }
 
+    catch {
         return atob(texto);
     }
 }
 
+
 function limpar() {
 
     editor.value = "";
+
     stdinInput.value = "";
 
     atualizarLinhas();
@@ -1369,13 +2006,19 @@ function limpar() {
 
 function abrirSalvar() {
 
-    document.getElementById("saveModal").style.display = "flex";
+    document.getElementById(
+        "saveModal"
+    ).style.display = "flex";
 }
+
 
 function fecharSalvar() {
 
-    document.getElementById("saveModal").style.display = "none";
+    document.getElementById(
+        "saveModal"
+    ).style.display = "none";
 }
+
 
 function salvarCodigo() {
 
@@ -1389,22 +2032,11 @@ function salvarCodigo() {
         nome = "Código sem nome";
     }
 
-    let codigos;
-
-    try {
-
-        codigos = JSON.parse(
-            localStorage.getItem("cpp_codigos") || "[]"
+    let codigos =
+        JSON.parse(
+            localStorage.getItem("cpp_codigos") ||
+            "[]"
         );
-
-        if (!Array.isArray(codigos)) {
-            codigos = [];
-        }
-
-    } catch {
-
-        codigos = [];
-    }
 
     codigos.push({
         id: Date.now(),
@@ -1420,65 +2052,82 @@ function salvarCodigo() {
     nomeInput.value = "";
 
     fecharSalvar();
+
     carregarCodigos();
 }
 
+
 function carregarCodigos() {
 
-    let codigos;
-
-    try {
-
-        codigos = JSON.parse(
-            localStorage.getItem("cpp_codigos") || "[]"
+    const codigos =
+        JSON.parse(
+            localStorage.getItem("cpp_codigos") ||
+            "[]"
         );
 
-        if (!Array.isArray(codigos)) {
-            codigos = [];
-        }
-
-    } catch {
-
-        codigos = [];
-    }
-
     savedList.innerHTML = "";
-    savedCount.textContent = codigos.length;
 
-    codigos.forEach(function(item) {
+    savedCount.textContent =
+        codigos.length;
 
-        const div = document.createElement("div");
-        div.className = "saved-item";
+    codigos.forEach(item => {
 
-        const nome = document.createElement("div");
-        nome.className = "saved-name";
-        nome.textContent = item.nome;
+        const div =
+            document.createElement("div");
 
-        const actions = document.createElement("div");
-        actions.className = "saved-actions";
+        div.className =
+            "saved-item";
 
-        const abrir = document.createElement("button");
-        abrir.className = "open-btn";
-        abrir.textContent = "ABRIR";
+        const nome =
+            document.createElement("div");
 
-        abrir.onclick = function() {
+        nome.className =
+            "saved-name";
 
-            editor.value = item.codigo;
+        nome.textContent =
+            item.nome;
+
+        const actions =
+            document.createElement("div");
+
+        actions.className =
+            "saved-actions";
+
+        const abrir =
+            document.createElement("button");
+
+        abrir.className =
+            "open-btn";
+
+        abrir.textContent =
+            "ABRIR";
+
+        abrir.onclick = () => {
+
+            editor.value =
+                item.codigo;
 
             atualizarLinhas();
 
             abrirPorId("codePage");
         };
 
-        const excluir = document.createElement("button");
-        excluir.className = "delete-btn";
-        excluir.textContent = "X";
 
-        excluir.onclick = function() {
+        const excluir =
+            document.createElement("button");
 
-            codigos = codigos.filter(function(x) {
-                return x.id !== item.id;
-            });
+        excluir.className =
+            "delete-btn";
+
+        excluir.textContent =
+            "X";
+
+        excluir.onclick = () => {
+
+            codigos =
+                codigos.filter(
+                    x => x.id !== item.id
+                );
 
             localStorage.setItem(
                 "cpp_codigos",
@@ -1488,6 +2137,7 @@ function carregarCodigos() {
             carregarCodigos();
         };
 
+
         actions.appendChild(abrir);
         actions.appendChild(excluir);
 
@@ -1495,6 +2145,7 @@ function carregarCodigos() {
         div.appendChild(actions);
 
         savedList.appendChild(div);
+
     });
 }
 
@@ -1526,23 +2177,26 @@ const ctx =
 
 ctx.imageSmoothingEnabled = false;
 
+
 let ferramenta = "pencil";
+
 let gridVisivel = true;
+
 let tamanhoCanvas = 32;
 
 let zoom = 1;
+
 let offsetX = 0;
+
 let offsetY = 0;
-
-let zoomMin = 1;
-let zoomMax = 4;
-
-let cameraInicializada = false;
 
 let desenhando = false;
 
 let historico = [];
+
 let futuro = [];
+
+let cameraInicializada = false;
 
 
 /* =========================================================
@@ -1567,9 +2221,10 @@ function salvarEstado() {
     futuro = [];
 }
 
+
 function desfazer() {
 
-    if (historico.length === 0) {
+    if (!historico.length) {
         return;
     }
 
@@ -1582,18 +2237,17 @@ function desfazer() {
         )
     );
 
-    const estado = historico.pop();
-
     ctx.putImageData(
-        estado,
+        historico.pop(),
         0,
         0
     );
 }
 
+
 function refazer() {
 
-    if (futuro.length === 0) {
+    if (!futuro.length) {
         return;
     }
 
@@ -1606,10 +2260,8 @@ function refazer() {
         )
     );
 
-    const estado = futuro.pop();
-
     ctx.putImageData(
-        estado,
+        futuro.pop(),
         0,
         0
     );
@@ -1622,18 +2274,20 @@ function refazer() {
 
 function novoCanvas() {
 
-    const tamanho = prompt(
-        "Tamanho do canvas:\n\n16\n32\n64\n128",
-        tamanhoCanvas
-    );
+    const tamanho =
+        prompt(
+            "Tamanho do canvas:\n\n16\n32\n64\n128",
+            tamanhoCanvas
+        );
 
     if (!tamanho) {
         return;
     }
 
-    const numero = parseInt(tamanho, 10);
+    const numero =
+        parseInt(tamanho);
 
-    if (![16, 32, 64, 128].includes(numero)) {
+    if (![16,32,64,128].includes(numero)) {
 
         alert(
             "Use 16, 32, 64 ou 128."
@@ -1645,6 +2299,7 @@ function novoCanvas() {
     tamanhoCanvas = numero;
 
     artCanvas.width = numero;
+
     artCanvas.height = numero;
 
     ctx.clearRect(
@@ -1654,23 +2309,16 @@ function novoCanvas() {
         numero
     );
 
-    ctx.imageSmoothingEnabled = false;
-
     artSize.textContent =
         numero + " × " + numero;
 
     historico = [];
-    futuro = [];
 
-    cameraInicializada = false;
+    futuro = [];
 
     atualizarCanvasVisual();
 }
 
-
-/* =========================================================
-   LIMPAR CANVAS
-========================================================= */
 
 function limparCanvas() {
 
@@ -1685,19 +2333,16 @@ function limparCanvas() {
 }
 
 
-/* =========================================================
-   FERRAMENTA
-========================================================= */
-
 function selecionarFerramenta(nome) {
 
     ferramenta = nome;
 
     document
         .querySelectorAll(".tool")
-        .forEach(function(b) {
-            b.classList.remove("active");
-        });
+        .forEach(
+            b =>
+            b.classList.remove("active")
+        );
 
     if (nome === "pencil") {
 
@@ -1705,11 +2350,14 @@ function selecionarFerramenta(nome) {
             .getElementById("pencilTool")
             .classList.add("active");
 
-    } else {
+    }
+
+    else {
 
         document
             .getElementById("eraserTool")
             .classList.add("active");
+
     }
 }
 
@@ -1723,72 +2371,62 @@ function obterPixel(event) {
     const rect =
         artCanvas.getBoundingClientRect();
 
-    if (
-        rect.width <= 0 ||
-        rect.height <= 0
-    ) {
-        return {
-            x: 0,
-            y: 0
-        };
-    }
+    const x =
+        Math.floor(
+            (
+                event.clientX -
+                rect.left
+            ) /
+            rect.width *
+            artCanvas.width
+        );
 
-    const x = Math.floor(
-        (
-            event.clientX -
-            rect.left
-        ) /
-        rect.width *
-        artCanvas.width
-    );
-
-    const y = Math.floor(
-        (
-            event.clientY -
-            rect.top
-        ) /
-        rect.height *
-        artCanvas.height
-    );
+    const y =
+        Math.floor(
+            (
+                event.clientY -
+                rect.top
+            ) /
+            rect.height *
+            artCanvas.height
+        );
 
     return {
-        x: Math.max(
-            0,
-            Math.min(
-                artCanvas.width - 1,
-                x
-            )
-        ),
-
-        y: Math.max(
-            0,
-            Math.min(
-                artCanvas.height - 1,
-                y
-            )
-        )
+        x,
+        y
     };
 }
 
+
 function pintar(event) {
 
-    const pixel = obterPixel(event);
+    const pixel =
+        obterPixel(event);
+
+    if (
+        pixel.x < 0 ||
+        pixel.y < 0 ||
+        pixel.x >= artCanvas.width ||
+        pixel.y >= artCanvas.height
+    ) {
+        return;
+    }
 
     const tamanho =
-        parseInt(
-            brushSize.value,
-            10
-        );
+        parseInt(brushSize.value);
 
     if (ferramenta === "eraser") {
 
         ctx.globalCompositeOperation =
             "destination-out";
 
-    } else {
+    }
+
+    else {
 
         ctx.globalCompositeOperation =
             "source-over";
+
         ctx.fillStyle =
             colorPicker.value;
     }
@@ -1804,6 +2442,7 @@ function pintar(event) {
         "source-over";
 }
 
+
 artCanvas.addEventListener(
     "pointerdown",
     function(event) {
@@ -1814,15 +2453,14 @@ artCanvas.addEventListener(
 
         desenhando = true;
 
-        try {
-            artCanvas.setPointerCapture(
-                event.pointerId
-            );
-        } catch {}
+        artCanvas.setPointerCapture(
+            event.pointerId
+        );
 
         pintar(event);
     }
 );
+
 
 artCanvas.addEventListener(
     "pointermove",
@@ -1838,57 +2476,93 @@ artCanvas.addEventListener(
     }
 );
 
-function finalizarDesenho(event) {
-
-    desenhando = false;
-
-    try {
-
-        artCanvas.releasePointerCapture(
-            event.pointerId
-        );
-
-    } catch {}
-}
 
 artCanvas.addEventListener(
     "pointerup",
-    finalizarDesenho
+    function(event) {
+
+        desenhando = false;
+
+        try {
+            artCanvas.releasePointerCapture(
+                event.pointerId
+            );
+        }
+        catch {}
+    }
 );
+
 
 artCanvas.addEventListener(
     "pointercancel",
-    finalizarDesenho
-);
-
-artCanvas.addEventListener(
-    "pointerleave",
-    function(event) {
-
-        if (
-            desenhando &&
-            event.pointerType === "mouse"
-        ) {
-            desenhando = false;
-        }
+    function() {
+        desenhando = false;
     }
 );
 
 
 /* =========================================================
-   CÂMERA
+   VISUAL DO CANVAS
 ========================================================= */
 
-function aplicarCamera() {
+function alternarGrade() {
+
+    gridVisivel =
+        !gridVisivel;
+
+    atualizarCanvasVisual();
+}
+
+
+function atualizarCanvasVisual() {
+
+    if (!canvasArea) {
+        return;
+    }
+
+    const tamanho =
+        Math.min(
+            canvasArea.clientWidth,
+            canvasArea.clientHeight
+        );
+
+    const tamanhoBase =
+        Math.max(
+            256,
+            Math.min(512, tamanho)
+        );
+
+    artCanvas.style.width =
+        tamanhoBase + "px";
+
+    artCanvas.style.height =
+        tamanhoBase + "px";
+
+    if (!cameraInicializada) {
+
+        zoom = 1;
+
+        offsetX = 0;
+
+        offsetY = 0;
+
+        cameraInicializada = true;
+    }
+
+    aplicarCameraArte();
+
+    desenharGrade();
+}
+
+
+function aplicarCameraArte() {
 
     artCanvas.style.transform =
-        "translate(-50%, -50%) " +
-        "translate(" +
+        "translate(calc(-50% + " +
         offsetX +
-        "px, " +
+        "px), calc(-50% + " +
         offsetY +
-        "px) " +
-        "scale(" +
+        "px)) scale(" +
         zoom +
         ")";
 
@@ -1898,17 +2572,6 @@ function aplicarCamera() {
         "%";
 }
 
-
-/* =========================================================
-   GRADE
-========================================================= */
-
-function alternarGrade() {
-
-    gridVisivel = !gridVisivel;
-
-    desenharGrade();
-}
 
 function desenharGrade() {
 
@@ -1925,7 +2588,9 @@ function desenharGrade() {
             tamanhoCanvas +
             ")";
 
-    } else {
+    }
+
+    else {
 
         artCanvas.style.backgroundImage =
             "none";
@@ -1933,114 +2598,38 @@ function desenharGrade() {
 }
 
 
-/* =========================================================
-   ATUALIZAÇÃO VISUAL DO CANVAS
-========================================================= */
-
-function atualizarCanvasVisual() {
-
-    const largura =
-        canvasArea.clientWidth;
-
-    const altura =
-        canvasArea.clientHeight;
-
-    const tamanho =
-        Math.min(
-            largura,
-            altura
-        );
-
-    const tamanhoBase =
-        Math.max(
-            256,
-            Math.min(
-                512,
-                tamanho
-            )
-        );
-
-    artCanvas.style.width =
-        tamanhoBase + "px";
-
-    artCanvas.style.height =
-        tamanhoBase + "px";
-
-    if (!cameraInicializada) {
-
-        zoom = 1;
-
-        offsetX = 0;
-        offsetY = 0;
-
-        cameraInicializada = true;
-    }
-
-    aplicarCamera();
-    desenharGrade();
-}
-
-
-/* =========================================================
-   ZOOM
-========================================================= */
-
 function resetZoom() {
 
     zoom = 1;
 
     offsetX = 0;
+
     offsetY = 0;
 
-    cameraInicializada = true;
-
-    aplicarCamera();
-}
-
-function aumentarZoom() {
-
-    zoom =
-        Math.min(
-            zoomMax,
-            zoom + 0.25
-        );
-
-    aplicarCamera();
-}
-
-function diminuirZoom() {
-
-    zoom =
-        Math.max(
-            zoomMin,
-            zoom - 0.25
-        );
-
-    aplicarCamera();
+    aplicarCameraArte();
 }
 
 
 /* =========================================================
-   SALVAR ARTE
+   SALVAR / CARREGAR ARTE
 ========================================================= */
 
 function salvarArte() {
 
     try {
 
-        const imagem =
-            artCanvas.toDataURL("image/png");
-
         localStorage.setItem(
             "engine_arte",
-            imagem
+            artCanvas.toDataURL("image/png")
         );
 
         alert(
             "Arte salva no dispositivo."
         );
 
-    } catch {
+    }
+
+    catch {
 
         alert(
             "Não foi possível salvar."
@@ -2048,10 +2637,6 @@ function salvarArte() {
     }
 }
 
-
-/* =========================================================
-   CARREGAR ARTE
-========================================================= */
 
 function carregarArte() {
 
@@ -2069,7 +2654,8 @@ function carregarArte() {
         return;
     }
 
-    const img = new Image();
+    const img =
+        new Image();
 
     img.onload = function() {
 
@@ -2087,17 +2673,6 @@ function carregarArte() {
             artCanvas.width,
             artCanvas.height
         );
-
-        ctx.imageSmoothingEnabled = false;
-
-        atualizarCanvasVisual();
-    };
-
-    img.onerror = function() {
-
-        alert(
-            "Não foi possível carregar a arte."
-        );
     };
 
     img.src = imagem;
@@ -2105,11 +2680,1029 @@ function carregarArte() {
 
 
 /* =========================================================
-   INICIALIZAÇÃO
+   GERENCIADOR DE CENAS
 ========================================================= */
 
-atualizarLinhas();
-carregarCodigos();
+const sceneCanvas =
+    document.getElementById("sceneCanvas");
+
+const sceneCanvasWrap =
+    document.getElementById("sceneCanvasWrap");
+
+const sceneInfo =
+    document.getElementById("sceneInfo");
+
+const sceneSize =
+    document.getElementById("sceneSize");
+
+const sceneCtx =
+    sceneCanvas.getContext("2d");
+
+
+let cena = {
+
+    width: 2000,
+
+    height: 1200,
+
+    objetos: []
+
+};
+
+
+let ferramentaCena = "select";
+
+let camadaCena = "background";
+
+let cenaZoom = 1;
+
+let cenaOffsetX = 0;
+
+let cenaOffsetY = 0;
+
+let cenaInicializada = false;
+
+let objetoSelecionado = null;
+
+let arrastandoObjeto = false;
+
+let arrastandoCamera = false;
+
+let ultimoMouseX = 0;
+
+let ultimoMouseY = 0;
+
+
+/* =========================================================
+   INICIALIZAÇÃO DA CENA
+========================================================= */
+
+function inicializarCenaVisual() {
+
+    if (!sceneCanvasWrap) {
+        return;
+    }
+
+    const rect =
+        sceneCanvasWrap.getBoundingClientRect();
+
+    const dpr =
+        window.devicePixelRatio || 1;
+
+    sceneCanvas.width =
+        rect.width * dpr;
+
+    sceneCanvas.height =
+        rect.height * dpr;
+
+    sceneCtx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+    if (!cenaInicializada) {
+
+        cenaZoom = 0.45;
+
+        cenaOffsetX = 0;
+
+        cenaOffsetY = 0;
+
+        cenaInicializada = true;
+    }
+
+    desenharCena();
+}
+
+
+function desenharCena() {
+
+    if (!sceneCanvasWrap) {
+        return;
+    }
+
+    const rect =
+        sceneCanvasWrap.getBoundingClientRect();
+
+    const largura =
+        rect.width;
+
+    const altura =
+        rect.height;
+
+    sceneCtx.clearRect(
+        0,
+        0,
+        largura,
+        altura
+    );
+
+
+    /* FUNDO */
+
+    sceneCtx.fillStyle =
+        "#0a0d12";
+
+    sceneCtx.fillRect(
+        0,
+        0,
+        largura,
+        altura
+    );
+
+
+    /* TRANSFORMAÇÃO DA CENA */
+
+    sceneCtx.save();
+
+    sceneCtx.translate(
+        largura / 2 + cenaOffsetX,
+        altura / 2 + cenaOffsetY
+    );
+
+    sceneCtx.scale(
+        cenaZoom,
+        cenaZoom
+    );
+
+    sceneCtx.translate(
+        -cena.width / 2,
+        -cena.height / 2
+    );
+
+
+    /* FUNDO DA CENA */
+
+    sceneCtx.fillStyle =
+        "#182333";
+
+    sceneCtx.fillRect(
+        0,
+        0,
+        cena.width,
+        cena.height
+    );
+
+
+    /* GRADE */
+
+    const grade =
+        100;
+
+    sceneCtx.strokeStyle =
+        "rgba(255,255,255,.08)";
+
+    sceneCtx.lineWidth =
+        1 / cenaZoom;
+
+    for (
+        let x = 0;
+        x <= cena.width;
+        x += grade
+    ) {
+
+        sceneCtx.beginPath();
+
+        sceneCtx.moveTo(x, 0);
+
+        sceneCtx.lineTo(
+            x,
+            cena.height
+        );
+
+        sceneCtx.stroke();
+    }
+
+
+    for (
+        let y = 0;
+        y <= cena.height;
+        y += grade
+    ) {
+
+        sceneCtx.beginPath();
+
+        sceneCtx.moveTo(0, y);
+
+        sceneCtx.lineTo(
+            cena.width,
+            y
+        );
+
+        sceneCtx.stroke();
+    }
+
+
+    /* OBJETOS */
+
+    cena.objetos.forEach(
+        objeto =>
+            desenharObjetoCena(
+                objeto
+            )
+    );
+
+
+    sceneCtx.restore();
+
+
+    sceneInfo.textContent =
+        "Zoom: " +
+        Math.round(cenaZoom * 100) +
+        "% | Objetos: " +
+        cena.objetos.length;
+}
+
+
+function desenharObjetoCena(objeto) {
+
+    const x = objeto.x;
+
+    const y = objeto.y;
+
+    const tamanho =
+        objeto.tamanho || 80;
+
+
+    let emoji = "⬜";
+
+    let cor = "#777";
+
+
+    switch (objeto.tipo) {
+
+        case "terrain":
+            emoji = "🟩";
+            cor = "#3d9b48";
+            break;
+
+        case "platform":
+            emoji = "🟫";
+            cor = "#8b5a2b";
+            break;
+
+        case "tree":
+            emoji = "🌳";
+            cor = "#267d36";
+            break;
+
+        case "player":
+            emoji = "🧍";
+            cor = "#2878ff";
+            break;
+
+        case "enemy":
+            emoji = "👾";
+            cor = "#d43b3b";
+            break;
+
+        case "npc":
+            emoji = "🧑";
+            cor = "#d9a441";
+            break;
+
+        case "spawn":
+            emoji = "🚩";
+            cor = "#ff4d4d";
+            break;
+    }
+
+
+    if (objeto.tipo === "terrain") {
+
+        sceneCtx.fillStyle =
+            cor;
+
+        sceneCtx.fillRect(
+            x - tamanho / 2,
+            y - tamanho / 4,
+            tamanho,
+            tamanho / 2
+        );
+
+    }
+
+    else if (objeto.tipo === "platform") {
+
+        sceneCtx.fillStyle =
+            cor;
+
+        sceneCtx.fillRect(
+            x - tamanho / 2,
+            y - tamanho / 8,
+            tamanho,
+            tamanho / 4
+        );
+
+    }
+
+    else {
+
+        sceneCtx.font =
+            tamanho + "px sans-serif";
+
+        sceneCtx.textAlign =
+            "center";
+
+        sceneCtx.textBaseline =
+            "middle";
+
+        sceneCtx.fillText(
+            emoji,
+            x,
+            y
+        );
+    }
+
+
+    if (
+        objeto === objetoSelecionado
+    ) {
+
+        sceneCtx.strokeStyle =
+            "#2878ff";
+
+        sceneCtx.lineWidth =
+            4 / cenaZoom;
+
+        sceneCtx.strokeRect(
+            x - tamanho / 2,
+            y - tamanho / 2,
+            tamanho,
+            tamanho
+        );
+    }
+}
+
+
+/* =========================================================
+   FERRAMENTAS DA CENA
+========================================================= */
+
+function selecionarFerramentaCena(nome) {
+
+    ferramentaCena =
+        nome;
+
+    document
+        .querySelectorAll(".scene-tool")
+        .forEach(
+            b =>
+            b.classList.remove("active")
+        );
+
+
+    const botoes =
+        document.querySelectorAll(
+            ".scene-tool"
+        );
+
+
+    botoes.forEach(
+        botao => {
+
+            const texto =
+                botao.textContent
+                .toLowerCase();
+
+            const mapa = {
+
+                select: "selecionar",
+
+                terrain: "terreno",
+
+                platform: "plataforma",
+
+                tree: "árvore",
+
+                player: "player",
+
+                enemy: "inimigo",
+
+                npc: "npc",
+
+                spawn: "spawn",
+
+                erase: "apagar"
+            };
+
+            if (
+                mapa[nome] &&
+                texto.includes(
+                    mapa[nome]
+                )
+            ) {
+
+                botao.classList.add(
+                    "active"
+                );
+            }
+        }
+    );
+
+
+    if (
+        nome !== "select" &&
+        nome !== "erase"
+    ) {
+
+        document.getElementById(
+            "sceneObjectType"
+        ).value = nome;
+    }
+}
+
+
+/* =========================================================
+   CONVERSÃO DE COORDENADAS
+========================================================= */
+
+function obterCoordenadaCena(event) {
+
+    const rect =
+        sceneCanvas.getBoundingClientRect();
+
+    const mouseX =
+        event.clientX -
+        rect.left;
+
+    const mouseY =
+        event.clientY -
+        rect.top;
+
+
+    const x =
+        (
+            mouseX -
+            rect.width / 2 -
+            cenaOffsetX
+        ) /
+        cenaZoom +
+        cena.width / 2;
+
+
+    const y =
+        (
+            mouseY -
+            rect.height / 2 -
+            cenaOffsetY
+        ) /
+        cenaZoom +
+        cena.height / 2;
+
+
+    return {
+        x,
+        y
+    };
+}
+
+
+/* =========================================================
+   CRIAR OBJETO
+========================================================= */
+
+function criarObjetoCena(x, y) {
+
+    const tipo =
+        document.getElementById(
+            "sceneObjectType"
+        ).value;
+
+
+    const tamanho =
+        parseInt(
+            document.getElementById(
+                "sceneObjectSize"
+            ).value
+        );
+
+
+    const objeto = {
+
+        id: Date.now() +
+            Math.random(),
+
+        tipo: tipo,
+
+        camada: camadaCena,
+
+        x: Math.max(
+            0,
+            Math.min(
+                cena.width,
+                x
+            )
+        ),
+
+        y: Math.max(
+            0,
+            Math.min(
+                cena.height,
+                y
+            )
+        ),
+
+        tamanho: tamanho
+    };
+
+
+    cena.objetos.push(
+        objeto
+    );
+
+
+    objetoSelecionado =
+        objeto;
+
+
+    desenharCena();
+}
+
+
+/* =========================================================
+   SELECIONAR OBJETO
+========================================================= */
+
+function encontrarObjeto(x, y) {
+
+    for (
+        let i =
+            cena.objetos.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const objeto =
+            cena.objetos[i];
+
+        const tamanho =
+            objeto.tamanho || 80;
+
+        if (
+            Math.abs(x - objeto.x) <=
+                tamanho / 2 &&
+            Math.abs(y - objeto.y) <=
+                tamanho / 2
+        ) {
+
+            return objeto;
+        }
+    }
+
+    return null;
+}
+
+
+/* =========================================================
+   EVENTOS DO CANVAS DA CENA
+========================================================= */
+
+sceneCanvas.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        event.preventDefault();
+
+        const pos =
+            obterCoordenadaCena(event);
+
+
+        if (
+            ferramentaCena === "erase"
+        ) {
+
+            const objeto =
+                encontrarObjeto(
+                    pos.x,
+                    pos.y
+                );
+
+            if (objeto) {
+
+                cena.objetos =
+                    cena.objetos.filter(
+                        x =>
+                        x.id !== objeto.id
+                    );
+
+                objetoSelecionado =
+                    null;
+
+                desenharCena();
+            }
+
+            return;
+        }
+
+
+        if (
+            ferramentaCena !== "select"
+        ) {
+
+            criarObjetoCena(
+                pos.x,
+                pos.y
+            );
+
+            return;
+        }
+
+
+        const objeto =
+            encontrarObjeto(
+                pos.x,
+                pos.y
+            );
+
+
+        if (objeto) {
+
+            objetoSelecionado =
+                objeto;
+
+            arrastandoObjeto =
+                true;
+
+            sceneCanvas.setPointerCapture(
+                event.pointerId
+            );
+
+        }
+
+        else {
+
+            objetoSelecionado =
+                null;
+
+            arrastandoCamera =
+                true;
+
+            ultimoMouseX =
+                event.clientX;
+
+            ultimoMouseY =
+                event.clientY;
+
+            sceneCanvas.setPointerCapture(
+                event.pointerId
+            );
+        }
+
+
+        desenharCena();
+    }
+);
+
+
+sceneCanvas.addEventListener(
+    "pointermove",
+    function(event) {
+
+        if (
+            arrastandoObjeto &&
+            objetoSelecionado
+        ) {
+
+            const pos =
+                obterCoordenadaCena(event);
+
+            objetoSelecionado.x =
+                Math.max(
+                    0,
+                    Math.min(
+                        cena.width,
+                        pos.x
+                    )
+                );
+
+            objetoSelecionado.y =
+                Math.max(
+                    0,
+                    Math.min(
+                        cena.height,
+                        pos.y
+                    )
+                );
+
+            desenharCena();
+
+            return;
+        }
+
+
+        if (arrastandoCamera) {
+
+            cenaOffsetX +=
+                event.clientX -
+                ultimoMouseX;
+
+            cenaOffsetY +=
+                event.clientY -
+                ultimoMouseY;
+
+            ultimoMouseX =
+                event.clientX;
+
+            ultimoMouseY =
+                event.clientY;
+
+            desenharCena();
+        }
+    }
+);
+
+
+sceneCanvas.addEventListener(
+    "pointerup",
+    function(event) {
+
+        arrastandoObjeto =
+            false;
+
+        arrastandoCamera =
+            false;
+
+        try {
+
+            sceneCanvas.releasePointerCapture(
+                event.pointerId
+            );
+
+        }
+        catch {}
+    }
+);
+
+
+sceneCanvas.addEventListener(
+    "pointercancel",
+    function() {
+
+        arrastandoObjeto =
+            false;
+
+        arrastandoCamera =
+            false;
+    }
+);
+
+
+/* =========================================================
+   ZOOM DA CENA
+========================================================= */
+
+sceneCanvas.addEventListener(
+    "wheel",
+    function(event) {
+
+        event.preventDefault();
+
+        const fator =
+            event.deltaY < 0
+            ? 1.1
+            : 0.9;
+
+        cenaZoom =
+            Math.max(
+                0.15,
+                Math.min(
+                    3,
+                    cenaZoom * fator
+                )
+            );
+
+        desenharCena();
+    },
+    { passive: false }
+);
+
+
+/* =========================================================
+   CAMADA
+========================================================= */
+
+function selecionarCamada(nome) {
+
+    camadaCena =
+        nome;
+
+    document
+        .querySelectorAll(".layer-item")
+        .forEach(
+            item =>
+            item.classList.remove(
+                "active"
+            )
+        );
+
+
+    const itens =
+        document.querySelectorAll(
+            ".layer-item"
+        );
+
+
+    itens.forEach(item => {
+
+        if (
+            item.textContent
+            .toLowerCase()
+            .includes(nome)
+        ) {
+
+            item.classList.add(
+                "active"
+            );
+        }
+    });
+}
+
+
+/* =========================================================
+   NOVA CENA
+========================================================= */
+
+function novaCena() {
+
+    if (
+        cena.objetos.length > 0
+    ) {
+
+        const confirmar =
+            confirm(
+                "Criar uma nova cena?\n\nOs objetos atuais serão apagados."
+            );
+
+        if (!confirmar) {
+            return;
+        }
+    }
+
+
+    cena = {
+
+        width: 2000,
+
+        height: 1200,
+
+        objetos: []
+
+    };
+
+
+    objetoSelecionado =
+        null;
+
+    cenaZoom =
+        0.45;
+
+    cenaOffsetX =
+        0;
+
+    cenaOffsetY =
+        0;
+
+    sceneSize.textContent =
+        cena.width +
+        " × " +
+        cena.height;
+
+    desenharCena();
+}
+
+
+/* =========================================================
+   LIMPAR CENA
+========================================================= */
+
+function limparCena() {
+
+    if (
+        !cena.objetos.length
+    ) {
+        return;
+    }
+
+
+    const confirmar =
+        confirm(
+            "Apagar todos os objetos da cena?"
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    cena.objetos = [];
+
+    objetoSelecionado = null;
+
+    desenharCena();
+}
+
+
+/* =========================================================
+   SALVAR CENA
+========================================================= */
+
+function salvarCena() {
+
+    try {
+
+        localStorage.setItem(
+            "my_engine_scene",
+            JSON.stringify(cena)
+        );
+
+        alert(
+            "Cena salva no dispositivo."
+        );
+
+    }
+
+    catch {
+
+        alert(
+            "Não foi possível salvar a cena."
+        );
+    }
+}
+
+
+/* =========================================================
+   CARREGAR CENA
+========================================================= */
+
+function carregarCena() {
+
+    const dados =
+        localStorage.getItem(
+            "my_engine_scene"
+        );
+
+
+    if (!dados) {
+
+        alert(
+            "Nenhuma cena salva."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const nova =
+            JSON.parse(dados);
+
+
+        if (
+            !nova ||
+            !Array.isArray(
+                nova.objetos
+            )
+        ) {
+
+            throw new Error(
+                "Cena inválida."
+            );
+        }
+
+
+        cena = nova;
+
+        objetoSelecionado =
+            null;
+
+        sceneSize.textContent =
+            cena.width +
+            " × " +
+            cena.height;
+
+        inicializarCenaVisual();
+
+    }
+
+    catch {
+
+        alert(
+            "Não foi possível carregar a cena."
+        );
+    }
+}
+
+
+/* =========================================================
+   REDIMENSIONAMENTO
+========================================================= */
 
 window.addEventListener(
     "resize",
@@ -2117,23 +3710,40 @@ window.addEventListener(
 
         if (
             document
-                .getElementById("artPage")
-                .classList
-                .contains("active")
+            .getElementById("artPage")
+            .classList
+            .contains("active")
         ) {
 
             atualizarCanvasVisual();
         }
+
+
+        if (
+            document
+            .getElementById("scenePage")
+            .classList
+            .contains("active")
+        ) {
+
+            inicializarCenaVisual();
+        }
     }
 );
 
-setTimeout(function() {
 
-    atualizarCanvasVisual();
+/* =========================================================
+   INICIALIZAÇÃO
+========================================================= */
 
-}, 100);
+atualizarLinhas();
+
+carregarCodigos();
+
+atualizarCanvasVisual();
+
+inicializarCenaVisual();
 
 </script>
 
 </body>
-</html>
