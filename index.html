@@ -8,9 +8,13 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>C++ Executor</title>
+<title>My Engine</title>
 
 <style>
+
+/* =========================================================
+   BASE
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -37,12 +41,12 @@ body {
 }
 
 body {
-    padding-bottom: 40px;
+    padding-bottom: 80px;
 }
 
 
 /* =========================================================
-   CABEÇALHO
+   HEADER
 ========================================================= */
 
 .header {
@@ -50,23 +54,234 @@ body {
     height: 60px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     background: #111;
 
     border-bottom: 1px solid #292929;
 
-    font-size: 21px;
-    font-weight: 700;
+    font-size: 20px;
+
+    font-weight: 800;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
 }
 
 
 /* =========================================================
-   EDITOR
+   NAVEGAÇÃO
+========================================================= */
+
+.navigation {
+
+    display: flex;
+
+    gap: 6px;
+
+    padding: 8px;
+
+    background: #151515;
+
+    border-bottom: 1px solid #292929;
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+.navigation::-webkit-scrollbar {
+    display: none;
+}
+
+
+.nav-button {
+
+    flex: 0 0 auto;
+
+    min-height: 40px;
+
+    padding:
+        8px
+        12px;
+
+    border: 1px solid #292929;
+
+    border-radius: 9px;
+
+    background: #1c1c1c;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.nav-button.active {
+
+    background: #2878ff;
+
+    border-color: #2878ff;
+
+    color: white;
+}
+
+
+/* =========================================================
+   PÁGINAS
+========================================================= */
+
+.page {
+
+    display: none;
+
+    animation: aparecer 0.15s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes aparecer {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================================
+   INÍCIO
+========================================================= */
+
+.home {
+
+    padding: 20px;
+}
+
+.hero {
+
+    padding: 25px 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #101010
+        );
+
+    border:
+        1px solid #292929;
+
+    border-radius: 16px;
+
+    margin-bottom: 15px;
+}
+
+.hero h1 {
+
+    margin:
+        0
+        0
+        8px;
+
+    font-size: 28px;
+}
+
+.hero p {
+
+    margin: 0;
+
+    color: #888;
+
+    line-height: 1.5;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.cards {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 10px;
+}
+
+.card {
+
+    min-height: 120px;
+
+    padding: 16px;
+
+    background: #171717;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    cursor: pointer;
+}
+
+.card:active {
+
+    transform: scale(0.98);
+
+}
+
+.card-icon {
+
+    font-size: 26px;
+
+    margin-bottom: 8px;
+}
+
+.card-title {
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+.card-description {
+
+    margin-top: 5px;
+
+    color: #777;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   SEÇÕES
 ========================================================= */
 
 .editor-area {
+
     padding: 15px;
 }
 
@@ -77,15 +292,23 @@ body {
     color: #888;
 
     font-size: 13px;
+
     font-weight: 700;
 }
+
+
+/* =========================================================
+   EDITOR
+========================================================= */
 
 .editor-wrapper {
 
     display: flex;
 
     width: 100%;
+
     height: 48vh;
+
     min-height: 300px;
 
     overflow: hidden;
@@ -93,12 +316,13 @@ body {
     background: #181818;
 
     border: 1px solid #333;
+
     border-radius: 10px;
 }
 
 
 /* =========================================================
-   NÚMEROS DAS LINHAS
+   LINHAS
 ========================================================= */
 
 .line-numbers {
@@ -108,6 +332,7 @@ body {
     flex-shrink: 0;
 
     padding-top: 15px;
+
     padding-right: 9px;
 
     background: #151515;
@@ -133,7 +358,7 @@ body {
 
 
 /* =========================================================
-   EDITOR DE CÓDIGO
+   TEXTAREA
 ========================================================= */
 
 .editor {
@@ -141,6 +366,7 @@ body {
     flex: 1;
 
     width: 100%;
+
     height: 100%;
 
     padding: 15px;
@@ -150,6 +376,7 @@ body {
     resize: none;
 
     outline: none;
+
     border: none;
 
     background: #181818;
@@ -200,8 +427,6 @@ body {
 
 button {
 
-    flex: 1;
-
     min-height: 46px;
 
     padding: 12px 8px;
@@ -212,7 +437,8 @@ button {
 
     color: white;
 
-    font-size: 14px;
+    font-size: 13px;
+
     font-weight: 700;
 
     cursor: pointer;
@@ -226,37 +452,37 @@ button:disabled {
     opacity: 0.5;
 }
 
-
-/* EXECUTAR */
-
 .run {
+
+    flex: 1;
+
     background: #20c968;
 }
 
-
-/* ENTRADA */
-
 .input-button {
+
+    flex: 1;
+
     background: #8e44ad;
 }
 
-
-/* SALVAR */
-
 .save {
+
+    flex: 1;
+
     background: #2878ff;
 }
 
-
-/* LIMPAR */
-
 .clear {
+
+    flex: 1;
+
     background: #292929;
 }
 
 
 /* =========================================================
-   ÁREA DO TERMINAL
+   TERMINAL
 ========================================================= */
 
 .terminal-area {
@@ -358,19 +584,6 @@ button:disabled {
     line-height: 1.4;
 }
 
-.stdin-input:focus {
-    border-color: #8e44ad;
-}
-
-.input-help {
-
-    margin-top: 7px;
-
-    color: #666;
-
-    font-size: 11px;
-}
-
 
 /* =========================================================
    STATUS
@@ -383,6 +596,78 @@ button:disabled {
     color: #777;
 
     font-size: 12px;
+}
+
+
+/* =========================================================
+   PLACEHOLDER DOS MÓDULOS
+========================================================= */
+
+.module-page {
+
+    padding: 20px;
+}
+
+.module-header {
+
+    padding: 20px;
+
+    background: #171717;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    margin-bottom: 15px;
+}
+
+.module-header h1 {
+
+    margin: 0 0 8px;
+
+    font-size: 24px;
+}
+
+.module-header p {
+
+    margin: 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+.coming-soon {
+
+    padding: 30px 20px;
+
+    text-align: center;
+
+    background: #121212;
+
+    border: 1px dashed #333;
+
+    border-radius: 14px;
+
+    color: #777;
+}
+
+.coming-soon-icon {
+
+    font-size: 40px;
+
+    margin-bottom: 10px;
+}
+
+.coming-soon strong {
+
+    display: block;
+
+    color: #aaa;
+
+    margin-bottom: 5px;
 }
 
 
@@ -403,13 +688,13 @@ button:disabled {
     display: flex;
 
     justify-content: space-between;
-    align-items: center;
 
     margin-bottom: 10px;
 
     color: #888;
 
     font-size: 13px;
+
     font-weight: 700;
 }
 
@@ -427,6 +712,7 @@ button:disabled {
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 10px;
@@ -444,15 +730,11 @@ button:disabled {
 
     flex: 1;
 
-    min-width: 0;
-
     overflow: hidden;
 
     white-space: nowrap;
 
     text-overflow: ellipsis;
-
-    color: white;
 
     font-size: 14px;
 }
@@ -466,11 +748,7 @@ button:disabled {
 
 .saved-actions button {
 
-    flex: none;
-
     min-height: auto;
-
-    width: auto;
 
     padding:
         8px
@@ -529,8 +807,6 @@ button:disabled {
 .modal-box h2 {
 
     margin-top: 0;
-
-    font-size: 19px;
 }
 
 .modal-box input {
@@ -565,7 +841,8 @@ button:disabled {
 }
 
 .modal-buttons button {
-    padding: 13px;
+
+    flex: 1;
 }
 
 .cancel {
@@ -585,43 +862,278 @@ button:disabled {
 
 
 <!-- =====================================================
-     CABEÇALHO
+     HEADER
 ===================================================== -->
 
 <div class="header">
 
-    C++ EXECUTOR
+    MY ENGINE
 
 </div>
 
 
 <!-- =====================================================
-     EDITOR
+     NAVEGAÇÃO
 ===================================================== -->
 
-<div class="editor-area">
+<div class="navigation">
 
-    <div class="label">
-        CÓDIGO C++
+    <button
+        class="nav-button active"
+        onclick="abrirPagina('home', this)">
+
+        🏠 Início
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="abrirPagina('codePage', this)">
+
+        📝 Código
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="abrirPagina('artPage', this)">
+
+        🎨 Arte
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="abrirPagina('scenePage', this)">
+
+        🗺️ Cena
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="abrirPagina('tilemapPage', this)">
+
+        🧱 Tilemap
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="abrirPagina('assetsPage', this)">
+
+        📦 Assets
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="abrirPagina('audioPage', this)">
+
+        🎵 Áudio
+
+    </button>
+
+
+    <button
+        class="nav-button"
+        onclick="abrirPagina('projectPage', this)">
+
+        ⚙️ Projeto
+
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     INÍCIO
+===================================================== -->
+
+<section
+    id="home"
+    class="page active home">
+
+
+    <div class="hero">
+
+        <h1>
+            Minha Engine
+        </h1>
+
+        <p>
+
+            Ambiente de desenvolvimento
+            para criação de jogos 2D.
+
+            O projeto começará pelo editor
+            C++ e evoluirá para uma engine
+            completa.
+
+        </p>
+
     </div>
 
 
-    <div class="editor-wrapper">
+    <div class="cards">
 
 
         <div
-            class="line-numbers"
-            id="lineNumbers">
+            class="card"
+            onclick="abrirPorId('codePage')">
+
+            <div class="card-icon">
+                📝
+            </div>
+
+            <div class="card-title">
+                Código
+            </div>
+
+            <div class="card-description">
+                Escreva e execute C++.
+            </div>
+
         </div>
 
 
-        <textarea
-            class="editor"
-            id="code"
-            spellcheck="false"
-            autocapitalize="off"
-            autocomplete="off"
-            autocorrect="off">#include <iostream>
+        <div
+            class="card"
+            onclick="abrirPorId('artPage')">
+
+            <div class="card-icon">
+                🎨
+            </div>
+
+            <div class="card-title">
+                Arte
+            </div>
+
+            <div class="card-description">
+                Editor de sprites e arte.
+            </div>
+
+        </div>
+
+
+        <div
+            class="card"
+            onclick="abrirPorId('scenePage')">
+
+            <div class="card-icon">
+                🗺️
+            </div>
+
+            <div class="card-title">
+                Cena
+            </div>
+
+            <div class="card-description">
+                Criação visual de mundos.
+            </div>
+
+        </div>
+
+
+        <div
+            class="card"
+            onclick="abrirPorId('tilemapPage')">
+
+            <div class="card-icon">
+                🧱
+            </div>
+
+            <div class="card-title">
+                Tilemap
+            </div>
+
+            <div class="card-description">
+                Construção de mapas 2D.
+            </div>
+
+        </div>
+
+
+        <div
+            class="card"
+            onclick="abrirPorId('assetsPage')">
+
+            <div class="card-icon">
+                📦
+            </div>
+
+            <div class="card-title">
+                Assets
+            </div>
+
+            <div class="card-description">
+                Gerenciamento de recursos.
+            </div>
+
+        </div>
+
+
+        <div
+            class="card"
+            onclick="abrirPorId('audioPage')">
+
+            <div class="card-icon">
+                🎵
+            </div>
+
+            <div class="card-title">
+                Áudio
+            </div>
+
+            <div class="card-description">
+                Música e efeitos sonoros.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CÓDIGO
+===================================================== -->
+
+<section
+    id="codePage"
+    class="page">
+
+
+    <div class="editor-area">
+
+        <div class="label">
+            CÓDIGO C++
+        </div>
+
+
+        <div class="editor-wrapper">
+
+
+            <div
+                class="line-numbers"
+                id="lineNumbers">
+            </div>
+
+
+            <textarea
+                class="editor"
+                id="code"
+                spellcheck="false"
+                autocapitalize="off"
+                autocomplete="off"
+                autocorrect="off">#include <iostream>
 
 int main() {
 
@@ -632,155 +1144,387 @@ int main() {
 }</textarea>
 
 
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     BOTÕES
-===================================================== -->
-
-<div class="buttons">
-
-
-    <button
-        class="run"
-        id="runButton"
-        onclick="executar()">
-
-        ▶ EXECUTAR
-
-    </button>
-
-
-    <button
-        class="input-button"
-        id="inputButton"
-        onclick="alternarEntrada()">
-
-        ⌨ ENTRADA
-
-    </button>
-
-
-    <button
-        class="save"
-        onclick="abrirSalvar()">
-
-        💾 SALVAR
-
-    </button>
-
-
-    <button
-        class="clear"
-        onclick="limpar()">
-
-        LIMPAR
-
-    </button>
-
-
-</div>
-
-
-<!-- =====================================================
-     TERMINAL
-===================================================== -->
-
-<div class="terminal-area">
-
-    <div class="label">
-        TERMINAL
-    </div>
-
-
-    <div
-        class="terminal"
-        id="terminal">
-
-        > Aguardando execução...
+        </div>
 
     </div>
 
 
-    <!-- =================================================
-         ENTRADA DO PROGRAMA
-    ================================================== -->
-
-    <div
-        class="input-area"
-        id="inputArea">
+    <div class="buttons">
 
 
-        <div class="input-title">
+        <button
+            class="run"
+            id="runButton"
+            onclick="executar()">
 
-            ENTRADA DO PROGRAMA — STDIN
+            ▶ EXECUTAR
+
+        </button>
+
+
+        <button
+            class="input-button"
+            id="inputButton"
+            onclick="alternarEntrada()">
+
+            ⌨ ENTRADA
+
+        </button>
+
+
+        <button
+            class="save"
+            onclick="abrirSalvar()">
+
+            💾 SALVAR
+
+        </button>
+
+
+        <button
+            class="clear"
+            onclick="limpar()">
+
+            LIMPAR
+
+        </button>
+
+
+    </div>
+
+
+    <div class="terminal-area">
+
+        <div class="label">
+            TERMINAL
+        </div>
+
+
+        <div
+            class="terminal"
+            id="terminal">
+
+            > Aguardando execução...
 
         </div>
 
 
-        <textarea
-            class="stdin-input"
-            id="stdinInput"
-            spellcheck="false"
-            autocapitalize="off"
-            autocomplete="off"
-            autocorrect="off"
-            placeholder="Digite aqui a entrada do programa..."></textarea>
+        <div
+            class="input-area"
+            id="inputArea">
 
 
-        <div class="input-help">
+            <div class="input-title">
 
-            Você pode colocar várias entradas,
-            uma por linha.
+                ENTRADA DO PROGRAMA — STDIN
+
+            </div>
+
+
+            <textarea
+                class="stdin-input"
+                id="stdinInput"
+                spellcheck="false"
+                placeholder="Digite aqui a entrada do programa..."></textarea>
+
 
         </div>
 
 
+        <div
+            class="status"
+            id="status">
+        </div>
+
     </div>
 
 
-    <div
-        class="status"
-        id="status">
+    <div class="saved-area">
+
+
+        <div class="saved-title">
+
+            <span>
+                MEUS CÓDIGOS
+            </span>
+
+
+            <span id="savedCount">
+                0
+            </span>
+
+        </div>
+
+
+        <div
+            class="saved-list"
+            id="savedList">
+        </div>
+
     </div>
 
-</div>
+</section>
 
 
 <!-- =====================================================
-     CÓDIGOS SALVOS
+     ARTE
 ===================================================== -->
 
-<div class="saved-area">
+<section
+    id="artPage"
+    class="page module-page">
 
 
-    <div class="saved-title">
+    <div class="module-header">
 
-        <span>
-            MEUS CÓDIGOS
-        </span>
+        <h1>
+            🎨 Arte
+        </h1>
 
+        <p>
 
-        <span id="savedCount">
-            0
-        </span>
+            Futuro editor de sprites,
+            pixel art, animações e recursos
+            visuais da engine.
+
+        </p>
 
     </div>
 
 
-    <div
-        class="saved-list"
-        id="savedList">
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            🎨
+        </div>
+
+        <strong>
+            Editor de Arte
+        </strong>
+
+        Em desenvolvimento.
+
     </div>
 
-</div>
+</section>
 
 
 <!-- =====================================================
-     MODAL SALVAR
+     CENA
+===================================================== -->
+
+<section
+    id="scenePage"
+    class="page module-page">
+
+
+    <div class="module-header">
+
+        <h1>
+            🗺️ Cena
+        </h1>
+
+        <p>
+
+            Futuro editor visual para
+            construir mundos, posicionar
+            entidades, props e objetos.
+
+        </p>
+
+    </div>
+
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            🗺️
+        </div>
+
+        <strong>
+            Editor de Cenas
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     TILEMAP
+===================================================== -->
+
+<section
+    id="tilemapPage"
+    class="page module-page">
+
+
+    <div class="module-header">
+
+        <h1>
+            🧱 Tilemap
+        </h1>
+
+        <p>
+
+            Futuro sistema de criação
+            de mapas baseados em tiles.
+
+        </p>
+
+    </div>
+
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            🧱
+        </div>
+
+        <strong>
+            Editor de Tilemap
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ASSETS
+===================================================== -->
+
+<section
+    id="assetsPage"
+    class="page module-page">
+
+
+    <div class="module-header">
+
+        <h1>
+            📦 Assets
+        </h1>
+
+        <p>
+
+            Futuro gerenciador de sprites,
+            sons, mapas, fontes e outros
+            recursos do projeto.
+
+        </p>
+
+    </div>
+
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            📦
+        </div>
+
+        <strong>
+            Gerenciador de Assets
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ÁUDIO
+===================================================== -->
+
+<section
+    id="audioPage"
+    class="page module-page">
+
+
+    <div class="module-header">
+
+        <h1>
+            🎵 Áudio
+        </h1>
+
+        <p>
+
+            Futuro sistema de música,
+            efeitos sonoros e controle
+            de áudio do jogo.
+
+        </p>
+
+    </div>
+
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            🎵
+        </div>
+
+        <strong>
+            Sistema de Áudio
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROJETO
+===================================================== -->
+
+<section
+    id="projectPage"
+    class="page module-page">
+
+
+    <div class="module-header">
+
+        <h1>
+            ⚙️ Projeto
+        </h1>
+
+        <p>
+
+            Configurações, informações,
+            versões e gerenciamento
+            do projeto.
+
+        </p>
+
+    </div>
+
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">
+            ⚙️
+        </div>
+
+        <strong>
+            Gerenciamento do Projeto
+        </strong>
+
+        Em desenvolvimento.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MODAL
 ===================================================== -->
 
 <div
@@ -826,7 +1570,6 @@ int main() {
 
         </div>
 
-
     </div>
 
 </div>
@@ -834,9 +1577,102 @@ int main() {
 
 <script>
 
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
+
+function abrirPagina(id, botao) {
+
+    const paginas =
+        document.querySelectorAll(".page");
+
+    paginas.forEach(
+        function(pagina) {
+
+            pagina.classList.remove("active");
+
+        }
+    );
+
+
+    const pagina =
+        document.getElementById(id);
+
+
+    if (pagina) {
+
+        pagina.classList.add("active");
+
+    }
+
+
+    const botoes =
+        document.querySelectorAll(".nav-button");
+
+
+    botoes.forEach(
+        function(item) {
+
+            item.classList.remove("active");
+
+        }
+    );
+
+
+    if (botao) {
+
+        botao.classList.add("active");
+
+    }
+
+
+    window.scrollTo(
+        0,
+        0
+    );
+
+}
+
+
+function abrirPorId(id) {
+
+    const botoes =
+        document.querySelectorAll(".nav-button");
+
+
+    let botaoEncontrado =
+        null;
+
+
+    botoes.forEach(
+        function(botao) {
+
+            if (
+                botao.getAttribute("onclick") &&
+                botao.getAttribute("onclick").includes(
+                    "'" + id + "'"
+                )
+            ) {
+
+                botaoEncontrado =
+                    botao;
+
+            }
+
+        }
+    );
+
+
+    abrirPagina(
+        id,
+        botaoEncontrado
+    );
+
+}
+
 
 /* =========================================================
-   ELEMENTOS
+   ELEMENTOS DO EDITOR
 ========================================================= */
 
 const editor =
@@ -869,12 +1705,8 @@ const runButton =
 const inputButton =
     document.getElementById("inputButton");
 
-
-/* =========================================================
-   ESTADO
-========================================================= */
-
-let executando = false;
+let executando =
+    false;
 
 
 /* =========================================================
@@ -894,7 +1726,8 @@ function atualizarLinhas() {
         i++
     ) {
 
-        numeros += i + "<br>";
+        numeros +=
+            i + "<br>";
 
     }
 
@@ -904,16 +1737,12 @@ function atualizarLinhas() {
 
 
 /* =========================================================
-   INPUT DO EDITOR
+   DIGITAÇÃO
 ========================================================= */
 
 editor.addEventListener(
     "input",
-    function() {
-
-        atualizarLinhas();
-
-    }
+    atualizarLinhas
 );
 
 
@@ -982,7 +1811,7 @@ editor.addEventListener(
 
 
 /* =========================================================
-   MOSTRAR / ESCONDER ENTRADA
+   ENTRADA
 ========================================================= */
 
 function alternarEntrada() {
@@ -1007,14 +1836,7 @@ function alternarEntrada() {
         inputButton.textContent =
             "⌨ OCULTAR";
 
-        setTimeout(
-            function() {
-
-                stdinInput.focus();
-
-            },
-            100
-        );
+        stdinInput.focus();
 
     }
 
@@ -1026,7 +1848,6 @@ function alternarEntrada() {
 ========================================================= */
 
 async function executar() {
-
 
     if (executando) {
 
@@ -1067,20 +1888,16 @@ async function executar() {
         "⏳ EXECUTANDO";
 
 
-    status.textContent =
-        "";
-
-
     terminal.textContent =
         "> Enviando código para Judge0...\n";
 
 
+    status.textContent =
+        "";
+
+
     try {
 
-
-        /* =================================================
-           CÓDIGO → BASE64
-        ================================================= */
 
         const codigoBase64 =
 
@@ -1093,15 +1910,12 @@ async function executar() {
             );
 
 
-        /* =================================================
-           STDIN → BASE64
-        ================================================= */
-
         const stdin =
             stdinInput.value;
 
 
-        let stdinBase64 = "";
+        let stdinBase64 =
+            "";
 
 
         if (stdin.length > 0) {
@@ -1119,10 +1933,6 @@ async function executar() {
         }
 
 
-        /* =================================================
-           ENVIA AO JUDGE0
-        ================================================= */
-
         const resposta =
 
             await fetch(
@@ -1131,7 +1941,8 @@ async function executar() {
 
                 {
 
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
 
@@ -1140,26 +1951,25 @@ async function executar() {
 
                     },
 
-                    body: JSON.stringify({
+                    body:
 
-                        language_id: 54,
+                        JSON.stringify({
 
-                        source_code:
-                            codigoBase64,
+                            language_id:
+                                54,
 
-                        stdin:
-                            stdinBase64
+                            source_code:
+                                codigoBase64,
 
-                    })
+                            stdin:
+                                stdinBase64
+
+                        })
 
                 }
 
             );
 
-
-        /* =================================================
-           VERIFICA HTTP
-        ================================================= */
 
         if (!resposta.ok) {
 
@@ -1171,20 +1981,13 @@ async function executar() {
         }
 
 
-        /* =================================================
-           RESULTADO
-        ================================================= */
-
         const resultado =
             await resposta.json();
 
 
-        let saida = "";
+        let saida =
+            "";
 
-
-        /* =================================================
-           STDOUT
-        ================================================= */
 
         if (resultado.stdout) {
 
@@ -1196,10 +1999,6 @@ async function executar() {
 
         }
 
-
-        /* =================================================
-           STDERR
-        ================================================= */
 
         if (resultado.stderr) {
 
@@ -1216,10 +2015,6 @@ async function executar() {
         }
 
 
-        /* =================================================
-           ERRO DE COMPILAÇÃO
-        ================================================= */
-
         if (resultado.compile_output) {
 
             if (saida) {
@@ -1235,42 +2030,40 @@ async function executar() {
         }
 
 
-        /* =================================================
-           STATUS
-        ================================================= */
-
-        if (
-            resultado.status &&
-            resultado.status.description
-        ) {
-
-            const descricao =
-                resultado.status.description;
-
+        if (!saida.trim()) {
 
             if (
-                resultado.status.id !== 3 &&
-                !saida.trim()
+                resultado.status &&
+                resultado.status.description
             ) {
 
                 saida =
-                    "> " + descricao;
+                    "> " +
+                    resultado.status.description;
+
+            }
+
+            else {
+
+                saida =
+                    "> Programa executado sem saída.";
 
             }
 
         }
 
 
-        /* =================================================
-           TEMPO / MEMÓRIA
-        ================================================= */
+        terminal.textContent =
+            saida;
 
-        let informacoes = "";
+
+        let info =
+            "";
 
 
         if (resultado.time) {
 
-            informacoes +=
+            info =
                 "Tempo: " +
                 resultado.time +
                 "s";
@@ -1280,11 +2073,11 @@ async function executar() {
 
         if (resultado.memory) {
 
-            if (informacoes) {
-                informacoes += "  •  ";
+            if (info) {
+                info += "  •  ";
             }
 
-            informacoes +=
+            info +=
                 "Memória: " +
                 resultado.memory +
                 " KB";
@@ -1292,90 +2085,33 @@ async function executar() {
         }
 
 
-        /* =================================================
-           STATUS FINAL
-        ================================================= */
-
         if (
             resultado.status &&
             resultado.status.id === 3
         ) {
 
-            if (informacoes) {
-                informacoes += "  •  ";
+            if (info) {
+                info += "  •  ";
             }
 
-            informacoes +=
+            info +=
                 "✓ Execução concluída";
 
         }
 
 
-        else if (
-            resultado.status &&
-            resultado.status.id === 6
-        ) {
-
-            if (informacoes) {
-                informacoes += "  •  ";
-            }
-
-            informacoes +=
-                "❌ Erro de compilação";
-
-        }
-
-
-        else if (
-            resultado.status &&
-            resultado.status.id === 5
-        ) {
-
-            if (informacoes) {
-                informacoes += "  •  ";
-            }
-
-            informacoes +=
-                "⏱️ Tempo limite excedido";
-
-        }
-
-
-        /* =================================================
-           SEM SAÍDA
-        ================================================= */
-
-        if (!saida.trim()) {
-
-            saida =
-                "> Programa executado sem saída.";
-
-        }
-
-
-        /* =================================================
-           TERMINAL
-        ================================================= */
-
-        terminal.textContent =
-            saida;
-
-
         status.textContent =
-            informacoes;
-
+            info;
 
     }
 
 
     catch (erro) {
 
-
         terminal.textContent =
 
             "> ERRO\n\n" +
             erro.message;
-
 
         status.textContent =
             "Falha na comunicação com o Judge0.";
@@ -1385,17 +2121,14 @@ async function executar() {
 
     finally {
 
-
         executando =
             false;
-
 
         runButton.disabled =
             false;
 
         inputButton.disabled =
             false;
-
 
         runButton.textContent =
             "▶ EXECUTAR";
@@ -1406,7 +2139,7 @@ async function executar() {
 
 
 /* =========================================================
-   BASE64 → TEXTO
+   BASE64
 ========================================================= */
 
 function decodificarBase64(texto) {
@@ -1471,16 +2204,9 @@ function abrirSalvar() {
         "";
 
 
-    setTimeout(
-        function() {
-
-            document.getElementById(
-                "codeName"
-            ).focus();
-
-        },
-        100
-    );
+    document.getElementById(
+        "codeName"
+    ).focus();
 
 }
 
@@ -1515,10 +2241,6 @@ function salvarCodigo() {
     }
 
 
-    const codigo =
-        editor.value;
-
-
     let codigos =
 
         JSON.parse(
@@ -1537,7 +2259,7 @@ function salvarCodigo() {
             nome,
 
         codigo:
-            codigo,
+            editor.value,
 
         data:
             new Date().toLocaleString(
@@ -1727,7 +2449,7 @@ function carregarCodigos() {
 
 
 /* =========================================================
-   ABRIR CÓDIGO
+   ABRIR
 ========================================================= */
 
 function abrirCodigo(id) {
@@ -1770,13 +2492,8 @@ function abrirCodigo(id) {
         "' carregado.";
 
 
-    status.textContent =
-        "";
-
-
-    window.scrollTo(
-        0,
-        0
+    abrirPorId(
+        "codePage"
     );
 
 }
@@ -1787,7 +2504,6 @@ function abrirCodigo(id) {
 ========================================================= */
 
 function excluirCodigo(id) {
-
 
     if (
         !confirm(
@@ -1837,7 +2553,7 @@ function excluirCodigo(id) {
 
 
 /* =========================================================
-   ENTER NO NOME DO ARQUIVO
+   ENTER NO NOME
 ========================================================= */
 
 document
