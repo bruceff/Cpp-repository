@@ -6,11 +6,15 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0, user-scalable=no">
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>C++ Executor</title>
 
 <style>
+
+/* =========================================================
+   BASE
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -19,6 +23,7 @@ content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 html,
 body {
+
     margin: 0;
     padding: 0;
 
@@ -31,24 +36,29 @@ body {
     font-family:
         -apple-system,
         BlinkMacSystemFont,
+        "Segoe UI",
         sans-serif;
 }
 
 body {
-    padding-bottom: 30px;
+
+    padding-bottom: 40px;
+
 }
 
 
-/* =========================
+/* =========================================================
    CABEÇALHO
-========================= */
+========================================================= */
 
 .header {
 
     height: 60px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     background: #111;
@@ -56,16 +66,20 @@ body {
     border-bottom: 1px solid #292929;
 
     font-size: 21px;
+
     font-weight: 700;
+
 }
 
 
-/* =========================
-   EDITOR
-========================= */
+/* =========================================================
+   ÁREA DO EDITOR
+========================================================= */
 
 .editor-area {
+
     padding: 15px;
+
 }
 
 .label {
@@ -77,15 +91,23 @@ body {
     font-size: 13px;
 
     font-weight: 700;
+
 }
 
+
+/* =========================================================
+   EDITOR
+========================================================= */
 
 .editor-wrapper {
 
     display: flex;
 
     width: 100%;
+
     height: 48vh;
+
+    min-height: 300px;
 
     overflow: hidden;
 
@@ -94,21 +116,23 @@ body {
     border: 1px solid #333;
 
     border-radius: 10px;
+
 }
 
 
-/* =========================
-   NÚMEROS
-========================= */
+/* =========================================================
+   NÚMEROS DAS LINHAS
+========================================================= */
 
 .line-numbers {
 
-    width: 42px;
+    width: 44px;
 
     flex-shrink: 0;
 
     padding-top: 15px;
-    padding-right: 10px;
+
+    padding-right: 9px;
 
     background: #151515;
 
@@ -129,21 +153,25 @@ body {
     user-select: none;
 
     overflow: hidden;
+
 }
 
 
-/* =========================
-   EDITOR
-========================= */
+/* =========================================================
+   TEXTAREA
+========================================================= */
 
 .editor {
 
     flex: 1;
 
     width: 100%;
+
     height: 100%;
 
     padding: 15px;
+
+    margin: 0;
 
     resize: none;
 
@@ -173,21 +201,20 @@ body {
 
     overflow: auto;
 
+    -webkit-overflow-scrolling: touch;
+
 }
-
-
-/* =========================
-   CORES DO C++
-========================= */
 
 .editor::selection {
+
     background: #444;
+
 }
 
 
-/* =========================
-   BOTÕES
-========================= */
+/* =========================================================
+   BOTÕES PRINCIPAIS
+========================================================= */
 
 .buttons {
 
@@ -199,13 +226,16 @@ body {
         0
         15px
         15px;
+
 }
 
 button {
 
     flex: 1;
 
-    padding: 14px 8px;
+    min-height: 46px;
+
+    padding: 12px 8px;
 
     border: none;
 
@@ -216,28 +246,39 @@ button {
     font-size: 14px;
 
     font-weight: 700;
-}
 
-.run {
-    background: #20c968;
-}
+    cursor: pointer;
 
-.save {
-    background: #2878ff;
-}
-
-.clear {
-    background: #292929;
 }
 
 button:active {
-    transform: scale(0.98);
+
+    transform: scale(0.97);
+
+}
+
+.run {
+
+    background: #20c968;
+
+}
+
+.save {
+
+    background: #2878ff;
+
+}
+
+.clear {
+
+    background: #292929;
+
 }
 
 
-/* =========================
+/* =========================================================
    TERMINAL
-========================= */
+========================================================= */
 
 .terminal-area {
 
@@ -245,11 +286,12 @@ button:active {
         0
         15px
         20px;
+
 }
 
 .terminal {
 
-    min-height: 140px;
+    min-height: 150px;
 
     padding: 15px;
 
@@ -274,12 +316,85 @@ button:active {
     white-space: pre-wrap;
 
     overflow-x: auto;
+
 }
 
 
-/* =========================
+/* =========================================================
+   ENTRADA STDIN
+========================================================= */
+
+.input-area {
+
+    display: none;
+
+    margin-top: 10px;
+
+}
+
+.stdin-input {
+
+    width: 100%;
+
+    min-height: 48px;
+
+    padding: 13px;
+
+    background: #111;
+
+    color: white;
+
+    border: 1px solid #333;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    font-family:
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
+
+    font-size: 15px;
+
+}
+
+.stdin-input:focus {
+
+    border-color: #2878ff;
+
+}
+
+.send-input {
+
+    width: 100%;
+
+    margin-top: 8px;
+
+    background: #2878ff;
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+
+    margin-top: 8px;
+
+    color: #777;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
    CÓDIGOS SALVOS
-========================= */
+========================================================= */
 
 .saved-area {
 
@@ -287,6 +402,7 @@ button:active {
         0
         15px
         20px;
+
 }
 
 .saved-title {
@@ -304,6 +420,7 @@ button:active {
     font-size: 13px;
 
     font-weight: 700;
+
 }
 
 .saved-list {
@@ -313,6 +430,7 @@ button:active {
     flex-direction: column;
 
     gap: 8px;
+
 }
 
 .saved-item {
@@ -323,6 +441,8 @@ button:active {
 
     justify-content: space-between;
 
+    gap: 10px;
+
     padding: 12px;
 
     background: #181818;
@@ -330,11 +450,14 @@ button:active {
     border: 1px solid #2b2b2b;
 
     border-radius: 10px;
+
 }
 
 .saved-name {
 
     flex: 1;
+
+    min-width: 0;
 
     overflow: hidden;
 
@@ -345,6 +468,7 @@ button:active {
     color: white;
 
     font-size: 14px;
+
 }
 
 .saved-actions {
@@ -352,11 +476,14 @@ button:active {
     display: flex;
 
     gap: 6px;
+
 }
 
 .saved-actions button {
 
     flex: none;
+
+    min-height: auto;
 
     width: auto;
 
@@ -365,20 +492,25 @@ button:active {
         10px;
 
     font-size: 12px;
+
 }
 
 .open-btn {
+
     background: #333;
+
 }
 
 .delete-btn {
+
     background: #8f2525;
+
 }
 
 
-/* =========================
+/* =========================================================
    MODAL
-========================= */
+========================================================= */
 
 .modal {
 
@@ -397,6 +529,7 @@ button:active {
     padding: 20px;
 
     z-index: 1000;
+
 }
 
 .modal-box {
@@ -412,6 +545,7 @@ button:active {
     border: 1px solid #333;
 
     border-radius: 14px;
+
 }
 
 .modal-box h2 {
@@ -419,6 +553,7 @@ button:active {
     margin-top: 0;
 
     font-size: 19px;
+
 }
 
 .modal-box input {
@@ -443,6 +578,7 @@ button:active {
     color: white;
 
     font-size: 16px;
+
 }
 
 .modal-buttons {
@@ -450,18 +586,46 @@ button:active {
     display: flex;
 
     gap: 8px;
+
 }
 
 .modal-buttons button {
+
     padding: 13px;
+
 }
 
 .cancel {
+
     background: #333;
+
 }
 
 .confirm {
+
     background: #2878ff;
+
+}
+
+
+/* =========================================================
+   AVISO
+========================================================= */
+
+.notice {
+
+    margin-top: 10px;
+
+    padding: 10px;
+
+    background: #151515;
+
+    border-radius: 8px;
+
+    color: #777;
+
+    font-size: 12px;
+
 }
 
 </style>
@@ -472,7 +636,9 @@ button:active {
 <body>
 
 
-<!-- CABEÇALHO -->
+<!-- =====================================================
+     CABEÇALHO
+===================================================== -->
 
 <div class="header">
 
@@ -481,20 +647,21 @@ button:active {
 </div>
 
 
-
-<!-- EDITOR -->
+<!-- =====================================================
+     EDITOR
+===================================================== -->
 
 <div class="editor-area">
 
     <div class="label">
+
         CÓDIGO C++
+
     </div>
 
 
     <div class="editor-wrapper">
 
-
-        <!-- NÚMEROS -->
 
         <div
             class="line-numbers"
@@ -502,17 +669,17 @@ button:active {
         </div>
 
 
-        <!-- EDITOR -->
-
         <textarea
             class="editor"
             id="code"
-            spellcheck="false">#include <iostream>
+            spellcheck="false"
+            autocapitalize="off"
+            autocomplete="off"
+            autocorrect="off">#include <iostream>
 
 int main() {
 
-
-    std::cout << "Olá!";
+    std::cout << "Olá, mundo!";
 
     return 0;
 
@@ -524,14 +691,16 @@ int main() {
 </div>
 
 
-
-<!-- BOTÕES -->
+<!-- =====================================================
+     BOTÕES
+===================================================== -->
 
 <div class="buttons">
 
 
     <button
         class="run"
+        id="runButton"
         onclick="executar()">
 
         ▶ EXECUTAR
@@ -560,13 +729,16 @@ int main() {
 </div>
 
 
-
-<!-- TERMINAL -->
+<!-- =====================================================
+     TERMINAL
+===================================================== -->
 
 <div class="terminal-area">
 
     <div class="label">
+
         TERMINAL
+
     </div>
 
 
@@ -578,58 +750,73 @@ int main() {
 
     </div>
 
+
+    <!-- =================================================
+         ENTRADA
+    ================================================== -->
+
+    <div
+        class="input-area"
+        id="inputArea">
+
+
+        <input
+            class="stdin-input"
+            id="stdinInput"
+            type="text"
+            placeholder="Digite a entrada do programa..."
+            autocomplete="off">
+
+
+        <button
+            class="send-input"
+            onclick="enviarEntrada()">
+
+            ENVIAR ENTRADA
+
+        </button>
+
+
+    </div>
+
+
+    <div
+        class="status"
+        id="status">
+
+    </div>
+
+
+    <div class="notice">
+
+        Dica: programas que utilizam
+        <b>cin</b> podem receber entrada pelo campo acima.
+
+    </div>
+
 </div>
 
-<div id="inputArea" style="display:none; margin-top:10px;">
 
-    <input
-        id="stdinInput"
-        type="text"
-        placeholder="Digite a entrada..."
-        style="
-            width:100%;
-            padding:14px;
-            box-sizing:border-box;
-            background:#111;
-            color:white;
-            border:1px solid #333;
-            border-radius:10px;
-            font-family:Menlo,monospace;
-            font-size:15px;
-            outline:none;
-        "
-    >
-
-    <button
-        onclick="enviarEntrada()"
-        style="
-            width:100%;
-            margin-top:8px;
-            padding:14px;
-            background:#2878ff;
-            color:white;
-            border:none;
-            border-radius:10px;
-            font-size:15px;
-            font-weight:bold;
-        "
-    >
-        ENVIAR
-    </button>
-
-</div>
-
-<!-- CÓDIGOS SALVOS -->
+<!-- =====================================================
+     CÓDIGOS SALVOS
+===================================================== -->
 
 <div class="saved-area">
 
 
     <div class="saved-title">
 
-        <span>MEUS CÓDIGOS</span>
+        <span>
+
+            MEUS CÓDIGOS
+
+        </span>
+
 
         <span id="savedCount">
+
             0
+
         </span>
 
     </div>
@@ -638,14 +825,15 @@ int main() {
     <div
         class="saved-list"
         id="savedList">
-    </div>
 
+    </div>
 
 </div>
 
 
-
-<!-- MODAL -->
+<!-- =====================================================
+     MODAL DE SALVAMENTO
+===================================================== -->
 
 <div
     class="modal"
@@ -656,14 +844,17 @@ int main() {
 
 
         <h2>
+
             Salvar código
+
         </h2>
 
 
         <input
             id="codeName"
             type="text"
-            placeholder="Nome do código">
+            placeholder="Nome do código"
+            autocomplete="off">
 
 
         <div class="modal-buttons">
@@ -695,13 +886,12 @@ int main() {
 </div>
 
 
-
 <script>
 
 
-/* ==================================================
+/* =========================================================
    ELEMENTOS
-================================================== */
+========================================================= */
 
 const editor =
     document.getElementById("code");
@@ -709,16 +899,45 @@ const editor =
 const lineNumbers =
     document.getElementById("lineNumbers");
 
+const terminal =
+    document.getElementById("terminal");
+
+const inputArea =
+    document.getElementById("inputArea");
+
+const stdinInput =
+    document.getElementById("stdinInput");
+
+const status =
+    document.getElementById("status");
+
 const savedList =
     document.getElementById("savedList");
 
 const savedCount =
     document.getElementById("savedCount");
 
+const runButton =
+    document.getElementById("runButton");
 
-/* ==================================================
-   LINHAS
-================================================== */
+
+/* =========================================================
+   ESTADO
+========================================================= */
+
+let executando =
+    false;
+
+let stdinAtual =
+    "";
+
+let aguardandoEntrada =
+    false;
+
+
+/* =========================================================
+   NUMERAÇÃO
+========================================================= */
 
 function atualizarLinhas() {
 
@@ -748,15 +967,23 @@ function atualizarLinhas() {
 }
 
 
+/* =========================================================
+   DIGITAÇÃO
+========================================================= */
+
 editor.addEventListener(
     "input",
-    atualizarLinhas
+    function() {
+
+        atualizarLinhas();
+
+    }
 );
 
 
-/* ==================================================
-   ROLAGEM
-================================================== */
+/* =========================================================
+   SCROLL
+========================================================= */
 
 editor.addEventListener(
     "scroll",
@@ -769,49 +996,148 @@ editor.addEventListener(
 );
 
 
-/* ==================================================
-   EXECUTAR
-================================================== */
-let aguardandoEntrada = false;
+/* =========================================================
+   TAB
+========================================================= */
+
+editor.addEventListener(
+    "keydown",
+    function(event) {
+
+
+        if (
+            event.key === "Tab"
+        ) {
+
+            event.preventDefault();
+
+
+            const inicio =
+                editor.selectionStart;
+
+            const fim =
+                editor.selectionEnd;
+
+
+            editor.value =
+
+                editor.value.substring(
+                    0,
+                    inicio
+                )
+
+                +
+
+                "    "
+
+                +
+
+                editor.value.substring(
+                    fim
+                );
+
+
+            editor.selectionStart =
+                inicio + 4;
+
+            editor.selectionEnd =
+                inicio + 4;
+
+
+            atualizarLinhas();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   MOSTRAR ENTRADA
+========================================================= */
 
 function mostrarEntrada() {
 
-    document.getElementById("inputArea").style.display = "block";
 
-    document.getElementById("stdinInput").value = "";
+    inputArea.style.display =
+        "block";
 
-    document.getElementById("stdinInput").focus();
 
-}
+    aguardandoEntrada =
+        true;
 
-function esconderEntrada() {
 
-    document.getElementById("inputArea").style.display = "none";
+    stdinInput.value =
+        "";
 
-}
 
-function enviarEntrada() {
+    setTimeout(
+        function() {
 
-    if (!aguardandoEntrada) {
-        return;
-    }
+            stdinInput.focus();
 
-    executarComEntrada(
-        document.getElementById("stdinInput").value
+        },
+        100
     );
 
 }
+
+
+/* =========================================================
+   ESCONDER ENTRADA
+========================================================= */
+
+function esconderEntrada() {
+
+
+    inputArea.style.display =
+        "none";
+
+
+    aguardandoEntrada =
+        false;
+
+}
+
+
+/* =========================================================
+   ENVIAR ENTRADA
+========================================================= */
+
+function enviarEntrada() {
+
+
+    stdinAtual =
+        stdinInput.value;
+
+
+    esconderEntrada();
+
+
+    executar();
+
+}
+
+
+/* =========================================================
+   EXECUTAR
+========================================================= */
+
 async function executar() {
+
+
+    if (executando) {
+
+        terminal.textContent =
+            "> Já existe uma execução em andamento.";
+
+        return;
+
+    }
 
 
     const codigo =
         editor.value;
-
-
-    const terminal =
-        document.getElementById(
-            "terminal"
-        );
 
 
     if (!codigo.trim()) {
@@ -824,12 +1150,32 @@ async function executar() {
     }
 
 
+    executando =
+        true;
+
+
+    runButton.disabled =
+        true;
+
+
+    runButton.textContent =
+        "⏳ EXECUTANDO";
+
+
+    status.textContent =
+        "";
+
+
     terminal.textContent =
-        "> Enviando para Judge0...\n";
+        "> Enviando código para Judge0...\n";
 
 
     try {
 
+
+        /* ============================================
+           BASE64 DO CÓDIGO
+        ============================================ */
 
         const codigoBase64 =
 
@@ -846,6 +1192,36 @@ async function executar() {
             );
 
 
+        /* ============================================
+           BASE64 DO STDIN
+        ============================================ */
+
+        let stdinBase64 = "";
+
+
+        if (stdinAtual) {
+
+            stdinBase64 =
+
+                btoa(
+
+                    unescape(
+
+                        encodeURIComponent(
+                            stdinAtual
+                        )
+
+                    )
+
+                );
+
+        }
+
+
+        /* ============================================
+           ENVIO
+        ============================================ */
+
         const resposta =
 
             await fetch(
@@ -854,7 +1230,8 @@ async function executar() {
 
                 {
 
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
 
@@ -867,12 +1244,14 @@ async function executar() {
 
                         JSON.stringify({
 
-                            language_id: 54,
+                            language_id:
+                                54,
 
                             source_code:
                                 codigoBase64,
 
-                            stdin: ""
+                            stdin:
+                                stdinBase64
 
                         })
 
@@ -881,26 +1260,40 @@ async function executar() {
             );
 
 
+        /* ============================================
+           HTTP
+        ============================================ */
+
         if (!resposta.ok) {
 
             throw new Error(
-                "HTTP " +
+                "Erro HTTP " +
                 resposta.status
             );
 
         }
 
 
+        /* ============================================
+           RESULTADO
+        ============================================ */
+
         const resultado =
             await resposta.json();
 
 
-        let saida = "";
+        let saida =
+            "";
 
+
+        /* ============================================
+           STDOUT
+        ============================================ */
 
         if (resultado.stdout) {
 
             saida +=
+
                 decodificarBase64(
                     resultado.stdout
                 );
@@ -908,13 +1301,23 @@ async function executar() {
         }
 
 
+        /* ============================================
+           STDERR
+        ============================================ */
+
         if (resultado.stderr) {
 
+
             if (saida) {
-                saida += "\n";
+
+                saida +=
+                    "\n";
+
             }
 
+
             saida +=
+
                 decodificarBase64(
                     resultado.stderr
                 );
@@ -922,13 +1325,25 @@ async function executar() {
         }
 
 
-        if (resultado.compile_output) {
+        /* ============================================
+           ERRO DE COMPILAÇÃO
+        ============================================ */
+
+        if (
+            resultado.compile_output
+        ) {
+
 
             if (saida) {
-                saida += "\n";
+
+                saida +=
+                    "\n";
+
             }
 
+
             saida +=
+
                 decodificarBase64(
                     resultado.compile_output
                 );
@@ -936,16 +1351,74 @@ async function executar() {
         }
 
 
+        /* ============================================
+           STATUS
+        ============================================ */
+
+        let descricao =
+            "";
+
+
+        if (
+            resultado.status &&
+            resultado.status.description
+        ) {
+
+            descricao =
+                resultado.status.description;
+
+        }
+
+
+        /* ============================================
+           TEMPO
+        ============================================ */
+
+        if (resultado.time) {
+
+            status.textContent =
+
+                "Tempo: " +
+                resultado.time +
+                "s";
+
+        }
+
+
+        /* ============================================
+           MEMÓRIA
+        ============================================ */
+
+        if (resultado.memory) {
+
+            if (status.textContent) {
+
+                status.textContent +=
+                    "  •  ";
+
+            }
+
+            status.textContent +=
+
+                "Memória: " +
+                resultado.memory +
+                " KB";
+
+        }
+
+
+        /* ============================================
+           SEM SAÍDA
+        ============================================ */
+
         if (!saida.trim()) {
 
-            if (
-                resultado.status &&
-                resultado.status.description
-            ) {
+
+            if (descricao) {
 
                 saida =
                     "> " +
-                    resultado.status.description;
+                    descricao;
 
             }
 
@@ -959,29 +1432,99 @@ async function executar() {
         }
 
 
+        /* ============================================
+           TERMINAL
+        ============================================ */
+
         terminal.textContent =
             saida;
+
+
+        /* ============================================
+           STATUS VISUAL
+        ============================================ */
+
+        if (
+            resultado.status &&
+            resultado.status.id === 3
+        ) {
+
+            status.textContent +=
+                "  •  ✓ Execução concluída";
+
+        }
+
+        else if (
+            resultado.status &&
+            resultado.status.id === 6
+        ) {
+
+            status.textContent +=
+                "  •  ❌ Erro de compilação";
+
+        }
+
+        else if (
+            resultado.status &&
+            resultado.status.id === 5
+        ) {
+
+            status.textContent +=
+                "  •  ⏱️ Tempo limite excedido";
+
+        }
+
+
+        /* ============================================
+           LIMPA STDIN
+        ============================================ */
+
+        stdinAtual =
+            "";
 
 
     }
 
     catch (erro) {
 
+
         terminal.textContent =
 
             "> ERRO:\n\n" +
             erro.message;
+
+
+        status.textContent =
+            "Falha na comunicação com o Judge0.";
+
+    }
+
+
+    finally {
+
+
+        executando =
+            false;
+
+
+        runButton.disabled =
+            false;
+
+
+        runButton.textContent =
+            "▶ EXECUTAR";
 
     }
 
 }
 
 
-/* ==================================================
-   BASE64
-================================================== */
+/* =========================================================
+   BASE64 → TEXTO
+========================================================= */
 
 function decodificarBase64(texto) {
+
 
     try {
 
@@ -1002,30 +1545,40 @@ function decodificarBase64(texto) {
 }
 
 
-/* ==================================================
+/* =========================================================
    LIMPAR
-================================================== */
+========================================================= */
 
 function limpar() {
 
 
-    editor.value = "";
+    editor.value =
+        "";
 
 
     atualizarLinhas();
 
 
-    document.getElementById(
-        "terminal"
-    ).textContent =
+    terminal.textContent =
         "> Terminal limpo.";
+
+
+    status.textContent =
+        "";
+
+
+    stdinAtual =
+        "";
+
+
+    esconderEntrada();
 
 }
 
 
-/* ==================================================
+/* =========================================================
    SALVAR
-================================================== */
+========================================================= */
 
 function abrirSalvar() {
 
@@ -1038,7 +1591,8 @@ function abrirSalvar() {
 
     document.getElementById(
         "codeName"
-    ).value = "";
+    ).value =
+        "";
 
 
     setTimeout(
@@ -1056,6 +1610,7 @@ function abrirSalvar() {
 
 
 function fecharSalvar() {
+
 
     document.getElementById(
         "saveModal"
@@ -1137,9 +1692,7 @@ function salvarCodigo() {
     carregarCodigos();
 
 
-    document.getElementById(
-        "terminal"
-    ).textContent =
+    terminal.textContent =
 
         "> Código '" +
         nome +
@@ -1148,9 +1701,9 @@ function salvarCodigo() {
 }
 
 
-/* ==================================================
-   CARREGAR
-================================================== */
+/* =========================================================
+   CARREGAR CÓDIGOS
+========================================================= */
 
 function carregarCodigos() {
 
@@ -1174,7 +1727,10 @@ function carregarCodigos() {
         codigos.length;
 
 
-    if (codigos.length === 0) {
+    if (
+        codigos.length === 0
+    ) {
+
 
         savedList.innerHTML =
 
@@ -1183,6 +1739,7 @@ function carregarCodigos() {
             'Nenhum código salvo.' +
 
             '</div>';
+
 
         return;
 
@@ -1305,9 +1862,9 @@ function carregarCodigos() {
 }
 
 
-/* ==================================================
-   ABRIR
-================================================== */
+/* =========================================================
+   ABRIR CÓDIGO
+========================================================= */
 
 function abrirCodigo(id) {
 
@@ -1334,7 +1891,9 @@ function abrirCodigo(id) {
 
 
     if (!codigo) {
+
         return;
+
     }
 
 
@@ -1345,13 +1904,15 @@ function abrirCodigo(id) {
     atualizarLinhas();
 
 
-    document.getElementById(
-        "terminal"
-    ).textContent =
+    terminal.textContent =
 
         "> Código '" +
         codigo.nome +
         "' carregado.";
+
+
+    status.textContent =
+        "";
 
 
     window.scrollTo(
@@ -1362,9 +1923,9 @@ function abrirCodigo(id) {
 }
 
 
-/* ==================================================
+/* =========================================================
    EXCLUIR
-================================================== */
+========================================================= */
 
 function excluirCodigo(id) {
 
@@ -1392,6 +1953,7 @@ function excluirCodigo(id) {
 
 
     codigos =
+
         codigos.filter(
             function(item) {
 
@@ -1417,16 +1979,72 @@ function excluirCodigo(id) {
 }
 
 
-/* ==================================================
-   INICIAR
-================================================== */
+/* =========================================================
+   ENTER NO CAMPO STDIN
+========================================================= */
+
+stdinInput.addEventListener(
+
+    "keydown",
+
+    function(event) {
+
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            enviarEntrada();
+
+        }
+
+    }
+
+);
+
+
+/* =========================================================
+   ENTER NO NOME DO ARQUIVO
+========================================================= */
+
+document
+    .getElementById("codeName")
+    .addEventListener(
+
+        "keydown",
+
+        function(event) {
+
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                salvarCodigo();
+
+            }
+
+        }
+
+    );
+
+
+/* =========================================================
+   INICIALIZAÇÃO
+========================================================= */
 
 atualizarLinhas();
 
 carregarCodigos();
 
-</script>
+esconderEntrada();
 
+
+</script>
 
 </body>
 
