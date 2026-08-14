@@ -156,20 +156,16 @@ function executar() {
 
     const codigo = document.getElementById("code").value;
 
+    const encoded = encodeURIComponent(codigo);
+
+    const url =
+        "shortcuts://run-shortcut" +
+        "?name=Executor%20c%2B%2B" +
+        "&input=text" +
+        "&text=" + encoded;
+
     document.getElementById("terminal").textContent =
-        "> Código recebido!\n\n" +
-        codigo;
+        "> Enviando código para o Executor c++...";
+
+    window.location.href = url;
 }
-
-function limpar() {
-
-    document.getElementById("code").value = "";
-
-    document.getElementById("terminal").textContent =
-        "> Terminal limpo.";
-}
-
-</script>
-
-</body>
-</html>
