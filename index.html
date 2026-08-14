@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>C++ Executor</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #0d0d0d;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.header {
+    padding: 18px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    background: #111;
+    border-bottom: 1px solid #333;
+}
+
+.editor-area {
+    padding: 15px;
+}
+
+.label {
+    color: #888;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+textarea {
+    width: 100%;
+    height: 50vh;
+    padding: 15px;
+    resize: none;
+    outline: none;
+
+    background: #181818;
+    color: #f5f5f5;
+
+    border: 1px solid #333;
+    border-radius: 10px;
+
+    font-family: Menlo, Monaco, monospace;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    padding: 0 15px 15px;
+}
+
+button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.run {
+    background: #20c968;
+}
+
+.clear {
+    background: #292929;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.terminal-area {
+    padding: 0 15px 20px;
+}
+
+.terminal {
+    min-height: 120px;
+    padding: 15px;
+
+    background: #050505;
+    border: 1px solid #222;
+    border-radius: 10px;
+
+    color: #00ff66;
+    font-family: Menlo, Monaco, monospace;
+    font-size: 14px;
+
+    white-space: pre-wrap;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    C++ EXECUTOR
+</div>
+
+<div class="editor-area">
+
+    <div class="label">
+        CÓDIGO C++
+    </div>
+
+    <textarea id="code">#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Olá!";
+    return 0;
+}</textarea>
+
+</div>
+
+<div class="buttons">
+
+    <button class="run" onclick="executar()">
+        ▶ EXECUTAR
+    </button>
+
+    <button class="clear" onclick="limpar()">
+        LIMPAR
+    </button>
+
+</div>
+
+<div class="terminal-area">
+
+    <div class="label">
+        TERMINAL
+    </div>
+
+    <div class="terminal" id="terminal">> Aguardando execução...</div>
+
+</div>
+
+<script>
+
+function executar() {
+
+    const codigo = document.getElementById("code").value;
+
+    document.getElementById("terminal").textContent =
+        "> Código recebido!\n\n" +
+        codigo;
+}
+
+function limpar() {
+
+    document.getElementById("code").value = "";
+
+    document.getElementById("terminal").textContent =
+        "> Terminal limpo.";
+}
+
+</script>
+
+</body>
+</html>
