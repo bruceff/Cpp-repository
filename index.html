@@ -1810,7 +1810,25 @@ function alternarEntrada() {
         ? "none"
         : "block";
 }
+function traduzirMyEngine(codigo) {
 
+    let resultado = codigo;
+
+    /*
+     * MY ENGINE → C++
+     *
+     * manda o papo X
+     * ↓
+     * std::cout << X
+     */
+
+    resultado = resultado.replace(
+        /^\s*manda o papo\s+(.+)$/gm,
+        'std::cout << $1;'
+    );
+
+    return resultado;
+}
 
 async function executar() {
 
@@ -1818,7 +1836,11 @@ async function executar() {
         return;
     }
 
-    const codigo = editor.value;
+    const codigoOriginal =
+    editor.value;
+
+const codigo =
+    traduzirMyEngine(codigoOriginal);
 
     if (!codigo.trim()) {
 
