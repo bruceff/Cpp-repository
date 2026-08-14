@@ -772,7 +772,35 @@ editor.addEventListener(
 /* ==================================================
    EXECUTAR
 ================================================== */
+let aguardandoEntrada = false;
 
+function mostrarEntrada() {
+
+    document.getElementById("inputArea").style.display = "block";
+
+    document.getElementById("stdinInput").value = "";
+
+    document.getElementById("stdinInput").focus();
+
+}
+
+function esconderEntrada() {
+
+    document.getElementById("inputArea").style.display = "none";
+
+}
+
+function enviarEntrada() {
+
+    if (!aguardandoEntrada) {
+        return;
+    }
+
+    executarComEntrada(
+        document.getElementById("stdinInput").value
+    );
+
+}
 async function executar() {
 
 
