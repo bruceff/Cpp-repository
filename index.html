@@ -21,6 +21,7 @@ html,
 body {
     margin: 0;
     padding: 0;
+
     width: 100%;
     min-height: 100%;
 
@@ -43,6 +44,7 @@ body {
 ========================= */
 
 .header {
+
     height: 60px;
 
     display: flex;
@@ -67,18 +69,16 @@ body {
 }
 
 .label {
+
     margin-bottom: 8px;
 
     color: #888;
 
     font-size: 13px;
+
     font-weight: 700;
 }
 
-
-/* =========================
-   EDITOR WRAPPER
-========================= */
 
 .editor-wrapper {
 
@@ -92,6 +92,7 @@ body {
     background: #181818;
 
     border: 1px solid #333;
+
     border-radius: 10px;
 }
 
@@ -132,78 +133,17 @@ body {
 
 
 /* =========================
-   ÁREA DE CÓDIGO
+   EDITOR
 ========================= */
 
-.code-area {
-
-    position: relative;
+.editor {
 
     flex: 1;
 
-    height: 100%;
-
-    overflow: hidden;
-}
-
-
-/* =========================
-   CÓDIGO COLORIDO
-========================= */
-
-.highlight {
-
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
     width: 100%;
     height: 100%;
 
     padding: 15px;
-
-    margin: 0;
-
-    overflow: hidden;
-
-    pointer-events: none;
-
-    white-space: pre;
-
-    font-family:
-        Menlo,
-        Monaco,
-        Consolas,
-        monospace;
-
-    font-size: 15px;
-
-    line-height: 1.5;
-
-    color: #f5f5f5;
-
-    tab-size: 4;
-}
-
-
-/* =========================
-   ÁREA DE DIGITAÇÃO
-========================= */
-
-textarea {
-
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 100%;
-
-    padding: 15px;
-
-    margin: 0;
 
     resize: none;
 
@@ -211,9 +151,9 @@ textarea {
 
     border: none;
 
-    background: transparent;
+    background: #181818;
 
-    color: transparent;
+    color: #f5f5f5;
 
     caret-color: white;
 
@@ -233,40 +173,15 @@ textarea {
 
     overflow: auto;
 
-    -webkit-text-fill-color: transparent;
 }
 
 
 /* =========================
-   CORES C++
+   CORES DO C++
 ========================= */
 
-.token-keyword {
-    color: #ff79c6;
-}
-
-.token-type {
-    color: #8be9fd;
-}
-
-.token-function {
-    color: #50fa7b;
-}
-
-.token-number {
-    color: #bd93f9;
-}
-
-.token-string {
-    color: #f1fa8c;
-}
-
-.token-comment {
-    color: #6272a4;
-}
-
-.token-preprocessor {
-    color: #ffb86c;
+.editor::selection {
+    background: #444;
 }
 
 
@@ -557,10 +472,17 @@ button:active {
 <body>
 
 
+<!-- CABEÇALHO -->
+
 <div class="header">
+
     C++ EXECUTOR
+
 </div>
 
+
+
+<!-- EDITOR -->
 
 <div class="editor-area">
 
@@ -572,23 +494,20 @@ button:active {
     <div class="editor-wrapper">
 
 
+        <!-- NÚMEROS -->
+
         <div
             class="line-numbers"
             id="lineNumbers">
         </div>
 
 
-        <div class="code-area">
+        <!-- EDITOR -->
 
-
-            <pre
-                class="highlight"
-                id="highlight"></pre>
-
-
-            <textarea
-                id="code"
-                spellcheck="false">#include <iostream>
+        <textarea
+            class="editor"
+            id="code"
+            spellcheck="false">#include <iostream>
 
 int main() {
 
@@ -601,16 +520,16 @@ int main() {
 }</textarea>
 
 
-        </div>
-
-
     </div>
 
 </div>
 
 
 
+<!-- BOTÕES -->
+
 <div class="buttons">
+
 
     <button
         class="run"
@@ -638,9 +557,12 @@ int main() {
 
     </button>
 
+
 </div>
 
 
+
+<!-- TERMINAL -->
 
 <div class="terminal-area">
 
@@ -661,7 +583,10 @@ int main() {
 
 
 
+<!-- CÓDIGOS SALVOS -->
+
 <div class="saved-area">
+
 
     <div class="saved-title">
 
@@ -679,9 +604,12 @@ int main() {
         id="savedList">
     </div>
 
+
 </div>
 
 
+
+<!-- MODAL -->
 
 <div
     class="modal"
@@ -742,9 +670,6 @@ int main() {
 const editor =
     document.getElementById("code");
 
-const highlight =
-    document.getElementById("highlight");
-
 const lineNumbers =
     document.getElementById("lineNumbers");
 
@@ -753,182 +678,6 @@ const savedList =
 
 const savedCount =
     document.getElementById("savedCount");
-
-
-/* ==================================================
-   ESCAPAR HTML
-================================================== */
-
-function escaparHTML(texto) {
-
-    return texto
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/* ==================================================
-   COLORIR C++
-================================================== */
-
-function colorirCodigo(codigo) {
-
-
-    let texto =
-        escaparHTML(codigo);
-
-
-    /*
-       Comentários
-    */
-
-    texto = texto.replace(
-        /(\/\/.*)/g,
-        '<span class="token-comment">$1</span>'
-    );
-
-
-    /*
-       Strings
-    */
-
-    texto = texto.replace(
-        /(&quot;.*?&quot;)/g,
-        '<span class="token-string">$1</span>'
-    );
-
-
-    /*
-       Pré-processadores
-    */
-
-    texto = texto.replace(
-        /(^|\n)(#(?:include|define|if|ifdef|ifndef|endif|pragma).*?)(?=\n|$)/g,
-        '$1<span class="token-preprocessor">$2</span>'
-    );
-
-
-    /*
-       Palavras-chave
-    */
-
-    const keywords = [
-
-        "if",
-        "else",
-        "for",
-        "while",
-        "do",
-        "switch",
-        "case",
-        "break",
-        "continue",
-        "return",
-        "class",
-        "struct",
-        "public",
-        "private",
-        "protected",
-        "virtual",
-        "override",
-        "const",
-        "static",
-        "using",
-        "namespace",
-        "new",
-        "delete",
-        "try",
-        "catch",
-        "throw",
-        "this",
-        "true",
-        "false",
-        "nullptr"
-
-    ];
-
-
-    const keywordRegex =
-        new RegExp(
-            "\\b(" +
-            keywords.join("|") +
-            ")\\b",
-            "g"
-        );
-
-
-    texto = texto.replace(
-        keywordRegex,
-        '<span class="token-keyword">$1</span>'
-    );
-
-
-    /*
-       Tipos
-    */
-
-    const types = [
-
-        "int",
-        "float",
-        "double",
-        "char",
-        "bool",
-        "void",
-        "long",
-        "short",
-        "unsigned",
-        "signed",
-        "auto",
-        "string"
-
-    ];
-
-
-    const typeRegex =
-        new RegExp(
-            "\\b(" +
-            types.join("|") +
-            ")\\b",
-            "g"
-        );
-
-
-    texto = texto.replace(
-        typeRegex,
-        '<span class="token-type">$1</span>'
-    );
-
-
-    /*
-       Números
-    */
-
-    texto = texto.replace(
-        /\b\d+(\.\d+)?\b/g,
-        '<span class="token-number">$&</span>'
-    );
-
-
-    /*
-       Funções
-    */
-
-    texto = texto.replace(
-        /\b([a-zA-Z_]\w*)(?=\s*\()/g,
-        '<span class="token-function">$1</span>'
-    );
-
-
-    highlight.innerHTML =
-        texto || " ";
-
-
-}
 
 
 /* ==================================================
@@ -963,28 +712,9 @@ function atualizarLinhas() {
 }
 
 
-/* ==================================================
-   ATUALIZAR EDITOR
-================================================== */
-
-function atualizarEditor() {
-
-    colorirCodigo(
-        editor.value
-    );
-
-    atualizarLinhas();
-
-}
-
-
-/* ==================================================
-   DIGITAÇÃO
-================================================== */
-
 editor.addEventListener(
     "input",
-    atualizarEditor
+    atualizarLinhas
 );
 
 
@@ -995,12 +725,6 @@ editor.addEventListener(
 editor.addEventListener(
     "scroll",
     function() {
-
-        highlight.scrollTop =
-            editor.scrollTop;
-
-        highlight.scrollLeft =
-            editor.scrollLeft;
 
         lineNumbers.scrollTop =
             editor.scrollTop;
@@ -1224,7 +948,7 @@ function limpar() {
     editor.value = "";
 
 
-    atualizarEditor();
+    atualizarLinhas();
 
 
     document.getElementById(
@@ -1361,7 +1085,7 @@ function salvarCodigo() {
 
 
 /* ==================================================
-   CARREGAR CÓDIGOS
+   CARREGAR
 ================================================== */
 
 function carregarCodigos() {
@@ -1554,7 +1278,7 @@ function abrirCodigo(id) {
         codigo.codigo;
 
 
-    atualizarEditor();
+    atualizarLinhas();
 
 
     document.getElementById(
@@ -1630,10 +1354,10 @@ function excluirCodigo(id) {
 
 
 /* ==================================================
-   INICIALIZAÇÃO
+   INICIAR
 ================================================== */
 
-atualizarEditor();
+atualizarLinhas();
 
 carregarCodigos();
 
