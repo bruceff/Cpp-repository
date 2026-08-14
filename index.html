@@ -3252,26 +3252,40 @@ function atualizarCanvasVisual() {
             canvasArea.clientHeight
         );
 
-
-    zoom =
-        tamanho /
-        tamanhoCanvas;
+    const tamanhoBase =
+        Math.max(
+            256,
+            Math.min(
+                512,
+                tamanho
+            )
+        );
 
 
     artCanvas.style.width =
-        tamanho +
+        tamanhoBase +
         "px";
-
 
     artCanvas.style.height =
-        tamanho +
+        tamanhoBase +
         "px";
 
 
+    if (!cameraInicializada) {
+
+        zoom = 1;
+
+        offsetX = 0;
+        offsetY = 0;
+
+        cameraInicializada = true;
+
+    }
+
+
+    aplicarCamera();
+
     desenharGrade();
-
-
-    atualizarInfo();
 
 }
 
