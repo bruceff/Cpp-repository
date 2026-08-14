@@ -86,7 +86,9 @@ body {
 }
 
 
-/* Container do editor */
+/* =========================
+   EDITOR + LINHAS
+========================= */
 
 .editor-wrapper {
 
@@ -105,9 +107,6 @@ body {
     border-radius: 10px;
 
 }
-
-
-/* Números */
 
 .line-numbers {
 
@@ -140,9 +139,6 @@ body {
     overflow: hidden;
 
 }
-
-
-/* Editor */
 
 textarea {
 
@@ -187,11 +183,10 @@ textarea {
 
     display: flex;
 
-    gap: 10px;
+    gap: 8px;
 
     padding:
         0
-        15px
         15px
         15px;
 
@@ -201,7 +196,7 @@ button {
 
     flex: 1;
 
-    padding: 15px;
+    padding: 14px 8px;
 
     border: none;
 
@@ -209,28 +204,22 @@ button {
 
     color: white;
 
-    font-size: 16px;
+    font-size: 14px;
 
     font-weight: 700;
 
 }
 
 .run {
-
     background: #20c968;
+}
 
+.save {
+    background: #2878ff;
 }
 
 .clear {
-
     background: #292929;
-
-}
-
-button:active {
-
-    transform: scale(0.98);
-
 }
 
 
@@ -243,8 +232,7 @@ button:active {
     padding:
         0
         15px
-        20px
-        15px;
+        20px;
 
 }
 
@@ -278,6 +266,216 @@ button:active {
 
 }
 
+
+/* =========================
+   CÓDIGOS SALVOS
+========================= */
+
+.saved-area {
+
+    padding:
+        0
+        15px
+        20px;
+
+}
+
+.saved-title {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    color: #888;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+.saved-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+}
+
+.saved-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 12px;
+
+    background: #181818;
+
+    border: 1px solid #2b2b2b;
+
+    border-radius: 10px;
+
+}
+
+.saved-name {
+
+    flex: 1;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    color: white;
+
+    font-size: 14px;
+
+}
+
+.saved-actions {
+
+    display: flex;
+
+    gap: 6px;
+
+}
+
+.saved-actions button {
+
+    flex: none;
+
+    width: auto;
+
+    padding:
+        8px
+        10px;
+
+    font-size: 12px;
+
+}
+
+.open-btn {
+
+    background: #333;
+
+}
+
+.delete-btn {
+
+    background: #8f2525;
+
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.75);
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 1000;
+
+}
+
+.modal-box {
+
+    width: 100%;
+
+    max-width: 400px;
+
+    padding: 20px;
+
+    background: #181818;
+
+    border: 1px solid #333;
+
+    border-radius: 14px;
+
+}
+
+.modal-box h2 {
+
+    margin-top: 0;
+
+    font-size: 19px;
+
+}
+
+.modal-box input {
+
+    width: 100%;
+
+    padding: 13px;
+
+    margin:
+        10px
+        0
+        15px;
+
+    border: 1px solid #444;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #0d0d0d;
+
+    color: white;
+
+    font-size: 16px;
+
+}
+
+.modal-buttons {
+
+    display: flex;
+
+    gap: 8px;
+
+}
+
+.modal-buttons button {
+
+    padding: 13px;
+
+}
+
+.cancel {
+
+    background: #333;
+
+}
+
+.confirm {
+
+    background: #2878ff;
+
+}
+
 </style>
 
 </head>
@@ -286,7 +484,9 @@ button:active {
 <body>
 
 
-<!-- CABEÇALHO -->
+<!-- =========================
+     CABEÇALHO
+========================= -->
 
 <div class="header">
 
@@ -296,29 +496,25 @@ button:active {
 
 
 
-<!-- EDITOR -->
+<!-- =========================
+     EDITOR
+========================= -->
 
 <div class="editor-area">
 
     <div class="label">
-
         CÓDIGO C++
-
     </div>
 
 
     <div class="editor-wrapper">
 
 
-        <!-- NÚMEROS -->
-
         <div
             class="line-numbers"
             id="lineNumbers">
         </div>
 
-
-        <!-- CÓDIGO -->
 
         <textarea
             id="code"
@@ -339,15 +535,27 @@ int main() {
 
 
 
-<!-- BOTÕES -->
+<!-- =========================
+     BOTÕES
+========================= -->
 
 <div class="buttons">
+
 
     <button
         class="run"
         onclick="executar()">
 
         ▶ EXECUTAR
+
+    </button>
+
+
+    <button
+        class="save"
+        onclick="abrirSalvar()">
+
+        💾 SALVAR
 
     </button>
 
@@ -360,18 +568,19 @@ int main() {
 
     </button>
 
+
 </div>
 
 
 
-<!-- TERMINAL -->
+<!-- =========================
+     TERMINAL
+========================= -->
 
 <div class="terminal-area">
 
     <div class="label">
-
         TERMINAL
-
     </div>
 
 
@@ -387,21 +596,111 @@ int main() {
 
 
 
+<!-- =========================
+     CÓDIGOS SALVOS
+========================= -->
+
+<div class="saved-area">
+
+
+    <div class="saved-title">
+
+        <span>MEUS CÓDIGOS</span>
+
+        <span id="savedCount">
+            0
+        </span>
+
+    </div>
+
+
+    <div
+        class="saved-list"
+        id="savedList">
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     MODAL SALVAR
+========================= -->
+
+<div
+    class="modal"
+    id="saveModal">
+
+
+    <div class="modal-box">
+
+
+        <h2>
+            Salvar código
+        </h2>
+
+
+        <input
+            id="codeName"
+            type="text"
+            placeholder="Nome do código">
+
+
+        <div class="modal-buttons">
+
+
+            <button
+                class="cancel"
+                onclick="fecharSalvar()">
+
+                CANCELAR
+
+            </button>
+
+
+            <button
+                class="confirm"
+                onclick="salvarCodigo()">
+
+                SALVAR
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
 <script>
 
 
 /* ==================================================
-   NUMERAÇÃO DAS LINHAS
+   ELEMENTOS
 ================================================== */
 
 const editor =
     document.getElementById("code");
 
-
 const lineNumbers =
     document.getElementById("lineNumbers");
 
+const savedList =
+    document.getElementById("savedList");
 
+const savedCount =
+    document.getElementById("savedCount");
+
+
+
+/* ==================================================
+   NUMERAÇÃO DAS LINHAS
+================================================== */
 
 function atualizarLinhas() {
 
@@ -419,7 +718,8 @@ function atualizarLinhas() {
         i++
     ) {
 
-        numeros += i + "<br>";
+        numeros +=
+            i + "<br>";
 
     }
 
@@ -431,20 +731,12 @@ function atualizarLinhas() {
 
 
 
-/* ==================================================
-   ATUALIZAR AO DIGITAR
-================================================== */
-
 editor.addEventListener(
     "input",
     atualizarLinhas
 );
 
 
-
-/* ==================================================
-   SINCRONIZAR ROLAGEM
-================================================== */
 
 editor.addEventListener(
     "scroll",
@@ -491,10 +783,17 @@ async function executar() {
 
 
         const codigoBase64 =
+
             btoa(
+
                 unescape(
-                    encodeURIComponent(codigo)
+
+                    encodeURIComponent(
+                        codigo
+                    )
+
                 )
+
             );
 
 
@@ -563,9 +862,7 @@ async function executar() {
         if (resultado.stderr) {
 
             if (saida) {
-
                 saida += "\n";
-
             }
 
             saida +=
@@ -579,9 +876,7 @@ async function executar() {
         if (resultado.compile_output) {
 
             if (saida) {
-
                 saida += "\n";
-
             }
 
             saida +=
@@ -623,7 +918,6 @@ async function executar() {
 
     catch (erro) {
 
-
         terminal.textContent =
 
             "> ERRO:\n\n" +
@@ -636,7 +930,7 @@ async function executar() {
 
 
 /* ==================================================
-   BASE64
+   DECODIFICAR BASE64
 ================================================== */
 
 function decodificarBase64(texto) {
@@ -682,10 +976,426 @@ function limpar() {
 
 
 /* ==================================================
+   ABRIR JANELA DE SALVAR
+================================================== */
+
+function abrirSalvar() {
+
+
+    const modal =
+        document.getElementById(
+            "saveModal"
+        );
+
+
+    const input =
+        document.getElementById(
+            "codeName"
+        );
+
+
+    modal.style.display =
+        "flex";
+
+
+    input.value = "";
+
+
+    setTimeout(
+        function() {
+            input.focus();
+        },
+        100
+    );
+
+}
+
+
+
+/* ==================================================
+   FECHAR JANELA
+================================================== */
+
+function fecharSalvar() {
+
+    document.getElementById(
+        "saveModal"
+    ).style.display =
+        "none";
+
+}
+
+
+
+/* ==================================================
+   SALVAR CÓDIGO
+================================================== */
+
+function salvarCodigo() {
+
+
+    const nomeInput =
+        document.getElementById(
+            "codeName"
+        );
+
+
+    let nome =
+        nomeInput.value.trim();
+
+
+    if (!nome) {
+
+        nome =
+            "Código sem nome";
+
+    }
+
+
+    const codigo =
+        editor.value;
+
+
+    let codigos =
+        JSON.parse(
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+        );
+
+
+    const novoCodigo = {
+
+        id:
+            Date.now(),
+
+        nome:
+            nome,
+
+        codigo:
+            codigo,
+
+        data:
+            new Date().toLocaleString(
+                "pt-BR"
+            )
+
+    };
+
+
+    codigos.push(
+        novoCodigo
+    );
+
+
+    localStorage.setItem(
+
+        "cpp_codigos",
+
+        JSON.stringify(
+            codigos
+        )
+
+    );
+
+
+    fecharSalvar();
+
+
+    carregarCodigos();
+
+
+    document.getElementById(
+        "terminal"
+    ).textContent =
+
+        "> Código '" +
+        nome +
+        "' salvo.";
+
+
+}
+
+
+
+/* ==================================================
+   CARREGAR CÓDIGOS
+================================================== */
+
+function carregarCodigos() {
+
+
+    const codigos =
+
+        JSON.parse(
+
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+
+        );
+
+
+    savedList.innerHTML =
+        "";
+
+
+    savedCount.textContent =
+        codigos.length;
+
+
+    if (codigos.length === 0) {
+
+
+        savedList.innerHTML =
+
+            '<div style="color:#666;font-size:13px;">' +
+
+            'Nenhum código salvo.' +
+
+            '</div>';
+
+
+        return;
+
+    }
+
+
+    codigos.forEach(
+        function(item) {
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "saved-item";
+
+
+            const nome =
+                document.createElement(
+                    "div"
+                );
+
+
+            nome.className =
+                "saved-name";
+
+
+            nome.textContent =
+                item.nome;
+
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "saved-actions";
+
+
+            const abrir =
+                document.createElement(
+                    "button"
+                );
+
+
+            abrir.className =
+                "open-btn";
+
+
+            abrir.textContent =
+                "ABRIR";
+
+
+            abrir.onclick =
+                function() {
+
+                    abrirCodigo(
+                        item.id
+                    );
+
+                };
+
+
+            const excluir =
+                document.createElement(
+                    "button"
+                );
+
+
+            excluir.className =
+                "delete-btn";
+
+
+            excluir.textContent =
+                "X";
+
+
+            excluir.onclick =
+                function() {
+
+                    excluirCodigo(
+                        item.id
+                    );
+
+                };
+
+
+            actions.appendChild(
+                abrir
+            );
+
+
+            actions.appendChild(
+                excluir
+            );
+
+
+            div.appendChild(
+                nome
+            );
+
+
+            div.appendChild(
+                actions
+            );
+
+
+            savedList.appendChild(
+                div
+            );
+
+
+        }
+    );
+
+}
+
+
+
+/* ==================================================
+   ABRIR CÓDIGO
+================================================== */
+
+function abrirCodigo(id) {
+
+
+    const codigos =
+
+        JSON.parse(
+
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+
+        );
+
+
+    const codigo =
+        codigos.find(
+            function(item) {
+                return item.id === id;
+            }
+        );
+
+
+    if (!codigo) {
+        return;
+    }
+
+
+    editor.value =
+        codigo.codigo;
+
+
+    atualizarLinhas();
+
+
+    document.getElementById(
+        "terminal"
+    ).textContent =
+
+        "> Código '" +
+        codigo.nome +
+        "' carregado.";
+
+
+    window.scrollTo(
+        0,
+        0
+    );
+
+}
+
+
+
+/* ==================================================
+   EXCLUIR CÓDIGO
+================================================== */
+
+function excluirCodigo(id) {
+
+
+    const confirmar =
+        confirm(
+            "Excluir este código?"
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    let codigos =
+
+        JSON.parse(
+
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+
+        );
+
+
+    codigos =
+        codigos.filter(
+            function(item) {
+                return item.id !== id;
+            }
+        );
+
+
+    localStorage.setItem(
+
+        "cpp_codigos",
+
+        JSON.stringify(
+            codigos
+        )
+
+    );
+
+
+    carregarCodigos();
+
+}
+
+
+
+/* ==================================================
    INICIALIZAÇÃO
 ================================================== */
 
 atualizarLinhas();
+
+carregarCodigos();
 
 
 </script>
