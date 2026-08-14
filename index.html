@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -33,10 +34,6 @@ body {
 
 body {
     padding-bottom: 80px;
-}
-
-button {
-    cursor: pointer;
 }
 
 .header {
@@ -93,18 +90,18 @@ button {
     display: block;
 }
 
-
-/* =========================
-   INÍCIO
-========================= */
-
 .home {
     padding: 20px;
 }
 
 .hero {
     padding: 25px 20px;
-    background: linear-gradient(145deg, #171717, #101010);
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #101010
+        );
     border: 1px solid #292929;
     border-radius: 16px;
     margin-bottom: 15px;
@@ -153,9 +150,8 @@ button {
     line-height: 1.4;
 }
 
-
 /* =========================
-   EDITOR C++
+   CÓDIGO
 ========================= */
 
 .editor-area {
@@ -188,7 +184,11 @@ button {
     background: #151515;
     color: #666;
     text-align: right;
-    font-family: Menlo, Monaco, Consolas, monospace;
+    font-family:
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
     font-size: 15px;
     line-height: 1.5;
     user-select: none;
@@ -207,7 +207,11 @@ button {
     background: #181818;
     color: #f5f5f5;
     caret-color: white;
-    font-family: Menlo, Monaco, Consolas, monospace;
+    font-family:
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
     font-size: 15px;
     line-height: 1.5;
     tab-size: 4;
@@ -229,6 +233,10 @@ button {
     color: white;
     font-size: 13px;
     font-weight: 700;
+}
+
+button:disabled {
+    opacity: 0.6;
 }
 
 .run {
@@ -262,7 +270,11 @@ button {
     border: 1px solid #222;
     border-radius: 10px;
     color: #00ff66;
-    font-family: Menlo, Monaco, Consolas, monospace;
+    font-family:
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
     font-size: 14px;
     line-height: 1.5;
     white-space: pre-wrap;
@@ -288,7 +300,11 @@ button {
     border: 1px solid #333;
     border-radius: 8px;
     outline: none;
-    font-family: Menlo, Monaco, Consolas, monospace;
+    font-family:
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
     font-size: 15px;
 }
 
@@ -298,66 +314,8 @@ button {
     font-size: 12px;
 }
 
-.saved-area {
-    padding: 0 15px 20px;
-}
-
-.saved-title {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    color: #888;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.saved-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.saved-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px;
-    background: #181818;
-    border: 1px solid #2b2b2b;
-    border-radius: 10px;
-}
-
-.saved-name {
-    flex: 1;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 14px;
-}
-
-.saved-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.saved-actions button {
-    min-height: auto;
-    padding: 8px 10px;
-    font-size: 12px;
-}
-
-.open-btn {
-    background: #333;
-}
-
-.delete-btn {
-    background: #8f2525;
-}
-
-
 /* =========================
-   EDITOR DE ARTE
+   ARTE
 ========================= */
 
 .art-page {
@@ -431,12 +389,22 @@ button {
     position: absolute;
     left: 50%;
     top: 50%;
+
     width: 512px;
     height: 512px;
+
+    transform:
+        translate(-50%, -50%)
+        translate(0px, 0px)
+        scale(1);
+
     transform-origin: center center;
+
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+
     background: transparent;
+
     touch-action: none;
 }
 
@@ -445,7 +413,7 @@ button {
     left: 8px;
     bottom: 8px;
     padding: 6px 9px;
-    background: rgba(0,0,0,.7);
+    background: rgba(0,0,0,0.7);
     border-radius: 7px;
     color: #aaa;
     font-family: monospace;
@@ -507,185 +475,6 @@ input[type="color"] {
     border-color: #2878ff;
 }
 
-
-/* =========================
-   GERENCIADOR DE CENAS
-========================= */
-
-.scene-page {
-    padding: 10px;
-}
-
-.scene-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
-.scene-title {
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.scene-size {
-    color: #777;
-    font-size: 11px;
-}
-
-.scene-toolbar {
-    display: flex;
-    gap: 6px;
-    padding: 7px;
-    background: #151515;
-    border: 1px solid #292929;
-    border-radius: 12px;
-    overflow-x: auto;
-}
-
-.scene-toolbar::-webkit-scrollbar {
-    display: none;
-}
-
-.scene-tool {
-    flex: 0 0 auto;
-    min-width: 48px;
-    height: 42px;
-    padding: 0 10px;
-    background: #202020;
-    border: 1px solid #333;
-    border-radius: 9px;
-    font-size: 12px;
-}
-
-.scene-tool.active {
-    background: #2878ff;
-    border-color: #2878ff;
-}
-
-.scene-workspace {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.scene-canvas-wrap {
-    position: relative;
-    height: 58vh;
-    min-height: 400px;
-    overflow: hidden;
-    background: #080808;
-    border: 1px solid #292929;
-    border-radius: 14px;
-    touch-action: none;
-}
-
-#sceneCanvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    touch-action: none;
-}
-
-.scene-info {
-    position: absolute;
-    left: 8px;
-    bottom: 8px;
-    padding: 6px 9px;
-    background: rgba(0,0,0,.72);
-    color: #aaa;
-    border-radius: 7px;
-    font-family: monospace;
-    font-size: 11px;
-    pointer-events: none;
-}
-
-.scene-panel {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.scene-box {
-    padding: 10px;
-    background: #151515;
-    border: 1px solid #292929;
-    border-radius: 10px;
-}
-
-.scene-box h3 {
-    margin: 0 0 9px;
-    font-size: 12px;
-}
-
-.scene-box select,
-.scene-box input {
-    width: 100%;
-    min-height: 38px;
-    padding: 8px;
-    background: #0c0c0c;
-    color: white;
-    border: 1px solid #333;
-    border-radius: 7px;
-    outline: none;
-}
-
-.scene-layers {
-    grid-column: 1 / -1;
-}
-
-.layer-list {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.layer-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 9px;
-    background: #202020;
-    border: 1px solid #333;
-    border-radius: 7px;
-    font-size: 12px;
-}
-
-.layer-item.active {
-    border-color: #2878ff;
-    background: #202b3d;
-}
-
-.layer-item button {
-    min-height: 28px;
-    padding: 4px 8px;
-    background: #333;
-    font-size: 10px;
-}
-
-.scene-actions {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    margin-top: 8px;
-}
-
-.scene-action {
-    min-height: 42px;
-    background: #202020;
-    border: 1px solid #333;
-    font-size: 11px;
-}
-
-.scene-action.primary {
-    background: #2878ff;
-    border-color: #2878ff;
-}
-
-
 /* =========================
    MÓDULOS
 ========================= */
@@ -734,6 +523,66 @@ input[type="color"] {
     margin-bottom: 5px;
 }
 
+/* =========================
+   CÓDIGOS SALVOS
+========================= */
+
+.saved-area {
+    padding: 0 15px 20px;
+}
+
+.saved-title {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #888;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.saved-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    background: #181818;
+    border: 1px solid #2b2b2b;
+    border-radius: 10px;
+}
+
+.saved-name {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
+}
+
+.saved-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.saved-actions button {
+    min-height: auto;
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
+.open-btn {
+    background: #333;
+}
+
+.delete-btn {
+    background: #8f2525;
+}
 
 /* =========================
    MODAL
@@ -743,7 +592,7 @@ input[type="color"] {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.75);
+    background: rgba(0,0,0,0.75);
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -793,8 +642,8 @@ input[type="color"] {
 }
 
 </style>
-</head>
 
+</head>
 
 <body>
 
@@ -802,61 +651,71 @@ input[type="color"] {
     MY ENGINE
 </div>
 
-
 <div class="navigation">
 
-    <button class="nav-button active"
+    <button
+        class="nav-button active"
         onclick="abrirPagina('home', this)">
         🏠 Início
     </button>
 
-    <button class="nav-button"
+    <button
+        class="nav-button"
         onclick="abrirPagina('codePage', this)">
         📝 Código
     </button>
 
-    <button class="nav-button"
+    <button
+        class="nav-button"
         onclick="abrirPagina('artPage', this)">
         🎨 Arte
     </button>
 
-    <button class="nav-button"
+    <button
+        class="nav-button"
         onclick="abrirPagina('scenePage', this)">
         🗺️ Cena
     </button>
 
-    <button class="nav-button"
+    <button
+        class="nav-button"
         onclick="abrirPagina('tilemapPage', this)">
         🧱 Tilemap
     </button>
 
-    <button class="nav-button"
+    <button
+        class="nav-button"
         onclick="abrirPagina('assetsPage', this)">
         📦 Assets
     </button>
 
-    <button class="nav-button"
+    <button
+        class="nav-button"
         onclick="abrirPagina('audioPage', this)">
         🎵 Áudio
     </button>
 
-    <button class="nav-button"
+    <button
+        class="nav-button"
         onclick="abrirPagina('projectPage', this)">
         ⚙️ Projeto
     </button>
 
 </div>
 
-
 <!-- =========================
      INÍCIO
 ========================= -->
 
-<section id="home" class="page active home">
+<section
+id="home"
+class="page active home">
 
     <div class="hero">
 
-        <h1>Minha Engine</h1>
+        <h1>
+            Minha Engine
+        </h1>
 
         <p>
             Ambiente de desenvolvimento
@@ -865,29 +724,34 @@ input[type="color"] {
 
     </div>
 
-
     <div class="cards">
 
-        <div class="card"
+        <div
+            class="card"
             onclick="abrirPorId('codePage')">
 
-            <div class="card-icon">📝</div>
+            <div class="card-icon">
+                📝
+            </div>
 
             <div class="card-title">
                 Código
             </div>
 
             <div class="card-description">
-                Escreva e execute C++.
+                Programe utilizando C++
+                e a linguagem My Engine.
             </div>
 
         </div>
 
-
-        <div class="card"
+        <div
+            class="card"
             onclick="abrirPorId('artPage')">
 
-            <div class="card-icon">🎨</div>
+            <div class="card-icon">
+                🎨
+            </div>
 
             <div class="card-title">
                 Arte
@@ -899,11 +763,13 @@ input[type="color"] {
 
         </div>
 
-
-        <div class="card"
+        <div
+            class="card"
             onclick="abrirPorId('scenePage')">
 
-            <div class="card-icon">🗺️</div>
+            <div class="card-icon">
+                🗺️
+            </div>
 
             <div class="card-title">
                 Cena
@@ -915,11 +781,13 @@ input[type="color"] {
 
         </div>
 
-
-        <div class="card"
+        <div
+            class="card"
             onclick="abrirPorId('tilemapPage')">
 
-            <div class="card-icon">🧱</div>
+            <div class="card-icon">
+                🧱
+            </div>
 
             <div class="card-title">
                 Tilemap
@@ -931,11 +799,13 @@ input[type="color"] {
 
         </div>
 
-
-        <div class="card"
+        <div
+            class="card"
             onclick="abrirPorId('assetsPage')">
 
-            <div class="card-icon">📦</div>
+            <div class="card-icon">
+                📦
+            </div>
 
             <div class="card-title">
                 Assets
@@ -947,11 +817,13 @@ input[type="color"] {
 
         </div>
 
-
-        <div class="card"
+        <div
+            class="card"
             onclick="abrirPorId('audioPage')">
 
-            <div class="card-icon">🎵</div>
+            <div class="card-icon">
+                🎵
+            </div>
 
             <div class="card-title">
                 Áudio
@@ -967,22 +839,24 @@ input[type="color"] {
 
 </section>
 
-
 <!-- =========================
      CÓDIGO
 ========================= -->
 
-<section id="codePage" class="page">
+<section
+id="codePage"
+class="page">
 
     <div class="editor-area">
 
         <div class="label">
-            CÓDIGO C++
+            CÓDIGO MY ENGINE / C++
         </div>
 
         <div class="editor-wrapper">
 
-            <div class="line-numbers"
+            <div
+                class="line-numbers"
                 id="lineNumbers">
             </div>
 
@@ -992,46 +866,48 @@ input[type="color"] {
                 spellcheck="false"
                 autocapitalize="off"
                 autocomplete="off"
-                autocorrect="off">#include <iostream>
-
-int main() {
-
-    std::cout << "Olá, mundo!";
-
-    return 0;
-
-}</textarea>
+                autocorrect="off">manda o papo "Olá, mundo!"</textarea>
 
         </div>
 
     </div>
 
-
     <div class="buttons">
 
-        <button class="run"
+        <button
+            class="run"
             id="runButton"
             onclick="executar()">
+
             ▶ EXECUTAR
+
         </button>
 
-        <button class="input-button"
+        <button
+            class="input-button"
             onclick="alternarEntrada()">
+
             ⌨ ENTRADA
+
         </button>
 
-        <button class="save"
+        <button
+            class="save"
             onclick="abrirSalvar()">
+
             💾 SALVAR
+
         </button>
 
-        <button class="clear"
+        <button
+            class="clear"
             onclick="limpar()">
+
             LIMPAR
+
         </button>
 
     </div>
-
 
     <div class="terminal-area">
 
@@ -1039,11 +915,17 @@ int main() {
             TERMINAL
         </div>
 
-        <div class="terminal" id="terminal">
-            &gt; Aguardando execução...
+        <div
+            class="terminal"
+            id="terminal">
+
+            > Aguardando execução...
+
         </div>
 
-        <div class="input-area" id="inputArea">
+        <div
+            class="input-area"
+            id="inputArea">
 
             <textarea
                 class="stdin-input"
@@ -1052,22 +934,29 @@ int main() {
 
         </div>
 
-        <div class="status" id="status"></div>
+        <div
+            class="status"
+            id="status">
+        </div>
 
     </div>
-
 
     <div class="saved-area">
 
         <div class="saved-title">
 
-            <span>MEUS CÓDIGOS</span>
+            <span>
+                MEUS CÓDIGOS
+            </span>
 
-            <span id="savedCount">0</span>
+            <span id="savedCount">
+                0
+            </span>
 
         </div>
 
-        <div class="saved-list"
+        <div
+            class="saved-list"
             id="savedList">
         </div>
 
@@ -1075,12 +964,13 @@ int main() {
 
 </section>
 
-
 <!-- =========================
      ARTE
 ========================= -->
 
-<section id="artPage" class="page art-page">
+<section
+id="artPage"
+class="page art-page">
 
     <div class="art-top">
 
@@ -1088,57 +978,64 @@ int main() {
             🎨 Editor de Arte
         </div>
 
-        <div class="art-size"
+        <div
+            class="art-size"
             id="artSize">
             32 × 32
         </div>
 
     </div>
 
-
     <div class="art-toolbar">
 
-        <button class="tool active"
+        <button
+            class="tool active"
             id="pencilTool"
             onclick="selecionarFerramenta('pencil')">
             ✏️
         </button>
 
-        <button class="tool"
+        <button
+            class="tool"
             id="eraserTool"
             onclick="selecionarFerramenta('eraser')">
             🧽
         </button>
 
-        <button class="tool"
+        <button
+            class="tool"
             onclick="limparCanvas()">
             🗑️
         </button>
 
-        <button class="tool"
+        <button
+            class="tool"
             onclick="desfazer()">
             ↩️
         </button>
 
-        <button class="tool"
+        <button
+            class="tool"
             onclick="refazer()">
             ↪️
         </button>
 
-        <button class="tool"
+        <button
+            class="tool"
             onclick="alternarGrade()">
             🔲
         </button>
 
-        <button class="tool"
+        <button
+            class="tool"
             onclick="resetZoom()">
             1:1
         </button>
 
     </div>
 
-
-    <div class="canvas-area"
+    <div
+        class="canvas-area"
         id="canvasArea">
 
         <canvas
@@ -1147,13 +1044,13 @@ int main() {
             height="32">
         </canvas>
 
-        <div class="canvas-info"
+        <div
+            class="canvas-info"
             id="canvasInfo">
             Zoom: 100%
         </div>
 
     </div>
-
 
     <div class="art-controls">
 
@@ -1169,7 +1066,6 @@ int main() {
                 value="#ffffff">
 
         </div>
-
 
         <div class="control-box">
 
@@ -1188,25 +1084,28 @@ int main() {
 
     </div>
 
-
     <div class="art-actions">
 
-        <button class="art-action primary"
+        <button
+            class="art-action primary"
             onclick="novoCanvas()">
             🆕 NOVO
         </button>
 
-        <button class="art-action"
+        <button
+            class="art-action"
             onclick="salvarArte()">
             💾 SALVAR
         </button>
 
-        <button class="art-action"
+        <button
+            class="art-action"
             onclick="carregarArte()">
             📂 ABRIR
         </button>
 
-        <button class="art-action"
+        <button
+            class="art-action"
             onclick="resetZoom()">
             🔍 ZOOM
         </button>
@@ -1215,277 +1114,56 @@ int main() {
 
 </section>
 
-
 <!-- =========================
-     GERENCIADOR DE CENAS
+     CENA
 ========================= -->
 
-<section id="scenePage" class="page scene-page">
+<section
+id="scenePage"
+class="page module-page">
 
-    <div class="scene-header">
+    <div class="module-header">
 
-        <div class="scene-title">
-            🗺️ Gerenciador de Cenas
-        </div>
+        <h1>
+            🗺️ Cena
+        </h1>
 
-        <div class="scene-size"
-            id="sceneSize">
-            2000 × 1200
-        </div>
-
-    </div>
-
-
-    <div class="scene-toolbar">
-
-        <button
-            class="scene-tool active"
-            id="sceneSelectTool"
-            onclick="selecionarFerramentaCena('select')">
-            🖐 Selecionar
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('terrain')">
-            🟩 Terreno
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('platform')">
-            🟫 Plataforma
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('tree')">
-            🌳 Árvore
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('player')">
-            🧍 Player
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('enemy')">
-            👾 Inimigo
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('npc')">
-            🧑 NPC
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('spawn')">
-            🚩 Spawn
-        </button>
-
-        <button
-            class="scene-tool"
-            onclick="selecionarFerramentaCena('erase')">
-            🗑️ Apagar
-        </button>
+        <p>
+            Editor visual de mundos,
+            objetos, personagens e props.
+        </p>
 
     </div>
 
+    <div class="coming-soon">
 
-    <div class="scene-workspace">
-
-        <div class="scene-canvas-wrap"
-            id="sceneCanvasWrap">
-
-            <canvas id="sceneCanvas"></canvas>
-
-            <div class="scene-info"
-                id="sceneInfo">
-                Zoom: 100% | Objetos: 0
-            </div>
-
+        <div class="coming-soon-icon">
+            🗺️
         </div>
 
+        <strong>
+            Editor de Cenas
+        </strong>
 
-        <div class="scene-panel">
-
-            <div class="scene-box">
-
-                <h3>
-                    OBJETO
-                </h3>
-
-                <select id="sceneObjectType">
-
-                    <option value="terrain">
-                        🟩 Terreno
-                    </option>
-
-                    <option value="platform">
-                        🟫 Plataforma
-                    </option>
-
-                    <option value="tree">
-                        🌳 Árvore
-                    </option>
-
-                    <option value="player">
-                        🧍 Player
-                    </option>
-
-                    <option value="enemy">
-                        👾 Inimigo
-                    </option>
-
-                    <option value="npc">
-                        🧑 NPC
-                    </option>
-
-                    <option value="spawn">
-                        🚩 Spawn
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="scene-box">
-
-                <h3>
-                    TAMANHO
-                </h3>
-
-                <input
-                    id="sceneObjectSize"
-                    type="range"
-                    min="20"
-                    max="300"
-                    value="80">
-
-            </div>
-
-
-            <div class="scene-box scene-layers">
-
-                <h3>
-                    CAMADAS
-                </h3>
-
-                <div class="layer-list">
-
-                    <div class="layer-item active">
-                        <span>
-                            🌄 Background
-                        </span>
-
-                        <button
-                            onclick="selecionarCamada('background')">
-                            ATIVAR
-                        </button>
-                    </div>
-
-
-                    <div class="layer-item">
-                        <span>
-                            🟩 Terrain
-                        </span>
-
-                        <button
-                            onclick="selecionarCamada('terrain')">
-                            ATIVAR
-                        </button>
-                    </div>
-
-
-                    <div class="layer-item">
-                        <span>
-                            📦 Props
-                        </span>
-
-                        <button
-                            onclick="selecionarCamada('props')">
-                            ATIVAR
-                        </button>
-                    </div>
-
-
-                    <div class="layer-item">
-                        <span>
-                            🧍 Entities
-                        </span>
-
-                        <button
-                            onclick="selecionarCamada('entities')">
-                            ATIVAR
-                        </button>
-                    </div>
-
-
-                    <div class="layer-item">
-                        <span>
-                            🚧 Collision
-                        </span>
-
-                        <button
-                            onclick="selecionarCamada('collision')">
-                            ATIVAR
-                        </button>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="scene-actions">
-
-        <button
-            class="scene-action primary"
-            onclick="novaCena()">
-            🆕 NOVA
-        </button>
-
-        <button
-            class="scene-action"
-            onclick="salvarCena()">
-            💾 SALVAR
-        </button>
-
-        <button
-            class="scene-action"
-            onclick="carregarCena()">
-            📂 ABRIR
-        </button>
-
-        <button
-            class="scene-action"
-            onclick="limparCena()">
-            🗑️ LIMPAR
-        </button>
+        Em desenvolvimento.
 
     </div>
 
 </section>
 
-
 <!-- =========================
-     MÓDULOS FUTUROS
+     TILEMAP
 ========================= -->
 
-<section id="tilemapPage" class="page module-page">
+<section
+id="tilemapPage"
+class="page module-page">
 
     <div class="module-header">
 
-        <h1>🧱 Tilemap</h1>
+        <h1>
+            🧱 Tilemap
+        </h1>
 
         <p>
             Ferramenta para construção
@@ -1510,12 +1188,19 @@ int main() {
 
 </section>
 
+<!-- =========================
+     ASSETS
+========================= -->
 
-<section id="assetsPage" class="page module-page">
+<section
+id="assetsPage"
+class="page module-page">
 
     <div class="module-header">
 
-        <h1>📦 Assets</h1>
+        <h1>
+            📦 Assets
+        </h1>
 
         <p>
             Gerenciamento de sprites,
@@ -1540,12 +1225,19 @@ int main() {
 
 </section>
 
+<!-- =========================
+     ÁUDIO
+========================= -->
 
-<section id="audioPage" class="page module-page">
+<section
+id="audioPage"
+class="page module-page">
 
     <div class="module-header">
 
-        <h1>🎵 Áudio</h1>
+        <h1>
+            🎵 Áudio
+        </h1>
 
         <p>
             Música, efeitos sonoros
@@ -1570,12 +1262,19 @@ int main() {
 
 </section>
 
+<!-- =========================
+     PROJETO
+========================= -->
 
-<section id="projectPage" class="page module-page">
+<section
+id="projectPage"
+class="page module-page">
 
     <div class="module-header">
 
-        <h1>⚙️ Projeto</h1>
+        <h1>
+            ⚙️ Projeto
+        </h1>
 
         <p>
             Configurações e gerenciamento
@@ -1600,12 +1299,13 @@ int main() {
 
 </section>
 
-
 <!-- =========================
      MODAL
 ========================= -->
 
-<div class="modal" id="saveModal">
+<div
+class="modal"
+id="saveModal">
 
     <div class="modal-box">
 
@@ -1638,7 +1338,6 @@ int main() {
 
 </div>
 
-
 <script>
 
 /* =========================================================
@@ -1649,58 +1348,76 @@ function abrirPagina(id, botao) {
 
     document
         .querySelectorAll(".page")
-        .forEach(p =>
-            p.classList.remove("active")
-        );
+        .forEach(function(p) {
+
+            p.classList.remove("active");
+
+        });
 
     const pagina =
         document.getElementById(id);
 
     if (pagina) {
+
         pagina.classList.add("active");
+
     }
 
     document
         .querySelectorAll(".nav-button")
-        .forEach(b =>
-            b.classList.remove("active")
-        );
+        .forEach(function(b) {
+
+            b.classList.remove("active");
+
+        });
 
     if (botao) {
+
         botao.classList.add("active");
+
     }
 
     window.scrollTo(0, 0);
 
-    if (id === "scenePage") {
-        setTimeout(inicializarCenaVisual, 30);
+    if (id === "artPage") {
+
+        setTimeout(function() {
+
+            atualizarCanvasVisual();
+
+        }, 50);
+
     }
 
-    if (id === "artPage") {
-        setTimeout(atualizarCanvasVisual, 30);
-    }
 }
 
 
 function abrirPorId(id) {
 
     const botoes =
-        document.querySelectorAll(".nav-button");
+        document.querySelectorAll(
+            ".nav-button"
+        );
 
     let encontrado = null;
 
-    botoes.forEach(b => {
+    botoes.forEach(function(b) {
 
         const onclick =
             b.getAttribute("onclick") || "";
 
-        if (onclick.includes("'" + id + "'")) {
+        if (
+            onclick.includes("'" + id + "'")
+        ) {
+
             encontrado = b;
+
         }
 
     });
 
     abrirPagina(id, encontrado);
+
 }
 
 
@@ -1738,6 +1455,10 @@ const runButton =
 let executando = false;
 
 
+/* =========================================================
+   LINHAS
+========================================================= */
+
 function atualizarLinhas() {
 
     const quantidade =
@@ -1750,10 +1471,13 @@ function atualizarLinhas() {
         i <= quantidade;
         i++
     ) {
+
         numeros += i + "<br>";
+
     }
 
     lineNumbers.innerHTML = numeros;
+
 }
 
 
@@ -1766,8 +1490,10 @@ editor.addEventListener(
 editor.addEventListener(
     "scroll",
     function() {
+
         lineNumbers.scrollTop =
             editor.scrollTop;
+
     }
 );
 
@@ -1787,8 +1513,13 @@ editor.addEventListener(
                 editor.selectionEnd;
 
             editor.value =
-                editor.value.substring(0, inicio) +
-                "    " +
+                editor.value.substring(
+                    0,
+                    inicio
+                )
+                +
+                "    "
+                +
                 editor.value.substring(fim);
 
             editor.selectionStart =
@@ -1798,93 +1529,316 @@ editor.addEventListener(
                 inicio + 4;
 
             atualizarLinhas();
+
         }
+
     }
 );
 
+
+/* =========================================================
+   LINGUAGEM MY ENGINE
+========================================================= */
+
+/*
+    PRIMEIRO COMANDO:
+
+    manda o papo "Olá!"
+
+    vira:
+
+    std::cout << "Olá!";
+
+    Também aceita:
+
+    manda o papo << "Olá!"
+*/
+
+
+function possuiComandoMyEngine(codigo) {
+
+    return /\bmanda\s+o\s+papo\b/i.test(codigo);
+
+}
+
+
+function traduzirMyEngine(codigo) {
+
+    let resultado = codigo;
+
+    const usaMyEngine =
+        possuiComandoMyEngine(resultado);
+
+
+    /*
+        manda o papo << alguma coisa
+    */
+
+    resultado =
+        resultado.replace(
+            /^(\s*)manda\s+o\s+papo\s*<<\s*(.+)$/gmi,
+            function(
+                match,
+                indentacao,
+                expressao
+            ) {
+
+                expressao =
+                    expressao.trim();
+
+                if (
+                    expressao.endsWith(";")
+                ) {
+
+                    expressao =
+                        expressao.slice(
+                            0,
+                            -1
+                        );
+
+                }
+
+                return (
+                    indentacao +
+                    "std::cout << " +
+                    expressao +
+                    ";"
+                );
+
+            }
+        );
+
+
+    /*
+        manda o papo alguma coisa
+    */
+
+    resultado =
+        resultado.replace(
+            /^(\s*)manda\s+o\s+papo\s+(.+)$/gmi,
+            function(
+                match,
+                indentacao,
+                expressao
+            ) {
+
+                expressao =
+                    expressao.trim();
+
+                if (
+                    expressao.startsWith("<<")
+                ) {
+
+                    expressao =
+                        expressao.substring(2).trim();
+
+                }
+
+                if (
+                    expressao.endsWith(";")
+                ) {
+
+                    expressao =
+                        expressao.slice(
+                            0,
+                            -1
+                        );
+
+                }
+
+                return (
+                    indentacao +
+                    "std::cout << " +
+                    expressao +
+                    ";"
+                );
+
+            }
+        );
+
+
+    /*
+        Se o código usa My Engine,
+        garante iostream.
+    */
+
+    if (usaMyEngine) {
+
+        if (
+            !/#include\s*<iostream>/i
+            .test(resultado)
+        ) {
+
+            resultado =
+                "#include <iostream>\n" +
+                resultado;
+
+        }
+
+    }
+
+
+    /*
+        Se o usuário escreveu somente
+        comandos My Engine e não colocou
+        main(), criamos automaticamente.
+    */
+
+    const possuiMain =
+        /\bmain\s*\(/.test(resultado);
+
+    if (
+        usaMyEngine &&
+        !possuiMain
+    ) {
+
+        const linhas =
+            resultado
+            .split("\n")
+            .filter(function(linha) {
+
+                return !linha
+                    .trim()
+                    .startsWith("#include");
+
+            });
+
+
+        const includes =
+            resultado
+            .split("\n")
+            .filter(function(linha) {
+
+                return linha
+                    .trim()
+                    .startsWith("#include");
+
+            });
+
+
+        resultado =
+            includes.join("\n") +
+            (
+                includes.length
+                    ? "\n\n"
+                    : ""
+            ) +
+            "int main() {\n\n" +
+            linhas.join("\n") +
+            "\n\n    return 0;\n" +
+            "}";
+
+    }
+
+
+    return resultado;
+
+}
+
+
+/* =========================================================
+   ENTRADA
+========================================================= */
 
 function alternarEntrada() {
 
     inputArea.style.display =
         inputArea.style.display === "block"
-        ? "none"
-        : "block";
+            ? "none"
+            : "block";
+
 }
-function traduzirMyEngine(codigo) {
 
-    let resultado = codigo;
 
-    /*
-     * MY ENGINE → C++
-     *
-     * manda o papo X
-     * ↓
-     * std::cout << X
-     */
-
-    resultado = resultado.replace(
-        /^\s*manda o papo\s+(.+)$/gm,
-        'std::cout << $1;'
-    );
-
-    return resultado;
-}
+/* =========================================================
+   EXECUTAR
+========================================================= */
 
 async function executar() {
 
     if (executando) {
+
         return;
+
     }
 
+
     const codigoOriginal =
-    editor.value;
+        editor.value;
 
-const codigo =
-    traduzirMyEngine(codigoOriginal);
 
-    if (!codigo.trim()) {
+    if (!codigoOriginal.trim()) {
 
         terminal.textContent =
             "> Nenhum código foi inserido.";
 
         return;
+
     }
 
+
+    const codigo =
+        traduzirMyEngine(
+            codigoOriginal
+        );
+
+
     executando = true;
+
 
     runButton.disabled = true;
 
     runButton.textContent =
         "⏳ EXECUTANDO";
 
+
     terminal.textContent =
-        "> Enviando código para Judge0...\n";
+        "> Traduzindo código My Engine...\n";
+
 
     status.textContent = "";
 
+
     try {
+
+        /*
+            UTF-8 → Base64
+        */
 
         const codigoBase64 =
             btoa(
                 unescape(
-                    encodeURIComponent(codigo)
+                    encodeURIComponent(
+                        codigo
+                    )
                 )
             );
+
 
         const stdin =
             stdinInput.value;
 
+
         let stdinBase64 = "";
+
 
         if (stdin) {
 
             stdinBase64 =
                 btoa(
                     unescape(
-                        encodeURIComponent(stdin)
+                        encodeURIComponent(
+                            stdin
+                        )
                     )
                 );
+
         }
+
+
+        terminal.textContent =
+            "> Enviando código para Judge0...\n";
+
 
         const resposta =
             await fetch(
@@ -1897,56 +1851,80 @@ const codigo =
                             "application/json"
                     },
 
-                    body: JSON.stringify({
-                        language_id: 54,
-                        source_code: codigoBase64,
-                        stdin: stdinBase64
-                    })
+                    body:
+                        JSON.stringify({
+
+                            language_id: 54,
+
+                            source_code:
+                                codigoBase64,
+
+                            stdin:
+                                stdinBase64
+
+                        })
                 }
             );
 
+
         if (!resposta.ok) {
+
             throw new Error(
                 "Erro HTTP " +
                 resposta.status
             );
+
         }
+
 
         const resultado =
             await resposta.json();
 
+
         let saida = "";
 
+
         if (resultado.stdout) {
+
             saida +=
                 decodificarBase64(
                     resultado.stdout
                 );
+
         }
+
 
         if (resultado.stderr) {
 
             if (saida) {
+
                 saida += "\n";
+
             }
 
             saida +=
                 decodificarBase64(
                     resultado.stderr
                 );
+
         }
+
 
         if (resultado.compile_output) {
 
             if (saida) {
+
                 saida += "\n";
+
             }
 
             saida +=
                 decodificarBase64(
                     resultado.compile_output
                 );
+
         }
+
 
         if (!saida.trim()) {
 
@@ -1956,14 +1934,20 @@ const codigo =
                     resultado.status?.description ||
                     "Programa executado sem saída."
                 );
+
         }
 
-        terminal.textContent = saida;
+
+        terminal.textContent =
+            saida;
+
 
         status.textContent =
             resultado.time
-            ? "Tempo: " + resultado.time + "s"
-            : "";
+                ? "Tempo: " +
+                  resultado.time +
+                  "s"
+                : "";
 
     }
 
@@ -1975,6 +1959,7 @@ const codigo =
 
         status.textContent =
             "Falha na comunicação com Judge0.";
+
     }
 
     finally {
@@ -1985,9 +1970,15 @@ const codigo =
 
         runButton.textContent =
             "▶ EXECUTAR";
+
     }
+
 }
 
+
+/* =========================================================
+   BASE64
+========================================================= */
 
 function decodificarBase64(texto) {
 
@@ -2002,10 +1993,17 @@ function decodificarBase64(texto) {
     }
 
     catch {
+
         return atob(texto);
+
     }
+
 }
 
+
+/* =========================================================
+   LIMPAR CÓDIGO
+========================================================= */
 
 function limpar() {
 
@@ -2019,6 +2017,7 @@ function limpar() {
         "> Terminal limpo.";
 
     status.textContent = "";
+
 }
 
 
@@ -2031,6 +2030,7 @@ function abrirSalvar() {
     document.getElementById(
         "saveModal"
     ).style.display = "flex";
+
 }
 
 
@@ -2039,43 +2039,61 @@ function fecharSalvar() {
     document.getElementById(
         "saveModal"
     ).style.display = "none";
+
 }
 
 
 function salvarCodigo() {
 
     const nomeInput =
-        document.getElementById("codeName");
+        document.getElementById(
+            "codeName"
+        );
+
 
     let nome =
         nomeInput.value.trim();
 
+
     if (!nome) {
-        nome = "Código sem nome";
+
+        nome =
+            "Código sem nome";
+
     }
+
 
     let codigos =
         JSON.parse(
-            localStorage.getItem("cpp_codigos") ||
-            "[]"
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
         );
 
+
     codigos.push({
+
         id: Date.now(),
+
         nome: nome,
+
         codigo: editor.value
+
     });
+
 
     localStorage.setItem(
         "cpp_codigos",
         JSON.stringify(codigos)
     );
 
+
     nomeInput.value = "";
 
     fecharSalvar();
 
     carregarCodigos();
+
 }
 
 
@@ -2083,92 +2101,141 @@ function carregarCodigos() {
 
     const codigos =
         JSON.parse(
-            localStorage.getItem("cpp_codigos") ||
-            "[]"
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
         );
+
 
     savedList.innerHTML = "";
 
     savedCount.textContent =
         codigos.length;
 
-    codigos.forEach(item => {
 
-        const div =
-            document.createElement("div");
+    codigos.forEach(
+        function(item) {
 
-        div.className =
-            "saved-item";
-
-        const nome =
-            document.createElement("div");
-
-        nome.className =
-            "saved-name";
-
-        nome.textContent =
-            item.nome;
-
-        const actions =
-            document.createElement("div");
-
-        actions.className =
-            "saved-actions";
-
-        const abrir =
-            document.createElement("button");
-
-        abrir.className =
-            "open-btn";
-
-        abrir.textContent =
-            "ABRIR";
-
-        abrir.onclick = () => {
-
-            editor.value =
-                item.codigo;
-
-            atualizarLinhas();
-
-            abrirPorId("codePage");
-        };
-
-
-        const excluir =
-            document.createElement("button");
-
-        excluir.className =
-            "delete-btn";
-
-        excluir.textContent =
-            "X";
-
-        excluir.onclick = () => {
-
-            codigos =
-                codigos.filter(
-                    x => x.id !== item.id
+            const div =
+                document.createElement(
+                    "div"
                 );
 
-            localStorage.setItem(
-                "cpp_codigos",
-                JSON.stringify(codigos)
+            div.className =
+                "saved-item";
+
+
+            const nome =
+                document.createElement(
+                    "div"
+                );
+
+            nome.className =
+                "saved-name";
+
+            nome.textContent =
+                item.nome;
+
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+            actions.className =
+                "saved-actions";
+
+
+            const abrir =
+                document.createElement(
+                    "button"
+                );
+
+            abrir.className =
+                "open-btn";
+
+            abrir.textContent =
+                "ABRIR";
+
+
+            abrir.onclick =
+                function() {
+
+                    editor.value =
+                        item.codigo;
+
+                    atualizarLinhas();
+
+                    abrirPorId(
+                        "codePage"
+                    );
+
+                };
+
+
+            const excluir =
+                document.createElement(
+                    "button"
+                );
+
+            excluir.className =
+                "delete-btn";
+
+            excluir.textContent =
+                "X";
+
+
+            excluir.onclick =
+                function() {
+
+                    const novos =
+                        codigos.filter(
+                            function(x) {
+
+                                return (
+                                    x.id !== item.id
+                                );
+
+                            }
+                        );
+
+
+                    localStorage.setItem(
+                        "cpp_codigos",
+                        JSON.stringify(novos)
+                    );
+
+
+                    carregarCodigos();
+
+                };
+
+
+            actions.appendChild(
+                abrir
             );
 
-            carregarCodigos();
-        };
+            actions.appendChild(
+                excluir
+            );
 
 
-        actions.appendChild(abrir);
-        actions.appendChild(excluir);
+            div.appendChild(
+                nome
+            );
 
-        div.appendChild(nome);
-        div.appendChild(actions);
+            div.appendChild(
+                actions
+            );
 
-        savedList.appendChild(div);
 
-    });
+            savedList.appendChild(
+                div
+            );
+
+        }
+    );
+
 }
 
 
@@ -2177,48 +2244,103 @@ function carregarCodigos() {
 ========================================================= */
 
 const artCanvas =
-    document.getElementById("artCanvas");
+    document.getElementById(
+        "artCanvas"
+    );
 
 const canvasArea =
-    document.getElementById("canvasArea");
+    document.getElementById(
+        "canvasArea"
+    );
 
 const colorPicker =
-    document.getElementById("colorPicker");
+    document.getElementById(
+        "colorPicker"
+    );
 
 const brushSize =
-    document.getElementById("brushSize");
+    document.getElementById(
+        "brushSize"
+    );
 
 const artSize =
-    document.getElementById("artSize");
+    document.getElementById(
+        "artSize"
+    );
 
 const canvasInfo =
-    document.getElementById("canvasInfo");
+    document.getElementById(
+        "canvasInfo"
+    );
+
 
 const ctx =
     artCanvas.getContext("2d");
 
-ctx.imageSmoothingEnabled = false;
+
+ctx.imageSmoothingEnabled =
+    false;
 
 
-let ferramenta = "pencil";
+let ferramenta =
+    "pencil";
 
-let gridVisivel = true;
+let gridVisivel =
+    true;
 
-let tamanhoCanvas = 32;
-
-let zoom = 1;
-
-let offsetX = 0;
-
-let offsetY = 0;
-
-let desenhando = false;
+let tamanhoCanvas =
+    32;
 
 let historico = [];
 
 let futuro = [];
 
-let cameraInicializada = false;
+
+/* =========================================================
+   CÂMERA / ZOOM
+========================================================= */
+
+let zoom =
+    1;
+
+let offsetX =
+    0;
+
+let offsetY =
+    0;
+
+let zoomMin =
+    0.5;
+
+let zoomMax =
+    8;
+
+let cameraInicializada =
+    false;
+
+let pontosToque =
+    new Map();
+
+let modoPinch =
+    false;
+
+let distanciaInicial =
+    0;
+
+let zoomInicial =
+    1;
+
+let centroInicialX =
+    0;
+
+let centroInicialY =
+    0;
+
+let offsetInicialX =
+    0;
+
+let offsetInicialY =
+    0;
 
 
 /* =========================================================
@@ -2236,19 +2358,35 @@ function salvarEstado() {
         )
     );
 
-    if (historico.length > 40) {
+
+    if (
+        historico.length > 40
+    ) {
+
         historico.shift();
+
     }
 
+
     futuro = [];
+
 }
 
 
+/* =========================================================
+   DESFAZER
+========================================================= */
+
 function desfazer() {
 
-    if (!historico.length) {
+    if (
+        historico.length === 0
+    ) {
+
         return;
+
     }
+
 
     futuro.push(
         ctx.getImageData(
@@ -2259,19 +2397,34 @@ function desfazer() {
         )
     );
 
+
+    const estado =
+        historico.pop();
+
+
     ctx.putImageData(
-        historico.pop(),
+        estado,
         0,
         0
     );
+
 }
 
 
+/* =========================================================
+   REFAZER
+========================================================= */
+
 function refazer() {
 
-    if (!futuro.length) {
+    if (
+        futuro.length === 0
+    ) {
+
         return;
+
     }
+
 
     historico.push(
         ctx.getImageData(
@@ -2282,11 +2435,17 @@ function refazer() {
         )
     );
 
+
+    const estado =
+        futuro.pop();
+
+
     ctx.putImageData(
-        futuro.pop(),
+        estado,
         0,
         0
     );
+
 }
 
 
@@ -2302,27 +2461,42 @@ function novoCanvas() {
             tamanhoCanvas
         );
 
+
     if (!tamanho) {
+
         return;
+
     }
+
 
     const numero =
         parseInt(tamanho);
 
-    if (![16,32,64,128].includes(numero)) {
+
+    if (
+        ![16, 32, 64, 128]
+        .includes(numero)
+    ) {
 
         alert(
             "Use 16, 32, 64 ou 128."
         );
 
         return;
+
     }
 
-    tamanhoCanvas = numero;
 
-    artCanvas.width = numero;
+    tamanhoCanvas =
+        numero;
 
-    artCanvas.height = numero;
+
+    artCanvas.width =
+        numero;
+
+    artCanvas.height =
+        numero;
+
 
     ctx.clearRect(
         0,
@@ -2331,20 +2505,31 @@ function novoCanvas() {
         numero
     );
 
+
     artSize.textContent =
-        numero + " × " + numero;
+        numero +
+        " × " +
+        numero;
+
 
     historico = [];
 
     futuro = [];
 
-    atualizarCanvasVisual();
+
+    resetZoom();
+
 }
 
+
+/* =========================================================
+   LIMPAR CANVAS
+========================================================= */
 
 function limparCanvas() {
 
     salvarEstado();
+
 
     ctx.clearRect(
         0,
@@ -2352,35 +2537,57 @@ function limparCanvas() {
         artCanvas.width,
         artCanvas.height
     );
+
 }
 
 
+/* =========================================================
+   FERRAMENTAS
+========================================================= */
+
 function selecionarFerramenta(nome) {
 
-    ferramenta = nome;
+    ferramenta =
+        nome;
+
 
     document
         .querySelectorAll(".tool")
-        .forEach(
-            b =>
-            b.classList.remove("active")
-        );
+        .forEach(function(b) {
 
-    if (nome === "pencil") {
+            b.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    if (
+        nome === "pencil"
+    ) {
 
         document
-            .getElementById("pencilTool")
-            .classList.add("active");
+            .getElementById(
+                "pencilTool"
+            )
+            .classList.add(
+                "active"
+            );
 
     }
 
     else {
 
         document
-            .getElementById("eraserTool")
-            .classList.add("active");
+            .getElementById(
+                "eraserTool"
+            )
+            .classList.add(
+                "active"
+            );
 
     }
+
 }
 
 
@@ -2393,37 +2600,53 @@ function obterPixel(event) {
     const rect =
         artCanvas.getBoundingClientRect();
 
+
     const x =
         Math.floor(
             (
                 event.clientX -
                 rect.left
-            ) /
-            rect.width *
+            )
+            /
+            rect.width
+            *
             artCanvas.width
         );
+
 
     const y =
         Math.floor(
             (
                 event.clientY -
                 rect.top
-            ) /
-            rect.height *
+            )
+            /
+            rect.height
+            *
             artCanvas.height
         );
+
 
     return {
         x,
         y
     };
+
 }
 
 
 function pintar(event) {
 
+    if (modoPinch) {
+
+        return;
+
+    }
+
+
     const pixel =
         obterPixel(event);
+
 
     if (
         pixel.x < 0 ||
@@ -2431,16 +2654,27 @@ function pintar(event) {
         pixel.x >= artCanvas.width ||
         pixel.y >= artCanvas.height
     ) {
+
         return;
+
     }
 
-    const tamanho =
-        parseInt(brushSize.value);
 
-    if (ferramenta === "eraser") {
+    const tamanho =
+        parseInt(
+            brushSize.value
+        );
+
+
+    if (
+        ferramenta === "eraser"
+    ) {
 
         ctx.globalCompositeOperation =
             "destination-out";
+
+        ctx.fillStyle =
+            "rgba(0,0,0,1)";
 
     }
 
@@ -2451,17 +2685,200 @@ function pintar(event) {
 
         ctx.fillStyle =
             colorPicker.value;
+
     }
 
+
     ctx.fillRect(
-        pixel.x - Math.floor(tamanho / 2),
-        pixel.y - Math.floor(tamanho / 2),
+
+        pixel.x -
+        Math.floor(tamanho / 2),
+
+        pixel.y -
+        Math.floor(tamanho / 2),
+
         tamanho,
+
         tamanho
+
     );
+
 
     ctx.globalCompositeOperation =
         "source-over";
+
+}
+
+
+/* =========================================================
+   TOUCH / POINTER
+========================================================= */
+
+function distanciaEntrePontos(a, b) {
+
+    return Math.hypot(
+        a.x - b.x,
+        a.y - b.y
+    );
+
+}
+
+
+function centroEntrePontos(a, b) {
+
+    return {
+        x: (a.x + b.x) / 2,
+        y: (a.y + b.y) / 2
+    };
+
+}
+
+
+function iniciarPinch() {
+
+    const pontos =
+        Array.from(
+            pontosToque.values()
+        );
+
+
+    if (
+        pontos.length < 2
+    ) {
+
+        return;
+
+    }
+
+
+    modoPinch =
+        true;
+
+    desenhando =
+        false;
+
+
+    const p1 =
+        pontos[0];
+
+    const p2 =
+        pontos[1];
+
+
+    distanciaInicial =
+        distanciaEntrePontos(
+            p1,
+            p2
+        );
+
+
+    zoomInicial =
+        zoom;
+
+
+    const centro =
+        centroEntrePontos(
+            p1,
+            p2
+        );
+
+
+    centroInicialX =
+        centro.x;
+
+    centroInicialY =
+        centro.y;
+
+
+    offsetInicialX =
+        offsetX;
+
+    offsetInicialY =
+        offsetY;
+
+}
+
+
+function atualizarPinch() {
+
+    const pontos =
+        Array.from(
+            pontosToque.values()
+        );
+
+
+    if (
+        pontos.length < 2 ||
+        distanciaInicial <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    const p1 =
+        pontos[0];
+
+    const p2 =
+        pontos[1];
+
+
+    const distancia =
+        distanciaEntrePontos(
+            p1,
+            p2
+        );
+
+
+    let novoZoom =
+        zoomInicial *
+        (
+            distancia /
+            distanciaInicial
+        );
+
+
+    novoZoom =
+        Math.max(
+            zoomMin,
+            Math.min(
+                zoomMax,
+                novoZoom
+            )
+        );
+
+
+    const centro =
+        centroEntrePontos(
+            p1,
+            p2
+        );
+
+
+    const fator =
+        novoZoom /
+        zoomInicial;
+
+
+    offsetX =
+        centro.x -
+        centroInicialX * fator +
+        offsetInicialX * fator;
+
+
+    offsetY =
+        centro.y -
+        centroInicialY * fator +
+        offsetInicialY * fator;
+
+
+    zoom =
+        novoZoom;
+
+
+    aplicarCamera();
+
 }
 
 
@@ -2471,15 +2888,42 @@ artCanvas.addEventListener(
 
         event.preventDefault();
 
-        salvarEstado();
 
-        desenhando = true;
+        pontosToque.set(
+            event.pointerId,
+            {
+                x: event.clientX,
+                y: event.clientY
+            }
+        );
+
 
         artCanvas.setPointerCapture(
             event.pointerId
         );
 
+
+        if (
+            pontosToque.size >= 2
+        ) {
+
+            iniciarPinch();
+
+            return;
+
+        }
+
+
+        modoPinch =
+            false;
+
+        salvarEstado();
+
+        desenhando =
+            true;
+
         pintar(event);
+
     }
 );
 
@@ -2488,43 +2932,107 @@ artCanvas.addEventListener(
     "pointermove",
     function(event) {
 
-        if (!desenhando) {
-            return;
-        }
-
         event.preventDefault();
 
+
+        if (
+            pontosToque.has(
+                event.pointerId
+            )
+        ) {
+
+            pontosToque.set(
+                event.pointerId,
+                {
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            );
+
+        }
+
+
+        if (
+            pontosToque.size >= 2
+        ) {
+
+            if (!modoPinch) {
+
+                iniciarPinch();
+
+            }
+
+            atualizarPinch();
+
+            return;
+
+        }
+
+
+        if (
+            !desenhando ||
+            modoPinch
+        ) {
+
+            return;
+
+        }
+
+
         pintar(event);
+
     }
 );
 
 
+function finalizarPointer(event) {
+
+    pontosToque.delete(
+        event.pointerId
+    );
+
+
+    desenhando =
+        false;
+
+
+    if (
+        pontosToque.size < 2
+    ) {
+
+        modoPinch =
+            false;
+
+    }
+
+
+    try {
+
+        artCanvas.releasePointerCapture(
+            event.pointerId
+        );
+
+    }
+
+    catch {}
+
+}
+
+
 artCanvas.addEventListener(
     "pointerup",
-    function(event) {
-
-        desenhando = false;
-
-        try {
-            artCanvas.releasePointerCapture(
-                event.pointerId
-            );
-        }
-        catch {}
-    }
+    finalizarPointer
 );
 
 
 artCanvas.addEventListener(
     "pointercancel",
-    function() {
-        desenhando = false;
-    }
+    finalizarPointer
 );
 
 
 /* =========================================================
-   VISUAL DO CANVAS
+   GRADE
 ========================================================= */
 
 function alternarGrade() {
@@ -2532,66 +3040,8 @@ function alternarGrade() {
     gridVisivel =
         !gridVisivel;
 
-    atualizarCanvasVisual();
-}
-
-
-function atualizarCanvasVisual() {
-
-    if (!canvasArea) {
-        return;
-    }
-
-    const tamanho =
-        Math.min(
-            canvasArea.clientWidth,
-            canvasArea.clientHeight
-        );
-
-    const tamanhoBase =
-        Math.max(
-            256,
-            Math.min(512, tamanho)
-        );
-
-    artCanvas.style.width =
-        tamanhoBase + "px";
-
-    artCanvas.style.height =
-        tamanhoBase + "px";
-
-    if (!cameraInicializada) {
-
-        zoom = 1;
-
-        offsetX = 0;
-
-        offsetY = 0;
-
-        cameraInicializada = true;
-    }
-
-    aplicarCameraArte();
-
     desenharGrade();
-}
 
-
-function aplicarCameraArte() {
-
-    artCanvas.style.transform =
-        "translate(calc(-50% + " +
-        offsetX +
-        "px), calc(-50% + " +
-        offsetY +
-        "px)) scale(" +
-        zoom +
-        ")";
-
-    canvasInfo.textContent =
-        "Zoom: " +
-        Math.round(zoom * 100) +
-        "%";
 }
 
 
@@ -2616,34 +3066,146 @@ function desenharGrade() {
 
         artCanvas.style.backgroundImage =
             "none";
+
     }
+
+}
+
+
+/* =========================================================
+   CÂMERA
+========================================================= */
+
+function aplicarCamera() {
+
+    artCanvas.style.transform =
+        "translate(-50%, -50%) " +
+        "translate(" +
+        offsetX +
+        "px, " +
+        offsetY +
+        "px) " +
+        "scale(" +
+        zoom +
+        ")";
+
+
+    canvasInfo.textContent =
+        "Zoom: " +
+        Math.round(
+            zoom * 100
+        ) +
+        "%";
+
+}
+
+
+function atualizarCanvasVisual() {
+
+    const largura =
+        canvasArea.clientWidth;
+
+    const altura =
+        canvasArea.clientHeight;
+
+
+    const tamanho =
+        Math.min(
+            largura,
+            altura
+        );
+
+
+    const tamanhoBase =
+        Math.max(
+            256,
+            Math.min(
+                512,
+                tamanho
+            )
+        );
+
+
+    artCanvas.style.width =
+        tamanhoBase +
+        "px";
+
+    artCanvas.style.height =
+        tamanhoBase +
+        "px";
+
+
+    if (!cameraInicializada) {
+
+        zoom =
+            Math.max(
+                1,
+                Math.min(
+                    2,
+                    tamanho /
+                    tamanhoBase
+                )
+            );
+
+        offsetX =
+            0;
+
+        offsetY =
+            0;
+
+        cameraInicializada =
+            true;
+
+    }
+
+
+    aplicarCamera();
+
+    desenharGrade();
+
 }
 
 
 function resetZoom() {
 
-    zoom = 1;
+    zoom =
+        1;
 
-    offsetX = 0;
+    offsetX =
+        0;
 
-    offsetY = 0;
+    offsetY =
+        0;
 
-    aplicarCameraArte();
+    modoPinch =
+        false;
+
+    pontosToque.clear();
+
+    aplicarCamera();
+
 }
 
 
 /* =========================================================
-   SALVAR / CARREGAR ARTE
+   SALVAR ARTE
 ========================================================= */
 
 function salvarArte() {
 
     try {
 
+        const imagem =
+            artCanvas.toDataURL(
+                "image/png"
+            );
+
+
         localStorage.setItem(
             "engine_arte",
-            artCanvas.toDataURL("image/png")
+            imagem
         );
+
 
         alert(
             "Arte salva no dispositivo."
@@ -2656,9 +3218,15 @@ function salvarArte() {
         alert(
             "Não foi possível salvar."
         );
+
     }
+
 }
 
+
+/* =========================================================
+   CARREGAR ARTE
+========================================================= */
 
 function carregarArte() {
 
@@ -2667,6 +3235,7 @@ function carregarArte() {
             "engine_arte"
         );
 
+
     if (!imagem) {
 
         alert(
@@ -2674,1056 +3243,44 @@ function carregarArte() {
         );
 
         return;
+
     }
+
 
     const img =
         new Image();
 
-    img.onload = function() {
 
-        ctx.clearRect(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
-
-        ctx.drawImage(
-            img,
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
-    };
-
-    img.src = imagem;
-}
-
-
-/* =========================================================
-   GERENCIADOR DE CENAS
-========================================================= */
-
-const sceneCanvas =
-    document.getElementById("sceneCanvas");
-
-const sceneCanvasWrap =
-    document.getElementById("sceneCanvasWrap");
-
-const sceneInfo =
-    document.getElementById("sceneInfo");
-
-const sceneSize =
-    document.getElementById("sceneSize");
-
-const sceneCtx =
-    sceneCanvas.getContext("2d");
-
-
-let cena = {
-
-    width: 2000,
-
-    height: 1200,
-
-    objetos: []
-
-};
-
-
-let ferramentaCena = "select";
-
-let camadaCena = "background";
-
-let cenaZoom = 1;
-
-let cenaOffsetX = 0;
-
-let cenaOffsetY = 0;
-
-let cenaInicializada = false;
-
-let objetoSelecionado = null;
-
-let arrastandoObjeto = false;
-
-let arrastandoCamera = false;
-
-let ultimoMouseX = 0;
-
-let ultimoMouseY = 0;
-
-
-/* =========================================================
-   INICIALIZAÇÃO DA CENA
-========================================================= */
-
-function inicializarCenaVisual() {
-
-    if (!sceneCanvasWrap) {
-        return;
-    }
-
-    const rect =
-        sceneCanvasWrap.getBoundingClientRect();
-
-    const dpr =
-        window.devicePixelRatio || 1;
-
-    sceneCanvas.width =
-        rect.width * dpr;
-
-    sceneCanvas.height =
-        rect.height * dpr;
-
-    sceneCtx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-    if (!cenaInicializada) {
-
-        cenaZoom = 0.45;
-
-        cenaOffsetX = 0;
-
-        cenaOffsetY = 0;
-
-        cenaInicializada = true;
-    }
-
-    desenharCena();
-}
-
-
-function desenharCena() {
-
-    if (!sceneCanvasWrap) {
-        return;
-    }
-
-    const rect =
-        sceneCanvasWrap.getBoundingClientRect();
-
-    const largura =
-        rect.width;
-
-    const altura =
-        rect.height;
-
-    sceneCtx.clearRect(
-        0,
-        0,
-        largura,
-        altura
-    );
-
-
-    /* FUNDO */
-
-    sceneCtx.fillStyle =
-        "#0a0d12";
-
-    sceneCtx.fillRect(
-        0,
-        0,
-        largura,
-        altura
-    );
-
-
-    /* TRANSFORMAÇÃO DA CENA */
-
-    sceneCtx.save();
-
-    sceneCtx.translate(
-        largura / 2 + cenaOffsetX,
-        altura / 2 + cenaOffsetY
-    );
-
-    sceneCtx.scale(
-        cenaZoom,
-        cenaZoom
-    );
-
-    sceneCtx.translate(
-        -cena.width / 2,
-        -cena.height / 2
-    );
-
-
-    /* FUNDO DA CENA */
-
-    sceneCtx.fillStyle =
-        "#182333";
-
-    sceneCtx.fillRect(
-        0,
-        0,
-        cena.width,
-        cena.height
-    );
-
-
-    /* GRADE */
-
-    const grade =
-        100;
-
-    sceneCtx.strokeStyle =
-        "rgba(255,255,255,.08)";
-
-    sceneCtx.lineWidth =
-        1 / cenaZoom;
-
-    for (
-        let x = 0;
-        x <= cena.width;
-        x += grade
-    ) {
-
-        sceneCtx.beginPath();
-
-        sceneCtx.moveTo(x, 0);
-
-        sceneCtx.lineTo(
-            x,
-            cena.height
-        );
-
-        sceneCtx.stroke();
-    }
-
-
-    for (
-        let y = 0;
-        y <= cena.height;
-        y += grade
-    ) {
-
-        sceneCtx.beginPath();
-
-        sceneCtx.moveTo(0, y);
-
-        sceneCtx.lineTo(
-            cena.width,
-            y
-        );
-
-        sceneCtx.stroke();
-    }
-
-
-    /* OBJETOS */
-
-    cena.objetos.forEach(
-        objeto =>
-            desenharObjetoCena(
-                objeto
-            )
-    );
-
-
-    sceneCtx.restore();
-
-
-    sceneInfo.textContent =
-        "Zoom: " +
-        Math.round(cenaZoom * 100) +
-        "% | Objetos: " +
-        cena.objetos.length;
-}
-
-
-function desenharObjetoCena(objeto) {
-
-    const x = objeto.x;
-
-    const y = objeto.y;
-
-    const tamanho =
-        objeto.tamanho || 80;
-
-
-    let emoji = "⬜";
-
-    let cor = "#777";
-
-
-    switch (objeto.tipo) {
-
-        case "terrain":
-            emoji = "🟩";
-            cor = "#3d9b48";
-            break;
-
-        case "platform":
-            emoji = "🟫";
-            cor = "#8b5a2b";
-            break;
-
-        case "tree":
-            emoji = "🌳";
-            cor = "#267d36";
-            break;
-
-        case "player":
-            emoji = "🧍";
-            cor = "#2878ff";
-            break;
-
-        case "enemy":
-            emoji = "👾";
-            cor = "#d43b3b";
-            break;
-
-        case "npc":
-            emoji = "🧑";
-            cor = "#d9a441";
-            break;
-
-        case "spawn":
-            emoji = "🚩";
-            cor = "#ff4d4d";
-            break;
-    }
-
-
-    if (objeto.tipo === "terrain") {
-
-        sceneCtx.fillStyle =
-            cor;
-
-        sceneCtx.fillRect(
-            x - tamanho / 2,
-            y - tamanho / 4,
-            tamanho,
-            tamanho / 2
-        );
-
-    }
-
-    else if (objeto.tipo === "platform") {
-
-        sceneCtx.fillStyle =
-            cor;
-
-        sceneCtx.fillRect(
-            x - tamanho / 2,
-            y - tamanho / 8,
-            tamanho,
-            tamanho / 4
-        );
-
-    }
-
-    else {
-
-        sceneCtx.font =
-            tamanho + "px sans-serif";
-
-        sceneCtx.textAlign =
-            "center";
-
-        sceneCtx.textBaseline =
-            "middle";
-
-        sceneCtx.fillText(
-            emoji,
-            x,
-            y
-        );
-    }
-
-
-    if (
-        objeto === objetoSelecionado
-    ) {
-
-        sceneCtx.strokeStyle =
-            "#2878ff";
-
-        sceneCtx.lineWidth =
-            4 / cenaZoom;
-
-        sceneCtx.strokeRect(
-            x - tamanho / 2,
-            y - tamanho / 2,
-            tamanho,
-            tamanho
-        );
-    }
-}
-
-
-/* =========================================================
-   FERRAMENTAS DA CENA
-========================================================= */
-
-function selecionarFerramentaCena(nome) {
-
-    ferramentaCena =
-        nome;
-
-    document
-        .querySelectorAll(".scene-tool")
-        .forEach(
-            b =>
-            b.classList.remove("active")
-        );
-
-
-    const botoes =
-        document.querySelectorAll(
-            ".scene-tool"
-        );
-
-
-    botoes.forEach(
-        botao => {
-
-            const texto =
-                botao.textContent
-                .toLowerCase();
-
-            const mapa = {
-
-                select: "selecionar",
-
-                terrain: "terreno",
-
-                platform: "plataforma",
-
-                tree: "árvore",
-
-                player: "player",
-
-                enemy: "inimigo",
-
-                npc: "npc",
-
-                spawn: "spawn",
-
-                erase: "apagar"
-            };
-
-            if (
-                mapa[nome] &&
-                texto.includes(
-                    mapa[nome]
-                )
-            ) {
-
-                botao.classList.add(
-                    "active"
-                );
-            }
-        }
-    );
-
-
-    if (
-        nome !== "select" &&
-        nome !== "erase"
-    ) {
-
-        document.getElementById(
-            "sceneObjectType"
-        ).value = nome;
-    }
-}
-
-
-/* =========================================================
-   CONVERSÃO DE COORDENADAS
-========================================================= */
-
-function obterCoordenadaCena(event) {
-
-    const rect =
-        sceneCanvas.getBoundingClientRect();
-
-    const mouseX =
-        event.clientX -
-        rect.left;
-
-    const mouseY =
-        event.clientY -
-        rect.top;
-
-
-    const x =
-        (
-            mouseX -
-            rect.width / 2 -
-            cenaOffsetX
-        ) /
-        cenaZoom +
-        cena.width / 2;
-
-
-    const y =
-        (
-            mouseY -
-            rect.height / 2 -
-            cenaOffsetY
-        ) /
-        cenaZoom +
-        cena.height / 2;
-
-
-    return {
-        x,
-        y
-    };
-}
-
-
-/* =========================================================
-   CRIAR OBJETO
-========================================================= */
-
-function criarObjetoCena(x, y) {
-
-    const tipo =
-        document.getElementById(
-            "sceneObjectType"
-        ).value;
-
-
-    const tamanho =
-        parseInt(
-            document.getElementById(
-                "sceneObjectSize"
-            ).value
-        );
-
-
-    const objeto = {
-
-        id: Date.now() +
-            Math.random(),
-
-        tipo: tipo,
-
-        camada: camadaCena,
-
-        x: Math.max(
-            0,
-            Math.min(
-                cena.width,
-                x
-            )
-        ),
-
-        y: Math.max(
-            0,
-            Math.min(
-                cena.height,
-                y
-            )
-        ),
-
-        tamanho: tamanho
-    };
-
-
-    cena.objetos.push(
-        objeto
-    );
-
-
-    objetoSelecionado =
-        objeto;
-
-
-    desenharCena();
-}
-
-
-/* =========================================================
-   SELECIONAR OBJETO
-========================================================= */
-
-function encontrarObjeto(x, y) {
-
-    for (
-        let i =
-            cena.objetos.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const objeto =
-            cena.objetos[i];
-
-        const tamanho =
-            objeto.tamanho || 80;
-
-        if (
-            Math.abs(x - objeto.x) <=
-                tamanho / 2 &&
-            Math.abs(y - objeto.y) <=
-                tamanho / 2
-        ) {
-
-            return objeto;
-        }
-    }
-
-    return null;
-}
-
-
-/* =========================================================
-   EVENTOS DO CANVAS DA CENA
-========================================================= */
-
-sceneCanvas.addEventListener(
-    "pointerdown",
-    function(event) {
-
-        event.preventDefault();
-
-        const pos =
-            obterCoordenadaCena(event);
-
-
-        if (
-            ferramentaCena === "erase"
-        ) {
-
-            const objeto =
-                encontrarObjeto(
-                    pos.x,
-                    pos.y
-                );
-
-            if (objeto) {
-
-                cena.objetos =
-                    cena.objetos.filter(
-                        x =>
-                        x.id !== objeto.id
-                    );
-
-                objetoSelecionado =
-                    null;
-
-                desenharCena();
-            }
-
-            return;
-        }
-
-
-        if (
-            ferramentaCena !== "select"
-        ) {
-
-            criarObjetoCena(
-                pos.x,
-                pos.y
-            );
-
-            return;
-        }
-
-
-        const objeto =
-            encontrarObjeto(
-                pos.x,
-                pos.y
+    img.onload =
+        function() {
+
+            ctx.clearRect(
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
             );
 
 
-        if (objeto) {
-
-            objetoSelecionado =
-                objeto;
-
-            arrastandoObjeto =
-                true;
-
-            sceneCanvas.setPointerCapture(
-                event.pointerId
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                artCanvas.width,
+                artCanvas.height
             );
 
-        }
-
-        else {
-
-            objetoSelecionado =
-                null;
-
-            arrastandoCamera =
-                true;
-
-            ultimoMouseX =
-                event.clientX;
-
-            ultimoMouseY =
-                event.clientY;
-
-            sceneCanvas.setPointerCapture(
-                event.pointerId
-            );
-        }
+        };
 
 
-        desenharCena();
-    }
-);
+    img.src =
+        imagem;
 
-
-sceneCanvas.addEventListener(
-    "pointermove",
-    function(event) {
-
-        if (
-            arrastandoObjeto &&
-            objetoSelecionado
-        ) {
-
-            const pos =
-                obterCoordenadaCena(event);
-
-            objetoSelecionado.x =
-                Math.max(
-                    0,
-                    Math.min(
-                        cena.width,
-                        pos.x
-                    )
-                );
-
-            objetoSelecionado.y =
-                Math.max(
-                    0,
-                    Math.min(
-                        cena.height,
-                        pos.y
-                    )
-                );
-
-            desenharCena();
-
-            return;
-        }
-
-
-        if (arrastandoCamera) {
-
-            cenaOffsetX +=
-                event.clientX -
-                ultimoMouseX;
-
-            cenaOffsetY +=
-                event.clientY -
-                ultimoMouseY;
-
-            ultimoMouseX =
-                event.clientX;
-
-            ultimoMouseY =
-                event.clientY;
-
-            desenharCena();
-        }
-    }
-);
-
-
-sceneCanvas.addEventListener(
-    "pointerup",
-    function(event) {
-
-        arrastandoObjeto =
-            false;
-
-        arrastandoCamera =
-            false;
-
-        try {
-
-            sceneCanvas.releasePointerCapture(
-                event.pointerId
-            );
-
-        }
-        catch {}
-    }
-);
-
-
-sceneCanvas.addEventListener(
-    "pointercancel",
-    function() {
-
-        arrastandoObjeto =
-            false;
-
-        arrastandoCamera =
-            false;
-    }
-);
-
-
-/* =========================================================
-   ZOOM DA CENA
-========================================================= */
-
-sceneCanvas.addEventListener(
-    "wheel",
-    function(event) {
-
-        event.preventDefault();
-
-        const fator =
-            event.deltaY < 0
-            ? 1.1
-            : 0.9;
-
-        cenaZoom =
-            Math.max(
-                0.15,
-                Math.min(
-                    3,
-                    cenaZoom * fator
-                )
-            );
-
-        desenharCena();
-    },
-    { passive: false }
-);
-
-
-/* =========================================================
-   CAMADA
-========================================================= */
-
-function selecionarCamada(nome) {
-
-    camadaCena =
-        nome;
-
-    document
-        .querySelectorAll(".layer-item")
-        .forEach(
-            item =>
-            item.classList.remove(
-                "active"
-            )
-        );
-
-
-    const itens =
-        document.querySelectorAll(
-            ".layer-item"
-        );
-
-
-    itens.forEach(item => {
-
-        if (
-            item.textContent
-            .toLowerCase()
-            .includes(nome)
-        ) {
-
-            item.classList.add(
-                "active"
-            );
-        }
-    });
 }
 
 
 /* =========================================================
-   NOVA CENA
-========================================================= */
-
-function novaCena() {
-
-    if (
-        cena.objetos.length > 0
-    ) {
-
-        const confirmar =
-            confirm(
-                "Criar uma nova cena?\n\nOs objetos atuais serão apagados."
-            );
-
-        if (!confirmar) {
-            return;
-        }
-    }
-
-
-    cena = {
-
-        width: 2000,
-
-        height: 1200,
-
-        objetos: []
-
-    };
-
-
-    objetoSelecionado =
-        null;
-
-    cenaZoom =
-        0.45;
-
-    cenaOffsetX =
-        0;
-
-    cenaOffsetY =
-        0;
-
-    sceneSize.textContent =
-        cena.width +
-        " × " +
-        cena.height;
-
-    desenharCena();
-}
-
-
-/* =========================================================
-   LIMPAR CENA
-========================================================= */
-
-function limparCena() {
-
-    if (
-        !cena.objetos.length
-    ) {
-        return;
-    }
-
-
-    const confirmar =
-        confirm(
-            "Apagar todos os objetos da cena?"
-        );
-
-
-    if (!confirmar) {
-        return;
-    }
-
-
-    cena.objetos = [];
-
-    objetoSelecionado = null;
-
-    desenharCena();
-}
-
-
-/* =========================================================
-   SALVAR CENA
-========================================================= */
-
-function salvarCena() {
-
-    try {
-
-        localStorage.setItem(
-            "my_engine_scene",
-            JSON.stringify(cena)
-        );
-
-        alert(
-            "Cena salva no dispositivo."
-        );
-
-    }
-
-    catch {
-
-        alert(
-            "Não foi possível salvar a cena."
-        );
-    }
-}
-
-
-/* =========================================================
-   CARREGAR CENA
-========================================================= */
-
-function carregarCena() {
-
-    const dados =
-        localStorage.getItem(
-            "my_engine_scene"
-        );
-
-
-    if (!dados) {
-
-        alert(
-            "Nenhuma cena salva."
-        );
-
-        return;
-    }
-
-
-    try {
-
-        const nova =
-            JSON.parse(dados);
-
-
-        if (
-            !nova ||
-            !Array.isArray(
-                nova.objetos
-            )
-        ) {
-
-            throw new Error(
-                "Cena inválida."
-            );
-        }
-
-
-        cena = nova;
-
-        objetoSelecionado =
-            null;
-
-        sceneSize.textContent =
-            cena.width +
-            " × " +
-            cena.height;
-
-        inicializarCenaVisual();
-
-    }
-
-    catch {
-
-        alert(
-            "Não foi possível carregar a cena."
-        );
-    }
-}
-
-
-/* =========================================================
-   REDIMENSIONAMENTO
+   RESIZE
 ========================================================= */
 
 window.addEventListener(
@@ -3732,24 +3289,15 @@ window.addEventListener(
 
         if (
             document
-            .getElementById("artPage")
-            .classList
-            .contains("active")
+                .getElementById("artPage")
+                .classList
+                .contains("active")
         ) {
 
             atualizarCanvasVisual();
+
         }
 
-
-        if (
-            document
-            .getElementById("scenePage")
-            .classList
-            .contains("active")
-        ) {
-
-            inicializarCenaVisual();
-        }
     }
 );
 
@@ -3764,8 +3312,7 @@ carregarCodigos();
 
 atualizarCanvasVisual();
 
-inicializarCenaVisual();
-
 </script>
 
 </body>
+</html>
