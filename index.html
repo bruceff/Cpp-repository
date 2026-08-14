@@ -2,1360 +2,2287 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>My Engine</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;background:#0d0d0d;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{padding-bottom:80px}
-.header{height:60px;display:flex;align-items:center;justify-content:center;background:#111;border-bottom:1px solid #292929;font-size:20px;font-weight:800;position:sticky;top:0;z-index:100}
-.navigation{display:flex;gap:6px;padding:8px;background:#151515;border-bottom:1px solid #292929;overflow-x:auto}
-.navigation::-webkit-scrollbar{display:none}
-.nav-button{flex:0 0 auto;min-height:40px;padding:8px 12px;border:1px solid #292929;border-radius:9px;background:#1c1c1c;color:#aaa;font-size:12px;font-weight:700}
-.nav-button.active{background:#2878ff;border-color:#2878ff;color:#fff}
-.page{display:none}.page.active{display:block}
-.home,.editor-area,.module-page,.dictionary-page{padding:20px}
-.hero{padding:25px 20px;background:linear-gradient(145deg,#171717,#101010);border:1px solid #292929;border-radius:16px;margin-bottom:15px}
-.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:#888;line-height:1.5;font-size:14px}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.card{min-height:120px;padding:16px;background:#171717;border:1px solid #292929;border-radius:14px;cursor:pointer}
-.card-icon{font-size:26px;margin-bottom:8px}.card-title{font-size:14px;font-weight:800}.card-description{margin-top:5px;color:#777;font-size:11px;line-height:1.4}
-.label{margin-bottom:8px;color:#888;font-size:13px;font-weight:700}
-.editor-wrapper{display:flex;width:100%;height:48vh;min-height:300px;overflow:hidden;background:#181818;border:1px solid #333;border-radius:10px}
-.line-numbers{width:44px;flex-shrink:0;padding-top:15px;padding-right:9px;background:#151515;color:#666;text-align:right;font-family:Menlo,monospace;font-size:15px;line-height:1.5;user-select:none;overflow:hidden}
-.editor{flex:1;width:100%;height:100%;padding:15px;margin:0;resize:none;outline:none;border:none;background:#181818;color:#f5f5f5;caret-color:#fff;font-family:Menlo,monospace;font-size:15px;line-height:1.5;tab-size:4;white-space:pre;overflow:auto}
-.buttons{display:flex;gap:8px;padding:0 15px 15px}
-button{min-height:46px;padding:12px 8px;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer}
-.run{flex:1;background:#20c968}.input-button{flex:1;background:#8e44ad}.save{flex:1;background:#2878ff}.clear{flex:1;background:#292929}
-.terminal-area,.saved-area{padding:0 15px 20px}
-.terminal{min-height:150px;padding:15px;background:#050505;border:1px solid #222;border-radius:10px;color:#00ff66;font-family:Menlo,monospace;font-size:14px;line-height:1.5;white-space:pre-wrap;overflow:auto}
-.input-area{display:none;margin-top:10px;padding:12px;background:#151515;border:1px solid #292929;border-radius:10px}
-.stdin-input{width:100%;min-height:90px;padding:13px;resize:vertical;background:#0b0b0b;color:#fff;border:1px solid #333;border-radius:8px;outline:none;font-family:Menlo,monospace;font-size:15px}
-.status{margin-top:8px;color:#777;font-size:12px}
-.translated-box{margin:0 15px 15px;background:#111;border:1px solid #292929;border-radius:10px;overflow:hidden}
-.translated-title{padding:10px 12px;background:#181818;color:#aaa;font-size:12px;font-weight:800}
-.translated-code{margin:0;padding:14px;max-height:260px;overflow:auto;color:#7cff9b;font-family:Menlo,monospace;font-size:13px;white-space:pre-wrap}
-.saved-title{display:flex;justify-content:space-between;margin-bottom:10px;color:#888;font-size:13px;font-weight:700}
-.saved-list{display:flex;flex-direction:column;gap:8px}.saved-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;background:#181818;border:1px solid #2b2b2b;border-radius:10px}
-.saved-name{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.saved-actions{display:flex;gap:6px}.saved-actions button{min-height:auto;padding:8px 10px;font-size:12px}.open-btn{background:#333}.delete-btn{background:#8f2525}
-.art-page{padding:10px}.art-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.art-title{font-size:18px;font-weight:800}.art-size{color:#777;font-size:12px}
-.art-toolbar{display:flex;gap:6px;padding:7px;background:#151515;border:1px solid #292929;border-radius:12px;overflow-x:auto;margin-bottom:8px}.art-toolbar::-webkit-scrollbar{display:none}
-.tool{flex:0 0 48px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;background:#202020;border:1px solid #333;border-radius:9px;font-size:20px}.tool.active{background:#2878ff;border-color:#2878ff}
-.canvas-area{position:relative;width:100%;height:58vh;min-height:380px;overflow:hidden;background:#080808;border:1px solid #292929;border-radius:14px;touch-action:none}
-#artCanvas{position:absolute;left:50%;top:50%;width:512px;height:512px;transform:translate(-50%,-50%) translate(0,0) scale(1);transform-origin:center center;image-rendering:pixelated;background:transparent;touch-action:none}
-.canvas-info{position:absolute;left:8px;bottom:8px;padding:6px 9px;background:rgba(0,0,0,.7);border-radius:7px;color:#aaa;font-family:monospace;font-size:11px;pointer-events:none}
-.art-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.control-box{padding:10px;background:#151515;border:1px solid #292929;border-radius:10px}.control-label{display:block;margin-bottom:7px;color:#888;font-size:11px;font-weight:700}
-input[type=range]{width:100%}input[type=color]{width:100%;height:40px;padding:2px;border:1px solid #333;border-radius:8px;background:#111}
-.art-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}.art-action{min-height:42px;background:#202020;border:1px solid #333;font-size:12px}.art-action.primary{background:#2878ff;border-color:#2878ff}
-.module-header{padding:20px;background:#171717;border:1px solid #292929;border-radius:14px;margin-bottom:15px}.module-header h1{margin:0 0 8px;font-size:24px}.module-header p{margin:0;color:#777;font-size:13px;line-height:1.5}.coming-soon{padding:30px 20px;text-align:center;background:#121212;border:1px dashed #333;border-radius:14px;color:#777}.coming-soon-icon{font-size:40px;margin-bottom:10px}.coming-soon strong{display:block;color:#aaa;margin-bottom:5px}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:20px;z-index:1000}.modal-box{width:100%;max-width:400px;padding:20px;background:#181818;border:1px solid #333;border-radius:14px}.modal-box h2{margin-top:0}.modal-box input{width:100%;padding:13px;margin:10px 0 15px;border:1px solid #444;border-radius:8px;outline:none;background:#0d0d0d;color:#fff;font-size:16px}.modal-buttons{display:flex;gap:8px}.modal-buttons button{flex:1}.cancel{background:#333}.confirm{background:#2878ff}
 
-/* DICIONÁRIO */
-.dictionary-page{padding:15px}
-.dictionary-header{padding:18px;background:#171717;border:1px solid #292929;border-radius:14px;margin-bottom:12px}
-.dictionary-header h1{margin:0 0 6px}.dictionary-header p{margin:0;color:#777;font-size:13px}
-.dictionary-actions{display:flex;gap:8px;margin-bottom:10px}
-.dictionary-actions button{flex:1;background:#2878ff}
-.dictionary-actions .secondary{background:#292929}
-.dictionary-search{width:100%;padding:13px;margin-bottom:10px;background:#111;color:#fff;border:1px solid #333;border-radius:10px;outline:none;font-size:15px}
-.dictionary-category{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.dictionary-category button{white-space:nowrap;min-height:38px;background:#202020;border:1px solid #333;padding:8px 12px}.dictionary-category button.active{background:#2878ff}
-.dictionary-list{display:flex;flex-direction:column;gap:8px}
-.dictionary-item{background:#171717;border:1px solid #292929;border-radius:11px;padding:13px}
-.dictionary-item-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.dictionary-command{font-family:Menlo,monospace;color:#61dafb;font-size:15px;font-weight:800}
-.dictionary-real{font-family:Menlo,monospace;color:#aaa;font-size:11px}
-.dictionary-description{margin-top:7px;color:#999;font-size:12px;line-height:1.45}
-.dictionary-item-actions{display:flex;gap:6px;margin-top:10px}.dictionary-item-actions button{min-height:36px;padding:7px 10px;font-size:11px}.edit-dict{background:#333}.delete-dict{background:#8f2525}
-.empty-dict{padding:25px;text-align:center;color:#666;background:#121212;border:1px dashed #333;border-radius:12px}
+<style>
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+    background:#0d0d0d;
+    color:white;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{
+    padding-bottom:40px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#111;
+    border-bottom:1px solid #292929;
+    font-size:20px;
+    font-weight:800;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+/* MENU */
+
+.menu-button{
+    position:absolute;
+    left:10px;
+    top:8px;
+    width:44px;
+    height:44px;
+    border:1px solid #333;
+    border-radius:10px;
+    background:#1c1c1c;
+    color:white;
+    font-size:23px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1200;
+}
+
+.menu-button:active{
+    background:#2878ff;
+}
+
+/* =========================
+   MENU LATERAL
+========================= */
+
+.menu-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:999;
+}
+
+.menu-overlay.active{
+    display:block;
+}
+
+.side-menu{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:280px;
+    max-width:82vw;
+    background:#111;
+    border-right:1px solid #333;
+    transform:translateX(-100%);
+    transition:transform .25s ease;
+    z-index:1100;
+    overflow-y:auto;
+    box-shadow:8px 0 30px rgba(0,0,0,.45);
+}
+
+.side-menu.active{
+    transform:translateX(0);
+}
+
+.menu-header{
+    height:70px;
+    display:flex;
+    align-items:center;
+    padding:0 18px;
+    font-size:21px;
+    font-weight:800;
+    border-bottom:1px solid #292929;
+}
+
+.menu-item{
+    width:100%;
+    min-height:54px;
+    padding:0 18px;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    border:0;
+    border-bottom:1px solid #242424;
+    background:#151515;
+    color:#ddd;
+    text-align:left;
+    font-size:15px;
+    font-weight:700;
+}
+
+.menu-item:active,
+.menu-item.active{
+    background:#2878ff;
+    color:white;
+}
+
+.menu-icon{
+    width:25px;
+    text-align:center;
+    font-size:19px;
+}
+
+/* =========================
+   PÁGINAS
+========================= */
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* =========================
+   INÍCIO
+========================= */
+
+.home{
+    padding:20px;
+}
+
+.hero{
+    padding:25px 20px;
+    background:linear-gradient(145deg,#171717,#101010);
+    border:1px solid #292929;
+    border-radius:16px;
+    margin-bottom:15px;
+}
+
+.hero h1{
+    margin:0 0 8px;
+    font-size:28px;
+}
+
+.hero p{
+    margin:0;
+    color:#888;
+    line-height:1.5;
+    font-size:14px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+}
+
+.card{
+    min-height:120px;
+    padding:16px;
+    background:#171717;
+    border:1px solid #292929;
+    border-radius:14px;
+}
+
+.card-icon{
+    font-size:26px;
+    margin-bottom:8px;
+}
+
+.card-title{
+    font-size:14px;
+    font-weight:800;
+}
+
+.card-description{
+    margin-top:5px;
+    color:#777;
+    font-size:11px;
+    line-height:1.4;
+}
+
+/* =========================
+   EDITOR C++
+========================= */
+
+.editor-area{
+    padding:15px;
+}
+
+.label{
+    margin-bottom:8px;
+    color:#888;
+    font-size:13px;
+    font-weight:700;
+}
+
+.editor-wrapper{
+    display:flex;
+    width:100%;
+    height:48vh;
+    min-height:300px;
+    overflow:hidden;
+    background:#181818;
+    border:1px solid #333;
+    border-radius:10px;
+}
+
+.line-numbers{
+    width:44px;
+    flex-shrink:0;
+    padding-top:15px;
+    padding-right:9px;
+    background:#151515;
+    color:#666;
+    text-align:right;
+    font-family:Menlo,Monaco,Consolas,monospace;
+    font-size:15px;
+    line-height:1.5;
+    user-select:none;
+    overflow:hidden;
+}
+
+.editor{
+    flex:1;
+    width:100%;
+    height:100%;
+    padding:15px;
+    margin:0;
+    resize:none;
+    outline:none;
+    border:none;
+    background:#181818;
+    color:#f5f5f5;
+    caret-color:white;
+    font-family:Menlo,Monaco,Consolas,monospace;
+    font-size:15px;
+    line-height:1.5;
+    tab-size:4;
+    white-space:pre;
+    overflow:auto;
+}
+
+.buttons{
+    display:flex;
+    gap:8px;
+    padding:0 15px 15px;
+}
+
+button{
+    min-height:46px;
+    padding:12px 8px;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-size:13px;
+    font-weight:700;
+}
+
+.run{
+    flex:1;
+    background:#20c968;
+}
+
+.input-button{
+    flex:1;
+    background:#8e44ad;
+}
+
+.save{
+    flex:1;
+    background:#2878ff;
+}
+
+.clear{
+    flex:1;
+    background:#292929;
+}
+
+/* =========================
+   TERMINAL
+========================= */
+
+.terminal-area{
+    padding:0 15px 20px;
+}
+
+.terminal{
+    min-height:150px;
+    padding:15px;
+    background:#050505;
+    border:1px solid #222;
+    border-radius:10px;
+    color:#00ff66;
+    font-family:Menlo,Monaco,Consolas,monospace;
+    font-size:14px;
+    line-height:1.5;
+    white-space:pre-wrap;
+    overflow-x:auto;
+}
+
+.input-area{
+    display:none;
+    margin-top:10px;
+    padding:12px;
+    background:#151515;
+    border:1px solid #292929;
+    border-radius:10px;
+}
+
+.stdin-input{
+    width:100%;
+    min-height:90px;
+    padding:13px;
+    resize:vertical;
+    background:#0b0b0b;
+    color:white;
+    border:1px solid #333;
+    border-radius:8px;
+    outline:none;
+    font-family:Menlo,Monaco,Consolas,monospace;
+    font-size:15px;
+}
+
+.status{
+    margin-top:8px;
+    color:#777;
+    font-size:12px;
+}
+
+/* =========================
+   CÓDIGOS SALVOS
+========================= */
+
+.saved-area{
+    padding:0 15px 20px;
+}
+
+.saved-title{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+    color:#888;
+    font-size:13px;
+    font-weight:700;
+}
+
+.saved-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.saved-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px;
+    background:#181818;
+    border:1px solid #2b2b2b;
+    border-radius:10px;
+}
+
+.saved-name{
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    font-size:14px;
+}
+
+.saved-actions{
+    display:flex;
+    gap:6px;
+}
+
+.saved-actions button{
+    min-height:auto;
+    padding:8px 10px;
+    font-size:12px;
+}
+
+.open-btn{
+    background:#333;
+}
+
+.delete-btn{
+    background:#8f2525;
+}
+
+/* =========================
+   ARTE
+========================= */
+
+.art-page{
+    padding:10px;
+}
+
+.art-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:8px;
+}
+
+.art-title{
+    font-size:18px;
+    font-weight:800;
+}
+
+.art-size{
+    color:#777;
+    font-size:12px;
+}
+
+.art-toolbar{
+    display:flex;
+    gap:6px;
+    padding:7px;
+    background:#151515;
+    border:1px solid #292929;
+    border-radius:12px;
+    overflow-x:auto;
+    margin-bottom:8px;
+}
+
+.art-toolbar::-webkit-scrollbar{
+    display:none;
+}
+
+.tool{
+    flex:0 0 48px;
+    height:44px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#202020;
+    border:1px solid #333;
+    border-radius:9px;
+    font-size:20px;
+}
+
+.tool.active{
+    background:#2878ff;
+    border-color:#2878ff;
+}
+
+/* FUNDO BRANCO */
+
+.canvas-area{
+    position:relative;
+    width:100%;
+    height:58vh;
+    min-height:380px;
+    overflow:hidden;
+    background:#fff;
+    border:1px solid #292929;
+    border-radius:14px;
+    touch-action:none;
+}
+
+#artCanvas{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:512px;
+    height:512px;
+    transform:
+        translate(-50%,-50%)
+        translate(0px,0px)
+        scale(1);
+    transform-origin:center center;
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+    background:transparent;
+    touch-action:none;
+}
+
+.canvas-info{
+    position:absolute;
+    left:8px;
+    bottom:8px;
+    padding:6px 9px;
+    background:rgba(0,0,0,.7);
+    border-radius:7px;
+    color:#aaa;
+    font-family:monospace;
+    font-size:11px;
+    pointer-events:none;
+}
+
+.art-controls{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-top:8px;
+}
+
+.control-box{
+    padding:10px;
+    background:#151515;
+    border:1px solid #292929;
+    border-radius:10px;
+}
+
+.control-label{
+    display:block;
+    margin-bottom:7px;
+    color:#888;
+    font-size:11px;
+    font-weight:700;
+}
+
+input[type="range"]{
+    width:100%;
+}
+
+input[type="color"]{
+    width:100%;
+    height:40px;
+    padding:2px;
+    border:1px solid #333;
+    border-radius:8px;
+    background:#111;
+}
+
+.art-actions{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:6px;
+    margin-top:8px;
+}
+
+.art-action{
+    min-height:42px;
+    background:#202020;
+    border:1px solid #333;
+    font-size:12px;
+}
+
+.art-action.primary{
+    background:#2878ff;
+    border-color:#2878ff;
+}
+
+/* =========================
+   MÓDULOS
+========================= */
+
+.module-page{
+    padding:20px;
+}
+
+.module-header{
+    padding:20px;
+    background:#171717;
+    border:1px solid #292929;
+    border-radius:14px;
+    margin-bottom:15px;
+}
+
+.module-header h1{
+    margin:0 0 8px;
+    font-size:24px;
+}
+
+.module-header p{
+    margin:0;
+    color:#777;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.coming-soon{
+    padding:30px 20px;
+    text-align:center;
+    background:#121212;
+    border:1px dashed #333;
+    border-radius:14px;
+    color:#777;
+}
+
+.coming-soon-icon{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.coming-soon strong{
+    display:block;
+    color:#aaa;
+    margin-bottom:5px;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:2000;
+}
+
+.modal-box{
+    width:100%;
+    max-width:400px;
+    padding:20px;
+    background:#181818;
+    border:1px solid #333;
+    border-radius:14px;
+}
+
+.modal-box h2{
+    margin-top:0;
+}
+
+.modal-box input{
+    width:100%;
+    padding:13px;
+    margin:10px 0 15px;
+    border:1px solid #444;
+    border-radius:8px;
+    outline:none;
+    background:#0d0d0d;
+    color:white;
+    font-size:16px;
+}
+
+.modal-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.modal-buttons button{
+    flex:1;
+}
+
+.cancel{
+    background:#333;
+}
+
+.confirm{
+    background:#2878ff;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">MY ENGINE</div>
+<!-- MENU -->
 
-<div class="navigation">
-<button class="nav-button active" onclick="abrirPagina('home',this)">🏠 Início</button>
-<button class="nav-button" onclick="abrirPagina('codePage',this)">📝 Código</button>
-<button class="nav-button" onclick="abrirPagina('artPage',this)">🎨 Arte</button>
-<button class="nav-button" onclick="abrirPagina('scenePage',this)">🗺️ Cena</button>
-<button class="nav-button" onclick="abrirPagina('tilemapPage',this)">🧱 Tilemap</button>
-<button class="nav-button" onclick="abrirPagina('assetsPage',this)">📦 Assets</button>
-<button class="nav-button" onclick="abrirPagina('audioPage',this)">🎵 Áudio</button>
-<button class="nav-button" onclick="abrirPagina('dictionaryPage',this)">📖 Dicionário</button>
-<button class="nav-button" onclick="abrirPagina('projectPage',this)">⚙️ Projeto</button>
+<button class="menu-button" onclick="alternarMenu()">☰</button>
+
+<div class="menu-overlay" id="menuOverlay" onclick="fecharMenu()"></div>
+
+<aside class="side-menu" id="sideMenu">
+
+    <div class="menu-header">
+        MY ENGINE
+    </div>
+
+    <button class="menu-item active" onclick="abrirMenuPagina('home',this)">
+        <span class="menu-icon">🏠</span>
+        Início
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('codePage',this)">
+        <span class="menu-icon">📝</span>
+        Código
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('artPage',this)">
+        <span class="menu-icon">🎨</span>
+        Arte
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('scenePage',this)">
+        <span class="menu-icon">🗺️</span>
+        Cena
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('tilemapPage',this)">
+        <span class="menu-icon">🧱</span>
+        Tilemap
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('assetsPage',this)">
+        <span class="menu-icon">📦</span>
+        Assets
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('audioPage',this)">
+        <span class="menu-icon">🎵</span>
+        Áudio
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('dictionaryPage',this)">
+        <span class="menu-icon">📖</span>
+        Dicionário
+    </button>
+
+    <button class="menu-item" onclick="abrirMenuPagina('projectPage',this)">
+        <span class="menu-icon">⚙️</span>
+        Projeto
+    </button>
+
+</aside>
+
+<!-- HEADER -->
+
+<div class="header">
+    MY ENGINE
 </div>
+
+<!-- INÍCIO -->
 
 <section id="home" class="page active home">
-<div class="hero">
-<h1>Minha Engine</h1>
-<p>Ambiente de desenvolvimento mobile para criação de jogos 2D.</p>
-</div>
 
-<div class="cards">
-<div class="card" onclick="abrirPorId('codePage')"><div class="card-icon">📝</div><div class="card-title">Código</div><div class="card-description">Escreva e execute C++.</div></div>
-<div class="card" onclick="abrirPorId('artPage')"><div class="card-icon">🎨</div><div class="card-title">Arte</div><div class="card-description">Crie sprites diretamente no celular.</div></div>
-<div class="card" onclick="abrirPorId('scenePage')"><div class="card-icon">🗺️</div><div class="card-title">Cena</div><div class="card-description">Construa seus mundos.</div></div>
-<div class="card" onclick="abrirPorId('tilemapPage')"><div class="card-icon">🧱</div><div class="card-title">Tilemap</div><div class="card-description">Construa mapas 2D.</div></div>
-<div class="card" onclick="abrirPorId('dictionaryPage')"><div class="card-icon">📖</div><div class="card-title">Dicionário</div><div class="card-description">Crie seus próprios comandos para o tradutor.</div></div>
-<div class="card" onclick="abrirPorId('assetsPage')"><div class="card-icon">📦</div><div class="card-title">Assets</div><div class="card-description">Gerencie recursos.</div></div>
-<div class="card" onclick="abrirPorId('audioPage')"><div class="card-icon">🎵</div><div class="card-title">Áudio</div><div class="card-description">Controle músicas e efeitos.</div></div>
-</div>
+    <div class="hero">
+        <h1>Minha Engine</h1>
+
+        <p>
+            Ambiente de desenvolvimento
+            mobile para criação de jogos 2D.
+        </p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card" onclick="abrirPorId('codePage')">
+            <div class="card-icon">📝</div>
+            <div class="card-title">Código</div>
+            <div class="card-description">
+                Escreva e execute C++.
+            </div>
+        </div>
+
+        <div class="card" onclick="abrirPorId('artPage')">
+            <div class="card-icon">🎨</div>
+            <div class="card-title">Arte</div>
+            <div class="card-description">
+                Crie sprites diretamente no celular.
+            </div>
+        </div>
+
+        <div class="card" onclick="abrirPorId('scenePage')">
+            <div class="card-icon">🗺️</div>
+            <div class="card-title">Cena</div>
+            <div class="card-description">
+                Construa seus mundos.
+            </div>
+        </div>
+
+        <div class="card" onclick="abrirPorId('tilemapPage')">
+            <div class="card-icon">🧱</div>
+            <div class="card-title">Tilemap</div>
+            <div class="card-description">
+                Construa mapas 2D.
+            </div>
+        </div>
+
+        <div class="card" onclick="abrirPorId('dictionaryPage')">
+            <div class="card-icon">📖</div>
+            <div class="card-title">Dicionário</div>
+            <div class="card-description">
+                Personalize os comandos da sua linguagem.
+            </div>
+        </div>
+
+        <div class="card" onclick="abrirPorId('projectPage')">
+            <div class="card-icon">⚙️</div>
+            <div class="card-title">Projeto</div>
+            <div class="card-description">
+                Configurações da Engine.
+            </div>
+        </div>
+
+    </div>
+
 </section>
+
+<!-- CÓDIGO -->
 
 <section id="codePage" class="page">
-<div class="editor-area">
-<div class="label">CÓDIGO C++ / MY ENGINE</div>
-<div class="editor-wrapper">
-<div class="line-numbers" id="lineNumbers"></div>
-<textarea class="editor" id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off">#include <iostream>
+
+    <div class="editor-area">
+
+        <div class="label">
+            CÓDIGO C++
+        </div>
+
+        <div class="editor-wrapper">
+
+            <div class="line-numbers" id="lineNumbers"></div>
+
+            <textarea
+                class="editor"
+                id="code"
+                spellcheck="false"
+                autocapitalize="off"
+                autocomplete="off"
+                autocorrect="off">#include <iostream>
 
 int main() {
-    manda o papo "Olá, mundo!";
+
+    std::cout << "Olá, mundo!";
+
     return 0;
+
 }</textarea>
-</div>
-</div>
 
-<div class="buttons">
-<button class="run" id="runButton" onclick="executar()">▶ EXECUTAR</button>
-<button class="input-button" onclick="alternarEntrada()">⌨ ENTRADA</button>
-<button class="save" onclick="abrirSalvar()">💾 SALVAR</button>
-<button class="clear" onclick="limpar()">LIMPAR</button>
-</div>
+        </div>
 
-<div class="translated-box">
-<div class="translated-title">CODE TRADUZIDO — enviado ao Judge0</div>
-<pre class="translated-code" id="translatedCode">// O código traduzido aparecerá aqui.</pre>
-</div>
+    </div>
 
-<div class="terminal-area">
-<div class="label">TERMINAL</div>
-<div class="terminal" id="terminal">> Aguardando execução...</div>
-<div class="input-area" id="inputArea">
-<textarea class="stdin-input" id="stdinInput" placeholder="Digite a entrada do programa..."></textarea>
-</div>
-<div class="status" id="status"></div>
-</div>
+    <div class="buttons">
 
-<div class="saved-area">
-<div class="saved-title"><span>MEUS CÓDIGOS</span><span id="savedCount">0</span></div>
-<div class="saved-list" id="savedList"></div>
-</div>
+        <button class="run" id="runButton" onclick="executar()">
+            ▶ EXECUTAR
+        </button>
+
+        <button class="input-button" onclick="alternarEntrada()">
+            ⌨ ENTRADA
+        </button>
+
+        <button class="save" onclick="abrirSalvar()">
+            💾 SALVAR
+        </button>
+
+        <button class="clear" onclick="limpar()">
+            LIMPAR
+        </button>
+
+    </div>
+
+    <div class="terminal-area">
+
+        <div class="label">
+            TERMINAL
+        </div>
+
+        <div class="terminal" id="terminal">
+            > Aguardando execução...
+        </div>
+
+        <div class="input-area" id="inputArea">
+
+            <textarea
+                class="stdin-input"
+                id="stdinInput"
+                placeholder="Digite a entrada do programa..."></textarea>
+
+        </div>
+
+        <div class="status" id="status"></div>
+
+    </div>
+
+    <div class="saved-area">
+
+        <div class="saved-title">
+            <span>MEUS CÓDIGOS</span>
+            <span id="savedCount">0</span>
+        </div>
+
+        <div class="saved-list" id="savedList"></div>
+
+    </div>
+
 </section>
+
+<!-- ARTE -->
 
 <section id="artPage" class="page art-page">
-<div class="art-top"><div class="art-title">🎨 Editor de Arte</div><div class="art-size" id="artSize">32 × 32</div></div>
 
-<div class="art-toolbar">
-<button class="tool active" id="pencilTool" onclick="selecionarFerramenta('pencil')">✏️</button>
-<button class="tool" id="eraserTool" onclick="selecionarFerramenta('eraser')">🧽</button>
-<button class="tool" onclick="limparCanvas()">🗑️</button>
-<button class="tool" onclick="desfazer()">↩️</button>
-<button class="tool" onclick="refazer()">↪️</button>
-<button class="tool" onclick="alternarGrade()">🔲</button>
-<button class="tool" onclick="resetZoom()">1:1</button>
-</div>
+    <div class="art-top">
 
-<div class="canvas-area" id="canvasArea">
-<canvas id="artCanvas" width="32" height="32"></canvas>
-<div class="canvas-info" id="canvasInfo">Zoom: 100%</div>
-</div>
+        <div class="art-title">
+            🎨 Editor de Arte
+        </div>
 
-<div class="art-controls">
-<div class="control-box"><span class="control-label">COR</span><input type="color" id="colorPicker" value="#ffffff"></div>
-<div class="control-box"><span class="control-label">TAMANHO DO PINCEL</span><input type="range" id="brushSize" min="1" max="8" value="1"></div>
-</div>
+        <div class="art-size" id="artSize">
+            32 × 32
+        </div>
 
-<div class="art-actions">
-<button class="art-action primary" onclick="novoCanvas()">🆕 NOVO</button>
-<button class="art-action" onclick="salvarArte()">💾 SALVAR</button>
-<button class="art-action" onclick="carregarArte()">📂 ABRIR</button>
-<button class="art-action" onclick="resetZoom()">🔍 ZOOM</button>
-</div>
+    </div>
+
+    <div class="art-toolbar">
+
+        <button class="tool active" id="pencilTool"
+            onclick="selecionarFerramenta('pencil')">
+            ✏️
+        </button>
+
+        <button class="tool" id="eraserTool"
+            onclick="selecionarFerramenta('eraser')">
+            🧽
+        </button>
+
+        <button class="tool" onclick="limparCanvas()">
+            🗑️
+        </button>
+
+        <button class="tool" onclick="desfazer()">
+            ↩️
+        </button>
+
+        <button class="tool" onclick="refazer()">
+            ↪️
+        </button>
+
+        <button class="tool" onclick="alternarGrade()">
+            🔲
+        </button>
+
+        <button class="tool" onclick="resetZoom()">
+            1:1
+        </button>
+
+    </div>
+
+    <div class="canvas-area" id="canvasArea">
+
+        <canvas
+            id="artCanvas"
+            width="32"
+            height="32">
+        </canvas>
+
+        <div class="canvas-info" id="canvasInfo">
+            Zoom: 100%
+        </div>
+
+    </div>
+
+    <div class="art-controls">
+
+        <div class="control-box">
+
+            <span class="control-label">
+                COR
+            </span>
+
+            <input
+                type="color"
+                id="colorPicker"
+                value="#ffffff">
+
+        </div>
+
+        <div class="control-box">
+
+            <span class="control-label">
+                TAMANHO DO PINCEL
+            </span>
+
+            <input
+                type="range"
+                id="brushSize"
+                min="1"
+                max="8"
+                value="1">
+
+        </div>
+
+    </div>
+
+    <div class="art-actions">
+
+        <button class="art-action primary" onclick="novoCanvas()">
+            🆕 NOVO
+        </button>
+
+        <button class="art-action" onclick="salvarArte()">
+            💾 SALVAR
+        </button>
+
+        <button class="art-action" onclick="carregarArte()">
+            📂 ABRIR
+        </button>
+
+        <button class="art-action" onclick="resetZoom()">
+            🔍 ZOOM
+        </button>
+
+    </div>
+
 </section>
 
-<section id="dictionaryPage" class="page dictionary-page">
-<div class="dictionary-header">
-<h1>📖 Dicionário</h1>
-<p>Aqui você batiza os comandos da My Engine. O tradutor transforma seus comandos personalizados em C++ antes de enviar o código ao Judge0.</p>
-</div>
-
-<div class="dictionary-actions">
-<button onclick="abrirDicionarioModal()">➕ NOVO COMANDO</button>
-<button class="secondary" onclick="restaurarDicionario()">↻ PADRÕES</button>
-</div>
-
-<input class="dictionary-search" id="dictionarySearch" placeholder="🔍 Pesquisar comando..." oninput="renderizarDicionario()">
-
-<div class="dictionary-category" id="dictionaryCategories">
-<button class="active" data-category="todos" onclick="selecionarCategoria('todos',this)">Todos</button>
-<button data-category="saida" onclick="selecionarCategoria('saida',this)">Saída</button>
-<button data-category="entrada" onclick="selecionarCategoria('entrada',this)">Entrada</button>
-<button data-category="tipos" onclick="selecionarCategoria('tipos',this)">Tipos</button>
-<button data-category="operadores" onclick="selecionarCategoria('operadores',this)">Operadores</button>
-<button data-category="controle" onclick="selecionarCategoria('controle',this)">Controle</button>
-<button data-category="outros" onclick="selecionarCategoria('outros',this)">Outros</button>
-</div>
-
-<div class="dictionary-list" id="dictionaryList"></div>
-</section>
+<!-- CENA -->
 
 <section id="scenePage" class="page module-page">
-<div class="module-header"><h1>🗺️ Cena</h1><p>Editor visual de mundos, objetos, personagens e props.</p></div>
-<div class="coming-soon"><div class="coming-soon-icon">🗺️</div><strong>Editor de Cenas</strong>Em desenvolvimento.</div>
+
+    <div class="module-header">
+
+        <h1>🗺️ Cena</h1>
+
+        <p>
+            Editor visual de mundos,
+            objetos, personagens e props.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">🗺️</div>
+
+        <strong>Editor de Cenas</strong>
+
+        Em desenvolvimento.
+
+    </div>
+
 </section>
+
+<!-- TILEMAP -->
 
 <section id="tilemapPage" class="page module-page">
-<div class="module-header"><h1>🧱 Tilemap</h1><p>Ferramenta para construção de mapas baseados em tiles.</p></div>
-<div class="coming-soon"><div class="coming-soon-icon">🧱</div><strong>Editor de Tilemap</strong>Em desenvolvimento.</div>
+
+    <div class="module-header">
+
+        <h1>🧱 Tilemap</h1>
+
+        <p>
+            Ferramenta para construção
+            de mapas baseados em tiles.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">🧱</div>
+
+        <strong>Editor de Tilemap</strong>
+
+        Em desenvolvimento.
+
+    </div>
+
 </section>
+
+<!-- ASSETS -->
 
 <section id="assetsPage" class="page module-page">
-<div class="module-header"><h1>📦 Assets</h1><p>Gerenciamento de sprites, mapas, sons e recursos.</p></div>
-<div class="coming-soon"><div class="coming-soon-icon">📦</div><strong>Gerenciador de Assets</strong>Em desenvolvimento.</div>
+
+    <div class="module-header">
+
+        <h1>📦 Assets</h1>
+
+        <p>
+            Gerenciamento de sprites,
+            mapas, sons e recursos.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">📦</div>
+
+        <strong>Gerenciador de Assets</strong>
+
+        Em desenvolvimento.
+
+    </div>
+
 </section>
+
+<!-- ÁUDIO -->
 
 <section id="audioPage" class="page module-page">
-<div class="module-header"><h1>🎵 Áudio</h1><p>Música, efeitos sonoros e gerenciamento de áudio.</p></div>
-<div class="coming-soon"><div class="coming-soon-icon">🎵</div><strong>Sistema de Áudio</strong>Em desenvolvimento.</div>
+
+    <div class="module-header">
+
+        <h1>🎵 Áudio</h1>
+
+        <p>
+            Música, efeitos sonoros
+            e gerenciamento de áudio.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">🎵</div>
+
+        <strong>Sistema de Áudio</strong>
+
+        Em desenvolvimento.
+
+    </div>
+
 </section>
+
+<!-- DICIONÁRIO -->
+
+<section id="dictionaryPage" class="page module-page">
+
+    <div class="module-header">
+
+        <h1>📖 Dicionário</h1>
+
+        <p>
+            Personalize os comandos utilizados
+            pela linguagem da My Engine.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">📖</div>
+
+        <strong>Tradutor</strong>
+
+        Sistema de comandos personalizados
+        da My Engine.
+
+    </div>
+
+</section>
+
+<!-- PROJETO -->
 
 <section id="projectPage" class="page module-page">
-<div class="module-header"><h1>⚙️ Projeto</h1><p>Configurações e gerenciamento do projeto da engine.</p></div>
-<div class="coming-soon"><div class="coming-soon-icon">⚙️</div><strong>Gerenciamento do Projeto</strong>Em desenvolvimento.</div>
+
+    <div class="module-header">
+
+        <h1>⚙️ Projeto</h1>
+
+        <p>
+            Configurações e gerenciamento
+            do projeto da Engine.
+        </p>
+
+    </div>
+
+    <div class="coming-soon">
+
+        <div class="coming-soon-icon">⚙️</div>
+
+        <strong>Gerenciamento do Projeto</strong>
+
+        Em desenvolvimento.
+
+    </div>
+
 </section>
 
+<!-- MODAL -->
+
 <div class="modal" id="saveModal">
-<div class="modal-box">
-<h2>Salvar código</h2>
-<input id="codeName" type="text" placeholder="Nome do código">
-<div class="modal-buttons">
-<button class="cancel" onclick="fecharSalvar()">CANCELAR</button>
-<button class="confirm" onclick="salvarCodigo()">SALVAR</button>
-</div>
-</div>
-</div>
 
-<div class="modal" id="dictionaryModal">
-<div class="modal-box">
-<h2 id="dictionaryModalTitle">Novo comando</h2>
+    <div class="modal-box">
 
-<input id="dictCommand" type="text" placeholder="Comando da My Engine">
-<input id="dictTranslation" type="text" placeholder="Comando C++ real">
-<input id="dictDescription" type="text" placeholder="O que esse comando faz?">
+        <h2>Salvar código</h2>
 
-<select id="dictCategory" style="width:100%;padding:13px;margin:0 0 15px;background:#0d0d0d;color:#fff;border:1px solid #444;border-radius:8px;font-size:16px">
-<option value="saida">Saída</option>
-<option value="entrada">Entrada</option>
-<option value="tipos">Tipos</option>
-<option value="operadores">Operadores</option>
-<option value="controle">Controle</option>
-<option value="outros">Outros</option>
-</select>
+        <input
+            id="codeName"
+            type="text"
+            placeholder="Nome do código">
 
-<div class="modal-buttons">
-<button class="cancel" onclick="fecharDicionarioModal()">CANCELAR</button>
-<button class="confirm" onclick="salvarComandoDicionario()">SALVAR</button>
-</div>
-</div>
+        <div class="modal-buttons">
+
+            <button class="cancel" onclick="fecharSalvar()">
+                CANCELAR
+            </button>
+
+            <button class="confirm" onclick="salvarCodigo()">
+                SALVAR
+            </button>
+
+        </div>
+
+    </div>
+
 </div>
 
 <script>
 
 /* =========================================================
-NAVEGAÇÃO
+   MENU
 ========================================================= */
 
-function abrirPagina(id,botao){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-const pagina=document.getElementById(id);
-if(pagina) pagina.classList.add("active");
+function alternarMenu(){
 
-document.querySelectorAll(".nav-button").forEach(b=>b.classList.remove("active"));
-if(botao) botao.classList.add("active");
+    const menu =
+        document.getElementById("sideMenu");
 
-window.scrollTo(0,0);
+    const overlay =
+        document.getElementById("menuOverlay");
 
-if(id==="artPage") setTimeout(atualizarCanvasVisual,50);
+    menu.classList.toggle("active");
+    overlay.classList.toggle("active");
+}
+
+function fecharMenu(){
+
+    document
+        .getElementById("sideMenu")
+        .classList.remove("active");
+
+    document
+        .getElementById("menuOverlay")
+        .classList.remove("active");
+}
+
+function abrirMenuPagina(id,botao){
+
+    abrirPagina(id);
+
+    document
+        .querySelectorAll(".menu-item")
+        .forEach(
+            b => b.classList.remove("active")
+        );
+
+    if(botao){
+        botao.classList.add("active");
+    }
+
+    fecharMenu();
+
+}
+
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
+
+function abrirPagina(id){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            p => p.classList.remove("active")
+        );
+
+    const pagina =
+        document.getElementById(id);
+
+    if(pagina){
+        pagina.classList.add("active");
+    }
+
+    window.scrollTo(0,0);
+
 }
 
 function abrirPorId(id){
-const botoes=document.querySelectorAll(".nav-button");
-let encontrado=null;
 
-botoes.forEach(b=>{
-const onclick=b.getAttribute("onclick")||"";
-if(onclick.includes("'"+id+"'")) encontrado=b;
-});
+    abrirPagina(id);
 
-abrirPagina(id,encontrado);
 }
 
 /* =========================================================
-EDITOR C++
+   C++ EDITOR
 ========================================================= */
 
-const editor=document.getElementById("code");
-const lineNumbers=document.getElementById("lineNumbers");
-const terminal=document.getElementById("terminal");
-const inputArea=document.getElementById("inputArea");
-const stdinInput=document.getElementById("stdinInput");
-const status=document.getElementById("status");
-const savedList=document.getElementById("savedList");
-const savedCount=document.getElementById("savedCount");
-const runButton=document.getElementById("runButton");
-const translatedCode=document.getElementById("translatedCode");
+const editor =
+    document.getElementById("code");
 
-let executando=false;
+const lineNumbers =
+    document.getElementById("lineNumbers");
+
+const terminal =
+    document.getElementById("terminal");
+
+const inputArea =
+    document.getElementById("inputArea");
+
+const stdinInput =
+    document.getElementById("stdinInput");
+
+const status =
+    document.getElementById("status");
+
+const savedList =
+    document.getElementById("savedList");
+
+const savedCount =
+    document.getElementById("savedCount");
+
+const runButton =
+    document.getElementById("runButton");
+
+let executando = false;
 
 function atualizarLinhas(){
-const quantidade=editor.value.split("\n").length;
-let numeros="";
-for(let i=1;i<=quantidade;i++) numeros+=i+"<br>";
-lineNumbers.innerHTML=numeros;
+
+    const quantidade =
+        editor.value.split("\n").length;
+
+    let numeros = "";
+
+    for(
+        let i=1;
+        i<=quantidade;
+        i++
+    ){
+
+        numeros += i + "<br>";
+
+    }
+
+    lineNumbers.innerHTML =
+        numeros;
+
 }
 
-editor.addEventListener("input",atualizarLinhas);
+editor.addEventListener(
+    "input",
+    atualizarLinhas
+);
 
-editor.addEventListener("scroll",()=>{
-lineNumbers.scrollTop=editor.scrollTop;
-});
+editor.addEventListener(
+    "scroll",
+    function(){
 
-editor.addEventListener("keydown",event=>{
-if(event.key==="Tab"){
-event.preventDefault();
+        lineNumbers.scrollTop =
+            editor.scrollTop;
 
-const inicio=editor.selectionStart;
-const fim=editor.selectionEnd;
+    }
+);
 
-editor.value=
-editor.value.substring(0,inicio)+
-"    "+
-editor.value.substring(fim);
+editor.addEventListener(
+    "keydown",
+    function(event){
 
-editor.selectionStart=inicio+4;
-editor.selectionEnd=inicio+4;
+        if(event.key === "Tab"){
 
-atualizarLinhas();
-}
-});
+            event.preventDefault();
+
+            const inicio =
+                editor.selectionStart;
+
+            const fim =
+                editor.selectionEnd;
+
+            editor.value =
+                editor.value.substring(0,inicio)
+                +
+                "    "
+                +
+                editor.value.substring(fim);
+
+            editor.selectionStart =
+                inicio + 4;
+
+            editor.selectionEnd =
+                inicio + 4;
+
+            atualizarLinhas();
+
+        }
+
+    }
+);
 
 function alternarEntrada(){
-inputArea.style.display=
-inputArea.style.display==="block"?"none":"block";
-}
 
-/* =========================================================
-TRADUTOR
-========================================================= */
-
-const DICIONARIO_PADRAO=[
-{comando:"manda o papo",traducao:"std::cout <<",descricao:"Mostra uma mensagem ou valor no terminal.",categoria:"saida"},
-{comando:"qual foi",traducao:"std::cerr <<",descricao:"Envia uma mensagem de erro para o terminal.",categoria:"saida"},
-{comando:"endl",traducao:"std::endl",descricao:"Finaliza a linha e limpa o buffer de saída.",categoria:"saida"},
-{comando:"nova linha",traducao:"\\n",descricao:"Quebra a linha dentro de uma string.",categoria:"saida"},
-{comando:"visao",traducao:"std::cin >>",descricao:"Recebe uma entrada do usuário.",categoria:"entrada"},
-{comando:"abraça o papo",traducao:"std::getline",descricao:"Lê uma linha inteira de texto.",categoria:"entrada"},
-{comando:"numero",traducao:"int",descricao:"Declara uma variável inteira.",categoria:"tipos"},
-{comando:"decimal",traducao:"float",descricao:"Declara uma variável decimal de precisão simples.",categoria:"tipos"},
-{comando:"decimal^",traducao:"double",descricao:"Declara uma variável decimal de maior precisão.",categoria:"tipos"},
-{comando:"letra",traducao:"char",descricao:"Declara um caractere.",categoria:"tipos"},
-{comando:"txt",traducao:"std::string",descricao:"Declara uma variável de texto.",categoria:"tipos"},
-{comando:"tlgd",traducao:"bool",descricao:"Declara uma variável verdadeira ou falsa.",categoria:"tipos"},
-{comando:"auto",traducao:"auto",descricao:"Permite que o C++ deduza automaticamente o tipo.",categoria:"tipos"},
-{comando:"+",traducao:"+",descricao:"Adição.",categoria:"operadores"},
-{comando:"-",traducao:"-",descricao:"Subtração.",categoria:"operadores"},
-{comando:"x",traducao:"*",descricao:"Multiplicação.",categoria:"operadores"},
-{comando:":",traducao:"/",descricao:"Divisão.",categoria:"operadores"},
-{comando:"resto da divisao",traducao:"%",descricao:"Obtém o resto de uma divisão.",categoria:"operadores"},
-{comando:"++",traducao:"++",descricao:"Incrementa uma variável em 1.",categoria:"operadores"},
-{comando:"--",traducao:"--",descricao:"Decrementa uma variável em 1.",categoria:"operadores"},
-{comando:"==",traducao:"==",descricao:"Compara dois valores.",categoria:"controle"},
-{comando:"!=",traducao:"!=",descricao:"Verifica se dois valores são diferentes.",categoria:"controle"},
-{comando:">",traducao:">",descricao:"Verifica se o primeiro valor é maior.",categoria:"controle"},
-{comando:"<",traducao:"<",descricao:"Verifica se o primeiro valor é menor.",categoria:"controle"},
-{comando:">=",traducao:">=",descricao:"Verifica se o primeiro valor é maior ou igual.",categoria:"controle"},
-{comando:"<=",traducao:"<=",descricao:"Verifica se o primeiro valor é menor ou igual.",categoria:"controle"},
-{comando:"e",traducao:"&&",descricao:"Operador lógico AND.",categoria:"controle"},
-{comando:"ou",traducao:"||",descricao:"Operador lógico OR.",categoria:"controle"},
-{comando:"nao",traducao:"!",descricao:"Operador lógico NOT.",categoria:"controle"},
-{comando:"se",traducao:"if",descricao:"Executa um bloco quando uma condição é verdadeira.",categoria:"controle"},
-{comando:"senao",traducao:"else",descricao:"Executa um bloco quando a condição anterior é falsa.",categoria:"controle"},
-{comando:"senao se",traducao:"else if",descricao:"Testa outra condição caso a anterior seja falsa.",categoria:"controle"},
-{comando:"enquanto",traducao:"while",descricao:"Repete enquanto uma condição for verdadeira.",categoria:"controle"},
-{comando:"para",traducao:"for",descricao:"Cria um laço de repetição.",categoria:"controle"},
-{comando:"retorna",traducao:"return",descricao:"Retorna um valor de uma função.",categoria:"outros"},
-{comando:"quebra",traducao:"break",descricao:"Interrompe um laço ou switch.",categoria:"outros"},
-{comando:"continua",traducao:"continue",descricao:"Pula para a próxima iteração de um laço.",categoria:"outros"}
-];
-
-function obterDicionario(){
-try{
-const salvo=localStorage.getItem("my_engine_dicionario");
-if(salvo) return JSON.parse(salvo);
-}catch(e){}
-return [...DICIONARIO_PADRAO];
-}
-
-let dicionario=obterDicionario();
-
-function salvarDicionarioLocal(){
-localStorage.setItem("my_engine_dicionario",JSON.stringify(dicionario));
-}
-
-function escaparRegex(texto){
-return texto.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
-}
-
-/*
-O tradutor trabalha por linhas e procura os comandos personalizados
-antes de enviar o código ao Judge0.
-*/
-
-function traduzirCodigo(codigo){
-
-let resultado=codigo;
-
-/*
-Comandos maiores vêm primeiro para evitar que uma expressão
-menor seja substituída dentro de uma maior.
-*/
-
-const ordenados=[...dicionario]
-.sort((a,b)=>b.comando.length-a.comando.length);
-
-for(const item of ordenados){
-
-if(!item.comando) continue;
-
-const comando=escaparRegex(item.comando.trim());
-
-/*
-Não substitui dentro de palavras maiores.
-*/
-
-const regex=new RegExp(
-"(?<![\\p{L}\\p{N}_])"+
-comando+
-"(?![\\p{L}\\p{N}_])",
-"giu"
-);
-
-resultado=resultado.replace(regex,()=>{
-return item.traducao;
-});
-}
-
-/*
-Adiciona automaticamente os headers mais comuns necessários
-para os comandos personalizados.
-*/
-
-if(/\bstd::cout\b|\bstd::cerr\b|\bstd::cin\b|\bstd::getline\b|\bstd::endl\b/.test(resultado)){
-if(!/#include\s*<iostream>/.test(resultado)){
-resultado="#include <iostream>\n"+resultado;
-}
-}
-
-if(/\bstd::string\b/.test(resultado)){
-if(!/#include\s*<string>/.test(resultado)){
-resultado="#include <string>\n"+resultado;
-}
-}
-
-return resultado;
-}
-
-/* =========================================================
-EXECUTOR
-========================================================= */
-
-async function executar(){
-
-if(executando) return;
-
-const codigo=editor.value;
-
-if(!codigo.trim()){
-terminal.textContent="> Nenhum código foi inserido.";
-return;
-}
-
-executando=true;
-runButton.disabled=true;
-runButton.textContent="⏳ EXECUTANDO";
-
-terminal.textContent="> Traduzindo código...\n";
-status.textContent="";
-
-const codigoTraduzido=traduzirCodigo(codigo);
-
-translatedCode.textContent=codigoTraduzido;
-
-terminal.textContent="> Código traduzido.\n> Enviando para Judge0...\n";
-
-try{
-
-const codigoBase64=
-btoa(unescape(encodeURIComponent(codigoTraduzido)));
-
-const stdin=stdinInput.value;
-
-let stdinBase64="";
-
-if(stdin){
-stdinBase64=
-btoa(unescape(encodeURIComponent(stdin)));
-}
-
-const resposta=await fetch(
-"https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-language_id:54,
-source_code:codigoBase64,
-stdin:stdinBase64
-})
-}
-);
-
-if(!resposta.ok){
-throw new Error("Erro HTTP "+resposta.status);
-}
-
-const resultado=await resposta.json();
-
-let saida="";
-
-if(resultado.stdout){
-saida+=decodificarBase64(resultado.stdout);
-}
-
-if(resultado.stderr){
-if(saida) saida+="\n";
-saida+=decodificarBase64(resultado.stderr);
-}
-
-if(resultado.compile_output){
-if(saida) saida+="\n";
-saida+=decodificarBase64(resultado.compile_output);
-}
-
-if(!saida.trim()){
-saida="> "+(
-resultado.status?.description||
-"Programa executado sem saída."
-);
-}
-
-terminal.textContent=saida;
-
-status.textContent=
-resultado.time?
-"Tempo: "+resultado.time+"s":
-"";
-
-}catch(erro){
-
-terminal.textContent=
-"> ERRO\n\n"+erro.message;
-
-status.textContent=
-"Falha na comunicação com Judge0.";
-
-}finally{
-
-executando=false;
-runButton.disabled=false;
-runButton.textContent="▶ EXECUTAR";
+    inputArea.style.display =
+        inputArea.style.display === "block"
+        ? "none"
+        : "block";
 
 }
+
+function encodeBase64UTF8(texto){
+
+    return btoa(
+        unescape(
+            encodeURIComponent(texto)
+        )
+    );
+
 }
 
 function decodificarBase64(texto){
-try{
-return decodeURIComponent(escape(atob(texto)));
-}catch{
-return atob(texto);
+
+    try{
+
+        return decodeURIComponent(
+            escape(atob(texto))
+        );
+
+    }
+
+    catch{
+
+        return atob(texto);
+
+    }
+
 }
+
+async function executar(){
+
+    if(executando){
+        return;
+    }
+
+    const codigo =
+        editor.value;
+
+    if(!codigo.trim()){
+
+        terminal.textContent =
+            "> Nenhum código foi inserido.";
+
+        return;
+
+    }
+
+    executando = true;
+
+    runButton.disabled = true;
+
+    runButton.textContent =
+        "⏳ EXECUTANDO";
+
+    terminal.textContent =
+        "> Enviando código para Judge0...\n";
+
+    status.textContent = "";
+
+    try{
+
+        const codigoBase64 =
+            encodeBase64UTF8(codigo);
+
+        const stdin =
+            stdinInput.value;
+
+        const stdinBase64 =
+            stdin
+            ? encodeBase64UTF8(stdin)
+            : "";
+
+        const resposta =
+            await fetch(
+                "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        language_id:54,
+
+                        source_code:
+                            codigoBase64,
+
+                        stdin:
+                            stdinBase64
+
+                    })
+                }
+            );
+
+        if(!resposta.ok){
+
+            throw new Error(
+                "Erro HTTP " +
+                resposta.status
+            );
+
+        }
+
+        const resultado =
+            await resposta.json();
+
+        let saida = "";
+
+        if(resultado.stdout){
+
+            saida +=
+                decodificarBase64(
+                    resultado.stdout
+                );
+
+        }
+
+        if(resultado.stderr){
+
+            if(saida){
+                saida += "\n";
+            }
+
+            saida +=
+                decodificarBase64(
+                    resultado.stderr
+                );
+
+        }
+
+        if(resultado.compile_output){
+
+            if(saida){
+                saida += "\n";
+            }
+
+            saida +=
+                decodificarBase64(
+                    resultado.compile_output
+                );
+
+        }
+
+        if(!saida.trim()){
+
+            saida =
+                "> " +
+                (
+                    resultado.status?.description ||
+                    "Programa executado sem saída."
+                );
+
+        }
+
+        terminal.textContent =
+            saida;
+
+        status.textContent =
+            resultado.time
+            ? "Tempo: " + resultado.time + "s"
+            : "";
+
+    }
+
+    catch(erro){
+
+        terminal.textContent =
+            "> ERRO\n\n" +
+            erro.message;
+
+        status.textContent =
+            "Falha na comunicação com Judge0.";
+
+    }
+
+    finally{
+
+        executando = false;
+
+        runButton.disabled = false;
+
+        runButton.textContent =
+            "▶ EXECUTAR";
+
+    }
+
 }
 
 function limpar(){
-editor.value="";
-stdinInput.value="";
-translatedCode.textContent="// O código traduzido aparecerá aqui.";
-atualizarLinhas();
-terminal.textContent="> Terminal limpo.";
-status.textContent="";
+
+    editor.value = "";
+
+    stdinInput.value = "";
+
+    atualizarLinhas();
+
+    terminal.textContent =
+        "> Terminal limpo.";
+
+    status.textContent = "";
+
 }
 
 /* =========================================================
-CÓDIGOS SALVOS
+   CÓDIGOS SALVOS
 ========================================================= */
 
 function abrirSalvar(){
-document.getElementById("saveModal").style.display="flex";
+
+    document.getElementById(
+        "saveModal"
+    ).style.display = "flex";
+
 }
 
 function fecharSalvar(){
-document.getElementById("saveModal").style.display="none";
+
+    document.getElementById(
+        "saveModal"
+    ).style.display = "none";
+
 }
 
 function salvarCodigo(){
 
-const nomeInput=document.getElementById("codeName");
+    const nomeInput =
+        document.getElementById("codeName");
 
-let nome=nomeInput.value.trim();
+    let nome =
+        nomeInput.value.trim();
 
-if(!nome) nome="Código sem nome";
+    if(!nome){
+        nome = "Código sem nome";
+    }
 
-let codigos=
-JSON.parse(localStorage.getItem("cpp_codigos")||"[]");
+    let codigos =
+        JSON.parse(
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+        );
 
-codigos.push({
-id:Date.now(),
-nome:nome,
-codigo:editor.value
-});
+    codigos.push({
 
-localStorage.setItem("cpp_codigos",JSON.stringify(codigos));
+        id:Date.now(),
 
-nomeInput.value="";
-fecharSalvar();
-carregarCodigos();
+        nome:nome,
+
+        codigo:editor.value
+
+    });
+
+    localStorage.setItem(
+        "cpp_codigos",
+        JSON.stringify(codigos)
+    );
+
+    nomeInput.value = "";
+
+    fecharSalvar();
+
+    carregarCodigos();
+
 }
 
 function carregarCodigos(){
 
-const codigos=
-JSON.parse(localStorage.getItem("cpp_codigos")||"[]");
+    const codigos =
+        JSON.parse(
+            localStorage.getItem(
+                "cpp_codigos"
+            ) || "[]"
+        );
 
-savedList.innerHTML="";
-savedCount.textContent=codigos.length;
+    savedList.innerHTML = "";
 
-codigos.forEach(item=>{
+    savedCount.textContent =
+        codigos.length;
 
-const div=document.createElement("div");
-div.className="saved-item";
+    codigos.forEach(item=>{
 
-const nome=document.createElement("div");
-nome.className="saved-name";
-nome.textContent=item.nome;
+        const div =
+            document.createElement("div");
 
-const actions=document.createElement("div");
-actions.className="saved-actions";
+        div.className =
+            "saved-item";
 
-const abrir=document.createElement("button");
-abrir.className="open-btn";
-abrir.textContent="ABRIR";
+        const nome =
+            document.createElement("div");
 
-abrir.onclick=()=>{
-editor.value=item.codigo;
-atualizarLinhas();
-abrirPorId("codePage");
-};
+        nome.className =
+            "saved-name";
 
-const excluir=document.createElement("button");
-excluir.className="delete-btn";
-excluir.textContent="X";
+        nome.textContent =
+            item.nome;
 
-excluir.onclick=()=>{
-const atual=
-JSON.parse(localStorage.getItem("cpp_codigos")||"[]");
+        const actions =
+            document.createElement("div");
 
-const novo=atual.filter(x=>x.id!==item.id);
+        actions.className =
+            "saved-actions";
 
-localStorage.setItem("cpp_codigos",JSON.stringify(novo));
-carregarCodigos();
-};
+        const abrir =
+            document.createElement("button");
 
-actions.appendChild(abrir);
-actions.appendChild(excluir);
+        abrir.className =
+            "open-btn";
 
-div.appendChild(nome);
-div.appendChild(actions);
+        abrir.textContent =
+            "ABRIR";
 
-savedList.appendChild(div);
+        abrir.onclick = ()=>{
 
-});
+            editor.value =
+                item.codigo;
+
+            atualizarLinhas();
+
+            abrirPagina("codePage");
+
+        };
+
+        const excluir =
+            document.createElement("button");
+
+        excluir.className =
+            "delete-btn";
+
+        excluir.textContent =
+            "X";
+
+        excluir.onclick = ()=>{
+
+            const novos =
+                codigos.filter(
+                    x => x.id !== item.id
+                );
+
+            localStorage.setItem(
+                "cpp_codigos",
+                JSON.stringify(novos)
+            );
+
+            carregarCodigos();
+
+        };
+
+        actions.appendChild(abrir);
+        actions.appendChild(excluir);
+
+        div.appendChild(nome);
+        div.appendChild(actions);
+
+        savedList.appendChild(div);
+
+    });
+
 }
 
 /* =========================================================
-DICIONÁRIO
+   EDITOR DE ARTE
 ========================================================= */
 
-let categoriaAtual="todos";
-let comandoEditando=null;
+const artCanvas =
+    document.getElementById("artCanvas");
 
-function selecionarCategoria(categoria,botao){
+const canvasArea =
+    document.getElementById("canvasArea");
 
-categoriaAtual=categoria;
+const colorPicker =
+    document.getElementById("colorPicker");
 
-document
-.querySelectorAll("#dictionaryCategories button")
-.forEach(b=>b.classList.remove("active"));
+const brushSize =
+    document.getElementById("brushSize");
 
-if(botao) botao.classList.add("active");
+const artSize =
+    document.getElementById("artSize");
 
-renderizarDicionario();
-}
+const canvasInfo =
+    document.getElementById("canvasInfo");
 
-function renderizarDicionario(){
+const ctx =
+    artCanvas.getContext("2d");
 
-const lista=document.getElementById("dictionaryList");
-const busca=
-document.getElementById("dictionarySearch").value
-.trim()
-.toLowerCase();
+ctx.imageSmoothingEnabled = false;
 
-lista.innerHTML="";
+let ferramenta = "pencil";
 
-const filtrados=dicionario.filter(item=>{
+let gridVisivel = true;
 
-const categoriaOk=
-categoriaAtual==="todos"||
-item.categoria===categoriaAtual;
+let tamanhoCanvas = 32;
 
-const buscaOk=
-!busca||
-item.comando.toLowerCase().includes(busca)||
-item.traducao.toLowerCase().includes(busca)||
-item.descricao.toLowerCase().includes(busca);
+let zoom = 16;
 
-return categoriaOk&&buscaOk;
-});
+let offsetX = 0;
 
-if(!filtrados.length){
+let offsetY = 0;
 
-lista.innerHTML=
-'<div class="empty-dict">Nenhum comando encontrado.</div>';
+let desenhando = false;
 
-return;
-}
+let historico = [];
 
-filtrados.forEach((item,index)=>{
+let futuro = [];
 
-const originalIndex=dicionario.indexOf(item);
-
-const div=document.createElement("div");
-div.className="dictionary-item";
-
-const topo=document.createElement("div");
-topo.className="dictionary-item-top";
-
-const nome=document.createElement("div");
-nome.className="dictionary-command";
-nome.textContent=item.comando;
-
-const real=document.createElement("div");
-real.className="dictionary-real";
-real.textContent="→ "+item.traducao;
-
-topo.appendChild(nome);
-topo.appendChild(real);
-
-const descricao=document.createElement("div");
-descricao.className="dictionary-description";
-descricao.textContent=item.descricao;
-
-const actions=document.createElement("div");
-actions.className="dictionary-item-actions";
-
-const editar=document.createElement("button");
-editar.className="edit-dict";
-editar.textContent="✏️ EDITAR";
-editar.onclick=()=>editarComando(originalIndex);
-
-const excluir=document.createElement("button");
-excluir.className="delete-dict";
-excluir.textContent="🗑️ EXCLUIR";
-excluir.onclick=()=>excluirComando(originalIndex);
-
-actions.appendChild(editar);
-actions.appendChild(excluir);
-
-div.appendChild(topo);
-div.appendChild(descricao);
-div.appendChild(actions);
-
-lista.appendChild(div);
-
-});
-}
-
-function abrirDicionarioModal(index=null){
-
-comandoEditando=index;
-
-const modal=document.getElementById("dictionaryModal");
-const titulo=document.getElementById("dictionaryModalTitle");
-
-const campoComando=document.getElementById("dictCommand");
-const campoTraducao=document.getElementById("dictTranslation");
-const campoDescricao=document.getElementById("dictDescription");
-const campoCategoria=document.getElementById("dictCategory");
-
-if(index===null){
-
-titulo.textContent="Novo comando";
-campoComando.value="";
-campoTraducao.value="";
-campoDescricao.value="";
-campoCategoria.value="outros";
-
-}else{
-
-const item=dicionario[index];
-
-titulo.textContent="Editar comando";
-campoComando.value=item.comando;
-campoTraducao.value=item.traducao;
-campoDescricao.value=item.descricao;
-campoCategoria.value=item.categoria;
-
-}
-
-modal.style.display="flex";
-}
-
-function fecharDicionarioModal(){
-document.getElementById("dictionaryModal").style.display="none";
-comandoEditando=null;
-}
-
-function salvarComandoDicionario(){
-
-const comando=
-document.getElementById("dictCommand").value.trim();
-
-const traducao=
-document.getElementById("dictTranslation").value.trim();
-
-const descricao=
-document.getElementById("dictDescription").value.trim();
-
-const categoria=
-document.getElementById("dictCategory").value;
-
-if(!comando||!traducao){
-
-alert("Preencha o comando e a tradução.");
-
-return;
-}
-
-const item={
-comando,
-traducao,
-descricao:descricao||"Comando personalizado da My Engine.",
-categoria
-};
-
-if(comandoEditando===null){
-
-dicionario.push(item);
-
-}else{
-
-dicionario[comandoEditando]=item;
-
-}
-
-salvarDicionarioLocal();
-fecharDicionarioModal();
-renderizarDicionario();
-}
-
-function editarComando(index){
-abrirDicionarioModal(index);
-}
-
-function excluirComando(index){
-
-const item=dicionario[index];
-
-if(!confirm("Excluir o comando \""+item.comando+"\"?")){
-return;
-}
-
-dicionario.splice(index,1);
-
-salvarDicionarioLocal();
-renderizarDicionario();
-}
-
-function restaurarDicionario(){
-
-if(!confirm("Restaurar todos os comandos padrão?")){
-return;
-}
-
-dicionario=[...DICIONARIO_PADRAO];
-
-salvarDicionarioLocal();
-renderizarDicionario();
-}
-
-/* =========================================================
-EDITOR DE ARTE
-========================================================= */
-
-const artCanvas=document.getElementById("artCanvas");
-const canvasArea=document.getElementById("canvasArea");
-const colorPicker=document.getElementById("colorPicker");
-const brushSize=document.getElementById("brushSize");
-const artSize=document.getElementById("artSize");
-const canvasInfo=document.getElementById("canvasInfo");
-const ctx=artCanvas.getContext("2d");
-
-ctx.imageSmoothingEnabled=false;
-
-let ferramenta="pencil";
-let gridVisivel=true;
-let tamanhoCanvas=32;
-let zoom=1;
-let offsetX=0;
-let offsetY=0;
-let desenhando=false;
-let historico=[];
-let futuro=[];
-
-let cameraInicializada=false;
-let doisDedos=false;
-let distanciaInicial=0;
-let zoomInicial=1;
-let offsetInicialX=0;
-let offsetInicialY=0;
+let cameraInicializada = false;
 
 function salvarEstado(){
 
-historico.push(
-ctx.getImageData(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-)
-);
+    historico.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
 
-if(historico.length>40) historico.shift();
+    if(historico.length > 40){
+        historico.shift();
+    }
 
-futuro=[];
+    futuro = [];
+
 }
 
 function desfazer(){
 
-if(!historico.length) return;
+    if(!historico.length){
+        return;
+    }
 
-futuro.push(
-ctx.getImageData(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-)
-);
+    futuro.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
 
-ctx.putImageData(historico.pop(),0,0);
+    ctx.putImageData(
+        historico.pop(),
+        0,
+        0
+    );
+
 }
 
 function refazer(){
 
-if(!futuro.length) return;
+    if(!futuro.length){
+        return;
+    }
 
-historico.push(
-ctx.getImageData(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-)
-);
+    historico.push(
+        ctx.getImageData(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        )
+    );
 
-ctx.putImageData(futuro.pop(),0,0);
+    ctx.putImageData(
+        futuro.pop(),
+        0,
+        0
+    );
+
 }
 
 function novoCanvas(){
 
-const tamanho=prompt(
-"Tamanho do canvas:\n\n16\n32\n64\n128",
-tamanhoCanvas
-);
+    const tamanho =
+        prompt(
+            "Tamanho do canvas:\n\n16\n32\n64\n128",
+            tamanhoCanvas
+        );
 
-if(!tamanho) return;
+    if(!tamanho){
+        return;
+    }
 
-const numero=parseInt(tamanho);
+    const numero =
+        parseInt(tamanho);
 
-if(![16,32,64,128].includes(numero)){
+    if(![16,32,64,128].includes(numero)){
 
-alert("Use 16, 32, 64 ou 128.");
-return;
-}
+        alert(
+            "Use 16, 32, 64 ou 128."
+        );
 
-tamanhoCanvas=numero;
+        return;
 
-artCanvas.width=numero;
-artCanvas.height=numero;
+    }
 
-ctx.clearRect(0,0,numero,numero);
+    tamanhoCanvas = numero;
 
-artSize.textContent=numero+" × "+numero;
+    artCanvas.width = numero;
 
-historico=[];
-futuro=[];
+    artCanvas.height = numero;
 
-resetZoom();
+    ctx.clearRect(
+        0,
+        0,
+        numero,
+        numero
+    );
+
+    artSize.textContent =
+        numero + " × " + numero;
+
+    historico = [];
+
+    futuro = [];
+
+    atualizarCanvasVisual();
+
 }
 
 function limparCanvas(){
 
-salvarEstado();
+    salvarEstado();
 
-ctx.clearRect(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-);
+    ctx.clearRect(
+        0,
+        0,
+        artCanvas.width,
+        artCanvas.height
+    );
+
 }
 
 function selecionarFerramenta(nome){
 
-ferramenta=nome;
+    ferramenta = nome;
 
-document.querySelectorAll(".tool")
-.forEach(b=>b.classList.remove("active"));
+    document
+        .querySelectorAll(".tool")
+        .forEach(
+            b => b.classList.remove("active")
+        );
 
-document
-.getElementById(
-nome==="pencil"?"pencilTool":"eraserTool"
-)
-.classList.add("active");
+    if(nome === "pencil"){
+
+        document
+            .getElementById("pencilTool")
+            .classList.add("active");
+
+    }
+
+    else{
+
+        document
+            .getElementById("eraserTool")
+            .classList.add("active");
+
+    }
+
 }
 
 function obterPixel(event){
 
-const rect=artCanvas.getBoundingClientRect();
+    const rect =
+        artCanvas.getBoundingClientRect();
 
-return{
-x:Math.floor(
-(event.clientX-rect.left)/
-rect.width*
-artCanvas.width
-),
-y:Math.floor(
-(event.clientY-rect.top)/
-rect.height*
-artCanvas.height
-)
-};
+    const x =
+        Math.floor(
+            (
+                event.clientX -
+                rect.left
+            )
+            /
+            rect.width
+            *
+            artCanvas.width
+        );
+
+    const y =
+        Math.floor(
+            (
+                event.clientY -
+                rect.top
+            )
+            /
+            rect.height
+            *
+            artCanvas.height
+        );
+
+    return {x,y};
+
 }
 
 function pintar(event){
 
-const pixel=obterPixel(event);
+    const pixel =
+        obterPixel(event);
 
-const tamanho=parseInt(brushSize.value);
+    const tamanho =
+        parseInt(brushSize.value);
 
-ctx.fillStyle=
-ferramenta==="eraser"?
-"rgba(0,0,0,0)":
-colorPicker.value;
+    ctx.fillStyle =
+        ferramenta === "eraser"
+        ? "rgba(0,0,0,0)"
+        : colorPicker.value;
 
-ctx.globalCompositeOperation=
-ferramenta==="eraser"?
-"destination-out":
-"source-over";
+    ctx.globalCompositeOperation =
+        ferramenta === "eraser"
+        ? "destination-out"
+        : "source-over";
 
-ctx.fillRect(
-pixel.x-Math.floor(tamanho/2),
-pixel.y-Math.floor(tamanho/2),
-tamanho,
-tamanho
+    ctx.fillRect(
+        pixel.x - Math.floor(tamanho/2),
+        pixel.y - Math.floor(tamanho/2),
+        tamanho,
+        tamanho
+    );
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+}
+
+artCanvas.addEventListener(
+    "pointerdown",
+    function(event){
+
+        event.preventDefault();
+
+        salvarEstado();
+
+        desenhando = true;
+
+        artCanvas.setPointerCapture(
+            event.pointerId
+        );
+
+        pintar(event);
+
+    }
 );
 
-ctx.globalCompositeOperation="source-over";
-}
+artCanvas.addEventListener(
+    "pointermove",
+    function(event){
 
-/*
-Controle de toque:
-1 dedo = desenhar
-2 dedos = zoom/pan
-*/
+        if(!desenhando){
+            return;
+        }
 
-function distanciaToque(a,b){
-return Math.hypot(
-a.clientX-b.clientX,
-a.clientY-b.clientY
-);
-}
+        event.preventDefault();
 
-function atualizarDoisDedos(event){
+        pintar(event);
 
-if(event.touches.length!==2) return;
-
-event.preventDefault();
-
-const a=event.touches[0];
-const b=event.touches[1];
-
-const distancia=distanciaToque(a,b);
-
-if(!doisDedos){
-
-doisDedos=true;
-desenhando=false;
-
-distanciaInicial=distancia;
-zoomInicial=zoom;
-
-offsetInicialX=offsetX;
-offsetInicialY=offsetY;
-
-return;
-}
-
-const fator=distancia/distanciaInicial;
-
-zoom=Math.max(
-0.5,
-Math.min(
-5,
-zoomInicial*fator
-)
+    }
 );
 
-atualizarCanvasVisual();
-}
+artCanvas.addEventListener(
+    "pointerup",
+    function(event){
 
-artCanvas.addEventListener("pointerdown",event=>{
+        desenhando = false;
 
-if(event.pointerType==="touch"){
+        try{
 
-artCanvas.setPointerCapture(event.pointerId);
+            artCanvas.releasePointerCapture(
+                event.pointerId
+            );
 
-}
+        }
 
-if(doisDedos) return;
+        catch{}
 
-event.preventDefault();
-
-salvarEstado();
-desenhando=true;
-
-pintar(event);
-});
-
-artCanvas.addEventListener("pointermove",event=>{
-
-if(!desenhando||doisDedos) return;
-
-event.preventDefault();
-
-pintar(event);
-});
-
-artCanvas.addEventListener("pointerup",event=>{
-
-desenhando=false;
-
-try{
-artCanvas.releasePointerCapture(event.pointerId);
-}catch{}
-});
-
-artCanvas.addEventListener("touchstart",event=>{
-
-if(event.touches.length>=2){
-
-desenhando=false;
-doisDedos=true;
-
-const a=event.touches[0];
-const b=event.touches[1];
-
-distanciaInicial=distanciaToque(a,b);
-zoomInicial=zoom;
-
-offsetInicialX=offsetX;
-offsetInicialY=offsetY;
-
-event.preventDefault();
-}
-
-},{passive:false});
-
-artCanvas.addEventListener("touchmove",event=>{
-
-if(event.touches.length>=2){
-
-atualizarDoisDedos(event);
-
-}
-
-},{passive:false});
-
-artCanvas.addEventListener("touchend",event=>{
-
-if(event.touches.length<2){
-
-doisDedos=false;
-desenhando=false;
-
-}
-
-});
+    }
+);
 
 function alternarGrade(){
 
-gridVisivel=!gridVisivel;
+    gridVisivel =
+        !gridVisivel;
 
-desenharGrade();
+    atualizarCanvasVisual();
+
 }
 
 function atualizarCanvasVisual(){
 
-const tamanho=Math.min(
-canvasArea.clientWidth,
-canvasArea.clientHeight
-);
+    const tamanho =
+        Math.min(
+            canvasArea.clientWidth,
+            canvasArea.clientHeight
+        );
 
-const tamanhoBase=Math.max(
-256,
-Math.min(512,tamanho)
-);
+    const tamanhoBase =
+        Math.max(
+            256,
+            Math.min(512,tamanho)
+        );
 
-artCanvas.style.width=tamanhoBase+"px";
-artCanvas.style.height=tamanhoBase+"px";
+    artCanvas.style.width =
+        tamanhoBase + "px";
 
-if(!cameraInicializada){
+    artCanvas.style.height =
+        tamanhoBase + "px";
 
-zoom=1;
-offsetX=0;
-offsetY=0;
-cameraInicializada=true;
-}
+    if(!cameraInicializada){
 
-aplicarCamera();
-desenharGrade();
+        zoom = 1;
+
+        offsetX = 0;
+
+        offsetY = 0;
+
+        cameraInicializada = true;
+
+    }
+
+    aplicarCamera();
+
+    desenharGrade();
+
 }
 
 function aplicarCamera(){
 
-artCanvas.style.transform=
-"translate(-50%,-50%) "+
-"translate("+offsetX+"px,"+offsetY+"px) "+
-"scale("+zoom+")";
+    artCanvas.style.transform =
+        "translate(-50%,-50%) " +
+        "translate(" +
+        offsetX +
+        "px," +
+        offsetY +
+        "px) " +
+        "scale(" +
+        zoom +
+        ")";
 
-canvasInfo.textContent=
-"Zoom: "+Math.round(zoom*100)+"%";
+    canvasInfo.textContent =
+        "Zoom: " +
+        Math.round(zoom * 100) +
+        "%";
+
 }
 
 function desenharGrade(){
 
-if(gridVisivel){
+    if(gridVisivel){
 
-artCanvas.style.backgroundImage=
-"linear-gradient(#333 1px,transparent 1px),"+
-"linear-gradient(90deg,#333 1px,transparent 1px)";
+        artCanvas.style.backgroundImage =
+            "linear-gradient(#333 1px, transparent 1px)," +
+            "linear-gradient(90deg,#333 1px,transparent 1px)";
 
-artCanvas.style.backgroundSize=
-"calc(100% / "+tamanhoCanvas+") "+
-"calc(100% / "+tamanhoCanvas+")";
+        artCanvas.style.backgroundSize =
+            "calc(100% / " +
+            tamanhoCanvas +
+            ") calc(100% / " +
+            tamanhoCanvas +
+            ")";
 
-}else{
+    }
 
-artCanvas.style.backgroundImage="none";
-}
+    else{
+
+        artCanvas.style.backgroundImage =
+            "none";
+
+    }
+
 }
 
 function resetZoom(){
 
-zoom=1;
-offsetX=0;
-offsetY=0;
+    zoom = 1;
 
-cameraInicializada=true;
+    offsetX = 0;
 
-aplicarCamera();
+    offsetY = 0;
+
+    aplicarCamera();
+
 }
 
 function salvarArte(){
 
-try{
+    try{
 
-localStorage.setItem(
-"engine_arte",
-artCanvas.toDataURL("image/png")
-);
+        localStorage.setItem(
+            "engine_arte",
+            artCanvas.toDataURL("image/png")
+        );
 
-alert("Arte salva no dispositivo.");
+        alert(
+            "Arte salva no dispositivo."
+        );
 
-}catch{
+    }
 
-alert("Não foi possível salvar.");
+    catch{
 
-}
+        alert(
+            "Não foi possível salvar."
+        );
+
+    }
+
 }
 
 function carregarArte(){
 
-const imagem=localStorage.getItem("engine_arte");
+    const imagem =
+        localStorage.getItem("engine_arte");
 
-if(!imagem){
+    if(!imagem){
 
-alert("Nenhuma arte salva.");
-return;
-}
+        alert(
+            "Nenhuma arte salva."
+        );
 
-const img=new Image();
+        return;
 
-img.onload=()=>{
+    }
 
-ctx.clearRect(
-0,
-0,
-artCanvas.width,
-artCanvas.height
-);
+    const img =
+        new Image();
 
-ctx.drawImage(
-img,
-0,
-0,
-artCanvas.width,
-artCanvas.height
-);
-};
+    img.onload = function(){
 
-img.src=imagem;
+        ctx.clearRect(
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        );
+
+        ctx.drawImage(
+            img,
+            0,
+            0,
+            artCanvas.width,
+            artCanvas.height
+        );
+
+    };
+
+    img.src = imagem;
+
 }
 
 /* =========================================================
-INICIALIZAÇÃO
+   INICIALIZAÇÃO
 ========================================================= */
 
 atualizarLinhas();
+
 carregarCodigos();
-renderizarDicionario();
 
-setTimeout(()=>{
 atualizarCanvasVisual();
-},50);
 
-window.addEventListener("resize",()=>{
-if(
-document.getElementById("artPage")
-.classList.contains("active")
-){
-atualizarCanvasVisual();
-}
-});
+window.addEventListener(
+    "resize",
+    function(){
+
+        if(
+            document
+                .getElementById("artPage")
+                .classList.contains("active")
+        ){
+
+            atualizarCanvasVisual();
+
+        }
+
+    }
+);
 
 </script>
 
