@@ -161,6 +161,37 @@ svg{
 }
 
 
+/* =====================================================
+   SETTINGS
+===================================================== */
+.settings-content{
+  flex:1;
+  overflow:auto;
+  padding:24px 18px 100px;
+}
+.settings-heading h1{margin:0 0 5px;font-size:27px}
+.settings-heading p{margin:0;color:#818992;font-size:13px}
+.settings-list{display:grid;gap:10px;margin-top:22px}
+.settings-card{width:100%;display:flex;align-items:center;gap:13px;padding:14px;background:#11151a;border:1px solid #242a31;border-radius:13px;text-align:left}
+.settings-card:active{background:#171c21}
+.settings-card-icon{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border-radius:11px;background:#171c21;font-size:22px}
+.settings-card-body{flex:1;min-width:0}
+.settings-card-title{font-size:14px;font-weight:800}
+.settings-card-desc{margin-top:4px;color:#737c85;font-size:10px;line-height:1.35}
+.settings-arrow{color:#68717a;font-size:22px}
+.dictionary-head{margin-top:22px}
+.dictionary-toolbar{display:flex;gap:7px;align-items:center;margin-top:12px}
+.dictionary-toolbar .tool-input{flex:1}
+.dictionary-list{display:grid;gap:7px;margin-top:10px}
+.dictionary-row{display:grid;grid-template-columns:minmax(90px,1fr) 18px minmax(90px,1fr) auto;gap:7px;align-items:center;padding:9px;background:#11151a;border:1px solid #242a31;border-radius:10px}
+.dictionary-row input{min-width:0;height:36px;background:#0b0e11;color:#fff;border:1px solid #303841;border-radius:7px;padding:0 9px;outline:none;font:12px monospace}
+.dictionary-row .pipe{color:#68717a;text-align:center;font-weight:800}
+.dictionary-row .dict-delete{width:34px;height:34px;border-radius:7px;background:#8f2525;color:#fff}
+.dictionary-empty{padding:28px 15px;text-align:center;color:#737c85;background:#11151a;border:1px dashed #2a3037;border-radius:10px;font-size:11px}
+.dictionary-help{margin-top:8px;color:#68717a;font-size:10px;line-height:1.45}
+@media(max-width:430px){.dictionary-row{grid-template-columns:1fr 14px 1fr auto}.dictionary-row input{font-size:11px;padding:0 7px}}
+
+
 .welcome h1{
   margin:0 0 7px;
   font-size:27px;
@@ -1195,7 +1226,7 @@ svg{
     Projects
   </button>
 
-  <button class="nav" onclick="showToast('Settings')">
+  <button class="nav" onclick="showSettingsScreen()">
     <svg viewBox="0 0 24 24" stroke-width="1.8">
       <circle cx="12" cy="12" r="3"/>
       <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
@@ -1203,6 +1234,80 @@ svg{
     Settings
   </button>
 
+</nav>
+
+</section>
+
+
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
+
+<section id="settings" class="screen">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
+      </svg>
+    </div>
+    Settings
+  </div>
+  <button class="menu" onclick="showDashboardScreen()">
+    <svg viewBox="0 0 24 24" width="21"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+</header>
+
+<main class="settings-content">
+  <div class="settings-heading">
+    <h1>Settings</h1>
+    <p>Configure a engine e personalize os comandos.</p>
+  </div>
+
+  <div class="settings-list">
+    <button class="settings-card" onclick="openSettingsDictionary()">
+      <span class="settings-card-icon">📖</span>
+      <span class="settings-card-body">
+        <span class="settings-card-title">Dicionário</span>
+        <span class="settings-card-desc">Dê apelidos aos comandos. Ex.: <b>cout | renomear</b>.</span>
+      </span>
+      <span class="settings-arrow">›</span>
+    </button>
+  </div>
+
+  <div id="settingsDictionary" style="display:none">
+    <div class="dictionary-head">
+      <div class="settings-heading">
+        <h1>Dicionário de comandos</h1>
+        <p>O comando original fica à esquerda e o apelido que você escolheu fica à direita.</p>
+      </div>
+      <div class="dictionary-toolbar">
+        <input id="settingsDictSearch" class="tool-input" placeholder="Pesquisar comando ou apelido..." oninput="renderSettingsDictionary()">
+        <button class="tool-btn primary" onclick="addDictionaryCommand()">＋ Adicionar</button><button class="tool-btn" onclick="resetDictionary2()">↺ Padrão</button>
+      </div>
+      <div class="dictionary-help">
+        Exemplo: <b>cout | renomear</b>. No código, <b>renomear</b> será convertido para <b>cout</b>. Deixe o apelido vazio para não criar um nome alternativo.
+      </div>
+      <div id="settingsDictionaryList" class="dictionary-list"></div>
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav" onclick="showDashboardScreen()">
+    <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg>
+    Home
+  </button>
+  <button class="nav" onclick="showProjectsScreen()">
+    <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 5h6l2 2h8v12H4z"/></svg>
+    Projects
+  </button>
+  <button class="nav active">
+    <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/></svg>
+    Settings
+  </button>
 </nav>
 
 </section>
@@ -1259,7 +1364,7 @@ svg{
     </svg>
     Projects
   </button>
-  <button class="nav" onclick="showToast('Settings')">
+  <button class="nav" onclick="showSettingsScreen()">
     <svg viewBox="0 0 24 24" stroke-width="1.8">
       <circle cx="12" cy="12" r="3"/>
       <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
@@ -2709,11 +2814,63 @@ function closeEngineTools(){
   target.classList.add('active');
   if(engineToolsReturnScreen==='projects')renderProjects();
 }
-function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap')tileResize2();if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
+function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap')tileResize2();if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();}
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();saveTile2();saveAssets2();saveProject2();showToast('My Engine salvo')}
-const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
-function renderDict2(){const q=(document.getElementById('dictSearch2')?.value||'').toLowerCase();document.getElementById('dictList2').innerHTML=DICT2.filter(x=>(x[0]+' '+x[1]).toLowerCase().includes(q)).map(x=>`<div class="dict-item"><span class="dict-command">${x[0]}</span><span class="dict-name">${x[1]}</span></div>`).join('')}
-function engineTranslate(){let s=document.getElementById('engineCode').value;let out=s.replace(/mostrar\s*\((.*?)\)/g,'std::cout << $1;').replace(/variavel\s+(\w+)\s*=\s*(.*)/g,'auto $1 = $2;').replace(/se\s*\((.*?)\)/g,'if($1)');document.getElementById('engineTerminal').textContent=out}
+const DICT_DEFAULT=[
+  {command:'cout',desc:'Saída padrão C++',alias:''},
+  {command:'cin',desc:'Entrada padrão C++',alias:''},
+  {command:'if',desc:'Condição',alias:'se'},
+  {command:'while',desc:'Laço de repetição',alias:'enquanto'},
+  {command:'auto',desc:'Declaração automática de variável',alias:'variavel'},
+  {command:'mostrar',desc:'Atalho da engine para saída',alias:''},
+  {command:'esperar',desc:'Aguarda em milissegundos',alias:''},
+  {command:'mover',desc:'Move um objeto',alias:''},
+  {command:'girar',desc:'Rotaciona um objeto',alias:''},
+  {command:'criar_sprite',desc:'Cria um sprite',alias:''},
+  {command:'tocar_audio',desc:'Executa um áudio',alias:''},
+  {command:'parar_audio',desc:'Para um áudio',alias:''},
+  {command:'colidir',desc:'Verifica colisão',alias:''},
+  {command:'cena',desc:'Acessa a cena',alias:''},
+  {command:'tile',desc:'Acessa um tile',alias:''},
+  {command:'salvar',desc:'Salva o projeto',alias:''}
+];
+let DICT2=[];
+function loadDictionary2(){
+  try{DICT2=JSON.parse(localStorage.getItem('myengine_dictionary2')||'null')||DICT_DEFAULT.map(x=>({...x}));}
+  catch(e){DICT2=DICT_DEFAULT.map(x=>({...x}));}
+}
+function saveDictionary2(){localStorage.setItem('myengine_dictionary2',JSON.stringify(DICT2));}
+function escapeHtml2(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#039;')}
+function renderSettingsDictionary(){
+  const el=document.getElementById('settingsDictionaryList'); if(!el)return;
+  const q=(document.getElementById('settingsDictSearch')?.value||'').trim().toLowerCase();
+  const rows=DICT2.map((x,i)=>({...x,i})).filter(x=>(x.command+' '+x.alias+' '+x.desc).toLowerCase().includes(q));
+  el.innerHTML=rows.map(x=>`<div class="dictionary-row">
+    <input value="${escapeHtml2(x.command)}" aria-label="Comando original" onchange="updateDictionaryCommand(${x.i},this.value)">
+    <span class="pipe">|</span>
+    <input value="${escapeHtml2(x.alias)}" placeholder="apelido" aria-label="Apelido" onchange="updateDictionaryAlias(${x.i},this.value)">
+    <button class="dict-delete" onclick="deleteDictionaryCommand(${x.i})">×</button>
+  </div>`).join('') || '<div class="dictionary-empty">Nenhum comando encontrado.</div>';
+}
+function updateDictionaryCommand(i,v){v=v.trim();if(!v)return renderSettingsDictionary();DICT2[i].command=v;saveDictionary2();renderSettingsDictionary();}
+function updateDictionaryAlias(i,v){DICT2[i].alias=v.trim();saveDictionary2();renderSettingsDictionary();}
+function addDictionaryCommand(){DICT2.push({command:'novo_comando',desc:'Comando personalizado',alias:''});saveDictionary2();renderSettingsDictionary();setTimeout(()=>{const inputs=document.querySelectorAll('#settingsDictionaryList .dictionary-row input');const last=inputs[inputs.length-2];if(last){last.focus();last.select()}},30);}
+function deleteDictionaryCommand(i){if(!confirm('Remover este comando do dicionário?'))return;DICT2.splice(i,1);saveDictionary2();renderSettingsDictionary();}
+function resetDictionary2(){if(!confirm('Restaurar o dicionário padrão?'))return;DICT2=DICT_DEFAULT.map(x=>({...x}));saveDictionary2();renderSettingsDictionary();}
+function openSettingsDictionary(){const panel=document.getElementById('settingsDictionary');panel.style.display='block';renderSettingsDictionary();panel.scrollIntoView({behavior:'smooth',block:'start'});}
+function showSettingsScreen(){loadDictionary2();showScreen('settings');renderSettingsDictionary();}
+function applyDictionaryAliases(s){
+  const entries=DICT2.filter(x=>x.alias&&x.command).sort((a,b)=>b.alias.length-a.alias.length);
+  for(const x of entries){const escaped=x.alias.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');s=s.replace(new RegExp('\\b'+escaped+'\\b','g'),x.command);}
+  return s;
+}
+function renderDict2(){renderSettingsDictionary()}
+function engineTranslate(){
+  let s=document.getElementById('engineCode').value;
+  s=applyDictionaryAliases(s);
+  let out=s.replace(/mostrar\s*\((.*?)\)/g,'std::cout << $1;').replace(/variavel\s+(\w+)\s*=\s*(.*)/g,'auto $1 = $2;').replace(/se\s*\((.*?)\)/g,'if($1)').replace(/enquanto\s*\((.*?)\)/g,'while($1)');
+  document.getElementById('engineTerminal').textContent=out;
+}
 function engineRunCode(){engineTranslate();document.getElementById('engineTerminal').textContent+='\n\n[My Engine] Código enviado para execução.'}
 function engineCodeSave(){localStorage.setItem('myengine_code',document.getElementById('engineCode').value);document.getElementById('engineTerminal').textContent='Código salvo localmente.'}
 /* ART */
@@ -2759,7 +2916,7 @@ function newFolder2(){const n=prompt('Nome da pasta');if(n)showToast('Pasta '+n+
 function renderAudio2(){const a=assets2.filter(x=>x.type.startsWith('audio/'));document.getElementById('audioList2').innerHTML=a.map(x=>`<div class="audio-item"><span>🎵 ${x.name}</span><audio controls src="${x.data}" style="max-width:150px"></audio></div>`).join('')||'<div class="tool-card tool-muted">Nenhum áudio importado.</div>'}
 /* PROJECT */
 function saveProject2(){const d={name:document.getElementById('projectName2').value,resolution:document.getElementById('projectResolution2').value,pixel:document.getElementById('projectPixel2').value,bg:document.getElementById('projectBg2').value};localStorage.setItem('myengine_project2',JSON.stringify(d));showToast('Configuração salva')}function loadProject2(){const d=JSON.parse(localStorage.getItem('myengine_project2')||'null');if(!d)return;document.getElementById('projectName2').value=d.name||'';document.getElementById('projectResolution2').value=d.resolution||'1280x720';document.getElementById('projectPixel2').value=d.pixel||'true';document.getElementById('projectBg2').value=d.bg||'#090b0e'}function exportProject2(){const d=JSON.stringify({project:JSON.parse(localStorage.getItem('myengine_project2')||'{}'),scene:sceneObjs2,tilemap:tileMap2,assets:assets2},null,2),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:'application/json'}));a.download='myengine-project.json';a.click()}
-function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();sceneInit2();tileInit2();loadAssets2();loadProject2();loadTile2();document.getElementById('engineCode').value=localStorage.getItem('myengine_code')||document.getElementById('engineCode').value;window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});renderDict2();}}
+function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();sceneInit2();tileInit2();loadAssets2();loadProject2();loadTile2();document.getElementById('engineCode').value=localStorage.getItem('myengine_code')||document.getElementById('engineCode').value;window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});loadDictionary2();renderSettingsDictionary();}}
 
 </script>
 
@@ -2782,7 +2939,7 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
       <button data-tool="assets" onclick="enginePage('assets')">📦 Assets</button>
       <button data-tool="audio" onclick="enginePage('audio')">🎵 Áudio</button>
       <button data-tool="project" onclick="enginePage('project')">⚙️ Projeto</button>
-      <button data-tool="dictionary" onclick="enginePage('dictionary')">📖 Dicionário</button>
+      
     </nav>
 
     <main id="tool-code" class="engine-page active">
@@ -2819,9 +2976,6 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
     <main id="tool-project" class="engine-page">
       <div class="tool-card"><div class="tool-title">⚙️ Project Manager</div><div class="tool-muted">Configurações persistentes do projeto atual.</div></div><div class="tool-card settings-grid"><label>Nome<input id="projectName2" class="tool-input"></label><label>Resolução<input id="projectResolution2" class="tool-input" value="1280x720"></label><label>Pixel art<select id="projectPixel2" class="tool-input"><option value="true">Ativado</option><option value="false">Desativado</option></select></label><label>Cor de fundo<input id="projectBg2" type="color" value="#090b0e" class="tool-input" style="padding:2px"></label><div class="tool-row"><button class="tool-btn primary" onclick="saveProject2()">💾 Salvar configuração</button><button class="tool-btn" onclick="exportProject2()">Exportar JSON</button></div></div></main>
 
-    <main id="tool-dictionary" class="engine-page">
-      <div class="tool-card"><div class="tool-title">📖 Dicionário</div><input id="dictSearch2" class="tool-input" placeholder="Pesquisar comando..." oninput="renderDict2()"></div><div id="dictList2"></div>
-    </main>
   </div>
 </section>
 
