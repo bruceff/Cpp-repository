@@ -2493,7 +2493,7 @@ function openEngineTools(context='project',resourceTool=null){
   const title=screen.querySelector('.engine-head strong');
   if(title) title.textContent=context==='resource'?'SNAKE ENGINE':'SNAKE ENGINE TOOLS';
   engineInitAll();
-  enginePage(context==='resource'?(resourceTool||'art'):'code');
+  enginePage(context==='resource'?(resourceTool||'art'):'scene');
 }
 function closeEngineTools(){
   document.getElementById('engineTools').classList.remove('active');
@@ -2504,7 +2504,7 @@ function closeEngineTools(){
     document.getElementById('editor').classList.add('active');
   }
 }
-function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap'){tmResize();tmRenderLayers();tmRenderTiles();tmRender();}if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
+function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));const page=document.getElementById('tool-'+name);if(!page)return;page.classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap'){tmResize();tmRenderLayers();tmRenderTiles();tmRender();}if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();tmSaveResource();saveAssets2();saveProject2();showToast('Snake Engine salvo')}
 const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
 function renderDict2(){const q=(document.getElementById('dictSearch2')?.value||'').toLowerCase();document.getElementById('dictList2').innerHTML=DICT2.filter(x=>(x[0]+' '+x[1]).toLowerCase().includes(q)).map(x=>`<div class="dict-item"><span class="dict-command">${x[0]}</span><span class="dict-name">${x[1]}</span></div>`).join('')}
@@ -2635,7 +2635,7 @@ function newFolder2(){const n=prompt('Nome da pasta');if(n)showToast('Pasta '+n+
 function renderAudio2(){const a=assets2.filter(x=>x.type.startsWith('audio/'));document.getElementById('audioList2').innerHTML=a.map(x=>`<div class="audio-item"><span><svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="3"/><circle cx="16.5" cy="16" r="3"/></svg> ${x.name}</span><audio controls src="${x.data}" style="max-width:150px"></audio></div>`).join('')||'<div class="tool-card tool-muted">Nenhum áudio importado.</div>'}
 /* PROJECT */
 function saveProject2(){const d={name:document.getElementById('projectName2').value,resolution:document.getElementById('projectResolution2').value,pixel:document.getElementById('projectPixel2').value,bg:document.getElementById('projectBg2').value};localStorage.setItem('myengine_project2',JSON.stringify(d));showToast('Configuração salva')}function loadProject2(){const d=JSON.parse(localStorage.getItem('myengine_project2')||'null');if(!d)return;document.getElementById('projectName2').value=d.name||'';document.getElementById('projectResolution2').value=d.resolution||'1280x720';document.getElementById('projectPixel2').value=d.pixel||'true';document.getElementById('projectBg2').value=d.bg||'#090b0e'}function exportProject2(){const d=JSON.stringify({project:JSON.parse(localStorage.getItem('myengine_project2')||'{}'),scene:sceneObjs2,tilemap:tileMap2,assets:assets2},null,2),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:'application/json'}));a.download='myengine-project.json';a.click()}
-function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();loadArt2();artRenderPalette2();sceneInit2();loadAssets2();loadProject2();loadTile2();tmInit();document.getElementById('engineCode').value=localStorage.getItem('myengine_code')||document.getElementById('engineCode').value;window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});renderDict2();}}
+function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();loadArt2();artRenderPalette2();sceneInit2();loadAssets2();loadProject2();loadTile2();tmInit();window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});renderDict2();}}
 
 </script>
 
@@ -2651,7 +2651,6 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
       <button class="engine-back" onclick="engineSaveAll()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H4V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg></button>
     </header>
     <nav class="engine-nav">
-      <button data-tool="code" class="active" onclick="enginePage('code')">TEXT Código</button>
       <button data-tool="art" onclick="enginePage('art')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 0 16h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h2a6 6 0 0 0 0-12Z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="11" cy="7.5" r=".8"/><circle cx="16" cy="8" r=".8"/></svg> Arte</button>
       <button data-tool="scene" onclick="enginePage('scene')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5v-13Z"/><path d="M8 4v13M16 7v13"/></svg> Cena</button>
       <button data-tool="tilemap" onclick="enginePage('tilemap')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 5.5 12 2l9 3.5-9 3-9-3Z"/><path d="M3 5.5v13L12 22V8.5M21 5.5v13L12 22"/><path d="M7.5 4l9 3"/></svg> Tilemap</button>
@@ -2660,12 +2659,6 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
       <button data-tool="project" onclick="enginePage('project')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1 2.3-2 1.2-1.9-1.3a7.8 7.8 0 0 1-2.2.9L12.7 20h-2.4l-.7-2a7.8 7.8 0 0 1-2.2-.9l-1.9 1.3-2-1.2.1-2.3a7.8 7.8 0 0 1-1.1-1.9L.8 13.7v-2.4l1.7-.9A7.8 7.8 0 0 1 3.6 8.5L3.5 6.2l2-1.2 1.9 1.3a7.8 7.8 0 0 1 2.2-.9l.7-2h2.4l.7 2a7.8 7.8 0 0 1 2.2.9l1.9-1.3 2 1.2-.1 2.3a7.8 7.8 0 0 1 1.1 1.9l1.7.9v2.4l-1.7.9a7.8 7.8 0 0 1-1.1 1.9Z"/></svg>️ Projeto</button>
       
     </nav>
-
-    <main id="tool-code" class="engine-page active">
-      <div class="tool-card"><div class="tool-title">Código Snake Engine / C++</div><div class="tool-muted">Use o editor principal para o projeto; este painel também traduz os comandos personalizados.</div></div>
-      <div class="tool-card"><textarea id="engineCode" class="tool-input" style="height:42vh;padding:12px;font:13px/1.5 monospace;resize:none">#include &lt;iostream&gt;\n\nint main(){\n    std::cout &lt;&lt; "Olá, mundo!";\n    return 0;\n}</textarea><div class="tool-row"><button class="tool-btn green" onclick="engineTranslate()">Traduzir</button><button class="tool-btn primary" onclick="engineRunCode()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg> Executar</button><button class="tool-btn" onclick="engineCodeSave()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H4V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg> Salvar</button><button class="tool-btn" onclick="document.getElementById('engineCode').value=''">Limpar</button></div><pre id="engineTerminal" class="terminal" style="margin-top:8px;min-height:100px"></pre></div>
-    </main>
-
     <main id="tool-art" class="engine-page">
       <div class="art-topbar">
         <div class="tool-card" style="margin:0;flex:1"><div class="tool-title"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 0 16h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h2a6 6 0 0 0 0-12Z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="11" cy="7.5" r=".8"/><circle cx="16" cy="8" r=".8"/></svg> Sprite Studio</div><div class="tool-muted" id="artSize2">32 × 32 • F1/1</div></div>
