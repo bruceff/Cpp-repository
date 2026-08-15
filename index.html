@@ -4515,5 +4515,554 @@ document.addEventListener("snake:animationevent",e=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — 7/9 AUDIO SYSTEM
+===================================================== */
+.se-audio-panel{
+  position:absolute;right:8px;bottom:8px;width:min(300px,82vw);max-height:52vh;
+  overflow:auto;padding:9px;background:#080d12ee;border:1px solid #29343d;
+  border-radius:7px;color:#8796a2;font:8px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;
+  display:none;z-index:15;box-shadow:0 12px 35px #0008;backdrop-filter:blur(8px)
+}
+.se-audio-panel.show{display:block}
+.se-audio-title{display:flex;align-items:center;justify-content:space-between;color:#cbd5dd;font-weight:800;letter-spacing:.08em;margin-bottom:7px}
+.se-audio-grid{display:grid;grid-template-columns:1fr auto;gap:3px 10px}
+.se-audio-key{color:#62717d}.se-audio-value{color:#aab5be;text-align:right}.se-audio-value.good{color:#a9e99a}
+.se-audio-bus{margin-top:7px;padding-top:7px;border-top:1px solid #1f2932}
+.se-audio-bus-head{display:flex;justify-content:space-between;color:#b8c5cf;margin-bottom:4px}
+.se-audio-meter{height:5px;background:#151e25;border:1px solid #25313b;border-radius:4px;overflow:hidden}
+.se-audio-meter>i{display:block;height:100%;width:0;background:#7ee35b}
+.runtime-btn.audio-on{color:#a9e99a;border-color:#34543a;background:#142019}
+@media(max-width:700px){.se-audio-panel{right:8px;bottom:132px;width:min(290px,86vw)}}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — 7/9: AUDIO SYSTEM
+   Web Audio API · buses · master · sfx/music · loop · fade
+   mobile unlock · asset integration · runtime debug
+===================================================== */
+(function(){
+"use strict";
+
+const RT = window.SnakeEngine = window.SnakeEngine || {};
+RT.runtime = RT.runtime || {};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+class SnakeAudioBus{
+  constructor(context,name,parentNode){
+    this.context=context;
+    this.name=name;
+    this.gain=context.createGain();
+    this.gain.gain.value=1;
+    this.muted=false;
+    this.volume=1;
+    this.meter=0;
+    this.gain.connect(parentNode);
+  }
+  setVolume(v,when=this.context.currentTime){
+    this.volume=clamp(Number(v)||0,0,2);
+    this.gain.gain.cancelScheduledValues(when);
+    this.gain.gain.setValueAtTime(this.muted?0:this.volume,when);
+  }
+  setMute(muted,when=this.context.currentTime){
+    this.muted=!!muted;
+    this.gain.gain.cancelScheduledValues(when);
+    this.gain.gain.setValueAtTime(this.muted?0:this.volume,when);
+  }
+  fadeTo(v,duration=.3){
+    const now=this.context.currentTime;
+    this.volume=clamp(Number(v)||0,0,2);
+    this.gain.gain.cancelScheduledValues(now);
+    this.gain.gain.setValueAtTime(this.gain.gain.value,now);
+    this.gain.gain.linearRampToValueAtTime(this.muted?0:this.volume,now+Math.max(0,duration));
+  }
+}
+
+class SnakeAudioHandle{
+  constructor(engine,options={}){
+    this.engine=engine;
+    this.id=options.id||("audio_"+Math.random().toString(36).slice(2));
+    this.assetId=options.assetId||null;
+    this.name=options.name||this.id;
+    this.bus=options.bus||"sfx";
+    this.loop=!!options.loop;
+    this.volume=clamp(Number(options.volume==null?1:options.volume),0,2);
+    this.playbackRate=Math.max(.05,Number(options.playbackRate||1));
+    this.source=null;
+    this.gain=null;
+    this.startedAt=0;
+    this.offset=0;
+    this.duration=0;
+    this.playing=false;
+    this.paused=false;
+    this.ended=false;
+    this.onEnded=options.onEnded||null;
+  }
+
+  play(buffer,offset=0){
+    this.stop(false);
+    const ctx=this.engine.context;
+    const bus=this.engine.getBus(this.bus);
+    if(!ctx||!bus||!buffer)return false;
+
+    const source=ctx.createBufferSource();
+    const gain=ctx.createGain();
+    source.buffer=buffer;
+    source.loop=this.loop;
+    source.playbackRate.value=this.playbackRate;
+    gain.gain.value=this.volume;
+    source.connect(gain);
+    gain.connect(bus.gain);
+
+    this.source=source;
+    this.gain=gain;
+    this.duration=buffer.duration||0;
+    this.startedAt=ctx.currentTime-offset/this.playbackRate;
+    this.offset=offset;
+    this.playing=true;
+    this.paused=false;
+    this.ended=false;
+
+    source.onended=()=>{
+      if(this.paused)return;
+      if(this.loop)return;
+      this.playing=false;
+      this.ended=true;
+      this.engine.active.delete(this.id);
+      if(typeof this.onEnded==="function"){
+        try{this.onEnded(this)}catch(e){console.error(e)}
+      }
+      document.dispatchEvent(new CustomEvent("snake:audioended",{detail:{handle:this}}));
+    };
+
+    source.start(0,Math.max(0,offset));
+    this.engine.active.set(this.id,this);
+    return true;
+  }
+
+  currentTime(){
+    if(!this.playing||!this.source)return this.offset;
+    const t=(this.engine.context.currentTime-this.startedAt)*this.playbackRate;
+    if(this.loop&&this.duration>0)return t%this.duration;
+    return Math.min(t,this.duration||t);
+  }
+
+  pause(){
+    if(!this.playing||!this.source)return;
+    this.offset=this.currentTime();
+    this.paused=true;
+    try{this.source.stop()}catch{}
+    this.source=null;
+    this.playing=false;
+  }
+
+  resume(buffer){
+    if(!this.paused)return false;
+    this.paused=false;
+    return this.play(buffer,this.offset);
+  }
+
+  stop(remove=true){
+    if(this.source){
+      try{this.source.onended=null;this.source.stop()}catch{}
+    }
+    this.source=null;
+    this.playing=false;
+    this.paused=false;
+    this.offset=0;
+    if(remove)this.engine.active.delete(this.id);
+  }
+
+  setVolume(v){
+    this.volume=clamp(Number(v)||0,0,2);
+    if(this.gain){
+      const now=this.engine.context.currentTime;
+      this.gain.gain.cancelScheduledValues(now);
+      this.gain.gain.setValueAtTime(this.volume,now);
+    }
+  }
+
+  fadeTo(v,duration=.25){
+    this.volume=clamp(Number(v)||0,0,2);
+    if(!this.gain)return;
+    const now=this.engine.context.currentTime;
+    this.gain.gain.cancelScheduledValues(now);
+    this.gain.gain.setValueAtTime(this.gain.gain.value,now);
+    this.gain.gain.linearRampToValueAtTime(this.volume,now+Math.max(0,duration));
+  }
+
+  setRate(v){
+    this.playbackRate=Math.max(.05,Number(v)||1);
+    if(this.source)this.source.playbackRate.setValueAtTime(this.playbackRate,this.engine.context.currentTime);
+  }
+}
+
+class SnakeAudioEngine{
+  constructor(){
+    this.context=null;
+    this.master=null;
+    this.masterVolume=1;
+    this.masterMuted=false;
+    this.buses=new Map();
+    this.buffers=new Map();
+    this.bufferPromises=new Map();
+    this.active=new Map();
+    this.unlocked=false;
+    this.debug=false;
+    this.stats={decoded:0,active:0,plays:0};
+  }
+
+  ensureContext(){
+    if(this.context)return this.context;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return null;
+    this.context=new AC({latencyHint:"interactive"});
+    this.master=this.context.createGain();
+    this.master.gain.value=this.masterVolume;
+    this.master.connect(this.context.destination);
+    this.createBus("music");
+    this.createBus("sfx");
+    this.createBus("ui");
+    this.createBus("ambient");
+    return this.context;
+  }
+
+  async unlock(){
+    const ctx=this.ensureContext();
+    if(!ctx)return false;
+    try{
+      if(ctx.state==="suspended")await ctx.resume();
+      // iOS/Safari unlock pulse.
+      const b=ctx.createBuffer(1,1,22050);
+      const s=ctx.createBufferSource();
+      s.buffer=b;s.connect(this.master);s.start(0);
+      this.unlocked=ctx.state==="running";
+      return this.unlocked;
+    }catch(e){
+      console.warn("Snake Audio unlock failed",e);
+      return false;
+    }
+  }
+
+  createBus(name){
+    const ctx=this.ensureContext();
+    if(!ctx||this.buses.has(name))return this.buses.get(name)||null;
+    const bus=new SnakeAudioBus(ctx,name,this.master);
+    this.buses.set(name,bus);
+    return bus;
+  }
+
+  getBus(name="sfx"){
+    return this.buses.get(name)||this.createBus(name)||this.buses.get("sfx");
+  }
+
+  setMasterVolume(v){
+    const ctx=this.ensureContext(); if(!ctx)return;
+    this.masterVolume=clamp(Number(v)||0,0,2);
+    const now=ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(this.masterMuted?0:this.masterVolume,now);
+  }
+
+  setMasterMute(muted){
+    const ctx=this.ensureContext(); if(!ctx)return;
+    this.masterMuted=!!muted;
+    this.master.gain.setValueAtTime(this.masterMuted?0:this.masterVolume,ctx.currentTime);
+  }
+
+  setBusVolume(name,v){this.getBus(name)?.setVolume(v)}
+  muteBus(name,m=true){this.getBus(name)?.setMute(m)}
+  fadeBus(name,v,d=.3){this.getBus(name)?.fadeTo(v,d)}
+
+  async decodeAsset(asset){
+    if(!asset)return null;
+    const key=asset.id||asset.name;
+    if(this.buffers.has(key))return this.buffers.get(key);
+    if(this.bufferPromises.has(key))return this.bufferPromises.get(key);
+
+    const p=(async()=>{
+      const ctx=this.ensureContext(); if(!ctx)return null;
+      try{
+        let arrayBuffer;
+        if(typeof asset.data==="string"&&asset.data.startsWith("data:")){
+          const res=await fetch(asset.data);
+          arrayBuffer=await res.arrayBuffer();
+        }else if(asset.arrayBuffer instanceof ArrayBuffer){
+          arrayBuffer=asset.arrayBuffer.slice(0);
+        }else{
+          return null;
+        }
+        const buffer=await ctx.decodeAudioData(arrayBuffer.slice(0));
+        this.buffers.set(key,buffer);
+        this.stats.decoded=this.buffers.size;
+        return buffer;
+      }catch(e){
+        console.warn("Snake Audio decode error",asset.name,e);
+        return null;
+      }finally{
+        this.bufferPromises.delete(key);
+      }
+    })();
+
+    this.bufferPromises.set(key,p);
+    return p;
+  }
+
+  findAsset(ref){
+    if(!ref)return null;
+    const list=typeof assets2!=="undefined"?assets2:[];
+    if(typeof ref==="object")return ref;
+    return list.find(a=>a.id===ref||a.name===ref)||null;
+  }
+
+  async play(ref,options={}){
+    await this.unlock();
+    const asset=this.findAsset(ref);
+    if(!asset)return null;
+    const buffer=await this.decodeAsset(asset);
+    if(!buffer)return null;
+
+    const handle=new SnakeAudioHandle(this,{
+      id:options.id,
+      assetId:asset.id,
+      name:options.name||asset.name,
+      bus:options.bus||((asset.meta?.audioType==="music"||/music|bgm/i.test(asset.name))?"music":"sfx"),
+      loop:options.loop==null?!!options.music:!!options.loop,
+      volume:options.volume==null?1:options.volume,
+      playbackRate:options.playbackRate||1,
+      onEnded:options.onEnded
+    });
+
+    handle.play(buffer,Number(options.offset||0));
+    this.stats.plays++;
+    this.stats.active=this.active.size;
+    document.dispatchEvent(new CustomEvent("snake:audioplay",{detail:{handle,asset}}));
+    updateAudioPanel();
+    return handle;
+  }
+
+  async resumeHandle(handle){
+    if(!handle)return false;
+    const asset=this.findAsset(handle.assetId||handle.name);
+    const buffer=await this.decodeAsset(asset);
+    return handle.resume(buffer);
+  }
+
+  stop(idOrHandle){
+    const h=typeof idOrHandle==="string"?this.active.get(idOrHandle):idOrHandle;
+    h?.stop();
+    this.stats.active=this.active.size;
+    updateAudioPanel();
+  }
+
+  stopBus(name){
+    [...this.active.values()].forEach(h=>{if(h.bus===name)h.stop()});
+    this.stats.active=this.active.size;
+    updateAudioPanel();
+  }
+
+  stopAll(){
+    [...this.active.values()].forEach(h=>h.stop());
+    this.active.clear();
+    this.stats.active=0;
+    updateAudioPanel();
+  }
+
+  async crossfadeMusic(ref,duration=.7,options={}){
+    const old=[...this.active.values()].filter(h=>h.bus==="music");
+    const next=await this.play(ref,{...options,bus:"music",loop:options.loop!==false,volume:0});
+    if(!next)return null;
+    next.fadeTo(options.volume==null?1:options.volume,duration);
+    old.forEach(h=>{h.fadeTo(0,duration);setTimeout(()=>h.stop(),Math.max(0,duration)*1000+40)});
+    return next;
+  }
+
+  update(){
+    this.stats.active=this.active.size;
+    // Lightweight pseudo-meter for debug based on active source volume.
+    for(const bus of this.buses.values()){
+      const vals=[...this.active.values()].filter(h=>h.bus===bus.name&&h.playing).map(h=>h.volume);
+      const target=vals.length?clamp(vals.reduce((a,b)=>a+b,0)/Math.max(1,vals.length),0,1):0;
+      bus.meter+= (target-bus.meter)*.18;
+    }
+  }
+}
+
+class SnakeAudioSource extends SnakeComponent{
+  constructor(options={}){
+    super();
+    this.asset=options.asset||options.assetId||null;
+    this.bus=options.bus||"sfx";
+    this.volume=clamp(Number(options.volume==null?1:options.volume),0,2);
+    this.loop=!!options.loop;
+    this.autoplay=!!options.autoplay;
+    this.playbackRate=Math.max(.05,Number(options.playbackRate||1));
+    this.handle=null;
+  }
+  async play(overrides={}){
+    this.handle=await SnakeAudio.play(this.asset,{
+      bus:overrides.bus||this.bus,
+      volume:overrides.volume==null?this.volume:overrides.volume,
+      loop:overrides.loop==null?this.loop:overrides.loop,
+      playbackRate:overrides.playbackRate||this.playbackRate
+    });
+    return this.handle;
+  }
+  stop(){if(this.handle)SnakeAudio.stop(this.handle)}
+  pause(){this.handle?.pause()}
+  async resume(){if(this.handle)await SnakeAudio.resumeHandle(this.handle)}
+  onStart(){if(this.autoplay)this.play()}
+  onDestroy(){this.stop()}
+}
+
+const SnakeAudio=new SnakeAudioEngine();
+RT.runtime.AudioEngine=SnakeAudioEngine;
+RT.runtime.AudioSource=SnakeAudioSource;
+RT.runtime.Audio=SnakeAudio;
+RT.Audio=SnakeAudio;
+
+window.AudioSystem={
+  play:(ref,options)=>SnakeAudio.play(ref,options),
+  playSfx:(ref,options={})=>SnakeAudio.play(ref,{...options,bus:"sfx"}),
+  playMusic:(ref,options={})=>SnakeAudio.play(ref,{...options,bus:"music",loop:options.loop!==false}),
+  crossfadeMusic:(ref,duration,options)=>SnakeAudio.crossfadeMusic(ref,duration,options),
+  stop:(id)=>SnakeAudio.stop(id),
+  stopBus:(bus)=>SnakeAudio.stopBus(bus),
+  stopAll:()=>SnakeAudio.stopAll(),
+  pause:(id)=>{const h=typeof id==="string"?SnakeAudio.active.get(id):id;h?.pause()},
+  resume:(id)=>{const h=typeof id==="string"?SnakeAudio.active.get(id):id;return SnakeAudio.resumeHandle(h)},
+  master:(v)=>SnakeAudio.setMasterVolume(v),
+  mute:(m=true)=>SnakeAudio.setMasterMute(m),
+  bus:(name,v)=>SnakeAudio.setBusVolume(name,v),
+  muteBus:(name,m=true)=>SnakeAudio.muteBus(name,m),
+  fadeBus:(name,v,d)=>SnakeAudio.fadeBus(name,v,d),
+  stats:()=>({...SnakeAudio.stats})
+};
+
+// Mobile-safe unlock on the first deliberate user gesture.
+["pointerdown","touchstart","keydown"].forEach(type=>{
+  window.addEventListener(type,()=>SnakeAudio.unlock(),{once:true,passive:true});
+});
+
+// Stop project audio when leaving Play Mode.
+const previousClosePreviewAudio=closePreview;
+closePreview=function(){
+  SnakeAudio.stopAll();
+  previousClosePreviewAudio();
+};
+
+// Update meters from the runtime loop without changing simulation timing.
+const previousRuntimeUpdateAudio=runtimeUpdate;
+runtimeUpdate=function(dt){
+  previousRuntimeUpdateAudio(dt);
+  SnakeAudio.update(dt);
+};
+
+// Mark imported audio assets with engine metadata while retaining old storage.
+const previousImportAssetsAudio=window.importAssets2;
+window.importAssets2=function(e){
+  const before=(typeof assets2!=="undefined"?assets2.length:0);
+  if(typeof previousImportAssetsAudio==="function")previousImportAssetsAudio(e);
+  // FileReader is async; metadata is applied in a short deferred pass.
+  setTimeout(()=>{
+    if(typeof assets2==="undefined")return;
+    assets2.slice(before).forEach(a=>{
+      if(String(a.type||"").startsWith("audio/")){
+        a.meta=a.meta||{};
+        if(!a.meta.audioType)a.meta.audioType=/music|bgm|theme/i.test(a.name)?"music":"sfx";
+        a.meta.bus=a.meta.bus||a.meta.audioType;
+      }
+    });
+    if(typeof saveAssets2==="function")saveAssets2();
+    if(typeof renderAudio2==="function")renderAudio2();
+  },180);
+};
+
+// Upgrade the Home Audio Manager into a functional preview/library.
+const previousRenderAudio2=window.renderAudio2;
+window.renderAudio2=function(){
+  const root=document.getElementById("audioList2");
+  if(!root){
+    if(typeof previousRenderAudio2==="function")previousRenderAudio2();
+    return;
+  }
+  const list=(typeof assets2!=="undefined"?assets2:[]).filter(a=>String(a.type||"").startsWith("audio/"));
+  root.innerHTML=list.length?list.map(a=>`
+    <div class="audio-item">
+      <span>${escapeHTML(a.name)}</span>
+      <small style="color:#687580">${escapeHTML(a.meta?.audioType||"sfx")}</small>
+      <button class="tool-btn" onclick="AudioSystem.play('${String(a.id).replace(/'/g,"\\'")}',{bus:'${a.meta?.bus||"sfx"}'})">PLAY</button>
+      <button class="tool-btn" onclick="AudioSystem.stopBus('${a.meta?.bus||"sfx"}')">STOP</button>
+    </div>
+  `).join(""):'<div class="tool-card tool-muted">Nenhum áudio importado.</div>';
+};
+
+let audioPanelOpen=false;
+function toggleAudioDebug(){
+  audioPanelOpen=!audioPanelOpen;
+  SnakeAudio.debug=audioPanelOpen;
+  document.getElementById("audioPanel")?.classList.toggle("show",audioPanelOpen);
+  document.getElementById("audioDebugBtn")?.classList.toggle("audio-on",audioPanelOpen);
+  updateAudioPanel();
+}
+
+function updateAudioPanel(){
+  const panel=document.getElementById("audioPanel");
+  if(!panel)return;
+
+  const buses=[...SnakeAudio.buses.values()];
+  panel.innerHTML=`
+    <div class="se-audio-title"><span>AUDIO</span><span>${SnakeAudio.unlocked?"READY":"LOCKED"}</span></div>
+    <div class="se-audio-grid">
+      <span class="se-audio-key">Context</span><span class="se-audio-value">${SnakeAudio.context?.state||"none"}</span>
+      <span class="se-audio-key">Master</span><span class="se-audio-value good">${SnakeAudio.masterMuted?"MUTED":Math.round(SnakeAudio.masterVolume*100)+"%"}</span>
+      <span class="se-audio-key">Decoded</span><span class="se-audio-value">${SnakeAudio.stats.decoded}</span>
+      <span class="se-audio-key">Active</span><span class="se-audio-value">${SnakeAudio.active.size}</span>
+      <span class="se-audio-key">Plays</span><span class="se-audio-value">${SnakeAudio.stats.plays}</span>
+    </div>
+    ${buses.map(b=>`
+      <div class="se-audio-bus">
+        <div class="se-audio-bus-head"><span>${b.name.toUpperCase()}</span><span>${b.muted?"MUTE":Math.round(b.volume*100)+"%"}</span></div>
+        <div class="se-audio-meter"><i style="width:${Math.round(clamp(b.meter,0,1)*100)}%"></i></div>
+      </div>
+    `).join("")}
+  `;
+}
+
+(function installAudioUI(){
+  const stage=document.querySelector("#preview .runtime-stage");
+  if(stage&&!document.getElementById("audioPanel")){
+    const panel=document.createElement("div");
+    panel.id="audioPanel";
+    panel.className="se-audio-panel";
+    stage.appendChild(panel);
+  }
+
+  const header=document.querySelector("#preview .preview-header");
+  if(header&&!document.getElementById("audioDebugBtn")){
+    const btn=document.createElement("button");
+    btn.id="audioDebugBtn";
+    btn.className="runtime-btn";
+    btn.title="Audio debug";
+    btn.setAttribute("aria-label","Audio debug");
+    btn.innerHTML='<svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17 9a4 4 0 0 1 0 6M19.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+    btn.onclick=toggleAudioDebug;
+    const meta=header.querySelector(".preview-meta");
+    header.insertBefore(btn,meta||null);
+  }
+})();
+
+document.addEventListener("snake:audioplay",e=>{
+  if(typeof addOutput==="function"){
+    addOutput("Audio: "+(e.detail.asset?.name||e.detail.handle?.name||"sound"));
+  }
+});
+
+})();
+</script>
+
 </body>
 </html>
