@@ -853,17 +853,90 @@ svg{
 .tool svg{width:19px}
 
 /* =====================================================
-   SNAKE RUNTIME — GAME LOOP / PLAY MODE
+   PREVIEW
 ===================================================== */
-.preview{position:absolute;inset:0;z-index:250;display:none;flex-direction:column;background:#06080b;color:#dfe7ed}
+
+.preview{
+  position:absolute;
+  inset:0;
+  z-index:250;
+  display:none;
+  flex-direction:column;
+  background:#07090b;
+}
+
 .preview.show{display:flex}
-.preview-header{height:54px;min-height:54px;display:flex;align-items:center;gap:7px;padding:0 9px;border-bottom:1px solid #252c33;background:#0c1014}
-.preview-title{flex:1;text-align:center;font-size:11px;font-weight:750;letter-spacing:.08em}.preview-meta{font:8px ui-monospace,monospace;color:#61707c;min-width:70px;text-align:right}.runtime-btn{width:34px;height:34px;border:1px solid #29343d;background:#121920;color:#8796a2;border-radius:6px;display:grid;place-items:center}.runtime-btn:hover{color:#e6edf2;background:#172029}.runtime-btn.primary{color:#a9e99a;border-color:#34543a;background:#142019}.runtime-btn.danger{color:#e58a8a}.runtime-btn .ui-icon{width:15px;height:15px}
-.game{flex:1;min-height:0;display:grid;place-items:center;padding:12px;position:relative}
-.runtime-stage{width:min(94vw,900px);height:min(78vh,620px);position:relative;border:1px solid #29343e;border-radius:8px;background:#070b0e;overflow:hidden;box-shadow:0 20px 60px #0008}
-#runtimeCanvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-action:none}
-.runtime-hud{position:absolute;top:8px;left:8px;display:flex;gap:5px;pointer-events:none}.runtime-chip{height:24px;padding:0 7px;display:flex;align-items:center;border:1px solid #29343d;background:#080d12df;border-radius:5px;color:#7d8c98;font:8px ui-monospace,monospace}.runtime-chip.active{color:#a9e99a;border-color:#34543a}.runtime-debug{position:absolute;right:8px;top:8px;text-align:right;color:#64737e;font:8px ui-monospace,monospace;line-height:14px;pointer-events:none}.runtime-overlay{position:absolute;inset:0;display:none;place-items:center;background:#05080bd9;backdrop-filter:blur(2px)}.runtime-overlay.show{display:grid}.runtime-overlay-card{text-align:center;padding:18px 22px;border:1px solid #2b3741;background:#0d1319;border-radius:8px;box-shadow:0 20px 50px #0008}.runtime-overlay-card strong{display:block;font-size:12px;margin-bottom:5px}.runtime-overlay-card span{font-size:9px;color:#697884}.runtime-touch{position:absolute;left:12px;right:12px;bottom:12px;display:none;justify-content:space-between;pointer-events:none}.runtime-dpad{display:grid;grid-template-columns:34px 34px 34px;grid-template-rows:34px 34px 34px;gap:3px;pointer-events:auto}.runtime-dpad button,.runtime-action{border:1px solid #35414b;background:#0d1319cc;color:#9eabb5;border-radius:6px;touch-action:none}.runtime-dpad .up{grid-column:2}.runtime-dpad .left{grid-column:1;grid-row:2}.runtime-dpad .down{grid-column:2;grid-row:3}.runtime-dpad .right{grid-column:3;grid-row:2}.runtime-action-wrap{display:flex;gap:6px;align-items:end}.runtime-action{width:42px;height:42px}
-.preview-footer{height:42px;min-height:42px;display:flex;align-items:center;gap:12px;padding:0 10px;border-top:1px solid #202831;background:#0c1014;color:#596874;font:8px ui-monospace,monospace}.preview-footer .spacer{flex:1}.runtime-state{color:#7fbe72}@media(max-width:700px){.runtime-stage{width:100%;height:calc(100vh - 160px);border-radius:6px}.runtime-touch{display:flex}.preview-meta{display:none}.runtime-btn{width:32px;height:32px}.runtime-debug{font-size:7px}.preview-footer{height:38px;min-height:38px}}
+
+.preview-header{
+  height:58px;
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  border-bottom:1px solid #252b32;
+  background:#0d1014;
+}
+
+.preview-title{
+  flex:1;
+  text-align:center;
+  font-size:13px;
+  font-weight:650;
+}
+
+.game{
+  flex:1;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+
+.game-screen{
+  width:min(92vw,600px);
+  aspect-ratio:16/10;
+  border:1px solid #343b43;
+  border-radius:10px;
+  background:#0d1115;
+  position:relative;
+  overflow:hidden;
+}
+
+.grid{
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(#171c21 1px,transparent 1px),
+    linear-gradient(90deg,#171c21 1px,transparent 1px);
+  background-size:24px 24px;
+}
+
+.snake{
+  position:absolute;
+  width:18px;
+  height:18px;
+  background:#91e864;
+  border-radius:4px;
+  left:45%;
+  top:45%;
+  box-shadow:22px 0 #6fbd4c,44px 0 #4e8b36;
+}
+
+.game-info{
+  position:absolute;
+  top:12px;
+  left:12px;
+  font-size:11px;
+  color:#91e864;
+}
+
+.preview-footer{
+  height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#68717a;
+  font-size:11px;
+}
 
 /* =====================================================
    TOAST
@@ -965,7 +1038,7 @@ body{background:var(--se-bg);color:var(--se-text);font-size:13px}
 .project-card:hover{border-color:#3a4651}.project-delete{background:#2b1719;color:#ed7777;border:1px solid #542528}
 .section-head span{color:#68737e;letter-spacing:1.4px}.section-head button{color:#8fca78}
 .engine-shell{background:#0a0d10}.engine-sidebar{background:#0c1014!important;border-color:#252c34!important}.engine-sidebar button{background:transparent!important;color:#8b96a1!important;border-radius:5px!important}.engine-sidebar button.active,.engine-sidebar button:hover{background:#171e25!important;color:#e9eef3!important}.engine-sidebar button.active{box-shadow:inset 2px 0 0 var(--se-accent)}
-.engine-page{background:#0a0d10!important}.engine-resource-mode .engine-nav{display:none!important}.engine-project-mode .engine-nav [data-tool="art"],.engine-project-mode .engine-nav [data-tool="tilemap"],.engine-project-mode .engine-nav [data-tool="assets"],.engine-project-mode .engine-nav [data-tool="audio"]{display:none!important}.engine-resource-mode .engine-head strong::after{content:" / RESOURCE";color:#65717c;font-weight:500}.engine-project-mode .engine-head strong::after{content:" / PROJECT";color:#65717c;font-weight:500}.tool-title{font-size:12px!important;font-weight:650;letter-spacing:.15px}.tool-muted{color:#77828d!important}.tool-btn,.art-mini-btn,.scene-toolbar2 button,.tile-tools button{background:#161c22!important;border:1px solid #29323b!important;border-radius:6px!important;color:#aeb7c0!important}.tool-btn:hover,.art-mini-btn:hover,.scene-toolbar2 button:hover,.tile-tools button:hover{border-color:#46515d!important;background:#1a2128!important}.tool-btn.primary,.tool-btn.green{background:#17241b!important;border-color:#34543a!important;color:#a9e99a!important}.tool-btn.danger{background:#2a1719!important;border-color:#552629!important;color:#ec8888!important}
+.engine-page{background:#0a0d10!important}.tool-title{font-size:12px!important;font-weight:650;letter-spacing:.15px}.tool-muted{color:#77828d!important}.tool-btn,.art-mini-btn,.scene-toolbar2 button,.tile-tools button{background:#161c22!important;border:1px solid #29323b!important;border-radius:6px!important;color:#aeb7c0!important}.tool-btn:hover,.art-mini-btn:hover,.scene-toolbar2 button:hover,.tile-tools button:hover{border-color:#46515d!important;background:#1a2128!important}.tool-btn.primary,.tool-btn.green{background:#17241b!important;border-color:#34543a!important;color:#a9e99a!important}.tool-btn.danger{background:#2a1719!important;border-color:#552629!important;color:#ec8888!important}
 .art-toolstrip{background:#0e1318!important;border:1px solid #252d35!important;border-radius:7px!important;padding:5px!important}.art-toolstrip button{background:transparent!important;border:1px solid transparent!important;color:#8d98a3!important;border-radius:5px!important}.art-toolstrip button.active{background:#1a222a!important;border-color:#35404b!important;color:#e8edf2!important}.art-toolstrip .ui-icon{width:15px;height:15px}
 .art-stage{border-color:#303943!important;background-color:#0b0f13!important}.art-stagebar{background:linear-gradient(transparent,#0b0f13d9)!important}.art-panel-title{font-size:10px!important;text-transform:uppercase;letter-spacing:1px;color:#697580!important}.art-side{gap:8px!important}.art-bottom{gap:8px!important}
 input,textarea,select,.tool-input{background:#0b0f13!important;border-color:#28313a!important;color:#e2e7ec!important;border-radius:6px!important}.input:focus,.tool-input:focus{border-color:#4a5966!important;outline:none;box-shadow:0 0 0 2px rgba(126,227,91,.07)}
@@ -981,61 +1054,8 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 .tm-toolbar .tool-btn.primary{background:#176b42;border-color:#24935c;color:#fff}.tm-toolbar .tm-spacer{flex:1}.tm-toolbar .tm-zoom-readout{min-width:52px;text-align:center;font-size:11px;color:#7f8c99}
 .tm-left,.tm-right{background:#0c1117;border-color:#202832;z-index:4;overflow:auto}.tm-left{border-right:1px solid #202832}.tm-right{border-left:1px solid #202832}.tm-panel-title{font-size:10px;letter-spacing:.12em;font-weight:800;color:#71808f;padding:13px 13px 8px}.tm-control{padding:0 12px 9px}.tm-control label{display:block;font-size:10px;color:#748290;margin-bottom:5px}.tm-control .tool-input,.tm-control select{width:100%;box-sizing:border-box;background:#10171f;border:1px solid #29333e;color:#d9e1e8;border-radius:6px;padding:8px;font-size:12px}.tm-control-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tm-section{border-top:1px solid #1d252d;padding-bottom:6px}.tm-tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:0 10px 10px}.tm-tile{position:relative;padding:0;aspect-ratio:1;border:1px solid #29333e;border-radius:5px;background:#080c10;overflow:hidden}.tm-tile.active{border-color:#54a8e8;box-shadow:0 0 0 1px #54a8e8}.tm-tile canvas{width:100%;height:100%;display:block;image-rendering:pixelated}.tm-tile .tm-tile-index{position:absolute;right:3px;bottom:2px;font-size:8px;color:#aeb8c4;background:rgba(0,0,0,.55);padding:1px 3px;border-radius:3px}.tm-viewport{position:relative;min-width:0;min-height:0;background:#080b0f;overflow:hidden;touch-action:none;cursor:crosshair}.tm-viewport:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}.tm-viewport canvas{display:block;width:100%;height:100%;image-rendering:pixelated}.tm-drop{position:absolute;inset:22px;display:none;align-items:center;justify-content:center;border:1px dashed #4c9aff;border-radius:12px;background:rgba(16,35,52,.7);color:#9dd4ff;font-size:13px;pointer-events:none}.tm-viewport.dragover .tm-drop{display:flex}.tm-right .tm-layer{display:grid;grid-template-columns:30px 1fr 30px;gap:4px;align-items:center;margin:2px 9px;padding:4px;border:1px solid transparent;border-radius:6px}.tm-right .tm-layer.active{background:#152330;border-color:#294c66}.tm-layer button{height:28px;background:#10171f;border:1px solid #28323d;color:#8e9aa6;border-radius:5px}.tm-layer-name{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.tm-bottom{grid-column:1/-1;background:#0b1015;border-top:1px solid #202832;overflow:auto;padding:8px 12px}.tm-bottom-head{display:flex;justify-content:space-between;align-items:center}.tm-status{font-size:10px;color:#70808f}.tm-preview{height:78px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#070a0d;margin-top:5px;border:1px solid #1f2831;border-radius:7px}.tm-preview canvas{image-rendering:pixelated;max-height:68px;max-width:95%}.tm-hotkeys{font-size:9px;line-height:1.5;color:#5f6c78;padding:8px 12px 12px}.tm-mobile-bar{display:none}
 .tm-brush-preview{position:absolute;pointer-events:none;border:1px solid #7ec8ff;background:rgba(83,168,232,.12);display:none;z-index:3}.tm-gesture-hint{position:absolute;left:12px;bottom:12px;padding:7px 9px;border:1px solid #27323d;background:rgba(9,13,17,.82);border-radius:6px;color:#657583;font-size:9px;pointer-events:none;opacity:.8}.tm-mode-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 10px 10px}.tm-mode-tabs button{background:#10171f;border:1px solid #27323d;color:#7f8c98;border-radius:5px;padding:7px 3px;font-size:9px}.tm-mode-tabs button.active{color:#dceeff;border-color:#3d82b7;background:#152a3b}.tm-range{width:100%}
-@media(max-width:900px){.tm-studio{grid-template-columns:220px minmax(0,1fr);grid-template-rows:48px minmax(0,1fr) 108px}.tm-right{position:absolute;right:0;top:48px;bottom:108px;width:290px;transform:translateX(102%);transition:transform .2s;border-left:1px solid #202832;box-shadow:-12px 0 30px rgba(0,0,0,.35)}.tm-studio.right-open .tm-right{transform:translateX(0)}.tm-left{position:absolute;left:0;top:48px;bottom:108px;width:250px;transform:translateX(-102%);transition:transform .2s;box-shadow:12px 0 30px rgba(0,0,0,.35)}.tm-studio.palette-open .tm-left{transform:translateX(0)}.tm-mobile-bar{display:flex;position:absolute;bottom:0;left:0;right:0;height:58px;background:#0c1117;border-top:1px solid #202832;z-index:8;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom)}.tm-mobile-bar button{height:44px;min-width:58px;border:1px solid #29333e;background:#111820;color:#94a1ad;border-radius:7px;font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.tm-mobile-bar button .ui-icon{width:17px;height:17px}.tm-mobile-bar button.active{color:#dff2ff;border-color:#4c9cce;background:#183149}.tm-viewport{grid-column:1/-1;grid-row:2}.tm-bottom{grid-row:3}.tm-gesture-hint{display:none}}
+@media(max-width:900px){.tm-studio{grid-template-columns:220px minmax(0,1fr);grid-template-rows:48px minmax(0,1fr) 108px}.tm-right{position:absolute;right:0;top:48px;bottom:108px;width:290px;transform:translateX(102%);transition:transform .2s;border-left:1px solid #202832;box-shadow:-12px 0 30px rgba(0,0,0,.35)}.tm-studio.right-open .tm-right{transform:translateX(0)}.tm-left{position:absolute;left:0;top:48px;bottom:108px;width:250px;transform:translateX(-102%);transition:transform .2s;box-shadow:12px 0 30px rgba(0,0,0,.35)}.tm-studio.palette-open .tm-left{transform:translateX(0)}.tm-mobile-bar{display:flex;position:absolute;bottom:0;left:0;right:0;height:58px;background:#0c1117;border-top:1px solid #202832;z-index:8;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom)}.tm-mobile-bar button{height:40px;min-width:44px;border:1px solid #29333e;background:#111820;color:#94a1ad;border-radius:7px;font-size:10px}.tm-mobile-bar button.active{color:#dff2ff;border-color:#4c9cce;background:#183149}.tm-viewport{grid-column:1/-1;grid-row:2}.tm-bottom{grid-row:3}.tm-gesture-hint{display:none}}
 @media(max-width:600px){.tm-studio{height:calc(100dvh - 56px);min-height:0;border-radius:0;border-left:0;border-right:0;grid-template-rows:46px minmax(0,1fr) 58px}.tm-toolbar{height:46px;padding:5px 7px}.tm-toolbar .tool-btn{height:34px;padding:0 8px;font-size:11px}.tm-toolbar .tool-btn .ui-icon{width:15px;height:15px}.tm-toolbar .desktop-only{display:none}.tm-bottom{display:none}.tm-right,.tm-left{top:46px;bottom:58px}.tm-viewport{grid-row:2}.tm-mobile-bar{height:58px}.tm-toolbar .tm-zoom-readout{display:block}.tm-mode-tabs{grid-template-columns:repeat(2,1fr)}}
-
-/* =========================================================
-   SNAKE ENGINE — SCENE COMPOSER / MOBILE-FIRST
-========================================================= */
-.scn-shell{height:calc(100vh - 72px);min-height:600px;display:flex;flex-direction:column;background:#080b0f;border:1px solid #202832;border-radius:10px;overflow:hidden;color:#dce4eb}
-.scn-topbar{height:48px;min-height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;background:#0d1217;border-bottom:1px solid #202832}
-.scn-doc{display:flex;align-items:center;gap:8px;min-width:0}.scn-doc-mark{width:30px;height:30px;display:grid;place-items:center;border:1px solid #2b3640;background:#121820;border-radius:6px;color:#aeb8c3}.scn-doc strong{display:block;font-size:12px;font-weight:700;letter-spacing:.02em}.scn-doc span:last-child{display:block;color:#667482;font-size:9px;margin-top:2px}.scn-top-actions{display:flex;align-items:center;gap:5px}.scn-icon-btn,.scn-save{height:32px;border:1px solid #2a3540;background:#121920;color:#aeb8c3;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:5px}.scn-icon-btn{width:32px}.scn-save{padding:0 10px;color:#a8e995;border-color:#31543a;background:#132019;font-size:10px;font-weight:700}.scn-divider{width:1px;height:22px;background:#26313b;margin:0 2px}
-.scn-main{position:relative;display:grid;grid-template-columns:220px minmax(0,1fr) 250px;grid-template-rows:minmax(0,1fr);flex:1;min-height:0}.scn-dock{background:#0c1117;overflow:auto}.scn-hierarchy{border-right:1px solid #202832}.scn-inspector2{border-left:1px solid #202832}.scn-dock-head{height:36px;padding:0 9px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e2730;color:#687785;font-size:9px;font-weight:800;letter-spacing:.12em}.scn-small-btn{width:27px;height:27px;border:1px solid #29343e;background:#121920;color:#8e9ba7;border-radius:5px;display:grid;place-items:center}.scn-small-btn .ui-icon{width:14px;height:14px}.scn-scene-root{height:36px;display:flex;align-items:center;gap:6px;padding:0 9px;border-bottom:1px solid #1d2630;color:#d6dee5;background:#10171e}.scn-scene-root .ui-icon{width:14px;color:#82909c}.scn-scene-root input{border:0!important;background:transparent!important;padding:0!important;font-size:10px!important;color:#d6dee5!important}.scn-tree{padding:6px}.scn-node{width:100%;min-height:32px;padding:0 7px;border:1px solid transparent;background:transparent;color:#8f9ca8;border-radius:5px;display:flex;align-items:center;gap:6px;text-align:left;font-size:10px}.scn-node:hover{background:#141c23;color:#dce5ec}.scn-node.active{background:#162b3c;border-color:#2c5974;color:#e5f2fb}.scn-node .scn-node-icon{width:14px;height:14px;color:#71808d}.scn-node.active .scn-node-icon{color:#8fc8ee}.scn-node-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.scn-node-type{font:8px monospace;color:#586672}.scn-hierarchy-actions{border-top:1px solid #1d2630;padding:7px;display:grid;grid-template-columns:1fr 1fr;gap:5px}.scn-hierarchy-actions button{height:30px;border:1px solid #27323c;background:#111820;color:#8795a2;border-radius:5px;font-size:9px;display:flex;align-items:center;justify-content:center;gap:4px}.scn-hierarchy-actions button:hover{color:#e0e7ed;border-color:#3b4a56}.scn-hierarchy-actions .ui-icon{width:13px;height:13px}
-.scn-viewport{position:relative;min-width:0;min-height:0;overflow:hidden;background:#070a0d;touch-action:none}.scn-viewport canvas{width:100%;height:100%;display:block;touch-action:none}.scn-toolbar{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:3px;padding:4px;background:rgba(10,14,18,.94);border:1px solid #2a3540;border-radius:7px;z-index:6;box-shadow:0 10px 28px rgba(0,0,0,.25)}.scn-toolbar button{height:31px;min-width:31px;padding:0 8px;border:1px solid transparent;background:transparent;color:#7f8d99;border-radius:5px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:9px}.scn-toolbar button:hover{background:#161e26;color:#dfe7ed}.scn-toolbar button.active{background:#182d3d;border-color:#2d5c79;color:#d9efff}.scn-toolbar .ui-icon{width:14px;height:14px}.scn-tool-sep{width:1px;height:22px;background:#27313b;margin:0 2px}.scn-viewport-status{position:absolute;left:9px;bottom:8px;display:flex;gap:5px;z-index:4}.scn-viewport-status span{padding:5px 7px;background:rgba(8,12,16,.88);border:1px solid #26323c;border-radius:5px;color:#64727e;font:9px monospace}.scn-add-fab{position:absolute;right:10px;bottom:10px;z-index:7}.scn-add-fab>button{width:40px;height:40px;border:1px solid #3d6d8d;background:#152a3a;color:#bfe4fb;border-radius:7px;display:grid;place-items:center;box-shadow:0 10px 22px rgba(0,0,0,.3)}.scn-add-menu{position:absolute;right:0;bottom:48px;width:150px;padding:5px;background:#0e151c;border:1px solid #2c3843;border-radius:7px;box-shadow:0 16px 35px rgba(0,0,0,.4);display:none}.scn-add-menu.open{display:grid}.scn-add-menu button{height:32px;text-align:left;padding:0 9px;background:transparent;border:0;color:#9aa7b2;border-radius:4px;font-size:10px}.scn-add-menu button:hover{background:#18222b;color:#fff}
-.scn-inspector-content{padding:8px}.scn-empty{padding:20px 8px;text-align:center;color:#566470;font-size:10px}.scn-inspector-section{border-bottom:1px solid #1d2630;padding:9px 0}.scn-inspector-section:last-child{border-bottom:0}.scn-inspector-title{font-size:9px;font-weight:800;letter-spacing:.1em;color:#657481;margin-bottom:8px}.scn-field{margin-bottom:7px}.scn-field label{display:block;font-size:9px;color:#687784;margin-bottom:4px}.scn-field input,.scn-field select{width:100%;height:30px;box-sizing:border-box;background:#0a1015!important;border:1px solid #28343e!important;border-radius:5px!important;padding:0 7px!important;font-size:10px!important;color:#dbe4eb!important}.scn-transform-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.scn-field-wide{grid-column:1/-1}.scn-check{display:flex;align-items:center;justify-content:space-between;height:30px;color:#84919d;font-size:9px}.scn-check input{width:auto!important;height:auto!important}.scn-inspector-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.scn-inspector-actions button{height:30px;border:1px solid #29343e;background:#121920;color:#8997a3;border-radius:5px;font-size:9px}.scn-inspector-actions .danger{color:#df8b8b;border-color:#523136;background:#211417}
-.scn-assets{height:112px;min-height:112px;background:#0b1015;border-top:1px solid #202832;padding:7px 9px}.scn-assets-head{height:25px;display:flex;align-items:center;justify-content:space-between;color:#687784;font-size:9px;font-weight:800;letter-spacing:.1em}.scn-assets-head>div{display:flex;gap:3px}.scn-assets-head button{border:0;background:transparent;color:#667582;padding:4px 6px;border-radius:4px;font-size:9px}.scn-assets-head button.active{background:#17232d;color:#b9d9ee}.scn-asset-tray{height:76px;display:flex;gap:7px;overflow:auto;align-items:center}.scn-asset{width:76px;min-width:76px;height:68px;background:#10171e;border:1px solid #252f39;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7e8c98;font-size:8px}.scn-asset:hover{border-color:#3c4f5e;color:#d5dfe6}.scn-asset .scn-thumb{width:36px;height:36px;display:grid;place-items:center;background:#0a0f14;border:1px solid #202a33;border-radius:4px;overflow:hidden}.scn-asset img{max-width:100%;max-height:100%;image-rendering:pixelated}.scn-asset span{max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.scn-mobile-bar{display:none}
-@media(max-width:900px){
-  .scn-shell{height:calc(100vh - 64px);min-height:520px;border-radius:0;border-left:0;border-right:0}
-  .scn-main{display:block;position:relative}
-  .scn-hierarchy,.scn-inspector2{position:absolute;top:0;bottom:0;width:min(280px,84vw);z-index:20;box-shadow:0 16px 35px rgba(0,0,0,.4);transition:transform .2s ease}
-  .scn-hierarchy{left:0;transform:translateX(-105%)}.scn-hierarchy.open{transform:translateX(0)}
-  .scn-inspector2{right:0;transform:translateX(105%)}.scn-inspector2.open{transform:translateX(0)}
-  .scn-viewport{height:100%}
-  .scn-assets{display:none}
-  .scn-toolbar{left:8px;right:8px;transform:none;justify-content:flex-start;overflow:auto;max-width:calc(100% - 16px)}
-  .scn-toolbar button span{display:none}.scn-toolbar button{min-width:36px}
-  .scn-mobile-bar{height:60px;display:flex;position:absolute;left:0;right:0;bottom:0;z-index:15;background:rgba(11,16,21,.97);border-top:1px solid #202832;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom)}
-  .scn-mobile-bar button{height:45px;min-width:55px;border:1px solid transparent;background:transparent;color:#687783;border-radius:6px;font-size:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-  .scn-mobile-bar button.active{color:#c9e8fb;background:#172632;border-color:#2c4e63}.scn-mobile-bar .ui-icon{width:17px;height:17px}
-  .scn-viewport-status{bottom:68px}
-  .scn-add-fab{bottom:68px}
-}
-@media(max-width:560px){
-  .scn-topbar{height:44px;min-height:44px}.scn-doc strong{font-size:11px}.scn-doc span:last-child{font-size:8px}.scn-save span{display:none}.scn-save{width:32px;padding:0}.scn-icon-btn{width:30px}
-  .scn-toolbar{top:7px}.scn-toolbar button{height:30px}.scn-tool-sep{display:none}
-  .scn-viewport-status{left:6px}.scn-add-fab{right:7px}
-}
-
-/* =========================================================
-   SNAKE ENGINE — PROJECT EDITOR V2
-========================================================= */
-.project-contextbar{height:34px;min-height:34px;background:#0b0f13;border-bottom:1px solid #202832;display:flex;align-items:center;padding:0 8px;gap:5px;color:#697783;overflow:auto}
-.project-contextbar .ctx{height:26px;padding:0 9px;border:1px solid transparent;background:transparent;color:#788692;border-radius:5px;font-size:9px;display:flex;align-items:center;gap:5px;white-space:nowrap}
-.project-contextbar .ctx:hover{background:#151c23;color:#cbd4dc}.project-contextbar .ctx.active{background:#16232c;border-color:#2c414f;color:#dce9f2}.project-contextbar .ctx .ui-icon{width:13px;height:13px}.project-contextbar .ctx-spacer{flex:1}.project-contextbar .status{font:8px ui-monospace,monospace;color:#566571;white-space:nowrap}.project-contextbar .status.dirty{color:#d4a86d}
-.editor-header .project-actions{display:flex;align-items:center;gap:4px}.editor-header .project-action{width:34px;height:34px;border:1px solid #29343e;background:#121920;color:#8f9ca8;border-radius:6px;display:grid;place-items:center}.editor-header .project-action:hover{color:#dce5eb;background:#172029}.editor-header .project-action.primary{color:#a9e99a;border-color:#34543a;background:#142019}.editor-header .project-action .ui-icon{width:16px;height:16px}
-.editor-shell{display:flex;flex:1;min-height:0;position:relative}.editor-center{display:flex;flex:1;min-width:0;min-height:0;flex-direction:column}
-.editor-sidebar-head{display:flex;align-items:center;justify-content:space-between;padding:0 9px;height:36px;border-bottom:1px solid #202832;color:#687784;font-size:9px;font-weight:800;letter-spacing:.1em}.editor-sidebar-tools{display:flex;gap:3px}.editor-sidebar-tools button{width:25px;height:25px;border:1px solid #28343e;background:#111820;color:#8795a1;border-radius:5px;display:grid;place-items:center}.editor-sidebar-tools button:hover{color:#dfe8ef}.editor-sidebar-tools .ui-icon{width:13px;height:13px}
-.explorer-tree{padding:5px}.tree-folder{height:28px;display:flex;align-items:center;gap:6px;padding:0 7px;color:#8a98a4;font-size:9px;text-transform:uppercase;letter-spacing:.08em}.tree-folder .ui-icon{width:13px;height:13px}.tree-file{width:100%;height:30px;border:0;background:transparent;color:#8e9ba7;border-radius:5px;display:flex;align-items:center;gap:7px;padding:0 8px 0 17px;text-align:left;font-size:10px}.tree-file:hover{background:#141c23;color:#d8e1e7}.tree-file.active{background:#172a36;color:#dff1fb}.tree-file .ui-icon{width:13px;height:13px}.tree-file .file-kind{margin-left:auto;color:#4f5e6a;font:8px monospace}.tree-empty{padding:18px 8px;color:#55636e;font-size:9px;text-align:center;line-height:15px}
-.editor-tabs{height:38px;min-height:38px;background:#10151a;border-bottom:1px solid #232c34;display:flex;align-items:stretch;overflow:auto}.editor-tab{height:38px;min-width:110px;padding:0 10px;border:0;border-right:1px solid #222b33;background:#10151a;color:#6f7c88;font-size:9px;display:flex;align-items:center;gap:6px}.editor-tab.active{background:#0a0e12;color:#dfe7ed;box-shadow:inset 0 2px #91e864}.editor-tab .dirty-dot{width:5px;height:5px;border-radius:50%;background:#d6a762}.editor-tab .tab-close{margin-left:auto;color:#586671;font-size:12px}.editor-tab .ui-icon{width:13px;height:13px}
-.editor-statusbar{height:24px;min-height:24px;background:#0d1217;border-top:1px solid #202832;display:flex;align-items:center;gap:12px;padding:0 9px;color:#596773;font:8px ui-monospace,monospace}.editor-statusbar .right{margin-left:auto;display:flex;gap:12px}.editor-statusbar .green{color:#7fbf70}
-.project-bottom-actions{display:flex;align-items:center;gap:5px;margin-left:auto}.project-bottom-actions button{height:25px;border:1px solid #28343e;background:#111820;color:#788792;border-radius:5px;font-size:8px;padding:0 8px}.project-bottom-actions button:hover{color:#dbe4ea}
-.project-modal{position:absolute;inset:0;z-index:400;background:rgba(3,6,9,.78);display:none;align-items:center;justify-content:center;padding:18px}.project-modal.show{display:flex}.project-modal-card{width:min(620px,100%);max-height:90%;overflow:auto;background:#10161c;border:1px solid #2a3540;border-radius:10px;box-shadow:0 25px 70px rgba(0,0,0,.5)}.project-modal-head{height:48px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222c34}.project-modal-head strong{font-size:11px;letter-spacing:.08em}.project-modal-close{width:30px;height:30px;background:transparent;border:0;color:#7e8c98}.project-modal-body{padding:13px}.project-setting-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.project-setting{display:flex;flex-direction:column;gap:5px;color:#71808c;font-size:9px}.project-setting.full{grid-column:1/-1}.project-setting input,.project-setting select{height:32px;border:1px solid #28343e;background:#090e13;color:#dbe4ea;border-radius:5px;padding:0 8px}.project-modal-footer{display:flex;justify-content:flex-end;gap:6px;padding:10px 13px;border-top:1px solid #222c34}.project-modal-footer button{height:32px;border:1px solid #293640;background:#141c23;color:#8b99a5;border-radius:5px;padding:0 11px;font-size:9px}.project-modal-footer .primary{color:#a9e99a;background:#142119;border-color:#35543b}
-.project-asset-chip{height:29px;padding:0 8px;border:1px solid #27333d;background:#10171d;color:#7f8d99;border-radius:5px;display:flex;align-items:center;gap:5px;font-size:9px}.project-asset-chip.active{color:#dce9f2;border-color:#31516a;background:#152631}.project-asset-chip .ui-icon{width:13px;height:13px}
-@media(min-width:901px){
- .editor-main{display:grid;grid-template-columns:235px minmax(0,1fr) 270px}.explorer{position:relative;inset:auto;width:auto;transform:none!important;box-shadow:none;z-index:1}.inspector{position:relative;inset:auto;width:auto;transform:none!important;box-shadow:none;z-index:1}.explorer-head{display:none}.editor-main .code-area,.editor-main .scene-area{min-width:0}.editor-header{padding:0 10px}.tool-dock{height:44px}.tool{width:auto;min-width:70px;padding:0 12px;gap:6px;font-size:9px;display:flex}.tool::after{font-size:9px}.tool:nth-child(1)::after{content:'Code'}.tool:nth-child(2)::after{content:'Scene'}.tool:nth-child(3)::after{content:'Preview'}.tool:nth-child(4)::after{content:'Console'}.tool:nth-child(5)::after{content:'Inspector'}
-}
-@media(max-width:900px){.project-contextbar{padding-right:4px}.editor-sidebar-head{height:42px}.editor-shell{display:block}.editor-main{display:block}.editor-main .explorer,.editor-main .inspector{top:0;bottom:0}.project-modal{align-items:flex-end;padding:0}.project-modal-card{max-height:88%;border-radius:12px 12px 0 0}.project-setting-grid{grid-template-columns:1fr}.project-setting.full{grid-column:auto}.editor-statusbar .right{display:none}}
 </style>
 </head>
 
@@ -1133,18 +1153,16 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
     <small>Snake Engine Editor</small>
   </div>
 
-  <div class="project-actions"><button class="project-action" onclick="toggleExplorer()" title="Files"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 6h6l2 2h8v10H4z"/></svg></button><button class="project-action" onclick="saveProjectWorkspace()" title="Save"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H4V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg></button><button class="project-action primary" onclick="runProject()" title="Run"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m9 5 10 7-10 7z"/></svg></button></div>
+  <button class="engine-tools-btn" onclick="openEngineTools()">TOOLS</button>
 
+  <button class="run-btn" onclick="runProject()">
+    <svg viewBox="0 0 24 24" stroke-width="2.2">
+      <path d="m9 5 10 7-10 7z"/>
+    </svg>
+  </button>
 
 </header>
 
-<div class="project-contextbar" id="projectContextbar">
-  <button class="ctx active" data-mode="code" onclick="projectSwitchMode('code')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></svg>CODE</button>
-  <button class="ctx" data-mode="scene" onclick="projectSwitchMode('scene')"><svg class="ui-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m5 17 4-4 3 3 3-4 4 5"/></svg>SCENE</button>
-  <button class="ctx" data-mode="assets" onclick="projectShowAssets()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 6h6l2 2h8v10H4z"/></svg>ASSETS</button>
-  <button class="ctx" data-mode="settings" onclick="openProjectSettings()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1 2.3-2 1.2-1.9-1.3a7.8 7.8 0 0 1-2.2.9L12.7 20h-2.4l-.7-2a7.8 7.8 0 0 1-2.2-.9l-1.9 1.3.1-2.3a7.8 7.8 0 0 1-1.1-1.9L.8 13.7v-2.4l1.7-.9A7.8 7.8 0 0 1 3.6 8.5L3.5 6.2l2-1.2 1.9 1.3a7.8 7.8 0 0 1 2.2-.9l.7-2h2.4l.7 2a7.8 7.8 0 0 1 2.2.9l1.9-1.3 2 1.2-.1 2.3a7.8 7.8 0 0 1-1.1 1.9Z"/></svg>PROJECT</button>
-  <span class="ctx-spacer"></span><span id="projectDirtyStatus" class="status">SYNCED</span>
-</div>
 
 <main class="editor-main">
 
@@ -1165,9 +1183,9 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
     </button>
   </div>
 
-  <div class="editor-sidebar-head"><span>FILES</span><div class="editor-sidebar-tools"><button onclick="projectNewFile()" title="New file"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><button onclick="projectRefreshExplorer()" title="Refresh"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 1 4"/><path d="M20 5v6h-6"/></svg></button></div></div><div id="projectExplorerTree" class="explorer-tree"></div><div class="file-list" style="display:none">
+  <div class="file-list">
 
-    <div class="folder">SNAKE ENGINE PROJECT</div>
+    <div class="folder">SNAKE FORGE</div>
 
     <button class="file active" onclick="openFile('main.cpp')">
       <svg viewBox="0 0 24 24">
@@ -1460,21 +1478,9 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 </main>
 
 
-<div id="projectModal" class="project-modal" onclick="if(event.target===this)closeProjectSettings()">
-  <div class="project-modal-card">
-    <div class="project-modal-head"><strong>PROJECT CONFIGURATION</strong><button class="project-modal-close" onclick="closeProjectSettings()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-    <div class="project-modal-body"><div class="project-setting-grid">
-      <label class="project-setting">Project name<input id="projectSettingName"></label>
-      <label class="project-setting">Resolution<input id="projectSettingResolution" value="1280x720"></label>
-      <label class="project-setting">Render mode<select id="projectSettingRender"><option value="2d">2D</option><option value="pixel">Pixel Perfect 2D</option></select></label>
-      <label class="project-setting">Background<input id="projectSettingBg" type="color" value="#090b0e"></label>
-      <label class="project-setting full">Startup scene<select id="projectSettingScene"><option value="main.scene">main.scene</option></select></label>
-    </div></div>
-    <div class="project-modal-footer"><button onclick="closeProjectSettings()">Cancel</button><button class="primary" onclick="saveProjectSettings()">Save project</button></div>
-  </div>
-</div>
-
-
+<!-- =====================================================
+     CONSOLE
+===================================================== -->
 
 <section id="bottomPanel" class="bottom-panel">
 
@@ -1497,7 +1503,7 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
   <div id="output" class="output">
 
     <div class="output-line">
-      Snake Engine Editor initialized.
+      Snake Forge Editor initialized.
     </div>
 
     <div class="output-line">
@@ -1572,29 +1578,47 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 ===================================================== -->
 
 <section id="preview" class="preview">
+
   <header class="preview-header">
-    <button class="runtime-btn" onclick="closePreview()" title="Close runtime"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-    <div class="preview-title">SNAKE RUNTIME</div>
-    <span id="runtimeProjectMeta" class="preview-meta">READY</span>
-    <button id="runtimePlayBtn" class="runtime-btn primary" onclick="runtimeTogglePause()" title="Pause / Resume"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
-    <button class="runtime-btn" onclick="runtimeStep()" title="Step"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M6 5v14M10 5l9 7-9 7z"/></svg></button>
-    <button class="runtime-btn" onclick="runtimeRestart()" title="Restart"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 1 4"/><path d="M20 5v6h-6"/></svg></button>
-  </header>
-  <div class="game">
-    <div class="runtime-stage">
-      <canvas id="runtimeCanvas"></canvas>
-      <div class="runtime-hud"><span id="runtimeStateChip" class="runtime-chip active">RUNNING</span><span id="runtimeFrameChip" class="runtime-chip">FRAME 0</span></div>
-      <div id="runtimeDebug" class="runtime-debug">FPS 0<br>DT 0.000<br>TIME 0.0s</div>
-      <div id="runtimeOverlay" class="runtime-overlay"><div class="runtime-overlay-card"><strong>PAUSED</strong><span>Press play to resume the game loop.</span></div></div>
-      <div class="runtime-touch">
-        <div class="runtime-dpad">
-          <button class="up" data-runtime-key="ArrowUp">↑</button><button class="left" data-runtime-key="ArrowLeft">←</button><button class="down" data-runtime-key="ArrowDown">↓</button><button class="right" data-runtime-key="ArrowRight">→</button>
-        </div>
-        <div class="runtime-action-wrap"><button class="runtime-action" data-runtime-key="Space">A</button><button class="runtime-action" data-runtime-key="Enter">B</button></div>
-      </div>
+
+    <button class="icon-btn" onclick="closePreview()">
+      <svg viewBox="0 0 24 24" stroke-width="2">
+        <path d="m15 18-6-6 6-6"/>
+      </svg>
+    </button>
+
+    <div class="preview-title">
+      GAME PREVIEW
     </div>
+
+    <button class="icon-btn" onclick="runProject()">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <path d="m9 5 10 7-10 7z"/>
+      </svg>
+    </button>
+
+  </header>
+
+  <div class="game">
+
+    <div class="game-screen">
+
+      <div class="grid"></div>
+
+      <div class="game-info">
+        SCORE 0000
+      </div>
+
+      <div class="snake"></div>
+
+    </div>
+
   </div>
-  <div class="preview-footer"><span>RUNTIME</span><span class="spacer"></span><span class="runtime-state" id="runtimeFooterState">Game loop active</span><span>60 FPS target</span></div>
+
+  <div class="preview-footer">
+    Preview Runtime
+  </div>
+
 </section>
 
 </section>
@@ -1624,7 +1648,7 @@ const defaultFiles={
 
 int main() {
 
-    std::cout << "Hello, Snake Engine!";
+    std::cout << "Hello, Snake Forge!";
 
     return 0;
 }`,
@@ -1683,24 +1707,12 @@ function renderProjects(){
   const list=document.getElementById("projectsList"); if(!list)return;
   const projects=getProjects();
   if(!projects.length){list.innerHTML='<div class="project-card"><div class="project-info"><div class="project-name">Nenhum projeto</div><div class="project-meta">Crie seu primeiro jogo.</div></div></div>';return;}
-  list.innerHTML=projects.map(p=>`<div class="project-card project-row" data-project-id="${escapeHTML(String(p.id))}"><button type="button" class="project-open" onclick="openProjectById('${String(p.id).replace(/'/g,"\\'")}')"><div class="project-icon">GAME</div><div class="project-info"><div class="project-name">${escapeHTML(p.name)}</div><div class="project-meta">Criado ${new Date(p.createdAt).toLocaleDateString()}</div></div></button><button type="button" class="project-delete" data-delete-project="${escapeHTML(String(p.id))}" aria-label="Excluir projeto"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg></button></div>`).join("");
-  list.querySelectorAll('[data-delete-project]').forEach(btn=>btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();deleteProject(this.dataset.deleteProject,e);}));
+  list.innerHTML=projects.map(p=>`<div class="project-card project-row"><button class="project-open" onclick="openProjectById(${p.id})"><div class="project-icon">GAME</div><div class="project-info"><div class="project-name">${escapeHTML(p.name)}</div><div class="project-meta">Criado ${new Date(p.createdAt).toLocaleDateString()}</div></div></button><button class="project-delete" onclick="deleteProject(${p.id},event)">DEL️</button></div>`).join("");
 }
 
-function openProjectById(id){const p=getProjects().find(x=>String(x.id)===String(id));if(p)openProject(p.name);}
-function deleteProject(id,e){
-  if(e){e.preventDefault();e.stopPropagation();}
-  const projects=getProjects();
-  const p=projects.find(x=>String(x.id)===String(id));
-  if(!p)return showToast('Projeto não encontrado');
-  const ok=window.confirm(`Excluir o projeto "${p.name}"? Esta ação remove também os arquivos salvos do projeto.`);
-  if(!ok)return;
-  saveProjects(projects.filter(x=>String(x.id)!==String(id)));
-  localStorage.removeItem(FILES_KEY+"_"+p.name);
-  if(currentProject===p.name){currentProject=null;}
-  renderProjects();
-  showToast('Projeto excluído');
-}
+function openProjectById(id){const p=getProjects().find(x=>x.id===id);if(p)openProject(p.name);}
+function deleteProject(id,e){if(e)e.stopPropagation();const p=getProjects().find(x=>x.id===id);if(!p)return;if(!confirm(`Excluir o projeto "${p.name}"? Esta ação remove também os arquivos salvos do projeto.`))return;saveProjects(getProjects().filter(x=>x.id!==id));localStorage.removeItem(FILES_KEY+"_"+p.name);if(currentProject===p.name){currentProject=null;}renderProjects();showProjectsScreen();showToast('Projeto excluído');}
+
 
 
 /* =====================================================
@@ -2219,79 +2231,80 @@ function clearOutput(){
 
 
 /* =====================================================
-   SNAKE RUNTIME — STEP 1: GAME LOOP
+   RUN
 ===================================================== */
-const snakeRuntime={
-  running:false,paused:false,raf:0,last:0,accumulator:0,step:1/60,
-  elapsed:0,frames:0,fps:0,fpsFrames:0,fpsElapsed:0,dt:0,
-  canvas:null,ctx:null,keys:new Set(),touchKeys:new Set(),player:{x:0,y:0,vx:0,vy:0,size:22},scene:[]
-};
-function runtimeInit(){
-  const c=document.getElementById('runtimeCanvas'); if(!c)return;
-  snakeRuntime.canvas=c; snakeRuntime.ctx=c.getContext('2d'); snakeRuntime.ctx.imageSmoothingEnabled=false;
-  if(c.dataset.bound)return;
-  c.dataset.bound='1';
-  window.addEventListener('keydown',runtimeKeyDown);
-  window.addEventListener('keyup',runtimeKeyUp);
-  window.addEventListener('resize',runtimeResize);
-  c.addEventListener('pointerdown',e=>{c.setPointerCapture?.(e.pointerId)});
-  document.querySelectorAll('[data-runtime-key]').forEach(btn=>{
-    const k=btn.dataset.runtimeKey;
-    const down=e=>{e.preventDefault();snakeRuntime.touchKeys.add(k);btn.classList.add('active')};
-    const up=e=>{e.preventDefault();snakeRuntime.touchKeys.delete(k);btn.classList.remove('active')};
-    btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('pointerleave',up);
-  });
-}
-function runtimeKeyDown(e){if(document.getElementById('preview')?.classList.contains('show')){snakeRuntime.keys.add(e.code);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();}}
-function runtimeKeyUp(e){snakeRuntime.keys.delete(e.code)}
-function runtimePressed(code){return snakeRuntime.keys.has(code)||snakeRuntime.touchKeys.has(code)}
-function runtimeResize(){
-  const c=snakeRuntime.canvas;if(!c)return;const r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=Math.max(1,Math.floor(r.width*d));c.height=Math.max(1,Math.floor(r.height*d));snakeRuntime.ctx.setTransform(d,0,0,d,0,0);runtimeRender();
-}
-function runtimeBuildScene(){
-  snakeRuntime.scene=[];
-  if(Array.isArray(sceneObjs2)&&sceneObjs2.length){
-    snakeRuntime.scene=sceneObjs2.map(o=>({id:o.id,name:o.name,type:o.type,x:o.x||0,y:o.y||0,rotation:o.rotation||0,scale:o.scale||1,visible:o.visible!==false}));
-  }
-  const p=snakeRuntime.scene.find(o=>/player/i.test(o.name||''));
-  if(p){snakeRuntime.player.x=p.x;snakeRuntime.player.y=p.y}else{snakeRuntime.player.x=0;snakeRuntime.player.y=0}
-}
-function runtimeStart(){
-  runtimeInit();runtimeBuildScene();snakeRuntime.running=true;snakeRuntime.paused=false;snakeRuntime.elapsed=0;snakeRuntime.frames=0;snakeRuntime.fps=0;snakeRuntime.fpsFrames=0;snakeRuntime.fpsElapsed=0;snakeRuntime.accumulator=0;snakeRuntime.last=performance.now();
-  document.getElementById('runtimeOverlay')?.classList.remove('show');
-  document.getElementById('runtimeStateChip').textContent='RUNNING';document.getElementById('runtimeStateChip').classList.add('active');document.getElementById('runtimeFooterState').textContent='Game loop active';
-  runtimeResize();cancelAnimationFrame(snakeRuntime.raf);snakeRuntime.raf=requestAnimationFrame(runtimeFrame);
-}
-function runtimeStop(){snakeRuntime.running=false;cancelAnimationFrame(snakeRuntime.raf);snakeRuntime.raf=0}
-function runtimeFrame(now){
-  if(!snakeRuntime.running)return;
-  let frameDelta=(now-snakeRuntime.last)/1000;snakeRuntime.last=now;frameDelta=Math.min(.25,Math.max(0,frameDelta));
-  if(!snakeRuntime.paused){snakeRuntime.accumulator+=frameDelta;while(snakeRuntime.accumulator>=snakeRuntime.step){runtimeUpdate(snakeRuntime.step);snakeRuntime.accumulator-=snakeRuntime.step;snakeRuntime.frames++;snakeRuntime.elapsed+=snakeRuntime.step;}}
-  snakeRuntime.dt=frameDelta;snakeRuntime.fpsFrames++;snakeRuntime.fpsElapsed+=frameDelta;if(snakeRuntime.fpsElapsed>=.5){snakeRuntime.fps=Math.round(snakeRuntime.fpsFrames/snakeRuntime.fpsElapsed);snakeRuntime.fpsFrames=0;snakeRuntime.fpsElapsed=0}
-  runtimeRender();snakeRuntime.raf=requestAnimationFrame(runtimeFrame);
-}
-function runtimeUpdate(dt){
-  const p=snakeRuntime.player,speed=180;let x=0,y=0;
-  if(runtimePressed('ArrowLeft')||runtimePressed('KeyA'))x-=1;if(runtimePressed('ArrowRight')||runtimePressed('KeyD'))x+=1;if(runtimePressed('ArrowUp')||runtimePressed('KeyW'))y-=1;if(runtimePressed('ArrowDown')||runtimePressed('KeyS'))y+=1;
-  if(x||y){const len=Math.hypot(x,y)||1;p.vx=x/len*speed;p.vy=y/len*speed}else{p.vx*=Math.pow(.0001,dt);p.vy*=Math.pow(.0001,dt)}
-  p.x+=p.vx*dt;p.y+=p.vy*dt;
-}
-function runtimeRender(){
-  const c=snakeRuntime.canvas,ctx=snakeRuntime.ctx;if(!c||!ctx)return;const w=c.clientWidth,h=c.clientHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle='#070b0e';ctx.fillRect(0,0,w,h);
-  const grid=32;ctx.strokeStyle='#121a20';ctx.lineWidth=1;for(let x=0;x<w;x+=grid){ctx.beginPath();ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,h);ctx.stroke()}for(let y=0;y<h;y+=grid){ctx.beginPath();ctx.moveTo(0,y+.5);ctx.lineTo(w,y+.5);ctx.stroke()}
-  const cx=w/2,cy=h/2;ctx.strokeStyle='#263742';ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
-  snakeRuntime.scene.forEach(o=>{if(!o.visible)return;const x=cx+o.x,y=cy+o.y,size=32*Math.max(.25,o.scale||1);ctx.save();ctx.translate(x,y);ctx.rotate((o.rotation||0)*Math.PI/180);ctx.globalAlpha=.65;ctx.strokeStyle=o.type==='Tilemap'?'#4c9aff':'#667681';ctx.fillStyle=o.type==='Light'?'#d7b65e':'#24303a';if(o.type==='Camera')ctx.strokeRect(-size*.7,-size*.45,size*1.4,size*.9);else ctx.fillRect(-size/2,-size/2,size,size);ctx.restore();ctx.globalAlpha=1});
-  const px=cx+snakeRuntime.player.x,py=cy+snakeRuntime.player.y;ctx.fillStyle='#91e864';ctx.fillRect(Math.round(px-snakeRuntime.player.size/2),Math.round(py-snakeRuntime.player.size/2),snakeRuntime.player.size,snakeRuntime.player.size);
-  const state=snakeRuntime.paused?'PAUSED':'RUNNING';const frame=document.getElementById('runtimeFrameChip');const debug=document.getElementById('runtimeDebug');if(frame)frame.textContent='FRAME '+snakeRuntime.frames;if(debug)debug.innerHTML='FPS '+snakeRuntime.fps+'<br>DT '+snakeRuntime.dt.toFixed(3)+'<br>TIME '+snakeRuntime.elapsed.toFixed(1)+'s';const meta=document.getElementById('runtimeProjectMeta');if(meta)meta.textContent=String(currentProject||'PROJECT').toUpperCase();
-}
-function runtimeTogglePause(){if(!snakeRuntime.running){runtimeStart();return}snakeRuntime.paused=!snakeRuntime.paused;document.getElementById('runtimeOverlay')?.classList.toggle('show',snakeRuntime.paused);document.getElementById('runtimeStateChip').textContent=snakeRuntime.paused?'PAUSED':'RUNNING';document.getElementById('runtimeStateChip').classList.toggle('active',!snakeRuntime.paused);document.getElementById('runtimeFooterState').textContent=snakeRuntime.paused?'Game loop paused':'Game loop active'}
-function runtimeStep(){if(!snakeRuntime.running){runtimeStart();snakeRuntime.paused=true}runtimeUpdate(snakeRuntime.step);snakeRuntime.frames++;snakeRuntime.elapsed+=snakeRuntime.step;runtimeRender()}
-function runtimeRestart(){runtimeStart()}
+
 function runProject(){
-  saveCurrentFile();clearOutput();addOutput('Snake Runtime','success');addOutput('Project: '+(currentProject||'Untitled'));addOutput('Initializing game loop...');openPreview();runtimeStart();addOutput('Game loop started at 60 Hz.','success');
+
+  saveCurrentFile();
+
+  clearOutput();
+
+  addOutput(
+    "Snake Forge Runtime",
+    "success"
+  );
+
+  addOutput(
+    "Project: "+currentProject
+  );
+
+  addOutput(
+    "Preparing scene..."
+  );
+
+  setTimeout(()=>{
+
+    addOutput(
+      "Scene loaded successfully.",
+      "success"
+    );
+
+    addOutput(
+      "Compiling "+currentFile+"..."
+    );
+
+  },250);
+
+  setTimeout(()=>{
+
+    addOutput(
+      "Build completed successfully.",
+      "success"
+    );
+
+    addOutput(
+      "Runtime started.",
+      "success"
+    );
+
+    openPreview();
+
+  },700);
+
 }
-function openPreview(){document.getElementById('preview').classList.add('show');runtimeStart()}
-function closePreview(){runtimeStop();document.getElementById('preview').classList.remove('show');}
+
+
+/* =====================================================
+   PREVIEW
+===================================================== */
+
+function openPreview(){
+
+  document
+    .getElementById("preview")
+    .classList.add("show");
+
+}
+
+function closePreview(){
+
+  document
+    .getElementById("preview")
+    .classList.remove("show");
+
+}
+
 
 /* =====================================================
    PANEL
@@ -2314,7 +2327,7 @@ function hideScreens(){document.querySelectorAll('.screen').forEach(x=>x.classLi
 function showDashboard(){hideScreens();document.getElementById('dashboard').classList.add('active');renderProjects();}
 function showProjectsScreen(){hideScreens();document.getElementById('projectsScreen').classList.add('active');renderProjects();}
 function showSettingsScreen(){hideScreens();document.getElementById('settingsScreen').classList.add('active');renderSettingsDictionary();}
-function openResource(name){openEngineTools('resource',name);}
+function openResource(name){openEngineTools();setTimeout(()=>enginePage(name),30);}
 const DICT_SETTINGS_KEY='myengine_dictionary_aliases';
 const DEFAULT_DICTIONARY=[['cout',''],['mostrar',''],['esperar',''],['mover',''],['girar',''],['criar_sprite',''],['tocar_audio',''],['parar_audio',''],['colidir',''],['se',''],['enquanto',''],['variavel',''],['cena',''],['tile',''],['salvar','']];
 function getDictionary(){try{return JSON.parse(localStorage.getItem(DICT_SETTINGS_KEY))||DEFAULT_DICTIONARY.map(x=>[x[0],x[1]]);}catch{return DEFAULT_DICTIONARY.map(x=>[x[0],x[1]]);}}
@@ -2456,30 +2469,9 @@ updateLines();
 /* =====================================================
    MY ENGINE INTEGRATED LOGIC
 ===================================================== */
-let engineContext='project';
-let engineResourceTool=null;
-function openEngineTools(context='project',resourceTool=null){
-  engineContext=context; engineResourceTool=resourceTool;
-  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
-  const screen=document.getElementById('engineTools');
-  screen.classList.add('active');
-  screen.classList.toggle('engine-resource-mode',context==='resource');
-  screen.classList.toggle('engine-project-mode',context==='project');
-  const title=screen.querySelector('.engine-head strong');
-  if(title) title.textContent=context==='resource'?'SNAKE ENGINE':'SNAKE ENGINE TOOLS';
-  engineInitAll();
-  enginePage(context==='resource'?(resourceTool||'art'):'scene');
-}
-function closeEngineTools(){
-  document.getElementById('engineTools').classList.remove('active');
-  if(engineContext==='resource'){
-    engineContext='project'; engineResourceTool=null;
-    showDashboard();
-  }else{
-    document.getElementById('editor').classList.add('active');
-  }
-}
-function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));const page=document.getElementById('tool-'+name);if(!page)return;page.classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap'){tmResize();tmRenderLayers();tmRenderTiles();tmRender();}if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
+function openEngineTools(){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById('engineTools').classList.add('active');enginePage('code');engineInitAll()}
+function closeEngineTools(){document.getElementById('engineTools').classList.remove('active');document.getElementById('editor').classList.add('active')}
+function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap'){tmResize();tmRenderLayers();tmRenderTiles();tmRender();}if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();tmSaveResource();saveAssets2();saveProject2();showToast('Snake Engine salvo')}
 const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
 function renderDict2(){const q=(document.getElementById('dictSearch2')?.value||'').toLowerCase();document.getElementById('dictList2').innerHTML=DICT2.filter(x=>(x[0]+' '+x[1]).toLowerCase().includes(q)).map(x=>`<div class="dict-item"><span class="dict-command">${x[0]}</span><span class="dict-name">${x[1]}</span></div>`).join('')}
@@ -2547,169 +2539,20 @@ function artPlay2(){art2.playing=!art2.playing;const b=document.getElementById('
 function artAddPalette2(){const v=prompt('HEX da cor','#ffcc00');if(!v||!/^(#)?[0-9a-f]{6}$/i.test(v))return;v=v.startsWith('#')?v:'#'+v;const p=JSON.parse(localStorage.getItem('myengine_art_palette')||'[]');if(!p.includes(v))p.push(v);localStorage.setItem('myengine_art_palette',JSON.stringify(p));artRenderPalette2()}
 function artRenderPalette2(){const el=document.getElementById('artPalette2');if(!el)return;const defaults=['#111111','#ffffff','#ff3b30','#ffcc00','#34c759','#00c7be','#0a84ff','#5e5ce6','#bf5af2','#ff2d55','#8e8e93','#a2845e'];const p=[...defaults,...JSON.parse(localStorage.getItem('myengine_art_palette')||'[]')];el.innerHTML=p.map(c=>`<button class="art-swatch" style="background:${c}" title="${c}" onclick="artSetColor2('${c}')"></button>`).join('')}
 document.addEventListener('keydown',e=>{if(!document.getElementById('tool-art')?.classList.contains('active'))return;if(e.target.matches('input,textarea'))return;const k=e.key.toLowerCase();const map={pencil:'p',eraser:'e',fill:'f',line:'l',rect:'r',circle:'c',picker:'i',select:'s',move:'m'};const tool=Object.keys(map).find(x=>map[x]===k);if(tool){art2.tool=tool;artSyncUI2()}if(k==='z'&&(e.ctrlKey||e.metaKey)){e.preventDefault();e.shiftKey?artRedo2():artUndo2()}if(k==='y'&&(e.ctrlKey||e.metaKey)){e.preventDefault();artRedo2()}if(k==='g'){art2.grid=!art2.grid;artRender2()}});
-/* SCENE COMPOSER — PROFESSIONAL MOBILE-FIRST */
-let sceneCtx2=null,sceneObjs2=[],sceneSel2=null,sceneTool2='select',sceneGrid2=true,sceneSnap2=true,sceneCam2={x:0,y:0,z:1},sceneDrag2=null,scenePointers2=new Map(),scenePinch2=null,sceneHistory2=[],sceneFuture2=[],sceneAssetTab2Value='sprites';
-
-function sceneInit2(){
-  const c=document.getElementById('sceneCanvas2'); if(!c)return;
-  sceneCtx2=c.getContext('2d'); sceneCtx2.imageSmoothingEnabled=false;
-  if(!c.dataset.bound){
-    c.dataset.bound='1';
-    c.addEventListener('pointerdown',sceneDown2);
-    c.addEventListener('pointermove',sceneMove2);
-    c.addEventListener('pointerup',sceneUp2);
-    c.addEventListener('pointercancel',sceneUp2);
-    c.addEventListener('wheel',e=>{e.preventDefault();sceneZoomAt2(e.deltaY<0?1.12:.89,e.clientX,e.clientY)},{passive:false});
-  }
-  sceneLoad2();
-  sceneResize2();
-  sceneRender2();
-  sceneRenderAssets2();
-}
-
-function sceneResize2(){
-  const c=document.getElementById('sceneCanvas2'); if(!c||!sceneCtx2)return;
-  const r=c.parentElement.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);
-  c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';
-  sceneCtx2.setTransform(d,0,0,d,0,0);sceneRender2();
-}
-
-function sceneWorld2(p){
-  const c=document.getElementById('sceneCanvas2');
-  return {x:(p.x-c.clientWidth/2)/sceneCam2.z+sceneCam2.x,y:(p.y-c.clientHeight/2)/sceneCam2.z+sceneCam2.y};
-}
-function sceneScreen2(o){
-  const c=document.getElementById('sceneCanvas2');
-  return {x:c.clientWidth/2+(o.x-sceneCam2.x)*sceneCam2.z,y:c.clientHeight/2+(o.y-sceneCam2.y)*sceneCam2.z};
-}
-function sceneNodeColor2(type){
-  return ({Sprite:'#6ebd5b',Tilemap:'#4c9aff',Camera:'#b58a4c',Light:'#d7b65e',Node2D:'#7e8994'})[type]||'#7e8994';
-}
-function sceneIconPath2(type){
-  return ({Sprite:'<rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m5 17 4-4 3 3 3-4 4 5"/>',
-    Tilemap:'<path d="m12 3 8 4-8 4-8-4 8-4Z"/><path d="m4 12 8 4 8-4M4 17l8 4 8-4"/>',
-    Camera:'<path d="M4 8h4l2-2h4l2 2h4v10H4V8Z"/><circle cx="12" cy="13" r="3"/>',
-    Light:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
-    Node2D:'<circle cx="12" cy="12" r="7"/><path d="M12 5v14M5 12h14"/>'})[type]||'<circle cx="12" cy="12" r="7"/>';
-}
-function sceneRender2(){
-  if(!sceneCtx2)return;
-  const c=document.getElementById('sceneCanvas2'),w=c.clientWidth,h=c.clientHeight;
-  sceneCtx2.clearRect(0,0,w,h);sceneCtx2.fillStyle='#080c10';sceneCtx2.fillRect(0,0,w,h);
-  const z=sceneCam2.z,grid=32*z;
-  if(sceneGrid2&&grid>5){
-    sceneCtx2.strokeStyle='#17212a';sceneCtx2.lineWidth=1;
-    const ox=((w/2)-(sceneCam2.x*z))%grid,oy=((h/2)-(sceneCam2.y*z))%grid;
-    for(let x=ox;x<w;x+=grid){sceneCtx2.beginPath();sceneCtx2.moveTo(x,0);sceneCtx2.lineTo(x,h);sceneCtx2.stroke()}
-    for(let y=oy;y<h;y+=grid){sceneCtx2.beginPath();sceneCtx2.moveTo(0,y);sceneCtx2.lineTo(w,y);sceneCtx2.stroke()}
-  }
-  const origin=sceneScreen2({x:0,y:0});
-  sceneCtx2.strokeStyle='#2f4654';sceneCtx2.lineWidth=1;
-  sceneCtx2.beginPath();sceneCtx2.moveTo(origin.x,0);sceneCtx2.lineTo(origin.x,h);sceneCtx2.stroke();
-  sceneCtx2.beginPath();sceneCtx2.moveTo(0,origin.y);sceneCtx2.lineTo(w,origin.y);sceneCtx2.stroke();
-
-  sceneObjs2.forEach(o=>{
-    const p=sceneScreen2(o),size=32*z*Math.max(.25,o.scale||1),rot=(o.rotation||0)*Math.PI/180;
-    sceneCtx2.save();sceneCtx2.translate(p.x,p.y);sceneCtx2.rotate(rot);
-    sceneCtx2.globalAlpha=o.visible===false?.25:1;sceneCtx2.fillStyle=sceneNodeColor2(o.type);
-    if(o.type==='Camera'){sceneCtx2.strokeStyle=sceneNodeColor2(o.type);sceneCtx2.lineWidth=2;sceneCtx2.strokeRect(-size*.7,-size*.45,size*1.4,size*.9);sceneCtx2.beginPath();sceneCtx2.moveTo(size*.7,-size*.18);sceneCtx2.lineTo(size,size*.18);sceneCtx2.lineTo(size*.7,size*.35);sceneCtx2.stroke()}
-    else if(o.type==='Light'){sceneCtx2.beginPath();sceneCtx2.arc(0,0,size*.42,0,Math.PI*2);sceneCtx2.fill();sceneCtx2.strokeStyle='#f2d77c';sceneCtx2.lineWidth=1;for(let i=0;i<8;i++){const a=i*Math.PI/4;sceneCtx2.beginPath();sceneCtx2.moveTo(Math.cos(a)*size*.55,Math.sin(a)*size*.55);sceneCtx2.lineTo(Math.cos(a)*size*.85,Math.sin(a)*size*.85);sceneCtx2.stroke()}}
-    else if(o.type==='Tilemap'){sceneCtx2.strokeStyle=sceneNodeColor2(o.type);sceneCtx2.lineWidth=1.5;sceneCtx2.strokeRect(-size/2,-size/2,size,size);sceneCtx2.beginPath();sceneCtx2.moveTo(0,-size/2);sceneCtx2.lineTo(0,size/2);sceneCtx2.moveTo(-size/2,0);sceneCtx2.lineTo(size/2,0);sceneCtx2.stroke()}
-    else {sceneCtx2.fillRect(-size/2,-size/2,size,size);sceneCtx2.strokeStyle='#dce8ef';sceneCtx2.globalAlpha=(o.visible===false?.2:.75);sceneCtx2.strokeRect(-size/2,-size/2,size,size)}
-    sceneCtx2.restore();
-    sceneCtx2.globalAlpha=1;sceneCtx2.fillStyle='#8c9aa6';sceneCtx2.font='9px ui-monospace,monospace';sceneCtx2.fillText(o.name,p.x+22*z,p.y-20*z);
-    if(o.id===sceneSel2){sceneCtx2.strokeStyle='#b9e5ff';sceneCtx2.lineWidth=1.5;sceneCtx2.setLineDash([4,3]);sceneCtx2.strokeRect(p.x-20*z,p.y-20*z,40*z,40*z);sceneCtx2.setLineDash([])}
-  });
-  const zoomEl=document.getElementById('sceneZoom2');if(zoomEl)zoomEl.textContent=Math.round(z*100)+'%';
-  renderSceneNodes2();renderSceneInspector2();
-}
-function sceneSnapshot2(){sceneHistory2.push(JSON.stringify(sceneObjs2));if(sceneHistory2.length>60)sceneHistory2.shift();sceneFuture2=[]}
-function sceneUndo2(){if(!sceneHistory2.length)return;sceneFuture2.push(JSON.stringify(sceneObjs2));sceneObjs2=JSON.parse(sceneHistory2.pop());sceneSel2=null;sceneRender2()}
-function sceneRedo2(){if(!sceneFuture2.length)return;sceneHistory2.push(JSON.stringify(sceneObjs2));sceneObjs2=JSON.parse(sceneFuture2.pop());sceneRender2()}
-function sceneSetTool2(tool){sceneTool2=tool;document.querySelectorAll('[data-scn-tool]').forEach(b=>b.classList.toggle('active',b.dataset.scnTool===tool));document.querySelectorAll('[data-scn-mobile]').forEach(b=>b.classList.toggle('active',b.dataset.scnMobile===tool));if(tool==='pan')showToast('Pan mode');}
-function sceneToggleGrid2(){sceneGrid2=!sceneGrid2;document.getElementById('sceneGridBtn2')?.classList.toggle('active',sceneGrid2);sceneRender2()}
-function sceneToggleSnap2(){sceneSnap2=!sceneSnap2;document.getElementById('sceneSnapBtn2')?.classList.toggle('active',sceneSnap2);sceneRender2()}
-function sceneSnapValue2(v){return sceneSnap2?Math.round(v/16)*16:v}
-function sceneAdd2(type){
-  sceneSnapshot2();const id=Date.now()+Math.floor(Math.random()*999);
-  sceneObjs2.push({id,name:type+' '+(sceneObjs2.length+1),x:sceneCam2.x,y:sceneCam2.y,type,rotation:0,scale:1,visible:true,locked:false});
-  sceneSel2=id;sceneRender2();document.getElementById('sceneAddMenu2')?.classList.remove('open');showToast(type+' added');
-}
-function sceneSelect2(id){sceneSel2=id;sceneRender2()}
-function sceneDelete2(){if(sceneSel2==null)return;sceneSnapshot2();sceneObjs2=sceneObjs2.filter(o=>o.id!==sceneSel2);sceneSel2=null;sceneRender2();showToast('Node removed')}
-function sceneDuplicate2(){const o=sceneObjs2.find(x=>x.id===sceneSel2);if(!o)return;sceneSnapshot2();const n={...o,id:Date.now()+Math.random(),name:o.name+' Copy',x:o.x+32,y:o.y+32};sceneObjs2.push(n);sceneSel2=n.id;sceneRender2()}
-function sceneFrameSelected2(){const o=sceneObjs2.find(x=>x.id===sceneSel2);if(!o){sceneCam2={x:0,y:0,z:1};}else{sceneCam2.x=o.x;sceneCam2.y=o.y;}sceneRender2()}
-function sceneZoomAt2(f,cx,cy){
-  const c=document.getElementById('sceneCanvas2'),r=c.getBoundingClientRect(),before=sceneWorld2({x:cx-r.left,y:cy-r.top});
-  sceneCam2.z=Math.max(.2,Math.min(6,sceneCam2.z*f));
-  const after=sceneWorld2({x:cx-r.left,y:cy-r.top});sceneCam2.x+=before.x-after.x;sceneCam2.y+=before.y-after.y;sceneRender2();
-}
-function sceneToggleAddMenu2(){document.getElementById('sceneAddMenu2')?.classList.toggle('open')}
-function sceneToggleHierarchy2(){document.getElementById('sceneHierarchy2')?.classList.toggle('open')}
-function sceneToggleInspector2(){document.getElementById('sceneInspectorDock2')?.classList.toggle('open')}
-function sceneRenameDoc2(v){const n=(v||'Main Scene').trim()||'Main Scene';const m=document.getElementById('sceneDocMeta2');if(m)m.textContent=n+' · 2D'}
-function sceneDown2(e){
-  const c=e.currentTarget,r=c.getBoundingClientRect();c.setPointerCapture?.(e.pointerId);scenePointers2.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(scenePointers2.size===2){scenePinch2=scenePinchState2();sceneDrag2=null;return}
-  if(sceneTool2==='pan'){sceneDrag2={pan:true,px:e.clientX,py:e.clientY,ox:sceneCam2.x,oy:sceneCam2.y};return}
-  const p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top});const hit=sceneObjs2.slice().reverse().find(o=>Math.hypot(o.x-p.x,o.y-p.y)<28/sceneCam2.z);
-  if(hit){sceneSel2=hit.id;sceneSnapshot2();sceneDrag2={id:hit.id,px:p.x,py:p.y,ox:hit.x,oy:hit.y,or:hit.rotation||0,os:hit.scale||1};sceneRender2()}
-  else if(sceneTool2==='select'){sceneSel2=null;sceneRender2()}
-}
-function scenePinchState2(){const a=[...scenePointers2.values()];const dx=a[0].x-a[1].x,dy=a[0].y-a[1].y;return{dist:Math.max(1,Math.hypot(dx,dy)),zoom:sceneCam2.z,mid:{x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2},cam:{...sceneCam2}}}
-function sceneMove2(e){
-  if(scenePointers2.has(e.pointerId))scenePointers2.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(scenePointers2.size>=2&&scenePinch2){
-    const a=[...scenePointers2.values()],dist=Math.max(1,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y));sceneCam2.z=Math.max(.2,Math.min(6,scenePinch2.zoom*dist/scenePinch2.dist));sceneRender2();return;
-  }
-  if(!sceneDrag2)return;
-  if(sceneDrag2.pan){sceneCam2.x=sceneDrag2.ox-(e.clientX-sceneDrag2.px)/sceneCam2.z;sceneCam2.y=sceneDrag2.oy-(e.clientY-sceneDrag2.py)/sceneCam2.z;sceneRender2();return}
-  const r=e.currentTarget.getBoundingClientRect(),p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top}),o=sceneObjs2.find(x=>x.id===sceneDrag2.id);if(!o||o.locked)return;
-  if(sceneTool2==='move'||sceneTool2==='select'){o.x=sceneSnapValue2(sceneDrag2.ox+p.x-sceneDrag2.px);o.y=sceneSnapValue2(sceneDrag2.oy+p.y-sceneDrag2.py)}
-  else if(sceneTool2==='rotate'){o.rotation=sceneDrag2.or+(p.x-sceneDrag2.px)*1.5}
-  else if(sceneTool2==='scale'){o.scale=Math.max(.25,Math.min(8,sceneDrag2.os+(p.x-sceneDrag2.px)/80))}
-  const co=document.getElementById('sceneCoord2');if(co)co.textContent=Math.round(p.x)+', '+Math.round(p.y);sceneRender2();
-}
-function sceneUp2(e){scenePointers2.delete(e.pointerId);if(scenePointers2.size<2)scenePinch2=null;sceneDrag2=null}
-function renderSceneNodes2(){
-  const el=document.getElementById('sceneNodes2');if(!el)return;
-  el.innerHTML=sceneObjs2.map(o=>`<button class="scn-node ${o.id===sceneSel2?'active':''}" onclick="sceneSelect2(${o.id})"><svg class="ui-icon scn-node-icon" viewBox="0 0 24 24">${sceneIconPath2(o.type)}</svg><span class="scn-node-name">${escapeHTML(o.name)}</span><span class="scn-node-type">${o.type}</span></button>`).join('')||'<div class="scn-empty">No nodes in scene.</div>';
-}
-function renderSceneInspector2(){
-  const el=document.getElementById('sceneInspector2');if(!el)return;const o=sceneObjs2.find(x=>x.id===sceneSel2);
-  if(!o){el.innerHTML='<div class="scn-empty">Select a node to edit its properties.</div>';return}
-  el.innerHTML=`<div class="scn-inspector-section"><div class="scn-inspector-title">NODE</div><div class="scn-field"><label>Name</label><input value="${escapeHTML(o.name)}" onchange="sceneEditField2('name',this.value)"></div><div class="scn-field"><label>Type</label><select disabled><option>${o.type}</option></select></div></div>
-  <div class="scn-inspector-section"><div class="scn-inspector-title">TRANSFORM</div><div class="scn-transform-grid">
-  <div class="scn-field"><label>X</label><input type="number" value="${Math.round(o.x)}" onchange="sceneEditField2('x',this.value)"></div>
-  <div class="scn-field"><label>Y</label><input type="number" value="${Math.round(o.y)}" onchange="sceneEditField2('y',this.value)"></div>
-  <div class="scn-field"><label>Rotation</label><input type="number" value="${Math.round(o.rotation||0)}" onchange="sceneEditField2('rotation',this.value)"></div>
-  <div class="scn-field"><label>Scale</label><input type="number" step=".05" value="${o.scale||1}" onchange="sceneEditField2('scale',this.value)"></div></div></div>
-  <div class="scn-inspector-section"><div class="scn-inspector-title">STATE</div><div class="scn-check"><span>Visible</span><input type="checkbox" ${o.visible!==false?'checked':''} onchange="sceneEditField2('visible',this.checked)"></div><div class="scn-check"><span>Locked</span><input type="checkbox" ${o.locked?'checked':''} onchange="sceneEditField2('locked',this.checked)"></div></div>
-  <div class="scn-inspector-section"><div class="scn-inspector-actions"><button onclick="sceneDuplicate2()">Duplicate</button><button class="danger" onclick="sceneDelete2()">Delete</button></div></div>`;
-}
-function sceneEditField2(key,value){const o=sceneObjs2.find(x=>x.id===sceneSel2);if(!o)return;sceneSnapshot2();o[key]=['x','y','rotation','scale'].includes(key)?Number(value)||0:value;sceneRender2()}
-function sceneAssetTab2(tab){sceneAssetTab2Value=tab;document.querySelectorAll('[data-scn-asset-tab]').forEach(b=>b.classList.toggle('active',b.dataset.scnAssetTab===tab));sceneRenderAssets2()}
-function sceneRenderAssets2(){
-  const el=document.getElementById('sceneAssetTray2');if(!el)return;
-  const imgs=(typeof assets2!=='undefined'?assets2:[]).filter(a=>a.type?.startsWith('image/'));
-  const tiles=(typeof assets2!=='undefined'?assets2:[]).filter(a=>/tilemap/i.test(a.name)||a.source==='tilemap');
-  let arr=sceneAssetTab2Value==='sprites'?imgs:sceneAssetTab2Value==='tilemaps'?tiles:[...imgs,...tiles];
-  el.innerHTML=arr.map(a=>`<button class="scn-asset" onclick="sceneAddAssetNode2('${String(a.id).replace(/'/g,'')}','${escapeHTML(a.name)}','${a.type?.startsWith('image/')?'Sprite':'Tilemap'}')"><span class="scn-thumb">${a.type?.startsWith('image/')?`<img src="${a.data}">`:'TM'}</span><span>${escapeHTML(a.name)}</span></button>`).join('')||'<div class="scn-empty" style="padding:8px">No compatible assets yet.</div>';
-}
-function sceneAddAssetNode2(id,name,type){sceneSnapshot2();const n={id:Date.now()+Math.random(),name:name.replace(/\.[^.]+$/,''),x:sceneCam2.x,y:sceneCam2.y,type:type==='Tilemap'?'Tilemap':'Sprite',rotation:0,scale:1,visible:true,locked:false,assetId:id};sceneObjs2.push(n);sceneSel2=n.id;sceneRender2();showToast('Asset added to scene')}
-function sceneSaveResource2(){saveScene2()}
-function saveScene2(){
-  const name=(document.getElementById('sceneName2')?.value||'Main Scene').trim()||'Main Scene';sceneRenameDoc2(name);
-  const payload={version:2,type:'scene',name,mode:'2D',grid:sceneGrid2,snap:sceneSnap2,nodes:sceneObjs2};
-  localStorage.setItem('myengine_scene_resource',JSON.stringify(payload));
-  try{if(typeof assets2!=='undefined'){assets2=assets2.filter(a=>a.source!=='scene-composer');assets2.push({id:'scene-composer',name:name+'.scene',type:'application/json',data:JSON.stringify(payload),folder:'root',source:'scene-composer'});saveAssets2();renderAssets2?.()}}catch(e){}
-  showToast('Scene saved');
-}
-function loadScene2(){
-  try{const d=JSON.parse(localStorage.getItem('myengine_scene_resource')||'null');if(d?.nodes){sceneObjs2=d.nodes;sceneGrid2=d.grid!==false;sceneSnap2=d.snap!==false;const n=document.getElementById('sceneName2');if(n)n.value=d.name||'Main Scene';sceneRenameDoc2(d.name||'Main Scene');return}}catch(e){}
-  sceneObjs2=[{id:1,name:'Background',x:0,y:0,type:'Node2D',rotation:0,scale:10,visible:true,locked:true},{id:2,name:'Player',x:-64,y:0,type:'Sprite',rotation:0,scale:1,visible:true,locked:false},{id:3,name:'Camera',x:0,y:0,type:'Camera',rotation:0,scale:1,visible:true,locked:true}];
-}
-function sceneRenderAssetAfterInit(){sceneRenderAssets2()}
+/* SCENE */
+let sceneCtx2,sceneObjs2=[],sceneSel2=null,sceneTool2='select',sceneGrid2=true,sceneSnap2=true,sceneCam2={x:0,y:0,z:1},sceneDrag2=null;
+function sceneInit2(){const c=document.getElementById('sceneCanvas2');sceneCtx2=c.getContext('2d');c.addEventListener('pointerdown',sceneDown2);c.addEventListener('pointermove',sceneMove2);['pointerup','pointercancel'].forEach(t=>c.addEventListener(t,()=>sceneDrag2=null));sceneLoad2();sceneResize2()}
+function sceneResize2(){const c=document.getElementById('sceneCanvas2'),r=c.parentElement.getBoundingClientRect(),d=devicePixelRatio||1;c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';sceneCtx2.setTransform(d,0,0,d,0,0);sceneRender2()}
+function sceneWorld2(p){const c=document.getElementById('sceneCanvas2');return{x:(p.x-c.clientWidth/2)/sceneCam2.z+sceneCam2.x,y:(p.y-c.clientHeight/2)/sceneCam2.z+sceneCam2.y}}
+function sceneScreen2(o){const c=document.getElementById('sceneCanvas2');return{x:c.clientWidth/2+(o.x-sceneCam2.x)*sceneCam2.z,y:c.clientHeight/2+(o.y-sceneCam2.y)*sceneCam2.z}}
+function sceneRender2(){if(!sceneCtx2)return;const c=document.getElementById('sceneCanvas2'),w=c.clientWidth,h=c.clientHeight;sceneCtx2.clearRect(0,0,w,h);sceneCtx2.fillStyle='#10161d';sceneCtx2.fillRect(0,0,w,h);if(sceneGrid2){sceneCtx2.strokeStyle='#1d2730';sceneCtx2.lineWidth=1;const g=32*sceneCam2.z;for(let x=w/2-(sceneCam2.x%32)*sceneCam2.z;x<w;x+=g){sceneCtx2.beginPath();sceneCtx2.moveTo(x,0);sceneCtx2.lineTo(x,h);sceneCtx2.stroke()}for(let y=h/2-(sceneCam2.y%32)*sceneCam2.z;y<h;y+=g){sceneCtx2.beginPath();sceneCtx2.moveTo(0,y);sceneCtx2.lineTo(w,y);sceneCtx2.stroke()}}sceneObjs2.forEach(o=>{const p=sceneScreen2(o);sceneCtx2.fillStyle=o.color||'#2878ff';sceneCtx2.fillRect(p.x-16*sceneCam2.z,p.y-16*sceneCam2.z,32*sceneCam2.z,32*sceneCam2.z);if(o.id===sceneSel2){sceneCtx2.strokeStyle='#fff';sceneCtx2.strokeRect(p.x-20*sceneCam2.z,p.y-20*sceneCam2.z,40*sceneCam2.z,40*sceneCam2.z)}sceneCtx2.fillStyle='#fff';sceneCtx2.font='10px monospace';sceneCtx2.fillText(o.name,p.x+20,p.y-20)});renderSceneNodes2();renderSceneInspector2()}
+function renderSceneNodes2(){document.getElementById('sceneNodes2').innerHTML=sceneObjs2.map(o=>`<button class="scene-node ${o.id===sceneSel2?'selected':''}" onclick="sceneSel2=${o.id};sceneRender2()">${o.type} · ${o.name}</button>`).join('')||'<div class="tool-muted">Cena vazia</div>'}
+function renderSceneInspector2(){const o=sceneObjs2.find(x=>x.id===sceneSel2);document.getElementById('sceneInspector2').innerHTML=o?`<div class="field"><label>Nome</label><input class="tool-input" value="${o.name}" onchange="o=sceneObjs2.find(x=>x.id===sceneSel2);o.name=this.value;sceneRender2()"></div><div class="field"><label>X</label><input class="tool-input" type="number" value="${o.x}" onchange="sceneObjs2.find(x=>x.id===sceneSel2).x=+this.value;sceneRender2()"></div><div class="field"><label>Y</label><input class="tool-input" type="number" value="${o.y}" onchange="sceneObjs2.find(x=>x.id===sceneSel2).y=+this.value;sceneRender2()"></div><div class="field"><label>Tipo</label><div>${o.type}</div></div>`:'Selecione um objeto.'}
+function sceneAdd2(type){const id=Date.now();sceneObjs2.push({id,name:type+' '+sceneObjs2.length,x:0,y:0,type,color:type==='Sprite'?'#20c968':'#2878ff'});sceneSel2=id;sceneRender2()}
+function sceneDown2(e){const r=e.currentTarget.getBoundingClientRect(),p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top});let hit=sceneObjs2.slice().reverse().find(o=>Math.abs(o.x-p.x)<24&&Math.abs(o.y-p.y)<24);if(hit){sceneSel2=hit.id;sceneDrag2={id:hit.id,ox:hit.x,oy:hit.y,px:p.x,py:p.y};sceneRender2()}else if(sceneTool2==='select')sceneSel2=null}
+function sceneMove2(e){if(!sceneDrag2||sceneTool2!=='select')return;const r=e.currentTarget.getBoundingClientRect(),p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top}),o=sceneObjs2.find(x=>x.id===sceneDrag2.id);if(!o)return;let x=sceneDrag2.ox+p.x-sceneDrag2.px,y=sceneDrag2.oy+p.y-sceneDrag2.py;if(sceneSnap2){x=Math.round(x/32)*32;y=Math.round(y/32)*32}o.x=x;o.y=y;sceneRender2()}
+function sceneUpdateTool2(){document.querySelectorAll('.scene-toolbar2 button').forEach((b,i)=>b.classList.toggle('active',sceneTool2==='select'&&i===0));}
+function saveScene2(){localStorage.setItem('myengine_scene',JSON.stringify(sceneObjs2))}function loadScene2(){sceneObjs2=JSON.parse(localStorage.getItem('myengine_scene')||'null')||[{id:1,name:'Player',x:-64,y:0,type:'Sprite',color:'#20c968'},{id:2,name:'Camera',x:64,y:0,type:'Camera',color:'#2878ff'}]}
 /* TILEMAP STUDIO — immersive touch-first editor */
 let tm={w:40,h:25,size:32,zoom:1,grid:true,tool:'paint',mode:'edit',tile:0,tiles:[],layers:[],layer:0,history:[],future:[],drawing:false,start:null,last:null,pan:{x:0,y:0},panning:false,panStart:null,brush:1,pointers:new Map(),pinch:null,selection:null,clipboard:null,binded:false};
 const tmColors=['#405a3c','#6f513b','#3f6f9f','#b08a3e','#6a4f7d','#273038','#a9b0b5','#8d4c4c','#b96e38','#668c54','#65707a','#356f8c'];
@@ -2737,7 +2580,7 @@ function tmRender(){const c=document.getElementById('tmCanvas');if(!tm.ctx)retur
 function tmRenderTiles(){const el=document.getElementById('tmTiles');if(!el)return;el.innerHTML=tm.tiles.map((t,i)=>`<button class="tm-tile ${i===tm.tile?'active':''}" title="${escapeHTML(t.name)}" onclick="tm.tile=${i};tmRenderTiles()"><canvas width="32" height="32" data-tile="${i}"></canvas><span class="tm-tile-index">${i+1}</span></button>`).join('');el.querySelectorAll('canvas').forEach(c=>{const i=+c.dataset.tile,x=c.getContext('2d');x.imageSmoothingEnabled=false;if(tm.tiles[i].canvas)x.drawImage(tm.tiles[i].canvas,0,0,32,32);else{x.fillStyle=tm.tiles[i].color||'#444';x.fillRect(0,0,32,32)}})}
 function tmRenderLayers(){const el=document.getElementById('tmLayers');if(!el)return;el.innerHTML=tm.layers.map((l,i)=>`<div class="tm-layer ${i===tm.layer?'active':''}"><button title="Visibility" onclick="tm.layers[${i}].visible=!tm.layers[${i}].visible;tmRenderLayers();tmRender()">${l.visible?'V':'—'}</button><span class="tm-layer-name" onclick="tm.layer=${i};tmRenderLayers();tmRender()">${escapeHTML(l.name)}</span><button title="Lock" onclick="tm.layers[${i}].locked=!tm.layers[${i}].locked;tmRenderLayers()">${l.locked?'L':'O'}</button></div>`).join('')}
 function tmRenderPreview(){const el=document.getElementById('tmPreview');if(!el)return;el.innerHTML='';const c=document.createElement('canvas');c.width=tm.w;c.height=tm.h;c.style.width=Math.min(760,Math.max(120,tm.w*3))+'px';c.style.height=Math.min(72,Math.max(30,tm.h*3))+'px';const x=c.getContext('2d');x.imageSmoothingEnabled=false;for(const L of tm.layers){if(!L.visible)continue;for(const [k,id] of Object.entries(L.cells||{})){const [a,b]=k.split(',').map(Number),t=tm.tiles[id];if(t?.canvas)x.drawImage(t.canvas,a,b,1,1);else{x.fillStyle=t?.color||'#444';x.fillRect(a,b,1,1)}}}el.appendChild(c)}
-function tmSetTool(t){tm.tool=t;document.querySelectorAll('[data-tm-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmTool===t));document.querySelectorAll('[data-tm-mobile-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmMobileTool===t));if(t==='pan')tm.panning=true;else if(!tm.pointers.size)tm.panning=false}
+function tmSetTool(t){tm.tool=t;document.querySelectorAll('[data-tm-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmTool===t));if(t==='pan')tm.panning=true;else if(!tm.pointers.size)tm.panning=false}
 function tmSetMode(m){tm.mode=m;document.querySelectorAll('[data-tm-mode]').forEach(b=>b.classList.toggle('active',b.dataset.tmMode===m));tmRender()}
 function tmZoom(z,anchor){const old=tm.zoom,next=Math.max(.25,Math.min(8,old*z));if(anchor){const c=document.getElementById('tmCanvas').getBoundingClientRect(),v=tmView(),px=anchor.x-c.left,py=anchor.y-c.top;const wx=(px-v.x)/v.s,wy=(py-v.y)/v.s;tm.zoom=next;const nv=tmView();tm.pan.x+=px-(nv.x+wx*nv.s);tm.pan.y+=py-(nv.y+wy*nv.s)}else tm.zoom=next;tmRender()}
 function tmToggleGrid(){tm.grid=!tm.grid;tmRender()}
@@ -2759,47 +2602,8 @@ function newFolder2(){const n=prompt('Nome da pasta');if(n)showToast('Pasta '+n+
 function renderAudio2(){const a=assets2.filter(x=>x.type.startsWith('audio/'));document.getElementById('audioList2').innerHTML=a.map(x=>`<div class="audio-item"><span><svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="3"/><circle cx="16.5" cy="16" r="3"/></svg> ${x.name}</span><audio controls src="${x.data}" style="max-width:150px"></audio></div>`).join('')||'<div class="tool-card tool-muted">Nenhum áudio importado.</div>'}
 /* PROJECT */
 function saveProject2(){const d={name:document.getElementById('projectName2').value,resolution:document.getElementById('projectResolution2').value,pixel:document.getElementById('projectPixel2').value,bg:document.getElementById('projectBg2').value};localStorage.setItem('myengine_project2',JSON.stringify(d));showToast('Configuração salva')}function loadProject2(){const d=JSON.parse(localStorage.getItem('myengine_project2')||'null');if(!d)return;document.getElementById('projectName2').value=d.name||'';document.getElementById('projectResolution2').value=d.resolution||'1280x720';document.getElementById('projectPixel2').value=d.pixel||'true';document.getElementById('projectBg2').value=d.bg||'#090b0e'}function exportProject2(){const d=JSON.stringify({project:JSON.parse(localStorage.getItem('myengine_project2')||'{}'),scene:sceneObjs2,tilemap:tileMap2,assets:assets2},null,2),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:'application/json'}));a.download='myengine-project.json';a.click()}
-function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();loadArt2();artRenderPalette2();sceneInit2();loadAssets2();loadProject2();loadTile2();tmInit();window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});renderDict2();}}
+function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();loadArt2();artRenderPalette2();sceneInit2();loadAssets2();loadProject2();loadTile2();tmInit();document.getElementById('engineCode').value=localStorage.getItem('myengine_code')||document.getElementById('engineCode').value;window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});renderDict2();}}
 
-
-/* =========================================================
-   PROJECT EDITOR V2 LOGIC
-========================================================= */
-const PROJECT_WORKSPACE_KEY='snakeEngineProjectWorkspace_v2';
-let projectWorkspace={files:{},activeFile:'main.cpp',scene:[],settings:{resolution:'1280x720',render:'2d',bg:'#090b0e',startup:'main.scene'},dirty:false};
-function projectWorkspaceKey(){return PROJECT_WORKSPACE_KEY+'_'+encodeURIComponent(currentProject||'default')}
-function loadProjectWorkspace(){
-  if(!currentProject)return;
-  try{const raw=localStorage.getItem(projectWorkspaceKey());if(raw){const d=JSON.parse(raw);projectWorkspace={...projectWorkspace,...d,files:{...defaultFiles,...(d.files||{})},scene:Array.isArray(d.scene)?d.scene:[],settings:{...projectWorkspace.settings,...(d.settings||{})}}}else{projectWorkspace={files:{...getFiles()},activeFile:'main.cpp',scene:[],settings:{...projectWorkspace.settings},dirty:false};persistProjectWorkspace(false)}}catch(e){projectWorkspace.files={...getFiles()}}
-  currentFile=projectWorkspace.activeFile||'main.cpp';
-}
-function persistProjectWorkspace(markDirty=true){if(!currentProject)return;localStorage.setItem(projectWorkspaceKey(),JSON.stringify(projectWorkspace));if(markDirty)projectWorkspace.dirty=true;updateProjectStatus();}
-function saveProjectWorkspace(){saveCurrentFile();projectWorkspace.activeFile=currentFile;projectWorkspace.files=getFiles();projectWorkspace.scene=projectWorkspace.scene||[];projectWorkspace.dirty=false;localStorage.setItem(projectWorkspaceKey(),JSON.stringify(projectWorkspace));saveFiles(projectWorkspace.files);updateProjectStatus();renderProjectExplorer();renderProjectTabs();showToast('Project saved')}
-function updateProjectStatus(){const el=document.getElementById('projectDirtyStatus');if(el){el.textContent=projectWorkspace.dirty?'UNSAVED':'SYNCED';el.classList.toggle('dirty',!!projectWorkspace.dirty)}const p=document.getElementById('projectStatusPath');if(p)p.textContent=currentFile||'main.cpp'}
-function markProjectDirty(){projectWorkspace.dirty=true;updateProjectStatus()}
-function projectRefreshExplorer(){renderProjectExplorer();showToast('Explorer refreshed')}
-function projectFileIcon(name){const ext=(name.split('.').pop()||'').toLowerCase();if(['cpp','h','hpp','c'].includes(ext))return '<svg class="ui-icon" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></svg>';if(ext==='scene'||ext==='tilemap')return '<svg class="ui-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 16h8M8 12h5M8 8h8"/></svg>';return '<svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h6"/></svg>'}
-function renderProjectExplorer(){const root=document.getElementById('projectExplorerTree');if(!root)return;const files=Object.keys(projectWorkspace.files||{}).sort((a,b)=>a.localeCompare(b));const scenes=['main.scene'];const all=[...new Set([...files,...scenes])];root.innerHTML='<div class="tree-folder"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 6h6l2 2h8v10H4z"/></svg> GAME</div>'+all.map(name=>`<button class="tree-file ${name===currentFile?'active':''}" onclick="projectOpenFile('${escapeHTML(name).replace(/'/g,"\\'")}')">${projectFileIcon(name)}<span>${escapeHTML(name)}</span><span class="file-kind">${name.split('.').pop().toUpperCase()}</span></button>`).join('')+'<div class="tree-folder"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 6h6l2 2h8v10H4z"/></svg> ASSETS</div><button class="tree-file" onclick="projectShowAssets()">'+projectFileIcon('assets')+'<span>Imported Assets</span></button>'}
-function projectOpenFile(file){if(file==='main.scene'){projectSwitchMode('scene');return}saveCurrentFile();currentFile=file;projectWorkspace.activeFile=file;document.getElementById('code').value=projectWorkspace.files[file]||getFiles()[file]||'';updateLines();renderProjectExplorer();renderProjectTabs();updateProjectStatus();projectSwitchMode('code')}
-function renderProjectTabs(){const tabs=document.querySelector('.tabs');if(!tabs)return;tabs.innerHTML=Object.keys(projectWorkspace.files||{}).filter((f,i)=>f===currentFile||i<4).map(f=>`<button class="editor-tab ${f===currentFile?'active':''}" onclick="projectOpenFile('${escapeHTML(f).replace(/'/g,"\\'")}')">${projectFileIcon(f)}<span>${escapeHTML(f)}</span>${f===currentFile&&projectWorkspace.dirty?'<span class="dirty-dot"></span>':''}</button>`).join('')}
-function projectNewFile(){if(!currentProject)return;const name=prompt('Nome do arquivo','script.cpp');if(!name)return;if(projectWorkspace.files[name])return showToast('Arquivo já existe');projectWorkspace.files[name]='';currentFile=name;projectWorkspace.activeFile=name;document.getElementById('code').value='';projectWorkspace.dirty=true;renderProjectExplorer();renderProjectTabs();updateLines();updateProjectStatus();showToast('Arquivo criado')}
-function projectDeleteCurrentFile(){const files=projectWorkspace.files;if(Object.keys(files).length<=1)return showToast('O projeto precisa de um arquivo');if(!files[currentFile])return; if(!confirm('Excluir '+currentFile+'?'))return;delete files[currentFile];currentFile=Object.keys(files)[0];projectWorkspace.activeFile=currentFile;document.getElementById('code').value=files[currentFile]||'';projectWorkspace.dirty=true;renderProjectExplorer();renderProjectTabs();updateLines();updateProjectStatus()}
-function projectSwitchMode(mode){document.querySelectorAll('#projectContextbar .ctx').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));if(mode==='code'){showCode()}else if(mode==='scene'){showScene()}else if(mode==='assets'){projectShowAssets()}else if(mode==='settings'){openProjectSettings()}}
-function projectShowAssets(){document.querySelectorAll('#projectContextbar .ctx').forEach(b=>b.classList.toggle('active',b.dataset.mode==='assets'));const names=(typeof assets2!=='undefined'?assets2:[]);const list=names.slice(0,80);const root=document.getElementById('projectExplorerTree');if(root){root.innerHTML='<div class="tree-folder"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 6h6l2 2h8v10H4z"/></svg> PROJECT ASSETS</div>'+ (list.length?list.map(a=>`<button class="tree-file" onclick="projectImportAsset('${String(a.id).replace(/'/g,"\\'")}')">${projectFileIcon(a.name)}<span>${escapeHTML(a.name)}</span></button>`).join(''):'<div class="tree-empty">Nenhum recurso global disponível.</div>')+'<div class="tree-folder">GLOBAL LIBRARY</div><div class="tree-empty">Recursos criados em Home podem ser importados para este projeto.</div>'}showToast('Project asset browser')}
-function projectImportAsset(id){const a=(typeof assets2!=='undefined'?assets2:[]).find(x=>String(x.id)===String(id));if(!a)return;projectWorkspace.importedAssets=projectWorkspace.importedAssets||[];if(!projectWorkspace.importedAssets.some(x=>String(x.id)===String(a.id)))projectWorkspace.importedAssets.push({id:a.id,name:a.name,type:a.type,data:a.data});projectWorkspace.dirty=true;updateProjectStatus();showToast('Asset imported: '+a.name)}
-function openProjectSettings(){const m=document.getElementById('projectModal');if(!m)return;document.getElementById('projectSettingName').value=currentProject||'';document.getElementById('projectSettingResolution').value=projectWorkspace.settings.resolution||'1280x720';document.getElementById('projectSettingRender').value=projectWorkspace.settings.render||'2d';document.getElementById('projectSettingBg').value=projectWorkspace.settings.bg||'#090b0e';document.getElementById('projectSettingScene').value=projectWorkspace.settings.startup||'main.scene';m.classList.add('show')}
-function closeProjectSettings(){document.getElementById('projectModal')?.classList.remove('show')}
-function saveProjectSettings(){const old=currentProject;const newName=document.getElementById('projectSettingName').value.trim()||old;projectWorkspace.settings={resolution:document.getElementById('projectSettingResolution').value,render:document.getElementById('projectSettingRender').value,bg:document.getElementById('projectSettingBg').value,startup:document.getElementById('projectSettingScene').value};if(newName!==old){const oldKey=PROJECT_WORKSPACE_KEY+'_'+encodeURIComponent(old);const ps=getProjects();const p=ps.find(x=>x.name===old);if(p){p.name=newName;saveProjects(ps)}currentProject=newName;document.getElementById('editorProjectName').textContent=newName;localStorage.setItem(projectWorkspaceKey(),JSON.stringify(projectWorkspace));localStorage.removeItem(oldKey);}saveProjectWorkspace();closeProjectSettings();renderProjects();showToast('Project settings saved')}
-function syncProjectScene(){projectWorkspace.scene=Array.from(document.querySelectorAll('#sceneWorld .scene-object')).map((el,i)=>({id:el.dataset.id||String(i),name:el.querySelector('.selection-label')?.textContent||('Node_'+i),x:parseInt(el.style.left)||0,y:parseInt(el.style.top)||0,type:el.dataset.type||'Node'}));projectWorkspace.dirty=true;updateProjectStatus()}
-function projectAddNode(type='Node'){addSceneObject(type);syncProjectScene()}
-function projectDeleteSelected(){const el=selectedObject&&document.querySelector('#sceneWorld .scene-object.selected');if(el){el.remove();selectedObject=null;syncProjectScene();updateInspector();showToast('Node deleted')}}
-function projectDuplicateSelected(){const el=document.querySelector('#sceneWorld .scene-object.selected');if(!el)return;const clone=el.cloneNode(true);clone.style.left=(parseInt(el.style.left)||0)+24+'px';clone.style.top=(parseInt(el.style.top)||0)+24+'px';clone.classList.remove('selected');clone.dataset.id=String(Date.now());clone.onclick=function(e){e.stopPropagation();document.querySelectorAll('#sceneWorld .scene-object').forEach(x=>x.classList.remove('selected'));clone.classList.add('selected');selectedObject=clone.querySelector('.selection-label')?.textContent||'Node';updateInspector()};document.getElementById('sceneWorld').appendChild(clone);syncProjectScene();showToast('Node duplicated')}
-function saveCurrentFile(){if(!currentProject)return;projectWorkspace.files=projectWorkspace.files||{};const code=document.getElementById('code');if(code)projectWorkspace.files[currentFile]=code.value;saveFiles(projectWorkspace.files);projectWorkspace.activeFile=currentFile;projectWorkspace.dirty=true;updateProjectStatus()}
-function loadProjectWorkspaceIntoScene(){const world=document.getElementById('sceneWorld');if(!world)return;world.querySelectorAll('.scene-object').forEach(x=>x.remove());const nodes=projectWorkspace.scene||[];if(!nodes.length){addSceneObject('Player');addSceneObject('Food');return}nodes.forEach(n=>{const object=document.createElement('div');object.className='scene-object';object.dataset.id=n.id;object.dataset.type=n.type;object.style.left=(n.x||0)+'px';object.style.top=(n.y||0)+'px';object.innerHTML=`<span class="selection-label">${escapeHTML(n.name||'Node')}</span><div class="${n.type==='Food'?'object-food':'object-body'}"></div>`;object.onclick=e=>{e.stopPropagation();document.querySelectorAll('#sceneWorld .scene-object').forEach(x=>x.classList.remove('selected'));object.classList.add('selected');selectedObject=n.name;updateInspector()};world.appendChild(object)});document.querySelectorAll('#sceneWorld .scene-object').forEach((x,i)=>{if(i===0)x.classList.add('selected')})}
-function openProject(name){currentProject=name;hideScreens();document.getElementById('editor').classList.add('active');document.getElementById('editorProjectName').textContent=name;loadFiles();loadProjectWorkspace();document.getElementById('code').value=projectWorkspace.files[currentFile]||'';updateLines();renderProjectExplorer();renderProjectTabs();loadProjectWorkspaceIntoScene();projectSwitchMode('code');addOutput('Opened project: '+name,'success');updateProjectStatus()}
-function showCode(){document.getElementById('codeArea').style.display='flex';document.getElementById('sceneArea').classList.remove('active');document.querySelectorAll('.tool').forEach((el,i)=>{if(i===0)el.classList.add('active');else el.classList.remove('active')});document.querySelectorAll('#projectContextbar .ctx').forEach(b=>b.classList.toggle('active',b.dataset.mode==='code'));updateProjectStatus()}
-function showScene(){document.getElementById('codeArea').style.display='none';document.getElementById('sceneArea').classList.add('active');document.querySelectorAll('.tool').forEach((el,i)=>{if(i===1)el.classList.add('active');else el.classList.remove('active')});document.querySelectorAll('#projectContextbar .ctx').forEach(b=>b.classList.toggle('active',b.dataset.mode==='scene'));updateInspector();}
-function backToDashboard(){saveProjectWorkspace();document.getElementById('editor').classList.remove('active');document.getElementById('projectsScreen').classList.add('active');document.getElementById('explorer').classList.remove('open');document.getElementById('inspector').classList.remove('open');renderProjects()}
 </script>
 
 
@@ -2814,6 +2618,7 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
       <button class="engine-back" onclick="engineSaveAll()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H4V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg></button>
     </header>
     <nav class="engine-nav">
+      <button data-tool="code" class="active" onclick="enginePage('code')">TEXT Código</button>
       <button data-tool="art" onclick="enginePage('art')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 0 16h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h2a6 6 0 0 0 0-12Z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="11" cy="7.5" r=".8"/><circle cx="16" cy="8" r=".8"/></svg> Arte</button>
       <button data-tool="scene" onclick="enginePage('scene')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5v-13Z"/><path d="M8 4v13M16 7v13"/></svg> Cena</button>
       <button data-tool="tilemap" onclick="enginePage('tilemap')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 5.5 12 2l9 3.5-9 3-9-3Z"/><path d="M3 5.5v13L12 22V8.5M21 5.5v13L12 22"/><path d="M7.5 4l9 3"/></svg> Tilemap</button>
@@ -2822,6 +2627,12 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
       <button data-tool="project" onclick="enginePage('project')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1 2.3-2 1.2-1.9-1.3a7.8 7.8 0 0 1-2.2.9L12.7 20h-2.4l-.7-2a7.8 7.8 0 0 1-2.2-.9l-1.9 1.3-2-1.2.1-2.3a7.8 7.8 0 0 1-1.1-1.9L.8 13.7v-2.4l1.7-.9A7.8 7.8 0 0 1 3.6 8.5L3.5 6.2l2-1.2 1.9 1.3a7.8 7.8 0 0 1 2.2-.9l.7-2h2.4l.7 2a7.8 7.8 0 0 1 2.2.9l1.9-1.3 2 1.2-.1 2.3a7.8 7.8 0 0 1 1.1 1.9l1.7.9v2.4l-1.7.9a7.8 7.8 0 0 1-1.1 1.9Z"/></svg>️ Projeto</button>
       
     </nav>
+
+    <main id="tool-code" class="engine-page active">
+      <div class="tool-card"><div class="tool-title">Código Snake Engine / C++</div><div class="tool-muted">Use o editor principal para o projeto; este painel também traduz os comandos personalizados.</div></div>
+      <div class="tool-card"><textarea id="engineCode" class="tool-input" style="height:42vh;padding:12px;font:13px/1.5 monospace;resize:none">#include &lt;iostream&gt;\n\nint main(){\n    std::cout &lt;&lt; "Olá, mundo!";\n    return 0;\n}</textarea><div class="tool-row"><button class="tool-btn green" onclick="engineTranslate()">Traduzir</button><button class="tool-btn primary" onclick="engineRunCode()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg> Executar</button><button class="tool-btn" onclick="engineCodeSave()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H4V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg> Salvar</button><button class="tool-btn" onclick="document.getElementById('engineCode').value=''">Limpar</button></div><pre id="engineTerminal" class="terminal" style="margin-top:8px;min-height:100px"></pre></div>
+    </main>
+
     <main id="tool-art" class="engine-page">
       <div class="art-topbar">
         <div class="tool-card" style="margin:0;flex:1"><div class="tool-title"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 0 16h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h2a6 6 0 0 0 0-12Z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="11" cy="7.5" r=".8"/><circle cx="16" cy="8" r=".8"/></svg> Sprite Studio</div><div class="tool-muted" id="artSize2">32 × 32 • F1/1</div></div>
@@ -2861,85 +2672,10 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
     </main>
 
     <main id="tool-scene" class="engine-page">
-      <div class="scn-shell" id="sceneStudio2">
-        <header class="scn-topbar">
-          <div class="scn-doc">
-            <span class="scn-doc-mark"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="m5 16 4-5 3 3 3-4 4 6"/></svg></span>
-            <div><strong>Scene Composer</strong><span id="sceneDocMeta2">Main Scene · 2D</span></div>
-          </div>
-          <div class="scn-top-actions">
-            <button class="scn-icon-btn" onclick="sceneUndo2()" title="Undo"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a7 7 0 0 1 7 7"/></svg></button>
-            <button class="scn-icon-btn" onclick="sceneRedo2()" title="Redo"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m15 7 5 5-5 5"/><path d="M19 12h-8a7 7 0 0 0-7 7"/></svg></button>
-            <span class="scn-divider"></span>
-            <button class="scn-save" onclick="saveScene2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H4V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg><span>Save</span></button>
-          </div>
-        </header>
-
-        <div class="scn-main">
-          <aside class="scn-dock scn-hierarchy" id="sceneHierarchy2">
-            <div class="scn-dock-head"><span>HIERARCHY</span><button class="scn-small-btn" onclick="sceneAdd2('Node2D')" title="Add node"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-            <div class="scn-scene-root"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><input id="sceneName2" value="Main Scene" onchange="sceneRenameDoc2(this.value)"></div>
-            <div class="scn-tree" id="sceneNodes2"></div>
-            <div class="scn-hierarchy-actions">
-              <button onclick="sceneAdd2('Sprite')"><svg class="ui-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m5 17 4-4 3 3 3-4 4 5"/></svg>Sprite</button>
-              <button onclick="sceneAdd2('Tilemap')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m12 3 8 4-8 4-8-4 8-4Z"/><path d="m4 12 8 4 8-4M4 17l8 4 8-4"/></svg>Tilemap</button>
-              <button onclick="sceneAdd2('Camera')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 8h4l2-2h4l2 2h4v10H4V8Z"/><circle cx="12" cy="13" r="3"/></svg>Camera</button>
-              <button onclick="sceneAdd2('Light')"><svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Light</button>
-            </div>
-          </aside>
-
-          <section class="scn-viewport" id="sceneViewport2">
-            <canvas id="sceneCanvas2"></canvas>
-
-            <div class="scn-toolbar">
-              <button data-scn-tool="select" class="active" onclick="sceneSetTool2('select')" title="Select"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 3v17l5-4 3 6 3-2-3-6h7L5 3Z"/></svg><span>Select</span></button>
-              <button data-scn-tool="move" onclick="sceneSetTool2('move')" title="Move"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M8 7l4-4 4 4M8 17l4 4 4-4M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><span>Move</span></button>
-              <button data-scn-tool="rotate" onclick="sceneSetTool2('rotate')" title="Rotate"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2-4.9"/><path d="M5 5v5h5"/></svg><span>Rotate</span></button>
-              <button data-scn-tool="scale" onclick="sceneSetTool2('scale')" title="Scale"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 9V5h4M15 5h4v4M19 15v4h-4M9 19H5v-4"/></svg><span>Scale</span></button>
-              <button data-scn-tool="pan" onclick="sceneSetTool2('pan')" title="Pan"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 11V6a2 2 0 0 1 4 0v5m0 0V4a2 2 0 0 1 4 0v7m0 0V6a2 2 0 0 1 4 0v8m-8-3V8a2 2 0 0 0-4 0v7c0 4 3 6 7 6h1c5 0 8-3 8-8"/></svg><span>Pan</span></button>
-              <span class="scn-tool-sep"></span>
-              <button onclick="sceneFrameSelected2()" title="Frame selected"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 9V5h4M19 9V5h-4M5 15v4h4M19 15v4h-4"/></svg></button>
-              <button onclick="sceneToggleGrid2()" id="sceneGridBtn2" class="active" title="Grid"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 12h16M12 4v16"/></svg></button>
-              <button onclick="sceneToggleSnap2()" id="sceneSnapBtn2" class="active" title="Snap"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M7 3v4M17 3v4M4 9h16M5 5h14v16H5z"/><path d="M9 14h6M12 11v6"/></svg></button>
-            </div>
-
-            <div class="scn-viewport-status">
-              <span id="sceneCoord2">0, 0</span>
-              <span id="sceneZoom2">100%</span>
-            </div>
-
-            <div class="scn-add-fab">
-              <button onclick="sceneAdd2('Sprite')" title="Add node"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-              <div class="scn-add-menu" id="sceneAddMenu2">
-                <button onclick="sceneAdd2('Sprite')">Sprite</button>
-                <button onclick="sceneAdd2('Tilemap')">Tilemap</button>
-                <button onclick="sceneAdd2('Camera')">Camera</button>
-                <button onclick="sceneAdd2('Light')">Light</button>
-                <button onclick="sceneAdd2('Node2D')">Node2D</button>
-              </div>
-            </div>
-          </section>
-
-          <aside class="scn-dock scn-inspector2" id="sceneInspectorDock2">
-            <div class="scn-dock-head"><span>INSPECTOR</span><button class="scn-small-btn" onclick="sceneToggleInspector2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg></button></div>
-            <div id="sceneInspector2" class="scn-inspector-content"></div>
-          </aside>
-        </div>
-
-        <footer class="scn-assets">
-          <div class="scn-assets-head"><span>SCENE ASSETS</span><div><button onclick="sceneAssetTab2('sprites')" class="active" data-scn-asset-tab="sprites">Sprites</button><button onclick="sceneAssetTab2('tilemaps')" data-scn-asset-tab="tilemaps">Tilemaps</button><button onclick="sceneAssetTab2('all')" data-scn-asset-tab="all">All</button></div></div>
-          <div id="sceneAssetTray2" class="scn-asset-tray"></div>
-        </footer>
-
-        <nav class="scn-mobile-bar">
-          <button data-scn-mobile="select" onclick="sceneSetTool2('select')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 3v17l5-4 3 6 3-2-3-6h7L5 3Z"/></svg><span>Select</span></button>
-          <button data-scn-mobile="move" onclick="sceneSetTool2('move')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M8 7l4-4 4 4M8 17l4 4 4-4"/></svg><span>Move</span></button>
-          <button data-scn-mobile="add" onclick="sceneToggleAddMenu2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button>
-          <button data-scn-mobile="layers" onclick="sceneToggleHierarchy2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Nodes</span></button>
-          <button data-scn-mobile="inspector" onclick="sceneToggleInspector2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M9 9h6M9 13h4"/></svg><span>Inspect</span></button>
-        </nav>
-      </div>
+      <div class="tool-card"><div class="tool-title"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5v-13Z"/><path d="M8 4v13M16 7v13"/></svg> Scene Editor</div><div class="tool-muted">Grid, snap, objetos, seleção, movimentação e inspector.</div></div>
+      <div class="scene-editor" id="sceneEditor2"><canvas id="sceneCanvas2"></canvas><div class="scene-toolbar2"><button class="active" id="sceneSelect2" onclick="sceneTool2='select';sceneUpdateTool2()">↖</button><button onclick="sceneTool2='pan';sceneUpdateTool2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 11V5a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-4a1.5 1.5 0 0 1 3 0v7c0 5-3 8-7 8-3 0-5-2-6-5l-2-4a1.5 1.5 0 0 1 3-1Z"/></svg></button><button onclick="sceneAdd2('Sprite')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><button onclick="sceneGrid2=!sceneGrid2;sceneRender2()">#</button><button onclick="sceneSnap2=!sceneSnap2">S</button></div><aside class="scene-panel"><h4>HIERARCHY</h4><div id="sceneNodes2"></div></aside><aside class="scene-panel right"><h4>INSPECTOR</h4><div id="sceneInspector2" class="tool-muted">Selecione um objeto.</div></aside><button class="scene-fab" onclick="sceneAdd2('Node')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
     </main>
+
     <main id="tool-tilemap" class="engine-page">
 <div class="tm-studio" id="tmStudio">
 <header class="tm-toolbar">
@@ -2974,13 +2710,7 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
 <div class="tm-section"><div class="tm-panel-title">SELECTION</div><div class="tm-control-row" style="padding:0 12px 10px"><button class="tool-btn" onclick="tmSelectionAction('copy')">Copy</button><button class="tool-btn" onclick="tmSelectionAction('duplicate')">Duplicate</button></div><div class="tm-control-row" style="padding:0 12px 10px"><button class="tool-btn" onclick="tmSelectionAction('flip')">Flip X</button><button class="tool-btn" onclick="tmSelectionAction('clear')">Clear</button></div></div>
 </aside>
 <section class="tm-bottom"><div class="tm-bottom-head"><span class="tm-panel-title" style="margin:0">MAP OVERVIEW</span><span id="tmStatus" class="tm-status">40 × 25 · 32px · 100%</span></div><div class="tm-preview" id="tmPreview"></div></section>
-<nav class="tm-mobile-bar">
-<button type="button" data-tm-mobile-tool="paint" onclick="tmSetTool('paint')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m4 16 10.8-10.8 4 4L8 20H4v-4Z"/><path d="m13 7 4 4"/></svg><span>Paint</span></button>
-<button type="button" data-tm-mobile-tool="erase" onclick="tmSetTool('erase')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m5 14 7-7 7 7-7 7-7-7Z"/><path d="m12 7 7 7"/></svg><span>Erase</span></button>
-<button type="button" data-tm-mobile-tool="select" onclick="tmSetTool('select')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 3v17l5-4 3 6 3-2-3-6h7L5 3Z"/></svg><span>Select</span></button>
-<button type="button" onclick="tmTogglePanel('palette')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1.5a2.5 2.5 0 0 0 0-5H12a2 2 0 0 1 0-4h2a7 7 0 0 0 0-14Z"/><circle cx="7" cy="10" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></svg><span>Tiles</span></button>
-<button type="button" onclick="tmTogglePanel('layers')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg><span>Layers</span></button>
-</nav>
+<nav class="tm-mobile-bar"><button onclick="tmSetTool('paint')">Paint</button><button onclick="tmSetTool('erase')">Erase</button><button onclick="tmSetTool('select')">Select</button><button onclick="tmTogglePanel('palette')">Tiles</button><button onclick="tmTogglePanel('layers')">Layers</button></nav>
 </div>
 </main>
 
@@ -3002,150 +2732,8 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
 </section>
 
 
-<style>
-/* =====================================================
-   SNAKE RUNTIME — STEP 2: NODE / ENTITY SYSTEM
-===================================================== */
-.runtime-node-debug{position:absolute;left:8px;bottom:8px;min-width:180px;max-width:260px;max-height:34vh;overflow:auto;padding:8px;background:#080d12e8;border:1px solid #29343d;border-radius:6px;color:#8796a2;font:8px ui-monospace,monospace;pointer-events:none;display:none}.runtime-node-debug.show{display:block}.runtime-node-debug .node-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.runtime-node-debug .node-line.active{color:#a9e99a}.runtime-node-debug .node-child{padding-left:12px;color:#687681}
-</style>
-<script>
-/* =====================================================
-   SNAKE RUNTIME — STEP 2: NODE / ENTITY SYSTEM
-   Hierarchical runtime scene graph with transforms,
-   components and lifecycle hooks.
-===================================================== */
-class SnakeTransform {
-  constructor(x=0,y=0,rotation=0,scaleX=1,scaleY=1){this.x=Number(x)||0;this.y=Number(y)||0;this.rotation=Number(rotation)||0;this.scaleX=Number(scaleX)||1;this.scaleY=Number(scaleY)||1;}
-  clone(){return new SnakeTransform(this.x,this.y,this.rotation,this.scaleX,this.scaleY)}
-}
-class SnakeComponent {
-  constructor(){this.node=null;this.enabled=true}
-  onAttach(){} onStart(){} onUpdate(){} onDestroy(){}
-}
-class SnakeNode {
-  constructor(data={}){
-    this.id=data.id ?? ('node_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
-    this.name=data.name || 'Node';
-    this.type=data.type || 'Node';
-    this.parent=null;this.children=[];
-    this.transform=new SnakeTransform(data.x,data.y,data.rotation,data.scaleX ?? data.scale ?? 1,data.scaleY ?? data.scale ?? 1);
-    this.visible=data.visible!==false;this.locked=!!data.locked;this.active=data.active!==false;
-    this.components=[];this.started=false;this.destroyed=false;
-    this.meta={...(data.meta||{})};
-  }
-  addChild(node){if(!(node instanceof SnakeNode))throw new TypeError('Child must be a SnakeNode');if(node.parent)node.parent.removeChild(node);node.parent=this;this.children.push(node);return node}
-  removeChild(node){const i=this.children.indexOf(node);if(i>=0){this.children.splice(i,1);node.parent=null}return node}
-  addComponent(component){if(!(component instanceof SnakeComponent))throw new TypeError('Component must extend SnakeComponent');component.node=this;this.components.push(component);if(this.started&&component.enabled)component.onStart(this);component.onAttach(this);return component}
-  getComponent(type){return this.components.find(c=>c instanceof type)||null}
-  getComponents(type){return this.components.filter(c=>c instanceof type)}
-  findById(id){if(String(this.id)===String(id))return this;for(const c of this.children){const found=c.findById(id);if(found)return found}return null}
-  find(name){if(this.name===name)return this;for(const c of this.children){const found=c.find(name);if(found)return found}return null}
-  get worldTransform(){
-    if(!this.parent)return this.transform.clone();
-    const p=this.parent.worldTransform,rad=p.rotation*Math.PI/180,cos=Math.cos(rad),sin=Math.sin(rad);
-    const lx=this.transform.x*p.scaleX,ly=this.transform.y*p.scaleY;
-    return new SnakeTransform(p.x+lx*cos-ly*sin,p.y+lx*sin+ly*cos,p.rotation+this.transform.rotation,p.scaleX*this.transform.scaleX,p.scaleY*this.transform.scaleY);
-  }
-  traverse(fn){fn(this);this.children.forEach(c=>c.traverse(fn))}
-  start(){if(this.started||this.destroyed)return;this.started=true;this.components.forEach(c=>c.enabled&&c.onStart(this));this.children.forEach(c=>c.start())}
-  update(dt){if(!this.active||this.destroyed)return;this.components.forEach(c=>c.enabled&&c.onUpdate(dt,this));this.children.forEach(c=>c.update(dt))}
-  destroy(){if(this.destroyed)return;this.components.forEach(c=>c.onDestroy(this));this.children.forEach(c=>c.destroy());this.children=[];this.destroyed=true;if(this.parent)this.parent.removeChild(this)}
-  serialize(){return {id:this.id,name:this.name,type:this.type,x:this.transform.x,y:this.transform.y,rotation:this.transform.rotation,scaleX:this.transform.scaleX,scaleY:this.transform.scaleY,visible:this.visible,locked:this.locked,active:this.active,meta:this.meta,children:this.children.map(c=>c.serialize())}}
-}
-class SnakeSceneGraph {
-  constructor(){this.root=new SnakeNode({id:'__root__',name:'Scene',type:'Scene'});this.nodes=new Map([['__root__',this.root]]);this.started=false}
-  addNode(data={},parentId='__root__'){const node=data instanceof SnakeNode?data:new SnakeNode(data);const parent=this.getNode(parentId)||this.root;parent.addChild(node);this.nodes.set(String(node.id),node);node.traverse(n=>this.nodes.set(String(n.id),n));if(this.started)node.start();return node}
-  getNode(id){return this.nodes.get(String(id))||null}
-  removeNode(id){const node=this.getNode(id);if(!node||node===this.root)return false;node.traverse(n=>this.nodes.delete(String(n.id)));node.destroy();return true}
-  find(name){return this.root.find(name)}
-  traverse(fn){this.root.traverse(fn)}
-  start(){if(this.started)return;this.started=true;this.root.start()}
-  update(dt){this.root.update(dt)}
-  serialize(){return this.root.children.map(n=>n.serialize())}
-  clear(){this.root.children.slice().forEach(n=>n.destroy());this.nodes=new Map([['__root__',this.root]]);this.started=false}
-}
-class SnakeVelocity extends SnakeComponent {
-  constructor(vx=0,vy=0){super();this.vx=vx;this.vy=vy}
-  onUpdate(dt){if(!this.node||this.node.locked)return;this.node.transform.x+=this.vx*dt;this.node.transform.y+=this.vy*dt}
-}
-class SnakeSprite extends SnakeComponent {
-  constructor(asset=null){super();this.asset=asset}
-}
-class SnakeCollider extends SnakeComponent {
-  constructor(width=32,height=32){super();this.width=width;this.height=height;this.isTrigger=false}
-  get bounds(){const t=this.node?.worldTransform||new SnakeTransform();return {x:t.x-this.width*t.scaleX/2,y:t.y-this.height*t.scaleY/2,w:this.width*t.scaleX,h:this.height*t.scaleY}}
-}
-class SnakeScript extends SnakeComponent {
-  constructor(hooks={}){super();this.hooks=hooks||{}}
-  onStart(node){if(typeof this.hooks.start==='function')this.hooks.start(node)}
-  onUpdate(dt,node){if(typeof this.hooks.update==='function')this.hooks.update(node,dt)}
-  onDestroy(node){if(typeof this.hooks.destroy==='function')this.hooks.destroy(node)}
-}
-window.SnakeEngine=window.SnakeEngine||{};
-window.SnakeEngine.runtime=window.SnakeEngine.runtime||{};
-window.SnakeEngine.runtime.Node=SnakeNode;
-window.SnakeEngine.runtime.SceneGraph=SnakeSceneGraph;
-window.SnakeEngine.runtime.Transform=SnakeTransform;
-window.SnakeEngine.runtime.Component=SnakeComponent;
-window.SnakeEngine.runtime.Velocity=SnakeVelocity;
-window.SnakeEngine.runtime.Sprite=SnakeSprite;
-window.SnakeEngine.runtime.Collider=SnakeCollider;
-window.SnakeEngine.runtime.Script=SnakeScript;
-
-snakeRuntime.graph=new SnakeSceneGraph();
-snakeRuntime.getNode=id=>snakeRuntime.graph.getNode(id);
-snakeRuntime.findNode=name=>snakeRuntime.graph.find(name);
-snakeRuntime.addNode=(data,parentId)=>snakeRuntime.graph.addNode(data,parentId);
-snakeRuntime.removeNode=id=>snakeRuntime.graph.removeNode(id);
-
-function runtimeBuildScene(){
-  snakeRuntime.graph.clear();
-  const source=Array.isArray(window.sceneObjs2)&&sceneObjs2.length?sceneObjs2:(projectWorkspace?.scene||[]);
-  const data=Array.isArray(source)?source:[];
-  const ids=new Set();
-  data.forEach((o,i)=>{const id=o.id ?? ('node_'+i);ids.add(String(id));snakeRuntime.graph.addNode({id,name:o.name||('Node '+(i+1)),type:o.type||'Node',x:o.x||0,y:o.y||0,rotation:o.rotation||0,scale:o.scale||1,visible:o.visible!==false,locked:!!o.locked,meta:o.meta||{}});});
-  snakeRuntime.graph.start();
-  snakeRuntime.scene=[];snakeRuntime.graph.traverse(n=>{if(n!==snakeRuntime.graph.root)snakeRuntime.scene.push(n)});
-  let p=snakeRuntime.graph.find('Player')||snakeRuntime.scene.find(o=>/player/i.test(o.name||''));
-  if(!p){p=snakeRuntime.graph.addNode({id:'runtime_player',name:'Player',type:'Sprite',x:0,y:0});p.addComponent(new SnakeCollider(22,22));p.addComponent(new SnakeVelocity());p.start();snakeRuntime.scene.push(p)}
-  snakeRuntime.playerNode=p;
-  snakeRuntime.player={x:p.transform.x,y:p.transform.y,vx:0,vy:0,size:22};
-  updateRuntimeNodeDebug();
-}
-function runtimeUpdate(dt){
-  const p=snakeRuntime.playerNode;if(!p)return;
-  let x=0,y=0;
-  if(runtimePressed('ArrowLeft')||runtimePressed('KeyA'))x-=1;if(runtimePressed('ArrowRight')||runtimePressed('KeyD'))x+=1;if(runtimePressed('ArrowUp')||runtimePressed('KeyW'))y-=1;if(runtimePressed('ArrowDown')||runtimePressed('KeyS'))y+=1;
-  const speed=180;
-  if(x||y){const len=Math.hypot(x,y)||1;p.transform.x+=x/len*speed*dt;p.transform.y+=y/len*speed*dt;snakeRuntime.player.vx=x/len*speed;snakeRuntime.player.vy=y/len*speed}else{snakeRuntime.player.vx*=Math.pow(.0001,dt);snakeRuntime.player.vy*=Math.pow(.0001,dt)}
-  snakeRuntime.graph.update(dt);
-  snakeRuntime.player.x=p.transform.x;snakeRuntime.player.y=p.transform.y;
-  snakeRuntime.scene=[];snakeRuntime.graph.traverse(n=>{if(n!==snakeRuntime.graph.root)snakeRuntime.scene.push(n)});
-}
-function updateRuntimeNodeDebug(){
-  const box=document.getElementById('runtimeNodeDebug');if(!box||!snakeRuntime.graph)return;const rows=[];
-  snakeRuntime.graph.root.children.forEach(root=>{const walk=(n,depth)=>{rows.push(`<div class="node-line ${n===snakeRuntime.playerNode?'active':''}">${'│ '.repeat(depth)}${n.name} <span class="node-child">${n.type}</span></div>`);n.children.forEach(c=>walk(c,depth+1))};walk(root,0)});
-  box.innerHTML=rows.join('')||'<div class="node-line">Scene is empty</div>';
-}
-function toggleRuntimeNodeDebug(){document.getElementById('runtimeNodeDebug')?.classList.toggle('show');updateRuntimeNodeDebug()}
-
-/* Runtime renderer now consumes the Scene Graph. */
-const __snakeRuntimeRenderStep2=runtimeRender;
-function runtimeRender(){
-  const c=snakeRuntime.canvas,ctx=snakeRuntime.ctx;if(!c||!ctx)return;const w=c.clientWidth,h=c.clientHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle='#070b0e';ctx.fillRect(0,0,w,h);
-  const grid=32;ctx.strokeStyle='#121a20';ctx.lineWidth=1;for(let x=0;x<w;x+=grid){ctx.beginPath();ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,h);ctx.stroke()}for(let y=0;y<h;y+=grid){ctx.beginPath();ctx.moveTo(0,y+.5);ctx.lineTo(w,y+.5);ctx.stroke()}
-  const cx=w/2,cy=h/2;ctx.strokeStyle='#263742';ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
-  if(snakeRuntime.graph){snakeRuntime.graph.traverse(o=>{if(o===snakeRuntime.graph.root||!o.visible)return;const t=o.worldTransform,x=cx+t.x,y=cy+t.y,size=32*Math.max(.25,Math.abs(t.scaleX||1));ctx.save();ctx.translate(x,y);ctx.rotate((t.rotation||0)*Math.PI/180);ctx.globalAlpha=o===snakeRuntime.playerNode?.65:.78;ctx.strokeStyle=o.type==='Tilemap'?'#4c9aff':o.type==='Camera'?'#c28bff':o.type==='Light'?'#d7b65e':'#667681';ctx.fillStyle=o===snakeRuntime.playerNode?'#91e864':'#24303a';if(o.type==='Camera'){ctx.strokeRect(-size*.7,-size*.45,size*1.4,size*.9);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(size,0);ctx.stroke()}else if(o.type==='Light'){ctx.beginPath();ctx.arc(0,0,size*.55,0,Math.PI*2);ctx.stroke()}else{ctx.fillRect(-size/2,-size/2,size,size);ctx.strokeRect(-size/2,-size/2,size,size)}ctx.restore()});}
-  const state=snakeRuntime.paused?'PAUSED':'RUNNING';const frame=document.getElementById('runtimeFrameChip');const debug=document.getElementById('runtimeDebug');if(frame)frame.textContent='FRAME '+snakeRuntime.frames;if(debug)debug.innerHTML='FPS '+snakeRuntime.fps+'<br>DT '+snakeRuntime.dt.toFixed(3)+'<br>NODES '+(snakeRuntime.graph?.nodes.size-1||0)+'<br>TIME '+snakeRuntime.elapsed.toFixed(1)+'s';const meta=document.getElementById('runtimeProjectMeta');if(meta)meta.textContent=String(currentProject||'PROJECT').toUpperCase();updateRuntimeNodeDebug();
-}
-
-/* Add a compact debug hierarchy to the runtime without changing the editor UI. */
-(function installRuntimeNodePanel(){
-  const preview=document.getElementById('preview');if(!preview||document.getElementById('runtimeNodeDebug'))return;
-  const box=document.createElement('div');box.id='runtimeNodeDebug';box.className='runtime-node-debug';preview.querySelector('.runtime-stage')?.appendChild(box);
-  const btn=document.createElement('button');btn.className='runtime-btn';btn.title='Node hierarchy';btn.setAttribute('aria-label','Node hierarchy');btn.innerHTML='<svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 5h5v5H5zM14 5h5v5h-5zM9 14h5v5H9zM10 7.5h4M16.5 10v2.5M7.5 10v2.5M7.5 12.5h9"/></svg>';btn.onclick=toggleRuntimeNodeDebug;preview.querySelector('.preview-header')?.insertBefore(btn,preview.querySelector('.preview-header .preview-meta'));
-})();
-</script>
-
+<!-- SNAKE ENGINE — 4/9 : INSPECTOR / COMPONENT SYSTEM -->
+<style id="snake-inspector-4-9">.se-inspector{width:100%;box-sizing:border-box;font-family:Inter,system-ui,sans-serif;color:#e8edf5;background:#11151c;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}.se-inspector-head{min-height:58px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(255,255,255,.07);background:#151a22}.se-inspector-kicker{font-size:10px;letter-spacing:.14em;opacity:.55;margin-bottom:3px}.se-inspector-type{font-size:11px;padding:5px 8px;border:1px solid rgba(255,255,255,.1);border-radius:6px;opacity:.7}.se-inspector-section{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.06)}.se-inspector-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:10px}.se-field{display:grid;grid-template-columns:74px minmax(0,1fr);align-items:center;gap:9px;margin:7px 0;font-size:12px}.se-field span{opacity:.7}.se-field input{width:100%;min-height:36px;box-sizing:border-box;border:1px solid rgba(255,255,255,.09);border-radius:7px;background:#0d1117;color:#edf2f8;padding:7px 9px;outline:none;font:inherit}.se-inspector-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.se-inspector-grid .se-field{grid-template-columns:1fr;gap:4px}.se-toggle{display:flex;align-items:center;justify-content:space-between;min-height:40px;font-size:12px}.se-toggle input{width:20px;height:20px;accent-color:#7f9cff}.se-component-list{display:grid;gap:6px}.se-component{padding:9px 10px;border:1px solid rgba(255,255,255,.07);background:#0d1117;border-radius:7px;font-size:12px}.se-empty{font-size:12px;opacity:.45;line-height:1.5}.se-empty-large{padding:32px 18px;text-align:center}@media(max-width:600px){.se-inspector-section{padding:11px}.se-field{grid-template-columns:62px minmax(0,1fr)}} </style>
+<script>window.SEInspector=(()=>{const S={selected:null,items:new Map(),container:null,register(id,d={}){const x={id,name:d.name||id,type:d.type||'Node',visible:d.visible!==false,locked:!!d.locked,transform:{x:+d.x||0,y:+d.y||0,z:+d.z||0,rotation:+d.rotation||0,scaleX:d.scaleX==null?1:+d.scaleX,scaleY:d.scaleY==null?1:+d.scaleY},components:Array.isArray(d.components)?d.components:[]};this.items.set(id,x);return x},select(id){if(!this.items.has(id))this.register(id);this.selected=id;this.render();document.dispatchEvent(new CustomEvent('snake:selectionChanged',{detail:this.items.get(id)}))},update(path,v){const x=this.items.get(this.selected);if(!x)return;const p=path.split('.');let t=x;for(let i=0;i<p.length-1;i++)t=t[p[i]]||(t[p[i]]={});t[p[p.length-1]]=v;document.dispatchEvent(new CustomEvent('snake:propertyChanged',{detail:{id:this.selected,path,value:v,item:x}}));this.render()},mount(c){this.container=typeof c==='string'?document.querySelector(c):c;if(this.container){this.container.dataset.snakeInspector='true';this.render()}},render(){if(!this.container)return;const x=this.selected&&this.items.get(this.selected);const e=v=>String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));const n=(l,p,v)=>`<label class="se-field"><span>${l}</span><input data-se-path="${p}" type="number" step=".01" value="${v}"></label>`;this.container.innerHTML=`<div class="se-inspector"><div class="se-inspector-head"><div><div class="se-inspector-kicker">INSPECTOR</div><strong>${x?e(x.name):'Nenhum objeto selecionado'}</strong></div>${x?`<span class="se-inspector-type">${e(x.type)}</span>`:''}</div>${x?`<section class="se-inspector-section"><div class="se-inspector-title">Transform</div>${n('X','transform.x',x.transform.x)}${n('Y','transform.y',x.transform.y)}${n('Z','transform.z',x.transform.z)}${n('Rotation','transform.rotation',x.transform.rotation)}<div class="se-inspector-grid">${n('Scale X','transform.scaleX',x.transform.scaleX)}${n('Scale Y','transform.scaleY',x.transform.scaleY)}</div></section><section class="se-inspector-section"><div class="se-inspector-title">State</div><label class="se-toggle"><span>Visible</span><input data-se-path="visible" type="checkbox" ${x.visible?'checked':''}></label><label class="se-toggle"><span>Locked</span><input data-se-path="locked" type="checkbox" ${x.locked?'checked':''}></label></section><section class="se-inspector-section"><div class="se-inspector-title">Components</div><div class="se-component-list">${x.components.length?x.components.map(c=>`<div class="se-component">${e(typeof c==='string'?c:c.name||'Component')}</div>`).join(''):'<div class="se-empty">Nenhum componente anexado.</div>'}</div></section>`:'<div class="se-empty se-empty-large">Selecione um objeto no editor para editar suas propriedades.</div>'}</div>`;this.container.querySelectorAll('[data-se-path]').forEach(i=>i.addEventListener('change',()=>this.update(i.dataset.sePath,i.type==='checkbox'?i.checked:Number(i.value))))}};document.addEventListener('snake:inspectorMount',e=>e.detail?.container&&S.mount(e.detail.container));document.addEventListener('snake:registerObject',e=>e.detail?.id&&S.register(e.detail.id,e.detail));document.addEventListener('snake:selectObject',e=>e.detail?.id&&S.select(e.detail.id));return S})();</script>
 </body>
 </html>
