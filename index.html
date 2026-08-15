@@ -6,12 +6,12 @@
 <title>MY ENGINE</title>
 
 <style>
-*{
+* {
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,body {
     margin:0;
     padding:0;
     width:100%;
@@ -22,29 +22,29 @@ html,body{
     overflow:hidden;
 }
 
-button,input,textarea,select{
+button,input,textarea,select {
     font:inherit;
 }
 
-button{
+button {
     border:0;
     color:#fff;
     font-weight:700;
     cursor:pointer;
 }
 
-button:active{
+button:active {
     transform:scale(.97);
 }
 
-.page{
+.page {
     display:none;
     width:100%;
     height:calc(100vh - 62px);
     overflow:auto;
 }
 
-.page.active{
+.page.active {
     display:block;
 }
 
@@ -52,7 +52,7 @@ button:active{
    HEADER
 ===================================================== */
 
-.header{
+.header {
     height:62px;
     display:flex;
     align-items:center;
@@ -65,7 +65,7 @@ button:active{
     font-weight:900;
 }
 
-.menu-button{
+.menu-button {
     position:absolute;
     left:14px;
     top:10px;
@@ -81,7 +81,7 @@ button:active{
    SIDE MENU
 ===================================================== */
 
-.side-menu{
+.side-menu {
     position:fixed;
     left:-290px;
     top:0;
@@ -95,11 +95,11 @@ button:active{
     padding-top:70px;
 }
 
-.side-menu.open{
+.side-menu.open {
     left:0;
 }
 
-.menu-overlay{
+.menu-overlay {
     display:none;
     position:fixed;
     inset:0;
@@ -107,11 +107,11 @@ button:active{
     background:rgba(0,0,0,.65);
 }
 
-.menu-overlay.open{
+.menu-overlay.open {
     display:block;
 }
 
-.menu-title{
+.menu-title {
     padding:16px 20px;
     color:#666;
     font-size:10px;
@@ -119,7 +119,7 @@ button:active{
     letter-spacing:2px;
 }
 
-.menu-item{
+.menu-item {
     width:100%;
     min-height:52px;
     padding:0 20px;
@@ -133,7 +133,7 @@ button:active{
     font-size:14px;
 }
 
-.menu-item.active{
+.menu-item.active {
     background:#2878ff;
     color:#fff;
 }
@@ -142,11 +142,11 @@ button:active{
    HOME
 ===================================================== */
 
-.home{
+.home {
     padding:20px;
 }
 
-.hero{
+.hero {
     padding:25px;
     border-radius:17px;
     border:1px solid #292929;
@@ -154,25 +154,25 @@ button:active{
     margin-bottom:14px;
 }
 
-.hero h1{
+.hero h1 {
     margin:0 0 7px;
     font-size:28px;
 }
 
-.hero p{
+.hero p {
     margin:0;
     color:#777;
     line-height:1.5;
     font-size:14px;
 }
 
-.cards{
+.cards {
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:10px;
 }
 
-.card{
+.card {
     min-height:115px;
     padding:15px;
     border-radius:13px;
@@ -180,17 +180,17 @@ button:active{
     background:#171717;
 }
 
-.card-icon{
+.card-icon {
     font-size:25px;
     margin-bottom:7px;
 }
 
-.card-title{
+.card-title {
     font-weight:900;
     font-size:14px;
 }
 
-.card-description{
+.card-description {
     margin-top:5px;
     color:#777;
     font-size:11px;
@@ -200,11 +200,11 @@ button:active{
    GENERAL MODULES
 ===================================================== */
 
-.module-page{
+.module-page {
     padding:18px;
 }
 
-.module-header{
+.module-header {
     padding:20px;
     margin-bottom:14px;
     border-radius:14px;
@@ -212,17 +212,17 @@ button:active{
     background:#171717;
 }
 
-.module-header h1{
+.module-header h1 {
     margin:0 0 7px;
 }
 
-.module-header p{
+.module-header p {
     margin:0;
     color:#777;
     font-size:13px;
 }
 
-.coming-soon{
+.coming-soon {
     padding:35px;
     text-align:center;
     color:#777;
@@ -235,18 +235,18 @@ button:active{
    CODE
 ===================================================== */
 
-.editor-area{
+.editor-area {
     padding:15px;
 }
 
-.label{
+.label {
     color:#888;
     font-size:11px;
     font-weight:900;
     margin-bottom:7px;
 }
 
-.editor-wrapper{
+.editor-wrapper {
     display:flex;
     height:40vh;
     min-height:270px;
@@ -256,7 +256,7 @@ button:active{
     background:#181818;
 }
 
-.line-numbers{
+.line-numbers {
     width:43px;
     flex-shrink:0;
     padding:15px 8px 15px 0;
@@ -267,7 +267,7 @@ button:active{
     overflow:hidden;
 }
 
-.editor{
+.editor {
     width:100%;
     height:100%;
     resize:none;
@@ -281,31 +281,31 @@ button:active{
     tab-size:4;
 }
 
-.buttons{
+.buttons {
     display:flex;
     gap:7px;
     padding:0 15px 15px;
 }
 
-.buttons button{
+.buttons button {
     flex:1;
     min-height:44px;
     border-radius:9px;
 }
 
-.run{background:#20c968;}
-.input-button{background:#8e44ad;}
-.save{background:#2878ff;}
-.clear{background:#292929;}
+.run {background:#20c968;}
+.input-button {background:#8e44ad;}
+.save {background:#2878ff;}
+.clear {background:#292929;}
 
 .translation-area,
 .terminal-area,
-.saved-area{
+.saved-area {
     padding:0 15px 18px;
 }
 
 .translation,
-.terminal{
+.terminal {
     min-height:120px;
     padding:14px;
     border-radius:9px;
@@ -315,22 +315,22 @@ button:active{
     overflow:auto;
 }
 
-.translation{
+.translation {
     background:#080808;
     color:#8ab4ff;
 }
 
-.terminal{
+.terminal {
     background:#030303;
     color:#00ff66;
 }
 
-.input-area{
+.input-area {
     display:none;
     margin-top:8px;
 }
 
-.stdin-input{
+.stdin-input {
     width:100%;
     min-height:80px;
     padding:12px;
@@ -341,13 +341,13 @@ button:active{
     resize:vertical;
 }
 
-.status{
+.status {
     color:#777;
     font-size:11px;
     margin-top:6px;
 }
 
-.saved-title{
+.saved-title {
     display:flex;
     justify-content:space-between;
     color:#888;
@@ -356,13 +356,13 @@ button:active{
     margin-bottom:8px;
 }
 
-.saved-list{
+.saved-list {
     display:flex;
     flex-direction:column;
     gap:7px;
 }
 
-.saved-item{
+.saved-item {
     display:flex;
     align-items:center;
     gap:8px;
@@ -372,54 +372,54 @@ button:active{
     border-radius:9px;
 }
 
-.saved-name{
+.saved-name {
     flex:1;
     overflow:hidden;
     white-space:nowrap;
     text-overflow:ellipsis;
 }
 
-.saved-actions{
+.saved-actions {
     display:flex;
     gap:5px;
 }
 
-.saved-actions button{
+.saved-actions button {
     min-height:31px;
     padding:5px 8px;
     border-radius:6px;
     font-size:10px;
 }
 
-.open-btn{background:#333;}
-.delete-btn{background:#8f2525;}
+.open-btn {background:#333;}
+.delete-btn {background:#8f2525;}
 
 /* =====================================================
    ART
 ===================================================== */
 
-.art-page{
+.art-page {
     padding:10px;
 }
 
-.art-top{
+.art-top {
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:8px;
 }
 
-.art-title{
+.art-title {
     font-size:18px;
     font-weight:900;
 }
 
-.art-size{
+.art-size {
     color:#777;
     font-size:11px;
 }
 
-.art-toolbar{
+.art-toolbar {
     display:flex;
     gap:6px;
     overflow-x:auto;
@@ -429,7 +429,7 @@ button:active{
     border-radius:11px;
 }
 
-.tool{
+.tool {
     flex:0 0 45px;
     height:43px;
     border-radius:8px;
@@ -437,11 +437,11 @@ button:active{
     border:1px solid #333;
 }
 
-.tool.active{
+.tool.active {
     background:#2878ff;
 }
 
-.canvas-area{
+.canvas-area {
     position:relative;
     width:100%;
     height:56vh;
@@ -454,7 +454,7 @@ button:active{
     touch-action:none;
 }
 
-#artCanvas{
+#artCanvas {
     position:absolute;
     left:50%;
     top:50%;
@@ -463,7 +463,7 @@ button:active{
     touch-action:none;
 }
 
-.canvas-info{
+.canvas-info {
     position:absolute;
     left:8px;
     bottom:8px;
@@ -474,21 +474,21 @@ button:active{
     pointer-events:none;
 }
 
-.art-controls{
+.art-controls {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:7px;
     margin-top:8px;
 }
 
-.control-box{
+.control-box {
     padding:10px;
     background:#151515;
     border:1px solid #292929;
     border-radius:9px;
 }
 
-.control-label{
+.control-label {
     display:block;
     color:#888;
     font-size:10px;
@@ -496,23 +496,23 @@ button:active{
     margin-bottom:7px;
 }
 
-input[type=color]{
+input[type=color] {
     width:100%;
     height:38px;
 }
 
-input[type=range]{
+input[type=range] {
     width:100%;
 }
 
-.art-actions{
+.art-actions {
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:6px;
     margin-top:8px;
 }
 
-.art-action{
+.art-action {
     min-height:41px;
     border-radius:8px;
     background:#202020;
@@ -520,7 +520,7 @@ input[type=range]{
     font-size:10px;
 }
 
-.art-action.primary{
+.art-action.primary {
     background:#2878ff;
 }
 
@@ -528,11 +528,11 @@ input[type=range]{
    DICTIONARY
 ===================================================== */
 
-.dictionary-page{
+.dictionary-page {
     padding:15px;
 }
 
-.dictionary-header{
+.dictionary-header {
     padding:20px;
     background:#171717;
     border:1px solid #292929;
@@ -540,17 +540,17 @@ input[type=range]{
     margin-bottom:12px;
 }
 
-.dictionary-header h1{
+.dictionary-header h1 {
     margin:0 0 7px;
 }
 
-.dictionary-header p{
+.dictionary-header p {
     margin:0;
     color:#777;
     font-size:13px;
 }
 
-.dictionary-search{
+.dictionary-search {
     width:100%;
     padding:13px;
     background:#111;
@@ -561,7 +561,7 @@ input[type=range]{
     margin-bottom:10px;
 }
 
-.dictionary-category{
+.dictionary-category {
     margin:14px 0 7px;
     color:#2878ff;
     font-size:10px;
@@ -569,7 +569,7 @@ input[type=range]{
     text-transform:uppercase;
 }
 
-.dictionary-item{
+.dictionary-item {
     display:flex;
     gap:9px;
     padding:11px;
@@ -579,17 +579,17 @@ input[type=range]{
     margin-bottom:5px;
 }
 
-.dictionary-command{
+.dictionary-command {
     color:#20c968;
     font-family:monospace;
     font-weight:900;
 }
 
-.dictionary-arrow{
+.dictionary-arrow {
     color:#555;
 }
 
-.dictionary-name{
+.dictionary-name {
     color:#ddd;
 }
 
@@ -597,14 +597,14 @@ input[type=range]{
    SCENE
 ===================================================== */
 
-.scene-page{
+.scene-page {
     position:relative;
     height:calc(100vh - 62px);
     overflow:hidden;
     background:#0a0d10;
 }
 
-.scene-world{
+.scene-world {
     position:absolute;
     inset:0;
     overflow:hidden;
@@ -612,7 +612,7 @@ input[type=range]{
     touch-action:none;
 }
 
-#sceneCanvas{
+#sceneCanvas {
     position:absolute;
     inset:0;
     width:100%;
@@ -620,7 +620,7 @@ input[type=range]{
     touch-action:none;
 }
 
-.scene-toolbar{
+.scene-toolbar {
     position:absolute;
     left:14px;
     right:14px;
@@ -638,7 +638,7 @@ input[type=range]{
     backdrop-filter:blur(14px);
 }
 
-.scene-toolbar button{
+.scene-toolbar button {
     flex:0 0 auto;
     min-width:42px;
     height:38px;
@@ -649,11 +649,11 @@ input[type=range]{
     font-size:11px;
 }
 
-.scene-toolbar button.active{
+.scene-toolbar button.active {
     background:#2878ff;
 }
 
-.scene-hud{
+.scene-hud {
     position:absolute;
     left:14px;
     bottom:14px;
@@ -666,7 +666,7 @@ input[type=range]{
 }
 
 .scene-hierarchy,
-.scene-inspector{
+.scene-inspector {
     position:absolute;
     top:78px;
     bottom:14px;
@@ -678,17 +678,17 @@ input[type=range]{
     backdrop-filter:blur(14px);
 }
 
-.scene-hierarchy{
+.scene-hierarchy {
     left:14px;
     width:215px;
 }
 
-.scene-inspector{
+.scene-inspector {
     right:14px;
     width:235px;
 }
 
-.panel-title{
+.panel-title {
     height:42px;
     display:flex;
     align-items:center;
@@ -700,20 +700,20 @@ input[type=range]{
     font-weight:900;
 }
 
-.panel-title button{
+.panel-title button {
     width:30px;
     height:28px;
     background:#2878ff;
     border-radius:7px;
 }
 
-.hierarchy-list{
+.hierarchy-list {
     height:calc(100% - 42px);
     overflow:auto;
     padding:6px;
 }
 
-.scene-node{
+.scene-node {
     display:flex;
     align-items:center;
     gap:6px;
@@ -724,41 +724,41 @@ input[type=range]{
     font-size:11px;
 }
 
-.scene-node.selected{
+.scene-node.selected {
     background:#2878ff;
     color:#fff;
 }
 
-.node-icon{
+.node-icon {
     width:20px;
     text-align:center;
 }
 
-.node-name{
+.node-name {
     flex:1;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
 }
 
-.inspector-body{
+.inspector-body {
     height:calc(100% - 42px);
     overflow:auto;
     padding:10px;
 }
 
-.inspector-empty{
+.inspector-empty {
     padding:30px 10px;
     text-align:center;
     color:#666;
     font-size:11px;
 }
 
-.inspector-section{
+.inspector-section {
     margin-bottom:15px;
 }
 
-.inspector-section-title{
+.inspector-section-title {
     color:#2878ff;
     font-size:10px;
     font-weight:900;
@@ -766,11 +766,11 @@ input[type=range]{
     text-transform:uppercase;
 }
 
-.field{
+.field {
     margin-bottom:8px;
 }
 
-.field label{
+.field label {
     display:block;
     color:#777;
     font-size:9px;
@@ -778,7 +778,7 @@ input[type=range]{
 }
 
 .field input,
-.field select{
+.field select {
     width:100%;
     height:34px;
     padding:7px;
@@ -790,30 +790,30 @@ input[type=range]{
     font-size:12px;
 }
 
-.transform-grid{
+.transform-grid {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:6px;
 }
 
-.inspector-buttons{
+.inspector-buttons {
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:6px;
 }
 
-.inspector-buttons button{
+.inspector-buttons button {
     min-height:35px;
     border-radius:7px;
     background:#292929;
     font-size:10px;
 }
 
-.inspector-buttons .danger{
+.inspector-buttons .danger {
     background:#8f2525;
 }
 
-.scene-add{
+.scene-add {
     position:absolute;
     right:270px;
     bottom:20px;
@@ -826,7 +826,7 @@ input[type=range]{
     box-shadow:0 7px 25px rgba(0,0,0,.5);
 }
 
-.scene-add-menu{
+.scene-add-menu {
     position:absolute;
     right:270px;
     bottom:88px;
@@ -839,11 +839,11 @@ input[type=range]{
     border-radius:11px;
 }
 
-.scene-add-menu.open{
+.scene-add-menu.open {
     display:block;
 }
 
-.scene-add-menu button{
+.scene-add-menu button {
     display:block;
     width:100%;
     height:39px;
@@ -854,7 +854,7 @@ input[type=range]{
     font-size:11px;
 }
 
-.mobile-inspector-button{
+.mobile-inspector-button {
     display:none!important;
 }
 
@@ -862,14 +862,14 @@ input[type=range]{
    TILEMAP
 ===================================================== */
 
-.tilemap-page{
+.tilemap-page {
     position:relative;
     height:calc(100vh - 62px);
     overflow:hidden;
     background:#0b0f14;
 }
 
-.tilemap-world{
+.tilemap-world {
     position:absolute;
     inset:0;
     overflow:hidden;
@@ -877,7 +877,7 @@ input[type=range]{
     touch-action:none;
 }
 
-#tilemapCanvas{
+#tilemapCanvas {
     position:absolute;
     inset:0;
     width:100%;
@@ -887,7 +887,7 @@ input[type=range]{
 
 /* top editor bar */
 
-.tilemap-toolbar{
+.tilemap-toolbar {
     position:absolute;
     top:12px;
     left:14px;
@@ -906,7 +906,7 @@ input[type=range]{
     backdrop-filter:blur(15px);
 }
 
-.tilemap-tool{
+.tilemap-tool {
     flex:0 0 auto;
     min-width:42px;
     height:38px;
@@ -917,12 +917,12 @@ input[type=range]{
     font-size:11px;
 }
 
-.tilemap-tool.active{
+.tilemap-tool.active {
     background:#2878ff;
     border-color:#2878ff;
 }
 
-.tilemap-separator{
+.tilemap-separator {
     width:1px;
     height:28px;
     background:#444;
@@ -931,7 +931,7 @@ input[type=range]{
 
 /* layer panel */
 
-.tilemap-layers{
+.tilemap-layers {
     position:absolute;
     top:78px;
     left:14px;
@@ -945,13 +945,13 @@ input[type=range]{
     backdrop-filter:blur(15px);
 }
 
-.layer-list{
+.layer-list {
     max-height:220px;
     overflow:auto;
     padding:6px;
 }
 
-.layer-row{
+.layer-row {
     display:flex;
     align-items:center;
     gap:7px;
@@ -963,25 +963,25 @@ input[type=range]{
     font-size:11px;
 }
 
-.layer-row.active{
+.layer-row.active {
     background:#2878ff;
     color:#fff;
 }
 
-.layer-eye{
+.layer-eye {
     width:24px;
     text-align:center;
     cursor:pointer;
 }
 
-.layer-name{
+.layer-name {
     flex:1;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
 }
 
-.layer-buttons{
+.layer-buttons {
     display:grid;
     grid-template-columns:1fr 1fr 1fr;
     gap:5px;
@@ -989,7 +989,7 @@ input[type=range]{
     border-top:1px solid #292929;
 }
 
-.layer-buttons button{
+.layer-buttons button {
     height:31px;
     border-radius:7px;
     background:#292929;
@@ -998,7 +998,7 @@ input[type=range]{
 
 /* tile palette */
 
-.tile-palette{
+.tile-palette {
     position:absolute;
     left:14px;
     right:14px;
@@ -1012,11 +1012,11 @@ input[type=range]{
     transition:transform .22s ease;
 }
 
-.tile-palette.collapsed{
+.tile-palette.collapsed {
     transform:translateY(calc(100% - 47px));
 }
 
-.palette-header{
+.palette-header {
     height:47px;
     display:flex;
     align-items:center;
@@ -1025,35 +1025,35 @@ input[type=range]{
     border-bottom:1px solid #292929;
 }
 
-.palette-title{
+.palette-title {
     font-size:11px;
     font-weight:900;
 }
 
-.palette-actions{
+.palette-actions {
     display:flex;
     gap:5px;
 }
 
-.palette-actions button{
+.palette-actions button {
     width:34px;
     height:30px;
     border-radius:7px;
     background:#292929;
 }
 
-.palette-body{
+.palette-body {
     padding:9px;
 }
 
-.tile-categories{
+.tile-categories {
     display:flex;
     gap:6px;
     overflow-x:auto;
     margin-bottom:8px;
 }
 
-.tile-category{
+.tile-category {
     flex:0 0 auto;
     height:31px;
     padding:0 10px;
@@ -1063,12 +1063,12 @@ input[type=range]{
     font-size:10px;
 }
 
-.tile-category.active{
+.tile-category.active {
     background:#2878ff;
     color:#fff;
 }
 
-.tiles-grid{
+.tiles-grid {
     display:grid;
     grid-template-columns:repeat(10,1fr);
     gap:6px;
@@ -1076,7 +1076,7 @@ input[type=range]{
     overflow:auto;
 }
 
-.tile{
+.tile {
     aspect-ratio:1;
     min-width:32px;
     border-radius:7px;
@@ -1088,29 +1088,29 @@ input[type=range]{
     background:#202020;
 }
 
-.tile.selected{
+.tile.selected {
     border-color:#fff;
     box-shadow:0 0 0 2px #2878ff;
 }
 
-.tile-grass{
+.tile-grass {
     background:
         linear-gradient(135deg,#55b44b 25%,#347e36 25% 50%,#5ac451 50% 75%,#3d913c 75%);
 }
 
-.tile-dirt{
+.tile-dirt {
     background:
         radial-gradient(circle at 20% 30%,#986331 0 2px,transparent 3px),
         radial-gradient(circle at 70% 70%,#6d4525 0 2px,transparent 3px),
         #754b29;
 }
 
-.tile-stone{
+.tile-stone {
     background:
         linear-gradient(45deg,#676d73 25%,#4b5156 25% 50%,#737980 50% 75%,#555b60 75%);
 }
 
-.tile-water{
+.tile-water {
     background:
         repeating-linear-gradient(
             0deg,
@@ -1119,16 +1119,16 @@ input[type=range]{
         );
 }
 
-.tile-lava{
+.tile-lava {
     background:
         linear-gradient(135deg,#e63b17,#ff9d21 45%,#c62513);
 }
 
-.tile-sand{
+.tile-sand {
     background:#c9ad69;
 }
 
-.tile-brick{
+.tile-brick {
     background:
         repeating-linear-gradient(
             0deg,
@@ -1137,11 +1137,11 @@ input[type=range]{
         );
 }
 
-.tile-snow{
+.tile-snow {
     background:#e8edf2;
 }
 
-.tile-wood{
+.tile-wood {
     background:
         repeating-linear-gradient(
             90deg,
@@ -1150,13 +1150,13 @@ input[type=range]{
         );
 }
 
-.tile-void{
+.tile-void {
     background:#292333;
 }
 
 /* tilemap hud */
 
-.tilemap-hud{
+.tilemap-hud {
     position:absolute;
     left:14px;
     bottom:174px;
@@ -1170,7 +1170,7 @@ input[type=range]{
 
 /* right quick controls */
 
-.tilemap-quick{
+.tilemap-quick {
     position:absolute;
     right:14px;
     bottom:174px;
@@ -1180,7 +1180,7 @@ input[type=range]{
     gap:7px;
 }
 
-.tilemap-quick button{
+.tilemap-quick button {
     width:44px;
     height:44px;
     border-radius:11px;
@@ -1189,7 +1189,7 @@ input[type=range]{
     font-size:16px;
 }
 
-.tilemap-quick .primary{
+.tilemap-quick .primary {
     background:#2878ff;
 }
 
@@ -1197,7 +1197,7 @@ input[type=range]{
    MODAL
 ===================================================== */
 
-.modal{
+.modal {
     display:none;
     position:fixed;
     inset:0;
@@ -1208,11 +1208,11 @@ input[type=range]{
     padding:20px;
 }
 
-.modal.open{
+.modal.open {
     display:flex;
 }
 
-.modal-box{
+.modal-box {
     width:100%;
     max-width:410px;
     padding:20px;
@@ -1221,11 +1221,11 @@ input[type=range]{
     border-radius:14px;
 }
 
-.modal-box h2{
+.modal-box h2 {
     margin-top:0;
 }
 
-.modal-box input{
+.modal-box input {
     width:100%;
     padding:12px;
     background:#0d0d0d;
@@ -1236,22 +1236,22 @@ input[type=range]{
     margin:10px 0 15px;
 }
 
-.modal-buttons{
+.modal-buttons {
     display:flex;
     gap:7px;
 }
 
-.modal-buttons button{
+.modal-buttons button {
     flex:1;
     min-height:42px;
     border-radius:7px;
 }
 
-.cancel{
+.cancel {
     background:#333;
 }
 
-.confirm{
+.confirm {
     background:#2878ff;
 }
 
@@ -1259,14 +1259,14 @@ input[type=range]{
    MOBILE
 ===================================================== */
 
-@media(max-width:700px){
+@media(max-width:700px) {
 
-    .cards{
+    .cards {
         grid-template-columns:1fr 1fr;
     }
 
     .scene-hierarchy,
-    .scene-inspector{
+    .scene-inspector {
         left:8px;
         right:8px;
         top:auto;
@@ -1277,56 +1277,56 @@ input[type=range]{
     }
 
     .scene-hierarchy.mobile-open,
-    .scene-inspector.mobile-open{
+    .scene-inspector.mobile-open {
         display:block;
     }
 
-    .scene-add{
+    .scene-add {
         right:14px;
         bottom:85px;
     }
 
-    .scene-add-menu{
+    .scene-add-menu {
         right:14px;
         bottom:150px;
     }
 
-    .mobile-inspector-button{
+    .mobile-inspector-button {
         display:block!important;
     }
 
-    .tilemap-layers{
+    .tilemap-layers {
         left:8px;
         top:78px;
         width:190px;
     }
 
-    .tiles-grid{
+    .tiles-grid {
         grid-template-columns:repeat(7,1fr);
         max-height:130px;
     }
 
-    .tile{
+    .tile {
         min-width:36px;
     }
 
-    .tilemap-palette{
+    .tilemap-palette {
         left:8px;
         right:8px;
         bottom:8px;
     }
 
-    .tilemap-hud{
+    .tilemap-hud {
         left:8px;
         bottom:165px;
     }
 
-    .tilemap-quick{
+    .tilemap-quick {
         right:8px;
         bottom:165px;
     }
 
-    .tilemap-toolbar{
+    .tilemap-toolbar {
         left:8px;
         right:8px;
     }
@@ -1402,66 +1402,49 @@ input[type=range]{
 <section id="home" class="page active home">
 
     <div class="hero">
-
         <h1>Minha Engine</h1>
-
         <p>
             Ambiente de desenvolvimento mobile
             para criação de jogos 2D.
         </p>
-
     </div>
 
     <div class="cards">
-
         <div class="card" data-page="codePage">
             <div class="card-icon">📝</div>
             <div class="card-title">Código</div>
-            <div class="card-description">
-                Escreva e execute C++.
-            </div>
+            <div class="card-description">Escreva e execute C++.</div>
         </div>
 
         <div class="card" data-page="artPage">
             <div class="card-icon">🎨</div>
             <div class="card-title">Arte</div>
-            <div class="card-description">
-                Crie sprites diretamente no celular.
-            </div>
+            <div class="card-description">Crie sprites diretamente no celular.</div>
         </div>
 
         <div class="card" data-page="scenePage">
             <div class="card-icon">🗺️</div>
             <div class="card-title">Cena</div>
-            <div class="card-description">
-                Construa mundos RPG.
-            </div>
+            <div class="card-description">Construa mundos RPG.</div>
         </div>
 
         <div class="card" data-page="tilemapPage">
             <div class="card-icon">🧱</div>
             <div class="card-title">Tilemap</div>
-            <div class="card-description">
-                Construa mapas profissionais.
-            </div>
+            <div class="card-description">Construa mapas profissionais.</div>
         </div>
 
         <div class="card" data-page="assetsPage">
             <div class="card-icon">📦</div>
             <div class="card-title">Assets</div>
-            <div class="card-description">
-                Gerencie os recursos do projeto.
-            </div>
+            <div class="card-description">Gerencie os recursos do projeto.</div>
         </div>
 
         <div class="card" data-page="dictionaryPage">
             <div class="card-icon">📖</div>
             <div class="card-title">Dicionário</div>
-            <div class="card-description">
-                Personalize comandos.
-            </div>
+            <div class="card-description">Personalize comandos.</div>
         </div>
-
     </div>
 
 </section>
@@ -1474,15 +1457,9 @@ input[type=range]{
 <section id="codePage" class="page">
 
     <div class="editor-area">
-
-        <div class="label">
-            CÓDIGO MY ENGINE / C++
-        </div>
-
+        <div class="label">CÓDIGO MY ENGINE / C++</div>
         <div class="editor-wrapper">
-
             <div class="line-numbers" id="lineNumbers"></div>
-
             <textarea
                 id="code"
                 class="editor"
@@ -1496,75 +1473,43 @@ int main() {
     cout << "Olá, mundo!";
     return 0;
 }</textarea>
-
         </div>
-
     </div>
 
     <div class="buttons">
-
-        <button class="run" id="runButton">
-            ▶ EXECUTAR
-        </button>
-
-        <button class="input-button" id="inputButton">
-            ⌨ ENTRADA
-        </button>
-
-        <button class="save" id="saveCodeButton">
-            💾 SALVAR
-        </button>
-
-        <button class="clear" id="clearCodeButton">
-            LIMPAR
-        </button>
-
+        <button class="run" id="runButton">▶ EXECUTAR</button>
+        <button class="input-button" id="inputButton">⌨ ENTRADA</button>
+        <button class="save" id="saveCodeButton">💾 SALVAR</button>
+        <button class="clear" id="clearCodeButton">LIMPAR</button>
     </div>
 
     <div class="translation-area">
-
-        <div class="label">
-            CÓDIGO TRADUZIDO
-        </div>
-
+        <div class="label">CÓDIGO TRADUZIDO</div>
         <div class="translation" id="translatedCode">
             &gt; O código traduzido aparecerá aqui.
         </div>
-
     </div>
 
     <div class="terminal-area">
-
-        <div class="label">
-            TERMINAL
-        </div>
-
+        <div class="label">TERMINAL</div>
         <div class="terminal" id="terminal">
             &gt; Aguardando execução...
         </div>
-
         <div class="input-area" id="inputArea">
-
             <textarea
                 class="stdin-input"
                 id="stdinInput"
                 placeholder="Digite a entrada do programa..."></textarea>
-
         </div>
-
         <div class="status" id="status"></div>
-
     </div>
 
     <div class="saved-area">
-
         <div class="saved-title">
             <span>MEUS CÓDIGOS</span>
             <span id="savedCount">0</span>
         </div>
-
         <div class="saved-list" id="savedList"></div>
-
     </div>
 
 </section>
@@ -1575,116 +1520,43 @@ int main() {
 ===================================================== -->
 
 <section id="artPage" class="page art-page">
-
     <div class="art-top">
-
-        <div class="art-title">
-            🎨 Editor de Arte
-        </div>
-
-        <div class="art-size" id="artSize">
-            32 × 32
-        </div>
-
+        <div class="art-title">🎨 Editor de Arte</div>
+        <div class="art-size" id="artSize">32 × 32</div>
     </div>
 
     <div class="art-toolbar">
-
-        <button class="tool active" id="pencilTool">
-            ✏️
-        </button>
-
-        <button class="tool" id="eraserTool">
-            🧽
-        </button>
-
-        <button class="tool" id="clearArtTool">
-            🗑️
-        </button>
-
-        <button class="tool" id="undoArtTool">
-            ↩️
-        </button>
-
-        <button class="tool" id="redoArtTool">
-            ↪️
-        </button>
-
-        <button class="tool" id="gridArtTool">
-            🔲
-        </button>
-
-        <button class="tool" id="resetArtTool">
-            1:1
-        </button>
-
+        <button class="tool active" id="pencilTool">✏️</button>
+        <button class="tool" id="eraserTool">🧽</button>
+        <button class="tool" id="clearArtTool">🗑️</button>
+        <button class="tool" id="undoArtTool">↩️</button>
+        <button class="tool" id="redoArtTool">↪️</button>
+        <button class="tool" id="gridArtTool">🔲</button>
+        <button class="tool" id="resetArtTool">1:1</button>
     </div>
 
     <div class="canvas-area" id="canvasArea">
-
-        <canvas
-            id="artCanvas"
-            width="32"
-            height="32"></canvas>
-
-        <div class="canvas-info" id="canvasInfo">
-            Zoom: 100%
-        </div>
-
+        <canvas id="artCanvas" width="32" height="32"></canvas>
+        <div class="canvas-info" id="canvasInfo">Zoom: 100%</div>
     </div>
 
     <div class="art-controls">
-
         <div class="control-box">
-
-            <span class="control-label">
-                COR
-            </span>
-
-            <input
-                type="color"
-                id="colorPicker"
-                value="#000000">
-
+            <span class="control-label">COR</span>
+            <input type="color" id="colorPicker" value="#000000">
         </div>
-
         <div class="control-box">
-
-            <span class="control-label">
-                TAMANHO
-            </span>
-
-            <input
-                type="range"
-                id="brushSize"
-                min="1"
-                max="8"
-                value="1">
-
+            <span class="control-label">TAMANHO</span>
+            <input type="range" id="brushSize" min="1" max="8" value="1">
         </div>
-
     </div>
 
     <div class="art-actions">
-
-        <button class="art-action primary" id="newArtButton">
-            🆕 NOVO
-        </button>
-
-        <button class="art-action" id="saveArtButton">
-            💾 SALVAR
-        </button>
-
-        <button class="art-action" id="loadArtButton">
-            📂 ABRIR
-        </button>
-
-        <button class="art-action" id="zoomArtButton">
-            🔍 ZOOM
-        </button>
-
+        <button class="art-action primary" id="newArtButton">🆕 NOVO</button>
+        <button class="art-action" id="saveArtButton">💾 SALVAR</button>
+        <button class="art-action" id="loadArtButton">📂 ABRIR</button>
+        <button class="art-action" id="zoomArtButton">🔍 ZOOM</button>
     </div>
-
 </section>
 
 
@@ -1693,167 +1565,60 @@ int main() {
 ===================================================== -->
 
 <section id="scenePage" class="page scene-page">
-
     <div class="scene-world" id="sceneWorld">
-
         <canvas id="sceneCanvas"></canvas>
-
     </div>
 
     <div class="scene-toolbar">
-
-        <button id="sceneSelectTool" class="active">
-            ↖ Selecionar
-        </button>
-
-        <button id="sceneMoveTool">
-            ✋ Mover
-        </button>
-
-        <button id="sceneGridTool">
-            ▦ Grid
-        </button>
-
-        <button id="sceneSnapTool">
-            🧲 Snap
-        </button>
-
-        <button id="sceneZoomOut">
-            −
-        </button>
-
-        <button id="sceneZoomIn">
-            +
-        </button>
-
-        <button id="sceneReset">
-            ⌂
-        </button>
-
-        <button id="sceneUndo">
-            ↩
-        </button>
-
-        <button id="sceneRedo">
-            ↪
-        </button>
-
-        <button id="sceneSave">
-            💾
-        </button>
-
-        <button id="sceneLoad">
-            📂
-        </button>
-
-        <button id="sceneExport">
-            ⇩
-        </button>
-
-        <button id="sceneImport">
-            ⇧
-        </button>
-
-        <button id="sceneHierarchyButton" class="mobile-inspector-button">
-            ☰
-        </button>
-
-        <button id="sceneInspectorButton" class="mobile-inspector-button">
-            ⚙
-        </button>
-
+        <button id="sceneSelectTool" class="active">↖ Selecionar</button>
+        <button id="sceneMoveTool">✋ Mover</button>
+        <button id="sceneGridTool">▦ Grid</button>
+        <button id="sceneSnapTool">🧲 Snap</button>
+        <button id="sceneZoomOut">−</button>
+        <button id="sceneZoomIn">+</button>
+        <button id="sceneReset">⌂</button>
+        <button id="sceneUndo">↩</button>
+        <button id="sceneRedo">↪</button>
+        <button id="sceneSave">💾</button>
+        <button id="sceneLoad">📂</button>
+        <button id="sceneExport">⇩</button>
+        <button id="sceneImport">⇧</button>
+        <button id="sceneHierarchyButton" class="mobile-inspector-button">☰</button>
+        <button id="sceneInspectorButton" class="mobile-inspector-button">⚙</button>
     </div>
 
     <div class="scene-hierarchy" id="sceneHierarchy">
-
         <div class="panel-title">
-
-            <span>
-                HIERARQUIA
-            </span>
-
-            <button id="sceneAddButton">
-                +
-            </button>
-
+            <span>HIERARQUIA</span>
+            <button id="sceneAddButton">+</button>
         </div>
-
-        <div
-            class="hierarchy-list"
-            id="hierarchyList"></div>
-
+        <div class="hierarchy-list" id="hierarchyList"></div>
     </div>
 
     <div class="scene-inspector" id="sceneInspector">
-
         <div class="panel-title">
-
-            <span>
-                INSPETOR
-            </span>
-
-            <button id="sceneCloseInspector">
-                ×
-            </button>
-
+            <span>INSPETOR</span>
+            <button id="sceneCloseInspector">×</button>
         </div>
-
-        <div
-            class="inspector-body"
-            id="inspectorBody">
-
-            <div class="inspector-empty">
-                Selecione um objeto.
-            </div>
-
+        <div class="inspector-body" id="inspectorBody">
+            <div class="inspector-empty">Selecione um objeto.</div>
         </div>
-
     </div>
 
-    <button
-        class="scene-add"
-        id="sceneFloatingAdd">
-        +
-    </button>
-
-    <div
-        class="scene-add-menu"
-        id="sceneAddMenu">
-
-        <button data-scene-type="player">
-            🧍 Player
-        </button>
-
-        <button data-scene-type="tile">
-            🟩 Tile / Bloco
-        </button>
-
-        <button data-scene-type="decoration">
-            🌲 Decoração
-        </button>
-
-        <button data-scene-type="enemy">
-            👾 Inimigo
-        </button>
-
-        <button data-scene-type="item">
-            💰 Item
-        </button>
-
-        <button data-scene-type="text">
-            📝 Texto
-        </button>
-
-        <button data-scene-type="empty">
-            📦 Objeto vazio
-        </button>
-
+    <button class="scene-add" id="sceneFloatingAdd">+</button>
+    <div class="scene-add-menu" id="sceneAddMenu">
+        <button data-scene-type="player">🧍 Player</button>
+        <button data-scene-type="tile">🟩 Tile / Bloco</button>
+        <button data-scene-type="decoration">🌲 Decoração</button>
+        <button data-scene-type="enemy">👾 Inimigo</button>
+        <button data-scene-type="item">💰 Item</button>
+        <button data-scene-type="text">📝 Texto</button>
+        <button data-scene-type="empty">📦 Objeto vazio</button>
     </div>
 
     <div class="scene-hud" id="sceneHud">
         X: 0 | Y: 0 | Zoom: 100%
     </div>
-
 </section>
 
 
@@ -1862,361 +1627,110 @@ int main() {
 ===================================================== -->
 
 <section id="tilemapPage" class="page tilemap-page">
-
-    <div class="tilemap-world" id="tilemapWorld">
-
+    <div class="tilemap-world">
         <canvas id="tilemapCanvas"></canvas>
-
     </div>
-
-
-    <!-- TOOLBAR -->
 
     <div class="tilemap-toolbar">
-
-        <button
-            class="tilemap-tool active"
-            id="tileBrush">
-            🖊️ Pincel
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileEraser">
-            🧽 Borracha
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileFill">
-            🪣 Preencher
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileRect">
-            ▣ Retângulo
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileSelect">
-            📐 Seleção
-        </button>
-
+        <button class="tilemap-tool active">✏️</button>
+        <button class="tilemap-tool">🧽</button>
+        <button class="tilemap-tool">✋</button>
+        <button class="tilemap-tool">🪣</button>
         <div class="tilemap-separator"></div>
-
-        <button
-            class="tilemap-tool"
-            id="tileZoomOut">
-            −
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileZoomIn">
-            +
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileReset">
-            ⌂
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileGrid">
-            ▦ Grid
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileSnap">
-            🧲 Snap
-        </button>
-
-        <div class="tilemap-separator"></div>
-
-        <button
-            class="tilemap-tool"
-            id="tileUndo">
-            ↩
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileRedo">
-            ↪
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileSave">
-            💾
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileLoad">
-            📂
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileExport">
-            ⇩
-        </button>
-
-        <button
-            class="tilemap-tool"
-            id="tileImport">
-            ⇧
-        </button>
-
+        <button class="tilemap-tool">↩️</button>
+        <button class="tilemap-tool">↪️</button>
+        <button class="tilemap-tool">💾</button>
     </div>
-
-
-    <!-- LAYERS -->
 
     <div class="tilemap-layers">
-
         <div class="panel-title">
-
-            <span>
-                CAMADAS
-            </span>
-
+            <span>CAMADAS</span>
         </div>
-
-        <div
-            class="layer-list"
-            id="tileLayerList"></div>
-
+        <div class="layer-list">
+            <div class="layer-row active">
+                <div class="layer-eye">👁️</div>
+                <div class="layer-name">Camada 1 (Base)</div>
+            </div>
+            <div class="layer-row">
+                <div class="layer-eye">👁️</div>
+                <div class="layer-name">Camada 2 (Detalhes)</div>
+            </div>
+        </div>
         <div class="layer-buttons">
-
-            <button id="addLayer">
-                +
-            </button>
-
-            <button id="removeLayer">
-                −
-            </button>
-
-            <button id="renameLayer">
-                ✎
-            </button>
-
+            <button>+</button>
+            <button>-</button>
+            <button>⇅</button>
         </div>
-
     </div>
 
-
-    <!-- HUD -->
-
-    <div
-        class="tilemap-hud"
-        id="tilemapHud">
-        X: 0 | Y: 0 | Zoom: 100% | Tile: 32
+    <div class="tile-palette tilemap-palette">
+        <div class="palette-header">
+            <span class="palette-title">TILES E BLOCOS</span>
+            <div class="palette-actions">
+                <button>⚙</button>
+                <button>↓</button>
+            </div>
+        </div>
+        <div class="palette-body">
+            <div class="tile-categories">
+                <div class="tile-category active">Terreno</div>
+                <div class="tile-category">Estruturas</div>
+                <div class="tile-category">Natureza</div>
+                <div class="tile-category">Perigos</div>
+            </div>
+            <div class="tiles-grid">
+                <div class="tile tile-grass selected"></div>
+                <div class="tile tile-dirt"></div>
+                <div class="tile tile-stone"></div>
+                <div class="tile tile-water"></div>
+                <div class="tile tile-lava"></div>
+                <div class="tile tile-sand"></div>
+                <div class="tile tile-brick"></div>
+                <div class="tile tile-snow"></div>
+                <div class="tile tile-wood"></div>
+                <div class="tile tile-void"></div>
+            </div>
+        </div>
     </div>
-
-
-    <!-- QUICK -->
 
     <div class="tilemap-quick">
-
-        <button
-            class="primary"
-            id="tilePaletteButton">
-            🧱
-        </button>
-
-        <button id="tileClearMap">
-            🗑
-        </button>
-
+        <button class="primary">+</button>
+        <button>-</button>
+        <button>▦</button>
     </div>
 
-
-    <!-- PALETTE -->
-
-    <div
-        class="tile-palette"
-        id="tilePalette">
-
-        <div class="palette-header">
-
-            <div class="palette-title">
-                🧱 PALETA DE TILES
-            </div>
-
-            <div class="palette-actions">
-
-                <button id="createTileButton">
-                    +
-                </button>
-
-                <button id="collapsePalette">
-                    ↓
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="palette-body">
-
-            <div
-                class="tile-categories"
-                id="tileCategories">
-
-                <button
-                    class="tile-category active"
-                    data-category="nature">
-                    🌱 Natureza
-                </button>
-
-                <button
-                    class="tile-category"
-                    data-category="terrain">
-                    🪨 Terreno
-                </button>
-
-                <button
-                    class="tile-category"
-                    data-category="building">
-                    🧱 Construção
-                </button>
-
-                <button
-                    class="tile-category"
-                    data-category="water">
-                    🌊 Água
-                </button>
-
-                <button
-                    class="tile-category"
-                    data-category="special">
-                    ✨ Especial
-                </button>
-
-            </div>
-
-            <div
-                class="tiles-grid"
-                id="tilesGrid"></div>
-
-        </div>
-
+    <div class="tilemap-hud">
+        Tile: 32x32 | Grid: ON
     </div>
-
 </section>
 
 
 <!-- =====================================================
-     ASSETS
+     ASSETS & AUDIO & PROJECT
 ===================================================== -->
 
 <section id="assetsPage" class="page module-page">
-
     <div class="module-header">
-
-        <h1>
-            📦 Assets
-        </h1>
-
-        <p>
-            Gerenciamento dos recursos do projeto.
-        </p>
-
+        <h1>📦 Assets</h1>
+        <p>Gerenciador de arquivos, spritesheets e fontes.</p>
     </div>
-
-    <div class="coming-soon">
-
-        📦<br><br>
-
-        <strong>
-            Asset Manager
-        </strong>
-
-        <br>
-
-        Sistema preparado para receber
-        sprites, texturas, sons e recursos
-        externos.
-
-    </div>
-
+    <div class="coming-soon">Em breve...</div>
 </section>
-
-
-<!-- =====================================================
-     AUDIO
-===================================================== -->
 
 <section id="audioPage" class="page module-page">
-
     <div class="module-header">
-
-        <h1>
-            🎵 Áudio
-        </h1>
-
-        <p>
-            Músicas e efeitos sonoros.
-        </p>
-
+        <h1>🎵 Áudio</h1>
+        <p>Importe e gerencie trilhas sonoras e efeitos.</p>
     </div>
-
-    <div class="coming-soon">
-
-        🎵<br><br>
-
-        <strong>
-            Audio Manager
-        </strong>
-
-        <br>
-
-        Em desenvolvimento.
-
-    </div>
-
+    <div class="coming-soon">Em breve...</div>
 </section>
 
-
-<!-- =====================================================
-     PROJECT
-===================================================== -->
-
 <section id="projectPage" class="page module-page">
-
     <div class="module-header">
-
-        <h1>
-            ⚙️ Projeto
-        </h1>
-
-        <p>
-            Configurações gerais da My Engine.
-        </p>
-
+        <h1>⚙️ Projeto</h1>
+        <p>Configurações de exportação e metadados do jogo.</p>
     </div>
-
-    <div class="coming-soon">
-
-        ⚙️<br><br>
-
-        <strong>
-            Project Manager
-        </strong>
-
-        <br>
-
-        Em desenvolvimento.
-
-    </div>
-
+    <div class="coming-soon">Em breve...</div>
 </section>
 
 
@@ -2225,4111 +1739,122 @@ int main() {
 ===================================================== -->
 
 <section id="dictionaryPage" class="page dictionary-page">
-
     <div class="dictionary-header">
-
-        <h1>
-            📖 Dicionário
-        </h1>
-
-        <p>
-            Personalize os comandos da My Engine.
-        </p>
-
+        <h1>📖 Dicionário de Comandos</h1>
+        <p>Referência rápida da API da Engine.</p>
     </div>
 
-    <input
-        class="dictionary-search"
-        id="dictionarySearch"
-        placeholder="Pesquisar comando...">
+    <input type="text" class="dictionary-search" placeholder="Buscar comando ou função...">
 
-    <div id="dictionaryList"></div>
+    <div class="dictionary-category">MOVIMENTO E FÍSICA</div>
+    <div class="dictionary-item">
+        <span class="dictionary-command">move(x, y)</span>
+        <span class="dictionary-arrow">→</span>
+        <span class="dictionary-name">Mover objeto</span>
+    </div>
+    <div class="dictionary-item">
+        <span class="dictionary-command">setGravity(val)</span>
+        <span class="dictionary-arrow">→</span>
+        <span class="dictionary-name">Ajustar gravidade</span>
+    </div>
+    <div class="dictionary-item">
+        <span class="dictionary-command">applyForce(f)</span>
+        <span class="dictionary-arrow">→</span>
+        <span class="dictionary-name">Aplicar impulso</span>
+    </div>
 
+    <div class="dictionary-category">RENDERIZAÇÃO</div>
+    <div class="dictionary-item">
+        <span class="dictionary-command">drawSprite(id)</span>
+        <span class="dictionary-arrow">→</span>
+        <span class="dictionary-name">Desenhar imagem</span>
+    </div>
 </section>
 
 
 <!-- =====================================================
-     SAVE CODE MODAL
+     MODALS
 ===================================================== -->
 
-<div
-    class="modal"
-    id="saveModal">
-
+<div class="modal" id="myModal">
     <div class="modal-box">
-
-        <h2>
-            Salvar código
-        </h2>
-
-        <input
-            id="codeName"
-            placeholder="Nome do código">
-
+        <h2 id="modalTitle">Título do Modal</h2>
+        <input type="text" id="modalInput" placeholder="Digite aqui...">
         <div class="modal-buttons">
-
-            <button
-                class="cancel"
-                id="cancelSave">
-                CANCELAR
-            </button>
-
-            <button
-                class="confirm"
-                id="confirmSave">
-                SALVAR
-            </button>
-
+            <button class="cancel" id="modalCancel">Cancelar</button>
+            <button class="confirm" id="modalConfirm">Confirmar</button>
         </div>
-
     </div>
-
 </div>
 
-
+<!-- =====================================================
+     JAVASCRIPT BASE
+===================================================== -->
 <script>
-
-/* =====================================================
-   SAFE HELPERS
-===================================================== */
-
-const $ = id => document.getElementById(id);
-
-function clamp(v,min,max){
-    return Math.max(min,Math.min(max,v));
-}
-
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-function openPage(id){
-
-    document
-        .querySelectorAll(".page")
-        .forEach(page=>{
-            page.classList.remove("active");
-        });
-
-    const page=$(id);
-
-    if(!page)return;
-
-    page.classList.add("active");
-
-    document
-        .querySelectorAll(".menu-item")
-        .forEach(item=>{
-            item.classList.toggle(
-                "active",
-                item.dataset.page===id
-            );
-        });
-
-    closeMenu();
-
-    if(id==="scenePage"){
-        setTimeout(sceneResize,30);
+    // Controle do Menu Lateral
+    const menuButton = document.getElementById('menuButton');
+    const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    function toggleMenu() {
+        sideMenu.classList.toggle('open');
+        menuOverlay.classList.toggle('open');
     }
 
-    if(id==="tilemapPage"){
-        setTimeout(tilemapResize,30);
-    }
+    menuButton.addEventListener('click', toggleMenu);
+    menuOverlay.addEventListener('click', toggleMenu);
 
-    if(id==="artPage"){
-        setTimeout(applyArtCamera,30);
-    }
-}
+    // Sistema de Navegação das Páginas
+    const menuItems = document.querySelectorAll('.menu-item, .card');
+    const pages = document.querySelectorAll('.page');
 
+    menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetPageId = item.getAttribute('data-page');
+            
+            if(!targetPageId) return;
 
-function openMenu(){
+            // Remove active das páginas e menu
+            pages.forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
 
-    $("sideMenu").classList.add("open");
-    $("menuOverlay").classList.add("open");
+            // Adiciona ativo no alvo
+            document.getElementById(targetPageId).classList.add('active');
+            
+            // Marca o item do menu como ativo se for pelo menu lateral
+            if(item.classList.contains('menu-item')) {
+                item.classList.add('active');
+            } else {
+                // Se clicou no card da home, ativa no menu lateral correspondente
+                const correspondingMenu = document.querySelector(`.menu-item[data-page="${targetPageId}"]`);
+                if(correspondingMenu) correspondingMenu.classList.add('active');
+            }
 
-}
-
-
-function closeMenu(){
-
-    $("sideMenu").classList.remove("open");
-    $("menuOverlay").classList.remove("open");
-
-}
-
-
-$("menuButton").onclick=openMenu;
-$("menuOverlay").onclick=closeMenu;
-
-
-document
-    .querySelectorAll("[data-page]")
-    .forEach(el=>{
-        el.addEventListener("click",()=>{
-            openPage(el.dataset.page);
+            // Fecha o menu lateral após o clique (mobile behavior)
+            if (sideMenu.classList.contains('open')) toggleMenu();
         });
     });
 
+    // Toggle de Menus Flutuantes na Scene (Mobile)
+    const btnHierarchy = document.getElementById('sceneHierarchyButton');
+    const btnInspector = document.getElementById('sceneInspectorButton');
+    const hierarchy = document.getElementById('sceneHierarchy');
+    const inspector = document.getElementById('sceneInspector');
 
-/* =====================================================
-   CODE EDITOR
-===================================================== */
-
-const editor=$("code");
-const lineNumbers=$("lineNumbers");
-
-function updateLines(){
-
-    const lines=editor.value.split("\n").length;
-
-    let html="";
-
-    for(let i=1;i<=lines;i++){
-        html+=i+"<br>";
-    }
-
-    lineNumbers.innerHTML=html;
-
-}
-
-editor.addEventListener("input",updateLines);
-
-editor.addEventListener("scroll",()=>{
-    lineNumbers.scrollTop=editor.scrollTop;
-});
-
-editor.addEventListener("keydown",e=>{
-
-    if(e.key==="Tab"){
-
-        e.preventDefault();
-
-        const start=editor.selectionStart;
-        const end=editor.selectionEnd;
-
-        editor.value=
-            editor.value.substring(0,start)+
-            "    "+
-            editor.value.substring(end);
-
-        editor.selectionStart=
-        editor.selectionEnd=
-            start+4;
-
-        updateLines();
-
-    }
-
-});
-
-
-const defaultDictionary={
-    "manda o papo":"std::cout <<",
-    "qual foi":"std::cerr <<",
-    "endl":"std::endl",
-    "nova linha":"\\n",
-    "visao":"std::cin",
-    "abraça o papo":"std::getline",
-    "numero":"int",
-    "decimal":"float",
-    "decimal^":"double",
-    "letra":"char",
-    "txt":"std::string",
-    "tlgd":"bool"
-};
-
-
-function getDictionary(){
-
-    try{
-
-        return JSON.parse(
-            localStorage.getItem(
-                "myengine_dicionario"
-            )
-        ) || {...defaultDictionary};
-
-    }catch{
-
-        return {...defaultDictionary};
-
-    }
-
-}
-
-
-function escapeRegex(text){
-
-    return text.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&"
-    );
-
-}
-
-
-function translateCode(code){
-
-    let result=code;
-
-    Object
-        .entries(getDictionary())
-        .sort((a,b)=>b[0].length-a[0].length)
-        .forEach(([a,b])=>{
-
-            result=result.replace(
-                new RegExp(
-                    escapeRegex(a),
-                    "gi"
-                ),
-                b
-            );
-
+    if(btnHierarchy) {
+        btnHierarchy.addEventListener('click', () => {
+            hierarchy.classList.toggle('mobile-open');
+            inspector.classList.remove('mobile-open');
         });
-
-    return result;
-
-}
-
-
-function decode64(value){
-
-    try{
-
-        return decodeURIComponent(
-            escape(atob(value))
-        );
-
-    }catch{
-
-        return atob(value);
-
     }
 
-}
-
-
-async function executeCode(){
-
-    const code=editor.value;
-
-    if(!code.trim())return;
-
-    const translated=translateCode(code);
-
-    $("translatedCode").textContent=translated;
-
-    $("terminal").textContent=
-        "> Enviando para compilador...";
-
-    $("runButton").disabled=true;
-
-    try{
-
-        const source=btoa(
-            unescape(
-                encodeURIComponent(translated)
-            )
-        );
-
-        const input=$("stdinInput").value;
-
-        const stdin=input
-            ?btoa(
-                unescape(
-                    encodeURIComponent(input)
-                )
-            )
-            :"";
-
-        const response=await fetch(
-            "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
-            {
-                method:"POST",
-                headers:{
-                    "Content-Type":
-                        "application/json"
-                },
-                body:JSON.stringify({
-                    language_id:54,
-                    source_code:source,
-                    stdin:stdin
-                })
-            }
-        );
-
-        const result=await response.json();
-
-        let output="";
-
-        if(result.stdout)
-            output+=decode64(result.stdout);
-
-        if(result.stderr)
-            output+=(output?"\n":"")+
-                decode64(result.stderr);
-
-        if(result.compile_output)
-            output+=(output?"\n":"")+
-                decode64(result.compile_output);
-
-        $("terminal").textContent=
-            output ||
-            "> "+
-            (
-                result.status?.description ||
-                "Executado."
-            );
-
-        $("status").textContent=
-            result.time
-            ?"Tempo: "+result.time+"s"
-            :"";
-
-    }catch(error){
-
-        $("terminal").textContent=
-            "> ERRO\n"+error.message;
-
-    }finally{
-
-        $("runButton").disabled=false;
-
-    }
-
-}
-
-
-$("runButton").onclick=executeCode;
-
-$("inputButton").onclick=()=>{
-
-    const area=$("inputArea");
-
-    area.style.display=
-        area.style.display==="block"
-        ?"none"
-        :"block";
-
-};
-
-
-$("clearCodeButton").onclick=()=>{
-
-    editor.value="";
-
-    $("translatedCode").textContent=
-        "> O código traduzido aparecerá aqui.";
-
-    $("terminal").textContent=
-        "> Terminal limpo.";
-
-    $("stdinInput").value="";
-
-    updateLines();
-
-};
-
-
-/* =====================================================
-   SAVED CODES
-===================================================== */
-
-function loadSavedCodes(){
-
-    const list=JSON.parse(
-        localStorage.getItem(
-            "cpp_codigos"
-        )||"[]"
-    );
-
-    $("savedList").innerHTML="";
-
-    $("savedCount").textContent=list.length;
-
-    list.forEach(item=>{
-
-        const row=document.createElement("div");
-
-        row.className="saved-item";
-
-        const name=document.createElement("div");
-
-        name.className="saved-name";
-
-        name.textContent=item.nome;
-
-        const actions=document.createElement("div");
-
-        actions.className="saved-actions";
-
-        const open=document.createElement("button");
-
-        open.className="open-btn";
-
-        open.textContent="ABRIR";
-
-        open.onclick=()=>{
-
-            editor.value=item.codigo;
-
-            updateLines();
-
-            openPage("codePage");
-
-        };
-
-        const del=document.createElement("button");
-
-        del.className="delete-btn";
-
-        del.textContent="X";
-
-        del.onclick=()=>{
-
-            const newList=
-                list.filter(
-                    x=>x.id!==item.id
-                );
-
-            localStorage.setItem(
-                "cpp_codigos",
-                JSON.stringify(newList)
-            );
-
-            loadSavedCodes();
-
-        };
-
-        actions.append(open,del);
-
-        row.append(name,actions);
-
-        $("savedList").appendChild(row);
-
-    });
-
-}
-
-
-$("saveCodeButton").onclick=()=>{
-
-    $("saveModal").classList.add("open");
-
-};
-
-
-$("cancelSave").onclick=()=>{
-
-    $("saveModal").classList.remove("open");
-
-};
-
-
-$("confirmSave").onclick=()=>{
-
-    let name=
-        $("codeName").value.trim();
-
-    if(!name)
-        name="Código sem nome";
-
-    const list=JSON.parse(
-        localStorage.getItem(
-            "cpp_codigos"
-        )||"[]"
-    );
-
-    list.push({
-        id:Date.now(),
-        nome:name,
-        codigo:editor.value
-    });
-
-    localStorage.setItem(
-        "cpp_codigos",
-        JSON.stringify(list)
-    );
-
-    $("codeName").value="";
-
-    $("saveModal").classList.remove("open");
-
-    loadSavedCodes();
-
-};
-
-
-/* =====================================================
-   ART EDITOR
-===================================================== */
-
-const artCanvas=$("artCanvas");
-const artCtx=
-    artCanvas.getContext("2d");
-
-const artArea=$("canvasArea");
-
-let artTool="pencil";
-let artZoom=1;
-let artOffsetX=0;
-let artOffsetY=0;
-let artDrawing=false;
-let artPointers=new Map();
-let artHistory=[];
-let artFuture=[];
-
-artCtx.imageSmoothingEnabled=false;
-
-
-function selectArtTool(tool){
-
-    artTool=tool;
-
-    $("pencilTool")
-        .classList.toggle(
-            "active",
-            tool==="pencil"
-        );
-
-    $("eraserTool")
-        .classList.toggle(
-            "active",
-            tool==="eraser"
-        );
-
-}
-
-
-$("pencilTool").onclick=()=>{
-    selectArtTool("pencil");
-};
-
-$("eraserTool").onclick=()=>{
-    selectArtTool("eraser");
-};
-
-
-function applyArtCamera(){
-
-    const size=Math.max(
-        256,
-        Math.min(
-            512,
-            Math.min(
-                artArea.clientWidth,
-                artArea.clientHeight
-            )
-        )
-    );
-
-    artCanvas.style.width=
-        size*artZoom+"px";
-
-    artCanvas.style.height=
-        size*artZoom+"px";
-
-    artCanvas.style.transform=
-        "translate(-50%,-50%) translate("+
-        artOffsetX+
-        "px,"+
-        artOffsetY+
-        "px)";
-
-    $("canvasInfo").textContent=
-        "Zoom: "+
-        Math.round(artZoom*100)+
-        "%";
-
-}
-
-
-function artPosition(e){
-
-    const r=
-        artCanvas.getBoundingClientRect();
-
-    return{
-        x:Math.floor(
-            (e.clientX-r.left)/
-            r.width*
-            artCanvas.width
-        ),
-        y:Math.floor(
-            (e.clientY-r.top)/
-            r.height*
-            artCanvas.height
-        )
-    };
-
-}
-
-
-function paintArt(e){
-
-    const p=artPosition(e);
-
-    if(
-        p.x<0||
-        p.y<0||
-        p.x>=artCanvas.width||
-        p.y>=artCanvas.height
-    )return;
-
-    const size=
-        parseInt(
-            $("brushSize").value
-        );
-
-    if(artTool==="eraser"){
-
-        artCtx.globalCompositeOperation=
-            "destination-out";
-
-    }else{
-
-        artCtx.globalCompositeOperation=
-            "source-over";
-
-        artCtx.fillStyle=
-            $("colorPicker").value;
-
-    }
-
-    artCtx.fillRect(
-        p.x-Math.floor(size/2),
-        p.y-Math.floor(size/2),
-        size,
-        size
-    );
-
-    artCtx.globalCompositeOperation=
-        "source-over";
-
-}
-
-
-artCanvas.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.preventDefault();
-
-        artPointers.set(
-            e.pointerId,
-            e
-        );
-
-        if(artPointers.size>1)
-            return;
-
-        artHistory.push(
-            artCtx.getImageData(
-                0,
-                0,
-                artCanvas.width,
-                artCanvas.height
-            )
-        );
-
-        artFuture=[];
-
-        artDrawing=true;
-
-        paintArt(e);
-
-    }
-);
-
-
-artCanvas.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(!artPointers.has(e.pointerId))
-            return;
-
-        artPointers.set(
-            e.pointerId,
-            e
-        );
-
-        if(
-            artDrawing &&
-            artPointers.size===1
-        ){
-
-            e.preventDefault();
-
-            paintArt(e);
-
-        }
-
-    }
-);
-
-
-function artPointerUp(e){
-
-    artPointers.delete(
-        e.pointerId
-    );
-
-    if(artPointers.size===0)
-        artDrawing=false;
-
-}
-
-
-artCanvas.addEventListener(
-    "pointerup",
-    artPointerUp
-);
-
-artCanvas.addEventListener(
-    "pointercancel",
-    artPointerUp
-);
-
-
-$("clearArtTool").onclick=()=>{
-
-    artCtx.clearRect(
-        0,
-        0,
-        artCanvas.width,
-        artCanvas.height
-    );
-
-};
-
-
-$("undoArtTool").onclick=()=>{
-
-    if(!artHistory.length)return;
-
-    artFuture.push(
-        artCtx.getImageData(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        )
-    );
-
-    artCtx.putImageData(
-        artHistory.pop(),
-        0,
-        0
-    );
-
-};
-
-
-$("redoArtTool").onclick=()=>{
-
-    if(!artFuture.length)return;
-
-    artHistory.push(
-        artCtx.getImageData(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        )
-    );
-
-    artCtx.putImageData(
-        artFuture.pop(),
-        0,
-        0
-    );
-
-};
-
-
-$("gridArtTool").onclick=()=>{
-
-    if(artCanvas.style.backgroundImage){
-
-        artCanvas.style.backgroundImage=
-            "none";
-
-    }else{
-
-        artCanvas.style.backgroundImage=
-            "linear-gradient(#aaa 1px,transparent 1px),"+
-            "linear-gradient(90deg,#aaa 1px,transparent 1px)";
-
-        artCanvas.style.backgroundSize=
-            "calc(100% / 32) calc(100% / 32)";
-
-    }
-
-};
-
-
-$("resetArtTool").onclick=()=>{
-
-    artZoom=1;
-
-    artOffsetX=0;
-
-    artOffsetY=0;
-
-    applyArtCamera();
-
-};
-
-
-$("zoomArtButton").onclick=()=>{
-
-    artZoom=clamp(
-        artZoom*1.25,
-        .5,
-        8
-    );
-
-    applyArtCamera();
-
-};
-
-
-$("newArtButton").onclick=()=>{
-
-    const value=
-        prompt(
-            "Tamanho: 16, 32, 64 ou 128",
-            "32"
-        );
-
-    const size=parseInt(value);
-
-    if(![16,32,64,128].includes(size))
-        return;
-
-    artCanvas.width=size;
-    artCanvas.height=size;
-
-    artCtx.clearRect(
-        0,
-        0,
-        size,
-        size
-    );
-
-    $("artSize").textContent=
-        size+" × "+size;
-
-    artZoom=1;
-
-    applyArtCamera();
-
-};
-
-
-$("saveArtButton").onclick=()=>{
-
-    localStorage.setItem(
-        "myengine_arte",
-        artCanvas.toDataURL()
-    );
-
-    alert("Arte salva.");
-
-};
-
-
-$("loadArtButton").onclick=()=>{
-
-    const src=
-        localStorage.getItem(
-            "myengine_arte"
-        );
-
-    if(!src){
-
-        alert("Nenhuma arte salva.");
-
-        return;
-
-    }
-
-    const img=new Image();
-
-    img.onload=()=>{
-
-        artCtx.clearRect(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
-
-        artCtx.drawImage(
-            img,
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
-
-    };
-
-    img.src=src;
-
-};
-
-
-/* =====================================================
-   SCENE ENGINE
-===================================================== */
-
-const sceneCanvas=$("sceneCanvas");
-const sceneWorld=$("sceneWorld");
-const sceneCtx=
-    sceneCanvas.getContext("2d");
-
-let sceneCamera={
-    x:0,
-    y:0,
-    zoom:1
-};
-
-let sceneGrid={
-    enabled:true,
-    size:32
-};
-
-let sceneSnap=true;
-
-let sceneObjects=[];
-
-let sceneSelected=[];
-
-let sceneId=1;
-
-let sceneToolMode="select";
-
-
-function sceneResize(){
-
-    const r=
-        sceneWorld.getBoundingClientRect();
-
-    const dpr=
-        window.devicePixelRatio||1;
-
-    sceneCanvas.width=
-        r.width*dpr;
-
-    sceneCanvas.height=
-        r.height*dpr;
-
-    sceneCtx.setTransform(
-        dpr,0,0,dpr,0,0
-    );
-
-    sceneRender();
-
-}
-
-
-function sceneWorldToScreen(x,y){
-
-    return{
-        x:
-            sceneWorld.clientWidth/2+
-            (x-sceneCamera.x)*
-            sceneCamera.zoom,
-
-        y:
-            sceneWorld.clientHeight/2+
-            (y-sceneCamera.y)*
-            sceneCamera.zoom
-    };
-
-}
-
-
-function sceneScreenToWorld(x,y){
-
-    return{
-        x:
-            sceneCamera.x+
-            (x-sceneWorld.clientWidth/2)/
-            sceneCamera.zoom,
-
-        y:
-            sceneCamera.y+
-            (y-sceneWorld.clientHeight/2)/
-            sceneCamera.zoom
-    };
-
-}
-
-
-function sceneRender(){
-
-    const w=
-        sceneWorld.clientWidth;
-
-    const h=
-        sceneWorld.clientHeight;
-
-    sceneCtx.clearRect(
-        0,0,w,h
-    );
-
-    sceneCtx.fillStyle="#0d1218";
-
-    sceneCtx.fillRect(
-        0,0,w,h
-    );
-
-    if(sceneGrid.enabled)
-        sceneDrawGrid();
-
-    sceneObjects
-        .filter(o=>o.visible!==false)
-        .sort(
-            (a,b)=>
-                (a.layer||0)-
-                (b.layer||0)
-        )
-        .forEach(drawSceneObject);
-
-    sceneSelected.forEach(id=>{
-
-        const o=
-            sceneObjects.find(
-                x=>x.id===id
-            );
-
-        if(!o)return;
-
-        const p=
-            sceneWorldToScreen(
-                o.x,
-                o.y
-            );
-
-        sceneCtx.strokeStyle=
-            "#58a6ff";
-
-        sceneCtx.lineWidth=2;
-
-        sceneCtx.strokeRect(
-            p.x-
-                o.width*
-                sceneCamera.zoom/2-
-                3,
-
-            p.y-
-                o.height*
-                sceneCamera.zoom/2-
-                3,
-
-            o.width*
-                sceneCamera.zoom+
-                6,
-
-            o.height*
-                sceneCamera.zoom+
-                6
-        );
-
-    });
-
-    $("sceneHud").textContent=
-        "X: "+
-        Math.round(sceneCamera.x)+
-        " | Y: "+
-        Math.round(sceneCamera.y)+
-        " | Zoom: "+
-        Math.round(sceneCamera.zoom*100)+
-        "%";
-
-}
-
-
-function sceneDrawGrid(){
-
-    const size=
-        sceneGrid.size*
-        sceneCamera.zoom;
-
-    if(size<5)return;
-
-    const center=
-        sceneWorldToScreen(0,0);
-
-    sceneCtx.strokeStyle=
-        "rgba(255,255,255,.055)";
-
-    sceneCtx.lineWidth=1;
-
-    sceneCtx.beginPath();
-
-    for(
-        let x=center.x%size;
-        x<sceneWorld.clientWidth;
-        x+=size
-    ){
-
-        sceneCtx.moveTo(x,0);
-
-        sceneCtx.lineTo(
-            x,
-            sceneWorld.clientHeight
-        );
-
-    }
-
-    for(
-        let y=center.y%size;
-        y<sceneWorld.clientHeight;
-        y+=size
-    ){
-
-        sceneCtx.moveTo(0,y);
-
-        sceneCtx.lineTo(
-            sceneWorld.clientWidth,
-            y
-        );
-
-    }
-
-    sceneCtx.stroke();
-
-}
-
-
-const sceneColors={
-    player:"#2e8bff",
-    tile:"#52a447",
-    decoration:"#4f9a45",
-    enemy:"#d64c4c",
-    item:"#e2bd42",
-    text:"#fff",
-    empty:"#777"
-};
-
-
-const sceneSizes={
-    player:[32,48],
-    tile:[32,32],
-    decoration:[48,64],
-    enemy:[32,32],
-    item:[24,24],
-    text:[80,24],
-    empty:[32,32]
-};
-
-
-function drawSceneObject(o){
-
-    const p=
-        sceneWorldToScreen(
-            o.x,
-            o.y
-        );
-
-    const w=
-        o.width*
-        sceneCamera.zoom;
-
-    const h=
-        o.height*
-        sceneCamera.zoom;
-
-    sceneCtx.save();
-
-    sceneCtx.translate(
-        p.x,
-        p.y
-    );
-
-    sceneCtx.rotate(
-        (o.rotation||0)*
-        Math.PI/180
-    );
-
-    sceneCtx.globalAlpha=
-        o.opacity===undefined
-        ?1
-        :o.opacity;
-
-    if(o.type==="text"){
-
-        sceneCtx.fillStyle=
-            o.color||"#fff";
-
-        sceneCtx.font=
-            Math.max(
-                10,
-                16*sceneCamera.zoom
-            )+"px sans-serif";
-
-        sceneCtx.textAlign="center";
-        sceneCtx.textBaseline="middle";
-
-        sceneCtx.fillText(
-            o.text||"Texto",
-            0,
-            0
-        );
-
-    }else{
-
-        sceneCtx.fillStyle=
-            o.color||
-            sceneColors[o.type];
-
-        sceneCtx.fillRect(
-            -w/2,
-            -h/2,
-            w,
-            h
-        );
-
-        sceneCtx.strokeStyle=
-            "rgba(255,255,255,.25)";
-
-        sceneCtx.strokeRect(
-            -w/2,
-            -h/2,
-            w,
-            h
-        );
-
-    }
-
-    sceneCtx.restore();
-
-}
-
-
-function addSceneObject(type){
-
-    let x=sceneCamera.x;
-    let y=sceneCamera.y;
-
-    if(sceneSnap){
-
-        x=
-            Math.round(
-                x/sceneGrid.size
-            )*
-            sceneGrid.size;
-
-        y=
-            Math.round(
-                y/sceneGrid.size
-            )*
-            sceneGrid.size;
-
-    }
-
-    const names={
-        player:"Player",
-        tile:"Tile",
-        decoration:"Decoração",
-        enemy:"Inimigo",
-        item:"Item",
-        text:"Texto",
-        empty:"Objeto"
-    };
-
-    const size=
-        sceneSizes[type]||
-        [32,32];
-
-    const obj={
-        id:sceneId++,
-        name:
-            names[type]+
-            " "+
-            (sceneObjects.length+1),
-        type,
-        x,
-        y,
-        width:size[0],
-        height:size[1],
-        rotation:0,
-        layer:0,
-        visible:true,
-        opacity:1,
-        color:sceneColors[type],
-        text:type==="text"?"Texto":""
-    };
-
-    sceneObjects.push(obj);
-
-    sceneSelected=[obj.id];
-
-    renderSceneHierarchy();
-
-    renderSceneInspector();
-
-    sceneRender();
-
-    $("sceneAddMenu")
-        .classList.remove("open");
-
-}
-
-
-function selectSceneObject(o){
-
-    if(!o){
-
-        sceneSelected=[];
-
-    }else{
-
-        sceneSelected=[o.id];
-
-    }
-
-    renderSceneHierarchy();
-
-    renderSceneInspector();
-
-    sceneRender();
-
-}
-
-
-function renderSceneHierarchy(){
-
-    const list=$("hierarchyList");
-
-    list.innerHTML="";
-
-    if(!sceneObjects.length){
-
-        list.innerHTML=
-            '<div style="padding:20px;color:#555;font-size:10px">Nenhum objeto.</div>';
-
-        return;
-
-    }
-
-    sceneObjects.forEach(o=>{
-
-        const row=
-            document.createElement("div");
-
-        row.className=
-            "scene-node"+
-            (
-                sceneSelected.includes(o.id)
-                ?" selected"
-                :""
-            );
-
-        row.innerHTML=
-            `
-            <span class="node-icon">
-                ${
-                    {
-                        player:"🧍",
-                        tile:"🟩",
-                        decoration:"🌲",
-                        enemy:"👾",
-                        item:"💰",
-                        text:"📝",
-                        empty:"📦"
-                    }[o.type]
-                }
-            </span>
-
-            <span class="node-name">
-                ${o.name}
-            </span>
-            `;
-
-        row.onclick=()=>{
-            selectSceneObject(o);
-        };
-
-        list.appendChild(row);
-
-    });
-
-}
-
-
-function field(label,value,callback){
-
-    const wrap=
-        document.createElement("div");
-
-    wrap.className="field";
-
-    const l=
-        document.createElement("label");
-
-    l.textContent=label;
-
-    const input=
-        document.createElement("input");
-
-    input.value=value;
-
-    input.addEventListener(
-        "change",
-        ()=>{
-            callback(input.value);
-        }
-    );
-
-    wrap.append(l,input);
-
-    return wrap;
-
-}
-
-
-function renderSceneInspector(){
-
-    const body=$("inspectorBody");
-
-    body.innerHTML="";
-
-    if(sceneSelected.length!==1){
-
-        body.innerHTML=
-            '<div class="inspector-empty">Selecione um objeto.</div>';
-
-        return;
-
-    }
-
-    const o=
-        sceneObjects.find(
-            x=>x.id===sceneSelected[0]
-        );
-
-    if(!o)return;
-
-    const section=
-        document.createElement("div");
-
-    section.className=
-        "inspector-section";
-
-    section.innerHTML=
-        '<div class="inspector-section-title">Objeto</div>';
-
-    section.appendChild(
-        field(
-            "Nome",
-            o.name,
-            v=>{
-                o.name=v;
-                renderSceneHierarchy();
-            }
-        )
-    );
-
-    section.appendChild(
-        field(
-            "X",
-            o.x,
-            v=>{
-                o.x=parseFloat(v)||0;
-                sceneRender();
-            }
-        )
-    );
-
-    section.appendChild(
-        field(
-            "Y",
-            o.y,
-            v=>{
-                o.y=parseFloat(v)||0;
-                sceneRender();
-            }
-        )
-    );
-
-    section.appendChild(
-        field(
-            "Largura",
-            o.width,
-            v=>{
-                o.width=
-                    Math.max(
-                        1,
-                        parseFloat(v)||1
-                    );
-                sceneRender();
-            }
-        )
-    );
-
-    section.appendChild(
-        field(
-            "Altura",
-            o.height,
-            v=>{
-                o.height=
-                    Math.max(
-                        1,
-                        parseFloat(v)||1
-                    );
-                sceneRender();
-            }
-        )
-    );
-
-    section.appendChild(
-        field(
-            "Rotação",
-            o.rotation,
-            v=>{
-                o.rotation=
-                    parseFloat(v)||0;
-                sceneRender();
-            }
-        )
-    );
-
-    section.appendChild(
-        field(
-            "Layer",
-            o.layer,
-            v=>{
-                o.layer=
-                    parseInt(v)||0;
-                sceneRender();
-            }
-        )
-    );
-
-    section.appendChild(
-        field(
-            "Opacidade",
-            o.opacity,
-            v=>{
-                o.opacity=
-                    clamp(
-                        parseFloat(v)||0,
-                        0,
-                        1
-                    );
-                sceneRender();
-            }
-        )
-    );
-
-    if(o.type==="text"){
-
-        section.appendChild(
-            field(
-                "Texto",
-                o.text,
-                v=>{
-                    o.text=v;
-                    sceneRender();
-                }
-            )
-        );
-
-    }
-
-    const buttons=
-        document.createElement("div");
-
-    buttons.className=
-        "inspector-buttons";
-
-    const duplicate=
-        document.createElement("button");
-
-    duplicate.textContent="DUPLICAR";
-
-    duplicate.onclick=()=>{
-
-        const clone=
-            JSON.parse(
-                JSON.stringify(o)
-            );
-
-        clone.id=sceneId++;
-
-        clone.name+=
-            " cópia";
-
-        clone.x+=32;
-        clone.y+=32;
-
-        sceneObjects.push(clone);
-
-        sceneSelected=[clone.id];
-
-        renderSceneHierarchy();
-
-        renderSceneInspector();
-
-        sceneRender();
-
-    };
-
-    const remove=
-        document.createElement("button");
-
-    remove.className="danger";
-
-    remove.textContent="EXCLUIR";
-
-    remove.onclick=()=>{
-
-        sceneObjects=
-            sceneObjects.filter(
-                x=>x.id!==o.id
-            );
-
-        sceneSelected=[];
-
-        renderSceneHierarchy();
-
-        renderSceneInspector();
-
-        sceneRender();
-
-    };
-
-    buttons.append(
-        duplicate,
-        remove
-    );
-
-    section.appendChild(buttons);
-
-    body.appendChild(section);
-
-}
-
-
-/* scene pointer */
-
-let scenePointers=new Map();
-let sceneDragging=null;
-let sceneDragStart=null;
-
-sceneCanvas.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.preventDefault();
-
-        scenePointers.set(
-            e.pointerId,
-            e
-        );
-
-        if(scenePointers.size>1)
-            return;
-
-        const rect=
-            sceneWorld.getBoundingClientRect();
-
-        const world=
-            sceneScreenToWorld(
-                e.clientX-rect.left,
-                e.clientY-rect.top
-            );
-
-        if(sceneToolMode==="select"){
-
-            let found=null;
-
-            for(
-                let i=sceneObjects.length-1;
-                i>=0;
-                i--
-            ){
-
-                const o=sceneObjects[i];
-
-                if(
-                    Math.abs(world.x-o.x)
-                    <=o.width/2 &&
-                    Math.abs(world.y-o.y)
-                    <=o.height/2
-                ){
-
-                    found=o;
-                    break;
-
-                }
-
-            }
-
-            selectSceneObject(found);
-
-            if(found){
-
-                sceneDragging=found;
-
-                sceneDragStart={
-                    x:world.x,
-                    y:world.y,
-                    ox:found.x,
-                    oy:found.y
-                };
-
-            }
-
-        }
-
-    }
-);
-
-
-sceneCanvas.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(!scenePointers.has(e.pointerId))
-            return;
-
-        scenePointers.set(
-            e.pointerId,
-            e
-        );
-
-        if(
-            scenePointers.size>1
-        )return;
-
-        if(!sceneDragging)
-            return;
-
-        const rect=
-            sceneWorld.getBoundingClientRect();
-
-        const world=
-            sceneScreenToWorld(
-                e.clientX-rect.left,
-                e.clientY-rect.top
-            );
-
-        let nx=
-            sceneDragStart.ox+
-            world.x-
-            sceneDragStart.x;
-
-        let ny=
-            sceneDragStart.oy+
-            world.y-
-            sceneDragStart.y;
-
-        if(sceneSnap){
-
-            nx=
-                Math.round(
-                    nx/sceneGrid.size
-                )*
-                sceneGrid.size;
-
-            ny=
-                Math.round(
-                    ny/sceneGrid.size
-                )*
-                sceneGrid.size;
-
-        }
-
-        sceneDragging.x=nx;
-        sceneDragging.y=ny;
-
-        sceneRender();
-
-    }
-);
-
-
-function scenePointerEnd(e){
-
-    scenePointers.delete(
-        e.pointerId
-    );
-
-    if(scenePointers.size===0)
-        sceneDragging=null;
-
-}
-
-
-sceneCanvas.addEventListener(
-    "pointerup",
-    scenePointerEnd
-);
-
-sceneCanvas.addEventListener(
-    "pointercancel",
-    scenePointerEnd
-);
-
-
-/* scene controls */
-
-$("sceneSelectTool").onclick=()=>{
-
-    sceneToolMode="select";
-
-    $("sceneSelectTool")
-        .classList.add("active");
-
-    $("sceneMoveTool")
-        .classList.remove("active");
-
-};
-
-
-$("sceneMoveTool").onclick=()=>{
-
-    sceneToolMode="move";
-
-    $("sceneMoveTool")
-        .classList.add("active");
-
-    $("sceneSelectTool")
-        .classList.remove("active");
-
-};
-
-
-$("sceneGridTool").onclick=()=>{
-
-    sceneGrid.enabled=
-        !sceneGrid.enabled;
-
-    sceneRender();
-
-};
-
-
-$("sceneSnapTool").onclick=()=>{
-
-    sceneSnap=!sceneSnap;
-
-};
-
-
-$("sceneZoomIn").onclick=()=>{
-
-    sceneCamera.zoom=
-        clamp(
-            sceneCamera.zoom*1.2,
-            .2,
-            8
-        );
-
-    sceneRender();
-
-};
-
-
-$("sceneZoomOut").onclick=()=>{
-
-    sceneCamera.zoom=
-        clamp(
-            sceneCamera.zoom/1.2,
-            .2,
-            8
-        );
-
-    sceneRender();
-
-};
-
-
-$("sceneReset").onclick=()=>{
-
-    sceneCamera={
-        x:0,
-        y:0,
-        zoom:1
-    };
-
-    sceneRender();
-
-};
-
-
-$("sceneUndo").onclick=()=>{
-
-    /* reservado para histórico futuro */
-
-};
-
-
-$("sceneRedo").onclick=()=>{
-
-    /* reservado para histórico futuro */
-
-};
-
-
-$("sceneSave").onclick=()=>{
-
-    localStorage.setItem(
-        "myengine_scene",
-        JSON.stringify({
-            camera:sceneCamera,
-            grid:sceneGrid,
-            snap:sceneSnap,
-            objects:sceneObjects
-        })
-    );
-
-    alert("Cena salva.");
-
-};
-
-
-$("sceneLoad").onclick=()=>{
-
-    const data=
-        localStorage.getItem(
-            "myengine_scene"
-        );
-
-    if(!data){
-
-        alert("Nenhuma cena salva.");
-
-        return;
-
-    }
-
-    try{
-
-        const s=JSON.parse(data);
-
-        sceneCamera=
-            s.camera||
-            {
-                x:0,
-                y:0,
-                zoom:1
-            };
-
-        sceneGrid=
-            s.grid||
-            {
-                enabled:true,
-                size:32
-            };
-
-        sceneSnap=
-            s.snap!==undefined
-            ?s.snap
-            :true;
-
-        sceneObjects=
-            s.objects||[];
-
-        sceneId=
-            sceneObjects.reduce(
-                (m,o)=>
-                    Math.max(m,o.id||0),
-                0
-            )+1;
-
-        renderSceneHierarchy();
-
-        renderSceneInspector();
-
-        sceneRender();
-
-    }catch{
-
-        alert("Cena inválida.");
-
-    }
-
-};
-
-
-$("sceneExport").onclick=()=>{
-
-    downloadJSON(
-        {
-            camera:sceneCamera,
-            grid:sceneGrid,
-            snap:sceneSnap,
-            objects:sceneObjects
-        },
-        "myengine_scene.json"
-    );
-
-};
-
-
-$("sceneImport").onclick=()=>{
-
-    importJSON(data=>{
-
-        sceneCamera=
-            data.camera||
-            {
-                x:0,
-                y:0,
-                zoom:1
-            };
-
-        sceneGrid=
-            data.grid||
-            {
-                enabled:true,
-                size:32
-            };
-
-        sceneSnap=
-            data.snap!==undefined
-            ?data.snap
-            :true;
-
-        sceneObjects=
-            data.objects||[];
-
-        sceneId=
-            sceneObjects.reduce(
-                (m,o)=>
-                    Math.max(m,o.id||0),
-                0
-            )+1;
-
-        renderSceneHierarchy();
-
-        renderSceneInspector();
-
-        sceneRender();
-
-    });
-
-};
-
-
-$("sceneAddButton").onclick=()=>{
-    $("sceneAddMenu")
-        .classList.toggle("open");
-};
-
-$("sceneFloatingAdd").onclick=()=>{
-    $("sceneAddMenu")
-        .classList.toggle("open");
-};
-
-$("sceneAddMenu")
-    .querySelectorAll("[data-scene-type]")
-    .forEach(button=>{
-
-        button.onclick=()=>{
-
-            addSceneObject(
-                button.dataset.sceneType
-            );
-
-        };
-
-    });
-
-
-$("sceneHierarchyButton").onclick=()=>{
-
-    $("sceneHierarchy")
-        .classList.toggle(
-            "mobile-open"
-        );
-
-    $("sceneInspector")
-        .classList.remove(
-            "mobile-open"
-        );
-
-};
-
-
-$("sceneInspectorButton").onclick=()=>{
-
-    $("sceneInspector")
-        .classList.toggle(
-            "mobile-open"
-        );
-
-    $("sceneHierarchy")
-        .classList.remove(
-            "mobile-open"
-        );
-
-};
-
-
-$("sceneCloseInspector").onclick=()=>{
-
-    $("sceneInspector")
-        .classList.remove(
-            "mobile-open"
-        );
-
-};
-
-
-/* =====================================================
-   TILEMAP ENGINE
-===================================================== */
-
-const tileCanvas=$("tilemapCanvas");
-const tileWorld=$("tilemapWorld");
-const tileCtx=
-    tileCanvas.getContext("2d");
-
-let tileCamera={
-    x:0,
-    y:0,
-    zoom:1
-};
-
-let tileSize=32;
-
-let tileGridEnabled=true;
-
-let tileSnap=true;
-
-let tileTool="brush";
-
-let tileSelected="grass";
-
-let tileLayerId=1;
-
-let tileLayers=[
-    {
-        id:1,
-        name:"Terreno",
-        visible:true,
-        tiles:{}
-    },
-    {
-        id:2,
-        name:"Decoração",
-        visible:true,
-        tiles:{}
-    }
-];
-
-let activeTileLayer=1;
-
-let tileHistory=[];
-
-let tileFuture=[];
-
-let tilePointers=new Map();
-
-let tilePainting=false;
-
-let tileLastCell=null;
-
-let tileRectStart=null;
-
-let tileRectPreview=null;
-
-
-/* palette definitions */
-
-const TILE_LIBRARY={
-
-    nature:[
-        {
-            id:"grass",
-            name:"Grama",
-            className:"tile-grass",
-            icon:"🌱"
-        },
-        {
-            id:"wood",
-            name:"Madeira",
-            className:"tile-wood",
-            icon:"🪵"
-        },
-        {
-            id:"leaf",
-            name:"Folhas",
-            className:"tile-grass",
-            icon:"🌿"
-        },
-        {
-            id:"flower",
-            name:"Flor",
-            className:"tile-grass",
-            icon:"🌸"
-        },
-        {
-            id:"moss",
-            name:"Musgo",
-            className:"tile-grass",
-            icon:"🍃"
-        }
-    ],
-
-    terrain:[
-        {
-            id:"dirt",
-            name:"Terra",
-            className:"tile-dirt",
-            icon:"🟫"
-        },
-        {
-            id:"stone",
-            name:"Pedra",
-            className:"tile-stone",
-            icon:"🪨"
-        },
-        {
-            id:"sand",
-            name:"Areia",
-            className:"tile-sand",
-            icon:"🏖️"
-        },
-        {
-            id:"snow",
-            name:"Neve",
-            className:"tile-snow",
-            icon:"❄️"
-        }
-    ],
-
-    building:[
-        {
-            id:"brick",
-            name:"Tijolo",
-            className:"tile-brick",
-            icon:"🧱"
-        },
-        {
-            id:"woodwall",
-            name:"Parede",
-            className:"tile-wood",
-            icon:"🪵"
-        },
-        {
-            id:"stonewall",
-            name:"Muralha",
-            className:"tile-stone",
-            icon:"🏰"
-        }
-    ],
-
-    water:[
-        {
-            id:"water",
-            name:"Água",
-            className:"tile-water",
-            icon:"🌊"
-        },
-        {
-            id:"deepwater",
-            name:"Água profunda",
-            className:"tile-water",
-            icon:"💧"
-        },
-        {
-            id:"ice",
-            name:"Gelo",
-            className:"tile-snow",
-            icon:"🧊"
-        }
-    ],
-
-    special:[
-        {
-            id:"lava",
-            name:"Lava",
-            className:"tile-lava",
-            icon:"🔥"
-        },
-        {
-            id:"void",
-            name:"Vazio",
-            className:"tile-void",
-            icon:"🌑"
-        },
-        {
-            id:"crystal",
-            name:"Cristal",
-            className:"tile-void",
-            icon:"💎"
-        }
-    ]
-
-};
-
-
-/* tile colors */
-
-const tileColors={
-    grass:"#4b9b43",
-    wood:"#76502e",
-    leaf:"#3b8c45",
-    flower:"#d95782",
-    moss:"#477e3c",
-    dirt:"#754b29",
-    stone:"#60666c",
-    sand:"#c9ad69",
-    snow:"#e8edf2",
-    brick:"#7d4635",
-    woodwall:"#70482b",
-    stonewall:"#51565a",
-    water:"#267fbd",
-    deepwater:"#18598e",
-    ice:"#a7d9ed",
-    lava:"#ef4b18",
-    void:"#292333",
-    crystal:"#8a5de7"
-};
-
-
-/* canvas */
-
-function tilemapResize(){
-
-    const r=
-        tileWorld.getBoundingClientRect();
-
-    const dpr=
-        window.devicePixelRatio||1;
-
-    tileCanvas.width=
-        r.width*dpr;
-
-    tileCanvas.height=
-        r.height*dpr;
-
-    tileCtx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-    tilemapRender();
-
-}
-
-
-/* world coordinate */
-
-function tileWorldToScreen(x,y){
-
-    return{
-
-        x:
-            tileWorld.clientWidth/2+
-            (x-tileCamera.x)*
-            tileCamera.zoom,
-
-        y:
-            tileWorld.clientHeight/2+
-            (y-tileCamera.y)*
-            tileCamera.zoom
-
-    };
-
-}
-
-
-function tileScreenToWorld(x,y){
-
-    return{
-
-        x:
-            tileCamera.x+
-            (x-tileWorld.clientWidth/2)/
-            tileCamera.zoom,
-
-        y:
-            tileCamera.y+
-            (y-tileWorld.clientHeight/2)/
-            tileCamera.zoom
-
-    };
-
-}
-
-
-function worldToCell(x,y){
-
-    return{
-
-        x:Math.floor(x/tileSize),
-        y:Math.floor(y/tileSize)
-
-    };
-
-}
-
-
-function cellKey(x,y){
-
-    return x+","+y;
-
-}
-
-
-/* render */
-
-function tilemapRender(){
-
-    const w=
-        tileWorld.clientWidth;
-
-    const h=
-        tileWorld.clientHeight;
-
-    tileCtx.clearRect(
-        0,
-        0,
-        w,
-        h
-    );
-
-    tileCtx.fillStyle="#0b1016";
-
-    tileCtx.fillRect(
-        0,
-        0,
-        w,
-        h
-    );
-
-
-    /* grid */
-
-    const screenSize=
-        tileSize*
-        tileCamera.zoom;
-
-    const origin=
-        tileWorldToScreen(0,0);
-
-    if(
-        tileGridEnabled &&
-        screenSize>=4
-    ){
-
-        tileCtx.strokeStyle=
-            "rgba(255,255,255,.055)";
-
-        tileCtx.lineWidth=1;
-
-        tileCtx.beginPath();
-
-        for(
-            let x=origin.x%screenSize;
-            x<w;
-            x+=screenSize
-        ){
-
-            tileCtx.moveTo(x,0);
-
-            tileCtx.lineTo(
-                x,
-                h
-            );
-
-        }
-
-        for(
-            let y=origin.y%screenSize;
-            y<h;
-            y+=screenSize
-        ){
-
-            tileCtx.moveTo(0,y);
-
-            tileCtx.lineTo(
-                w,
-                y
-            );
-
-        }
-
-        tileCtx.stroke();
-
-    }
-
-
-    /* layers */
-
-    tileLayers.forEach(layer=>{
-
-        if(!layer.visible)return;
-
-        Object
-            .entries(layer.tiles)
-            .forEach(([key,tile])=>{
-
-                const parts=
-                    key.split(",")
-                        .map(Number);
-
-                drawTile(
-                    parts[0],
-                    parts[1],
-                    tile.id
-                );
-
-            });
-
-    });
-
-
-    /* rectangle preview */
-
-    if(tileRectPreview){
-
-        const a=
-            tileRectPreview.a;
-
-        const b=
-            tileRectPreview.b;
-
-        const minX=
-            Math.min(a.x,b.x);
-
-        const minY=
-            Math.min(a.y,b.y);
-
-        const maxX=
-            Math.max(a.x,b.x);
-
-        const maxY=
-            Math.max(a.y,b.y);
-
-        const p=
-            tileWorldToScreen(
-                minX*tileSize,
-                minY*tileSize
-            );
-
-        tileCtx.fillStyle=
-            "rgba(40,120,255,.2)";
-
-        tileCtx.fillRect(
-            p.x,
-            p.y,
-            (maxX-minX+1)*
-                screenSize,
-            (maxY-minY+1)*
-                screenSize
-        );
-
-        tileCtx.strokeStyle=
-            "#58a6ff";
-
-        tileCtx.strokeRect(
-            p.x,
-            p.y,
-            (maxX-minX+1)*
-                screenSize,
-            (maxY-minY+1)*
-                screenSize
-        );
-
-    }
-
-
-    const centerCell=
-        worldToCell(
-            tileCamera.x,
-            tileCamera.y
-        );
-
-    $("tilemapHud").textContent=
-        "X: "+
-        centerCell.x+
-        " | Y: "+
-        centerCell.y+
-        " | Zoom: "+
-        Math.round(
-            tileCamera.zoom*100
-        )+
-        "% | Tile: "+
-        tileSize;
-
-}
-
-
-/* draw tile */
-
-function drawTile(x,y,id){
-
-    const p=
-        tileWorldToScreen(
-            x*tileSize,
-            y*tileSize
-        );
-
-    const size=
-        tileSize*
-        tileCamera.zoom;
-
-    tileCtx.fillStyle=
-        tileColors[id]||
-        "#777";
-
-    tileCtx.fillRect(
-        p.x,
-        p.y,
-        size,
-        size
-    );
-
-    /* texture */
-
-    tileCtx.globalAlpha=.22;
-
-    tileCtx.fillStyle="#fff";
-
-    if(
-        id==="grass"||
-        id==="leaf"||
-        id==="moss"
-    ){
-
-        tileCtx.fillRect(
-            p.x+size*.2,
-            p.y+size*.2,
-            size*.12,
-            size*.12
-        );
-
-        tileCtx.fillRect(
-            p.x+size*.68,
-            p.y+size*.55,
-            size*.1,
-            size*.1
-        );
-
-    }
-
-    if(id==="stone"){
-
-        tileCtx.fillRect(
-            p.x+size*.1,
-            p.y+size*.2,
-            size*.3,
-            size*.08
-        );
-
-        tileCtx.fillRect(
-            p.x+size*.55,
-            p.y+size*.65,
-            size*.25,
-            size*.08
-        );
-
-    }
-
-    if(id==="water"){
-
-        tileCtx.fillRect(
-            p.x,
-            p.y+size*.35,
-            size,
-            size*.08
-        );
-
-        tileCtx.fillRect(
-            p.x,
-            p.y+size*.7,
-            size,
-            size*.08
-        );
-
-    }
-
-    tileCtx.globalAlpha=1;
-
-    if(tileGridEnabled){
-
-        tileCtx.strokeStyle=
-            "rgba(0,0,0,.18)";
-
-        tileCtx.lineWidth=1;
-
-        tileCtx.strokeRect(
-            p.x,
-            p.y,
-            size,
-            size
-        );
-
-    }
-
-}
-
-
-/* active layer */
-
-function getActiveLayer(){
-
-    return tileLayers.find(
-        l=>l.id===activeTileLayer
-    );
-
-}
-
-
-/* history */
-
-function saveTileHistory(){
-
-    tileHistory.push(
-        JSON.stringify(
-            tileLayers
-        )
-    );
-
-    if(tileHistory.length>40)
-        tileHistory.shift();
-
-    tileFuture=[];
-
-}
-
-
-let tileFuture=[];
-
-
-function tileUndo(){
-
-    if(!tileHistory.length)
-        return;
-
-    tileFuture.push(
-        JSON.stringify(tileLayers)
-    );
-
-    tileLayers=
-        JSON.parse(
-            tileHistory.pop()
-        );
-
-    renderTileLayers();
-
-    tilemapRender();
-
-}
-
-
-function tileRedo(){
-
-    if(!tileFuture.length)
-        return;
-
-    tileHistory.push(
-        JSON.stringify(tileLayers)
-    );
-
-    tileLayers=
-        JSON.parse(
-            tileFuture.pop()
-        );
-
-    renderTileLayers();
-
-    tilemapRender();
-
-}
-
-
-/* paint */
-
-function paintCell(x,y){
-
-    const layer=
-        getActiveLayer();
-
-    if(!layer)return;
-
-    const key=
-        cellKey(x,y);
-
-    if(tileTool==="eraser"){
-
-        delete layer.tiles[key];
-
-    }else{
-
-        layer.tiles[key]={
-            id:tileSelected
-        };
-
-    }
-
-}
-
-
-/* flood fill */
-
-function floodFill(startX,startY){
-
-    const layer=
-        getActiveLayer();
-
-    if(!layer)return;
-
-    const target=
-        layer.tiles[
-            cellKey(startX,startY)
-        ]?.id||null;
-
-    if(target===tileSelected)
-        return;
-
-    const queue=[
-        [startX,startY]
-    ];
-
-    const visited=
-        new Set();
-
-    let count=0;
-
-    while(queue.length && count<10000){
-
-        const [x,y]=queue.shift();
-
-        const key=
-            cellKey(x,y);
-
-        if(visited.has(key))
-            continue;
-
-        visited.add(key);
-
-        const current=
-            layer.tiles[key]?.id||null;
-
-        if(current!==target)
-            continue;
-
-        layer.tiles[key]={
-            id:tileSelected
-        };
-
-        count++;
-
-        queue.push(
-            [x+1,y],
-            [x-1,y],
-            [x,y+1],
-            [x,y-1]
-        );
-
-    }
-
-}
-
-
-/* rectangle */
-
-function fillRectangle(a,b){
-
-    const layer=
-        getActiveLayer();
-
-    if(!layer)return;
-
-    const minX=
-        Math.min(a.x,b.x);
-
-    const maxX=
-        Math.max(a.x,b.x);
-
-    const minY=
-        Math.min(a.y,b.y);
-
-    const maxY=
-        Math.max(a.y,b.y);
-
-    for(
-        let y=minY;
-        y<=maxY;
-        y++
-    ){
-
-        for(
-            let x=minX;
-            x<=maxX;
-            x++
-        ){
-
-            paintCell(x,y);
-
-        }
-
-    }
-
-}
-
-
-/* pointer */
-
-function tilePointerToCell(e){
-
-    const rect=
-        tileWorld.getBoundingClientRect();
-
-    const world=
-        tileScreenToWorld(
-            e.clientX-rect.left,
-            e.clientY-rect.top
-        );
-
-    return worldToCell(
-        world.x,
-        world.y
-    );
-
-}
-
-
-tileCanvas.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.preventDefault();
-
-        tilePointers.set(
-            e.pointerId,
-            e
-        );
-
-        if(tilePointers.size>1)
-            return;
-
-        const cell=
-            tilePointerToCell(e);
-
-        if(tileTool==="select"){
-
-            tileRectStart=cell;
-
-            tileRectPreview={
-                a:cell,
-                b:cell
-            };
-
-            tilemapRender();
-
-            return;
-
-        }
-
-        saveTileHistory();
-
-        if(tileTool==="fill"){
-
-            floodFill(
-                cell.x,
-                cell.y
-            );
-
-            tilemapRender();
-
-            return;
-
-        }
-
-        if(tileTool==="rect"){
-
-            tileRectStart=cell;
-
-            tileRectPreview={
-                a:cell,
-                b:cell
-            };
-
-            tilemapRender();
-
-            return;
-
-        }
-
-        paintCell(
-            cell.x,
-            cell.y
-        );
-
-        tilePainting=true;
-
-        tileLastCell=cell;
-
-        tilemapRender();
-
-    }
-);
-
-
-tileCanvas.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(!tilePointers.has(e.pointerId))
-            return;
-
-        tilePointers.set(
-            e.pointerId,
-            e
-        );
-
-        if(tilePointers.size>1)
-            return;
-
-        const cell=
-            tilePointerToCell(e);
-
-        if(
-            tileTool==="rect"||
-            tileTool==="select"
-        ){
-
-            if(tileRectStart){
-
-                tileRectPreview={
-                    a:tileRectStart,
-                    b:cell
-                };
-
-                tilemapRender();
-
-            }
-
-            return;
-
-        }
-
-        if(
-            tilePainting &&
-            (
-                !tileLastCell||
-                cell.x!==tileLastCell.x||
-                cell.y!==tileLastCell.y
-            )
-        ){
-
-            paintCell(
-                cell.x,
-                cell.y
-            );
-
-            tileLastCell=cell;
-
-            tilemapRender();
-
-        }
-
-    }
-);
-
-
-function tilePointerUp(e){
-
-    tilePointers.delete(
-        e.pointerId
-    );
-
-    if(tilePointers.size)
-        return;
-
-    if(
-        tileTool==="rect" &&
-        tileRectStart &&
-        tileRectPreview
-    ){
-
-        saveTileHistory();
-
-        fillRectangle(
-            tileRectPreview.a,
-            tileRectPreview.b
-        );
-
-    }
-
-    if(
-        tileTool==="select" &&
-        tileRectStart
-    ){
-
-        /* seleção visual preparada */
-
-    }
-
-    tileRectStart=null;
-
-    tileRectPreview=null;
-
-    tilePainting=false;
-
-    tileLastCell=null;
-
-    tilemapRender();
-
-}
-
-
-tileCanvas.addEventListener(
-    "pointerup",
-    tilePointerUp
-);
-
-tileCanvas.addEventListener(
-    "pointercancel",
-    tilePointerUp
-);
-
-
-/* tools */
-
-function setTileTool(tool){
-
-    tileTool=tool;
-
-    [
-        "tileBrush",
-        "tileEraser",
-        "tileFill",
-        "tileRect",
-        "tileSelect"
-    ].forEach(id=>{
-        $(id).classList.remove(
-            "active"
-        );
-    });
-
-    const map={
-        brush:"tileBrush",
-        eraser:"tileEraser",
-        fill:"tileFill",
-        rect:"tileRect",
-        select:"tileSelect"
-    };
-
-    $(map[tool])
-        .classList.add("active");
-
-}
-
-
-$("tileBrush").onclick=()=>{
-    setTileTool("brush");
-};
-
-$("tileEraser").onclick=()=>{
-    setTileTool("eraser");
-};
-
-$("tileFill").onclick=()=>{
-    setTileTool("fill");
-};
-
-$("tileRect").onclick=()=>{
-    setTileTool("rect");
-};
-
-$("tileSelect").onclick=()=>{
-    setTileTool("select");
-};
-
-
-$("tileZoomIn").onclick=()=>{
-
-    tileCamera.zoom=
-        clamp(
-            tileCamera.zoom*1.2,
-            .2,
-            8
-        );
-
-    tilemapRender();
-
-};
-
-
-$("tileZoomOut").onclick=()=>{
-
-    tileCamera.zoom=
-        clamp(
-            tileCamera.zoom/1.2,
-            .2,
-            8
-        );
-
-    tilemapRender();
-
-};
-
-
-$("tileReset").onclick=()=>{
-
-    tileCamera={
-        x:0,
-        y:0,
-        zoom:1
-    };
-
-    tilemapRender();
-
-};
-
-
-$("tileGrid").onclick=()=>{
-
-    tileGridEnabled=
-        !tileGridEnabled;
-
-    tilemapRender();
-
-};
-
-
-$("tileSnap").onclick=()=>{
-
-    tileSnap=!tileSnap;
-
-};
-
-
-/* =====================================================
-   TILE PALETTE
-===================================================== */
-
-function renderTiles(category="nature"){
-
-    const grid=$("tilesGrid");
-
-    grid.innerHTML="";
-
-    const tiles=
-        TILE_LIBRARY[category]||[];
-
-    tiles.forEach(tile=>{
-
-        const button=
-            document.createElement("button");
-
-        button.className=
-            "tile "+
-            tile.className+
-            (
-                tile.id===tileSelected
-                ?" selected"
-                :""
-            );
-
-        button.title=tile.name;
-
-        button.textContent=
-            tile.icon;
-
-        button.onclick=()=>{
-
-            tileSelected=
-                tile.id;
-
-            renderTiles(
-                category
-            );
-
-        };
-
-        grid.appendChild(button);
-
-    });
-
-}
-
-
-document
-    .querySelectorAll(".tile-category")
-    .forEach(button=>{
-
-        button.onclick=()=>{
-
-            document
-                .querySelectorAll(
-                    ".tile-category"
-                )
-                .forEach(b=>
-                    b.classList.remove(
-                        "active"
-                    )
-                );
-
-            button.classList.add(
-                "active"
-            );
-
-            renderTiles(
-                button.dataset.category
-            );
-
-        };
-
-    });
-
-
-$("tilePaletteButton").onclick=()=>{
-
-    $("tilePalette")
-        .classList.toggle(
-            "collapsed"
-        );
-
-};
-
-
-$("collapsePalette").onclick=()=>{
-
-    $("tilePalette")
-        .classList.toggle(
-            "collapsed"
-        );
-
-};
-
-
-/* =====================================================
-   TILE LAYERS
-===================================================== */
-
-function renderTileLayers(){
-
-    const list=
-        $("tileLayerList");
-
-    list.innerHTML="";
-
-    [...tileLayers]
-        .reverse()
-        .forEach(layer=>{
-
-            const row=
-                document.createElement("div");
-
-            row.className=
-                "layer-row"+
-                (
-                    layer.id===activeTileLayer
-                    ?" active"
-                    :""
-                );
-
-            const eye=
-                document.createElement("span");
-
-            eye.className="layer-eye";
-
-            eye.textContent=
-                layer.visible
-                ?"●"
-                :"○";
-
-            eye.onclick=e=>{
-
-                e.stopPropagation();
-
-                layer.visible=
-                    !layer.visible;
-
-                renderTileLayers();
-
-                tilemapRender();
-
-            };
-
-            const name=
-                document.createElement("span");
-
-            name.className="layer-name";
-
-            name.textContent=
-                layer.name;
-
-            row.append(
-                eye,
-                name
-            );
-
-            row.onclick=()=>{
-
-                activeTileLayer=
-                    layer.id;
-
-                renderTileLayers();
-
-            };
-
-            list.appendChild(row);
-
+    if(btnInspector) {
+        btnInspector.addEventListener('click', () => {
+            inspector.classList.toggle('mobile-open');
+            hierarchy.classList.remove('mobile-open');
         });
-
-}
-
-
-$("addLayer").onclick=()=>{
-
-    const id=++tileLayerId;
-
-    tileLayers.push({
-        id,
-        name:"Camada "+id,
-        visible:true,
-        tiles:{}
-    });
-
-    activeTileLayer=id;
-
-    renderTileLayers();
-
-};
-
-
-$("removeLayer").onclick=()=>{
-
-    if(tileLayers.length<=1){
-
-        alert(
-            "O Tilemap precisa ter pelo menos uma camada."
-        );
-
-        return;
-
     }
-
-    tileLayers=
-        tileLayers.filter(
-            l=>l.id!==activeTileLayer
-        );
-
-    activeTileLayer=
-        tileLayers[
-            tileLayers.length-1
-        ].id;
-
-    renderTileLayers();
-
-    tilemapRender();
-
-};
-
-
-$("renameLayer").onclick=()=>{
-
-    const layer=
-        getActiveLayer();
-
-    if(!layer)return;
-
-    const name=
-        prompt(
-            "Nome da camada:",
-            layer.name
-        );
-
-    if(name&&name.trim()){
-
-        layer.name=
-            name.trim();
-
-        renderTileLayers();
-
-    }
-
-};
-
-
-/* =====================================================
-   CLEAR TILEMAP
-===================================================== */
-
-$("tileClearMap").onclick=()=>{
-
-    if(
-        !confirm(
-            "Limpar a camada atual?"
-        )
-    )return;
-
-    saveTileHistory();
-
-    const layer=
-        getActiveLayer();
-
-    layer.tiles={};
-
-    tilemapRender();
-
-};
-
-
-/* =====================================================
-   TILE SAVE / LOAD
-===================================================== */
-
-function getTilemapData(){
-
-    return{
-        version:2,
-        tileSize,
-        camera:tileCamera,
-        grid:tileGridEnabled,
-        snap:tileSnap,
-        layers:tileLayers,
-        activeLayer:activeTileLayer
-    };
-
-}
-
-
-$("tileSave").onclick=()=>{
-
-    localStorage.setItem(
-        "myengine_tilemap",
-        JSON.stringify(
-            getTilemapData()
-        )
-    );
-
-    alert(
-        "Tilemap salvo."
-    );
-
-};
-
-
-$("tileLoad").onclick=()=>{
-
-    const data=
-        localStorage.getItem(
-            "myengine_tilemap"
-        );
-
-    if(!data){
-
-        alert(
-            "Nenhum Tilemap salvo."
-        );
-
-        return;
-
-    }
-
-    try{
-
-        loadTilemapData(
-            JSON.parse(data)
-        );
-
-    }catch{
-
-        alert(
-            "Tilemap inválido."
-        );
-
-    }
-
-};
-
-
-function loadTilemapData(data){
-
-    tileSize=
-        data.tileSize||32;
-
-    tileCamera=
-        data.camera||
-        {
-            x:0,
-            y:0,
-            zoom:1
-        };
-
-    tileGridEnabled=
-        data.grid!==false;
-
-    tileSnap=
-        data.snap!==false;
-
-    tileLayers=
-        data.layers||
-        [
-            {
-                id:1,
-                name:"Terreno",
-                visible:true,
-                tiles:{}
-            }
-        ];
-
-    activeTileLayer=
-        data.activeLayer||
-        tileLayers[0].id;
-
-    tileLayerId=
-        tileLayers.reduce(
-            (m,l)=>
-                Math.max(
-                    m,
-                    l.id
-                ),
-            0
-        );
-
-    renderTileLayers();
-
-    tilemapRender();
-
-}
-
-
-/* =====================================================
-   EXPORT / IMPORT
-===================================================== */
-
-function downloadJSON(data,name){
-
-    const blob=
-        new Blob(
-            [
-                JSON.stringify(
-                    data,
-                    null,
-                    2
-                )
-            ],
-            {
-                type:
-                    "application/json"
-            }
-        );
-
-    const url=
-        URL.createObjectURL(blob);
-
-    const a=
-        document.createElement("a");
-
-    a.href=url;
-
-    a.download=name;
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    a.remove();
-
-    setTimeout(
-        ()=>URL.revokeObjectURL(url),
-        1000
-    );
-
-}
-
-
-function importJSON(callback){
-
-    const input=
-        document.createElement("input");
-
-    input.type="file";
-
-    input.accept=
-        ".json,application/json";
-
-    input.onchange=e=>{
-
-        const file=
-            e.target.files[0];
-
-        if(!file)return;
-
-        const reader=
-            new FileReader();
-
-        reader.onload=event=>{
-
-            try{
-
-                callback(
-                    JSON.parse(
-                        event.target.result
-                    )
-                );
-
-            }catch{
-
-                alert(
-                    "Arquivo JSON inválido."
-                );
-
-            }
-
-        };
-
-        reader.readAsText(file);
-
-    };
-
-    input.click();
-
-}
-
-
-$("tileExport").onclick=()=>{
-
-    downloadJSON(
-        getTilemapData(),
-        "myengine_tilemap.json"
-    );
-
-};
-
-
-$("tileImport").onclick=()=>{
-
-    importJSON(
-        loadTilemapData
-    );
-
-};
-
-
-/* =====================================================
-   TILEMAP PINCH ZOOM
-===================================================== */
-
-let tileInitialDistance=0;
-
-let tileInitialZoom=1;
-
-
-tileCanvas.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(tilePointers.size<2)
-            return;
-
-        const points=
-            [...tilePointers.values()];
-
-        const distance=
-            Math.hypot(
-                points[0].clientX-
-                points[1].clientX,
-
-                points[0].clientY-
-                points[1].clientY
-            );
-
-        if(!tileInitialDistance){
-
-            tileInitialDistance=
-                distance;
-
-            tileInitialZoom=
-                tileCamera.zoom;
-
-            return;
-
-        }
-
-        tileCamera.zoom=
-            clamp(
-                tileInitialZoom*
-                (
-                    distance/
-                    tileInitialDistance
-                ),
-                .2,
-                8
-            );
-
-        tilemapRender();
-
-    }
-);
-
-
-tileCanvas.addEventListener(
-    "pointerdown",
-    e=>{
-
-        if(tilePointers.size>=2){
-
-            const points=
-                [...tilePointers.values()];
-
-            tileInitialDistance=
-                Math.hypot(
-                    points[0].clientX-
-                    points[1].clientX,
-
-                    points[0].clientY-
-                    points[1].clientY
-                );
-
-            tileInitialZoom=
-                tileCamera.zoom;
-
-        }
-
-    }
-);
-
-
-tileCanvas.addEventListener(
-    "pointerup",
-    ()=>{
-
-        if(tilePointers.size<2){
-
-            tileInitialDistance=0;
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   CREATE CUSTOM TILE
-===================================================== */
-
-$("createTileButton").onclick=()=>{
-
-    const name=
-        prompt(
-            "Nome do novo tile:"
-        );
-
-    if(!name||!name.trim())
-        return;
-
-    const id=
-        "custom_"+Date.now();
-
-    const color=
-        prompt(
-            "Cor hexadecimal:",
-            "#2878ff"
-        )||"#2878ff";
-
-    tileColors[id]=color;
-
-    TILE_LIBRARY.special.push({
-        id,
-        name:name.trim(),
-        className:"tile-void",
-        icon:"◆"
-    });
-
-    renderTiles("special");
-
-    document
-        .querySelectorAll(
-            ".tile-category"
-        )
-        .forEach(b=>{
-            b.classList.remove(
-                "active"
-            );
-        });
-
-    document
-        .querySelector(
-            '[data-category="special"]'
-        )
-        .classList.add("active");
-
-};
-
-
-/* =====================================================
-   DICTIONARY
-===================================================== */
-
-const dictionaryItems=[
-    ["Saída","manda o papo","std::cout"],
-    ["Saída","qual foi","std::cerr"],
-    ["Saída","endl","std::endl"],
-    ["Entrada","visao","std::cin"],
-    ["Entrada","abraça o papo","std::getline"],
-    ["Tipos","numero","int"],
-    ["Tipos","decimal","float"],
-    ["Tipos","decimal^","double"],
-    ["Tipos","letra","char"],
-    ["Tipos","txt","std::string"],
-    ["Tipos","tlgd","bool"]
-];
-
-
-function renderDictionary(filter=""){
-
-    const list=
-        $("dictionaryList");
-
-    list.innerHTML="";
-
-    let category="";
-
-    dictionaryItems
-        .filter(item=>
-            (
-                item[1]+" "+
-                item[2]
-            )
-            .toLowerCase()
-            .includes(
-                filter.toLowerCase()
-            )
-        )
-        .forEach(item=>{
-
-            if(item[0]!==category){
-
-                category=item[0];
-
-                const title=
-                    document.createElement("div");
-
-                title.className=
-                    "dictionary-category";
-
-                title.textContent=
-                    category;
-
-                list.appendChild(title);
-
-            }
-
-            const row=
-                document.createElement("div");
-
-            row.className=
-                "dictionary-item";
-
-            row.innerHTML=
-                `
-                <span class="dictionary-command">
-                    ${item[1]}
-                </span>
-
-                <span class="dictionary-arrow">
-                    →
-                </span>
-
-                <span class="dictionary-name">
-                    ${item[2]}
-                </span>
-                `;
-
-            list.appendChild(row);
-
-        });
-
-}
-
-
-$("dictionarySearch").addEventListener(
-    "input",
-    e=>{
-        renderDictionary(
-            e.target.value
-        );
-    }
-);
-
-
-/* =====================================================
-   RESIZE
-===================================================== */
-
-window.addEventListener(
-    "resize",
-    ()=>{
-
-        if(
-            $("scenePage")
-                .classList.contains("active")
-        ){
-
-            sceneResize();
-
-        }
-
-        if(
-            $("tilemapPage")
-                .classList.contains("active")
-        ){
-
-            tilemapResize();
-
-        }
-
-        if(
-            $("artPage")
-                .classList.contains("active")
-        ){
-
-            applyArtCamera();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   INITIALIZATION
-===================================================== */
-
-updateLines();
-
-loadSavedCodes();
-
-renderDictionary();
-
-renderSceneHierarchy();
-
-renderSceneInspector();
-
-renderTileLayers();
-
-renderTiles("nature");
-
-sceneResize();
-
-tilemapResize();
-
-applyArtCamera();
-
 </script>
 
 </body>
+</html>
