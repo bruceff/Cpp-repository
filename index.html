@@ -3001,5 +3001,151 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
   </div>
 </section>
 
+
+<style>
+/* =====================================================
+   SNAKE RUNTIME — STEP 2: NODE / ENTITY SYSTEM
+===================================================== */
+.runtime-node-debug{position:absolute;left:8px;bottom:8px;min-width:180px;max-width:260px;max-height:34vh;overflow:auto;padding:8px;background:#080d12e8;border:1px solid #29343d;border-radius:6px;color:#8796a2;font:8px ui-monospace,monospace;pointer-events:none;display:none}.runtime-node-debug.show{display:block}.runtime-node-debug .node-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.runtime-node-debug .node-line.active{color:#a9e99a}.runtime-node-debug .node-child{padding-left:12px;color:#687681}
+</style>
+<script>
+/* =====================================================
+   SNAKE RUNTIME — STEP 2: NODE / ENTITY SYSTEM
+   Hierarchical runtime scene graph with transforms,
+   components and lifecycle hooks.
+===================================================== */
+class SnakeTransform {
+  constructor(x=0,y=0,rotation=0,scaleX=1,scaleY=1){this.x=Number(x)||0;this.y=Number(y)||0;this.rotation=Number(rotation)||0;this.scaleX=Number(scaleX)||1;this.scaleY=Number(scaleY)||1;}
+  clone(){return new SnakeTransform(this.x,this.y,this.rotation,this.scaleX,this.scaleY)}
+}
+class SnakeComponent {
+  constructor(){this.node=null;this.enabled=true}
+  onAttach(){} onStart(){} onUpdate(){} onDestroy(){}
+}
+class SnakeNode {
+  constructor(data={}){
+    this.id=data.id ?? ('node_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
+    this.name=data.name || 'Node';
+    this.type=data.type || 'Node';
+    this.parent=null;this.children=[];
+    this.transform=new SnakeTransform(data.x,data.y,data.rotation,data.scaleX ?? data.scale ?? 1,data.scaleY ?? data.scale ?? 1);
+    this.visible=data.visible!==false;this.locked=!!data.locked;this.active=data.active!==false;
+    this.components=[];this.started=false;this.destroyed=false;
+    this.meta={...(data.meta||{})};
+  }
+  addChild(node){if(!(node instanceof SnakeNode))throw new TypeError('Child must be a SnakeNode');if(node.parent)node.parent.removeChild(node);node.parent=this;this.children.push(node);return node}
+  removeChild(node){const i=this.children.indexOf(node);if(i>=0){this.children.splice(i,1);node.parent=null}return node}
+  addComponent(component){if(!(component instanceof SnakeComponent))throw new TypeError('Component must extend SnakeComponent');component.node=this;this.components.push(component);if(this.started&&component.enabled)component.onStart(this);component.onAttach(this);return component}
+  getComponent(type){return this.components.find(c=>c instanceof type)||null}
+  getComponents(type){return this.components.filter(c=>c instanceof type)}
+  findById(id){if(String(this.id)===String(id))return this;for(const c of this.children){const found=c.findById(id);if(found)return found}return null}
+  find(name){if(this.name===name)return this;for(const c of this.children){const found=c.find(name);if(found)return found}return null}
+  get worldTransform(){
+    if(!this.parent)return this.transform.clone();
+    const p=this.parent.worldTransform,rad=p.rotation*Math.PI/180,cos=Math.cos(rad),sin=Math.sin(rad);
+    const lx=this.transform.x*p.scaleX,ly=this.transform.y*p.scaleY;
+    return new SnakeTransform(p.x+lx*cos-ly*sin,p.y+lx*sin+ly*cos,p.rotation+this.transform.rotation,p.scaleX*this.transform.scaleX,p.scaleY*this.transform.scaleY);
+  }
+  traverse(fn){fn(this);this.children.forEach(c=>c.traverse(fn))}
+  start(){if(this.started||this.destroyed)return;this.started=true;this.components.forEach(c=>c.enabled&&c.onStart(this));this.children.forEach(c=>c.start())}
+  update(dt){if(!this.active||this.destroyed)return;this.components.forEach(c=>c.enabled&&c.onUpdate(dt,this));this.children.forEach(c=>c.update(dt))}
+  destroy(){if(this.destroyed)return;this.components.forEach(c=>c.onDestroy(this));this.children.forEach(c=>c.destroy());this.children=[];this.destroyed=true;if(this.parent)this.parent.removeChild(this)}
+  serialize(){return {id:this.id,name:this.name,type:this.type,x:this.transform.x,y:this.transform.y,rotation:this.transform.rotation,scaleX:this.transform.scaleX,scaleY:this.transform.scaleY,visible:this.visible,locked:this.locked,active:this.active,meta:this.meta,children:this.children.map(c=>c.serialize())}}
+}
+class SnakeSceneGraph {
+  constructor(){this.root=new SnakeNode({id:'__root__',name:'Scene',type:'Scene'});this.nodes=new Map([['__root__',this.root]]);this.started=false}
+  addNode(data={},parentId='__root__'){const node=data instanceof SnakeNode?data:new SnakeNode(data);const parent=this.getNode(parentId)||this.root;parent.addChild(node);this.nodes.set(String(node.id),node);node.traverse(n=>this.nodes.set(String(n.id),n));if(this.started)node.start();return node}
+  getNode(id){return this.nodes.get(String(id))||null}
+  removeNode(id){const node=this.getNode(id);if(!node||node===this.root)return false;node.traverse(n=>this.nodes.delete(String(n.id)));node.destroy();return true}
+  find(name){return this.root.find(name)}
+  traverse(fn){this.root.traverse(fn)}
+  start(){if(this.started)return;this.started=true;this.root.start()}
+  update(dt){this.root.update(dt)}
+  serialize(){return this.root.children.map(n=>n.serialize())}
+  clear(){this.root.children.slice().forEach(n=>n.destroy());this.nodes=new Map([['__root__',this.root]]);this.started=false}
+}
+class SnakeVelocity extends SnakeComponent {
+  constructor(vx=0,vy=0){super();this.vx=vx;this.vy=vy}
+  onUpdate(dt){if(!this.node||this.node.locked)return;this.node.transform.x+=this.vx*dt;this.node.transform.y+=this.vy*dt}
+}
+class SnakeSprite extends SnakeComponent {
+  constructor(asset=null){super();this.asset=asset}
+}
+class SnakeCollider extends SnakeComponent {
+  constructor(width=32,height=32){super();this.width=width;this.height=height;this.isTrigger=false}
+  get bounds(){const t=this.node?.worldTransform||new SnakeTransform();return {x:t.x-this.width*t.scaleX/2,y:t.y-this.height*t.scaleY/2,w:this.width*t.scaleX,h:this.height*t.scaleY}}
+}
+class SnakeScript extends SnakeComponent {
+  constructor(hooks={}){super();this.hooks=hooks||{}}
+  onStart(node){if(typeof this.hooks.start==='function')this.hooks.start(node)}
+  onUpdate(dt,node){if(typeof this.hooks.update==='function')this.hooks.update(node,dt)}
+  onDestroy(node){if(typeof this.hooks.destroy==='function')this.hooks.destroy(node)}
+}
+window.SnakeEngine=window.SnakeEngine||{};
+window.SnakeEngine.runtime=window.SnakeEngine.runtime||{};
+window.SnakeEngine.runtime.Node=SnakeNode;
+window.SnakeEngine.runtime.SceneGraph=SnakeSceneGraph;
+window.SnakeEngine.runtime.Transform=SnakeTransform;
+window.SnakeEngine.runtime.Component=SnakeComponent;
+window.SnakeEngine.runtime.Velocity=SnakeVelocity;
+window.SnakeEngine.runtime.Sprite=SnakeSprite;
+window.SnakeEngine.runtime.Collider=SnakeCollider;
+window.SnakeEngine.runtime.Script=SnakeScript;
+
+snakeRuntime.graph=new SnakeSceneGraph();
+snakeRuntime.getNode=id=>snakeRuntime.graph.getNode(id);
+snakeRuntime.findNode=name=>snakeRuntime.graph.find(name);
+snakeRuntime.addNode=(data,parentId)=>snakeRuntime.graph.addNode(data,parentId);
+snakeRuntime.removeNode=id=>snakeRuntime.graph.removeNode(id);
+
+function runtimeBuildScene(){
+  snakeRuntime.graph.clear();
+  const source=Array.isArray(window.sceneObjs2)&&sceneObjs2.length?sceneObjs2:(projectWorkspace?.scene||[]);
+  const data=Array.isArray(source)?source:[];
+  const ids=new Set();
+  data.forEach((o,i)=>{const id=o.id ?? ('node_'+i);ids.add(String(id));snakeRuntime.graph.addNode({id,name:o.name||('Node '+(i+1)),type:o.type||'Node',x:o.x||0,y:o.y||0,rotation:o.rotation||0,scale:o.scale||1,visible:o.visible!==false,locked:!!o.locked,meta:o.meta||{}});});
+  snakeRuntime.graph.start();
+  snakeRuntime.scene=[];snakeRuntime.graph.traverse(n=>{if(n!==snakeRuntime.graph.root)snakeRuntime.scene.push(n)});
+  let p=snakeRuntime.graph.find('Player')||snakeRuntime.scene.find(o=>/player/i.test(o.name||''));
+  if(!p){p=snakeRuntime.graph.addNode({id:'runtime_player',name:'Player',type:'Sprite',x:0,y:0});p.addComponent(new SnakeCollider(22,22));p.addComponent(new SnakeVelocity());p.start();snakeRuntime.scene.push(p)}
+  snakeRuntime.playerNode=p;
+  snakeRuntime.player={x:p.transform.x,y:p.transform.y,vx:0,vy:0,size:22};
+  updateRuntimeNodeDebug();
+}
+function runtimeUpdate(dt){
+  const p=snakeRuntime.playerNode;if(!p)return;
+  let x=0,y=0;
+  if(runtimePressed('ArrowLeft')||runtimePressed('KeyA'))x-=1;if(runtimePressed('ArrowRight')||runtimePressed('KeyD'))x+=1;if(runtimePressed('ArrowUp')||runtimePressed('KeyW'))y-=1;if(runtimePressed('ArrowDown')||runtimePressed('KeyS'))y+=1;
+  const speed=180;
+  if(x||y){const len=Math.hypot(x,y)||1;p.transform.x+=x/len*speed*dt;p.transform.y+=y/len*speed*dt;snakeRuntime.player.vx=x/len*speed;snakeRuntime.player.vy=y/len*speed}else{snakeRuntime.player.vx*=Math.pow(.0001,dt);snakeRuntime.player.vy*=Math.pow(.0001,dt)}
+  snakeRuntime.graph.update(dt);
+  snakeRuntime.player.x=p.transform.x;snakeRuntime.player.y=p.transform.y;
+  snakeRuntime.scene=[];snakeRuntime.graph.traverse(n=>{if(n!==snakeRuntime.graph.root)snakeRuntime.scene.push(n)});
+}
+function updateRuntimeNodeDebug(){
+  const box=document.getElementById('runtimeNodeDebug');if(!box||!snakeRuntime.graph)return;const rows=[];
+  snakeRuntime.graph.root.children.forEach(root=>{const walk=(n,depth)=>{rows.push(`<div class="node-line ${n===snakeRuntime.playerNode?'active':''}">${'│ '.repeat(depth)}${n.name} <span class="node-child">${n.type}</span></div>`);n.children.forEach(c=>walk(c,depth+1))};walk(root,0)});
+  box.innerHTML=rows.join('')||'<div class="node-line">Scene is empty</div>';
+}
+function toggleRuntimeNodeDebug(){document.getElementById('runtimeNodeDebug')?.classList.toggle('show');updateRuntimeNodeDebug()}
+
+/* Runtime renderer now consumes the Scene Graph. */
+const __snakeRuntimeRenderStep2=runtimeRender;
+function runtimeRender(){
+  const c=snakeRuntime.canvas,ctx=snakeRuntime.ctx;if(!c||!ctx)return;const w=c.clientWidth,h=c.clientHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle='#070b0e';ctx.fillRect(0,0,w,h);
+  const grid=32;ctx.strokeStyle='#121a20';ctx.lineWidth=1;for(let x=0;x<w;x+=grid){ctx.beginPath();ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,h);ctx.stroke()}for(let y=0;y<h;y+=grid){ctx.beginPath();ctx.moveTo(0,y+.5);ctx.lineTo(w,y+.5);ctx.stroke()}
+  const cx=w/2,cy=h/2;ctx.strokeStyle='#263742';ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  if(snakeRuntime.graph){snakeRuntime.graph.traverse(o=>{if(o===snakeRuntime.graph.root||!o.visible)return;const t=o.worldTransform,x=cx+t.x,y=cy+t.y,size=32*Math.max(.25,Math.abs(t.scaleX||1));ctx.save();ctx.translate(x,y);ctx.rotate((t.rotation||0)*Math.PI/180);ctx.globalAlpha=o===snakeRuntime.playerNode?.65:.78;ctx.strokeStyle=o.type==='Tilemap'?'#4c9aff':o.type==='Camera'?'#c28bff':o.type==='Light'?'#d7b65e':'#667681';ctx.fillStyle=o===snakeRuntime.playerNode?'#91e864':'#24303a';if(o.type==='Camera'){ctx.strokeRect(-size*.7,-size*.45,size*1.4,size*.9);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(size,0);ctx.stroke()}else if(o.type==='Light'){ctx.beginPath();ctx.arc(0,0,size*.55,0,Math.PI*2);ctx.stroke()}else{ctx.fillRect(-size/2,-size/2,size,size);ctx.strokeRect(-size/2,-size/2,size,size)}ctx.restore()});}
+  const state=snakeRuntime.paused?'PAUSED':'RUNNING';const frame=document.getElementById('runtimeFrameChip');const debug=document.getElementById('runtimeDebug');if(frame)frame.textContent='FRAME '+snakeRuntime.frames;if(debug)debug.innerHTML='FPS '+snakeRuntime.fps+'<br>DT '+snakeRuntime.dt.toFixed(3)+'<br>NODES '+(snakeRuntime.graph?.nodes.size-1||0)+'<br>TIME '+snakeRuntime.elapsed.toFixed(1)+'s';const meta=document.getElementById('runtimeProjectMeta');if(meta)meta.textContent=String(currentProject||'PROJECT').toUpperCase();updateRuntimeNodeDebug();
+}
+
+/* Add a compact debug hierarchy to the runtime without changing the editor UI. */
+(function installRuntimeNodePanel(){
+  const preview=document.getElementById('preview');if(!preview||document.getElementById('runtimeNodeDebug'))return;
+  const box=document.createElement('div');box.id='runtimeNodeDebug';box.className='runtime-node-debug';preview.querySelector('.runtime-stage')?.appendChild(box);
+  const btn=document.createElement('button');btn.className='runtime-btn';btn.title='Node hierarchy';btn.setAttribute('aria-label','Node hierarchy');btn.innerHTML='<svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 5h5v5H5zM14 5h5v5h-5zM9 14h5v5H9zM10 7.5h4M16.5 10v2.5M7.5 10v2.5M7.5 12.5h9"/></svg>';btn.onclick=toggleRuntimeNodeDebug;preview.querySelector('.preview-header')?.insertBefore(btn,preview.querySelector('.preview-header .preview-meta'));
+})();
+</script>
+
 </body>
 </html>
