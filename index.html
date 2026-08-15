@@ -21,14 +21,8 @@ html,body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 }
 
-button,input,textarea{
-  font:inherit;
-}
-
-button{
-  border:0;
-  color:inherit;
-}
+button,input,textarea,select{font:inherit}
+button{border:0;color:inherit}
 
 .screen{
   position:absolute;
@@ -37,13 +31,18 @@ button{
   flex-direction:column;
 }
 
-.screen.active{
-  display:flex;
+.screen.active{display:flex}
+
+svg{
+  fill:none;
+  stroke:currentColor;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
-/* =========================
+/* =====================================================
    DASHBOARD
-========================= */
+===================================================== */
 
 .topbar{
   height:64px;
@@ -72,13 +71,6 @@ button{
   place-items:center;
 }
 
-svg{
-  fill:none;
-  stroke:currentColor;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
 .logo svg{
   width:19px;
   color:#91e864;
@@ -92,10 +84,6 @@ svg{
   display:grid;
   place-items:center;
   color:#8c949d;
-}
-
-.menu:active{
-  background:#191d22;
 }
 
 .dashboard-content{
@@ -129,17 +117,9 @@ svg{
   gap:9px;
 }
 
-.new-project svg{
-  width:21px;
-}
+.new-project svg{width:21px}
 
-.new-project:active{
-  transform:scale(.985);
-}
-
-.section{
-  margin-top:34px;
-}
+.section{margin-top:34px}
 
 .section-head{
   display:flex;
@@ -172,11 +152,10 @@ svg{
   align-items:center;
   gap:13px;
   text-align:left;
+  margin-bottom:9px;
 }
 
-.project-card:active{
-  background:#171b20;
-}
+.project-card:active{background:#171b20}
 
 .project-icon{
   width:48px;
@@ -188,9 +167,7 @@ svg{
   color:#91e864;
 }
 
-.project-icon svg{
-  width:24px;
-}
+.project-icon svg{width:24px}
 
 .project-info{
   flex:1;
@@ -245,13 +222,11 @@ svg{
   height:21px;
 }
 
-.nav.active{
-  color:#91e864;
-}
+.nav.active{color:#91e864}
 
-/* =========================
-   NEW PROJECT SHEET
-========================= */
+/* =====================================================
+   NEW PROJECT
+===================================================== */
 
 .overlay{
   position:absolute;
@@ -259,12 +234,10 @@ svg{
   background:rgba(0,0,0,.68);
   display:none;
   align-items:flex-end;
-  z-index:100;
+  z-index:300;
 }
 
-.overlay.show{
-  display:flex;
-}
+.overlay.show{display:flex}
 
 .sheet{
   width:100%;
@@ -296,9 +269,7 @@ svg{
   padding:0 14px;
 }
 
-.input:focus{
-  border-color:#91e864;
-}
+.input:focus{border-color:#91e864}
 
 .sheet-buttons{
   display:flex;
@@ -323,9 +294,9 @@ svg{
   color:#091006;
 }
 
-/* =========================
-   EDITOR
-========================= */
+/* =====================================================
+   EDITOR HEADER
+===================================================== */
 
 .editor-header{
   height:58px;
@@ -336,6 +307,7 @@ svg{
   align-items:center;
   padding:0 9px;
   gap:7px;
+  z-index:100;
 }
 
 .icon-btn{
@@ -348,9 +320,7 @@ svg{
   place-items:center;
 }
 
-.icon-btn:active{
-  background:#191e23;
-}
+.icon-btn:active{background:#191e23}
 
 .icon-btn svg{
   width:20px;
@@ -387,9 +357,11 @@ svg{
   place-items:center;
 }
 
-.run-btn svg{
-  width:19px;
-}
+.run-btn svg{width:19px}
+
+/* =====================================================
+   EDITOR MAIN
+===================================================== */
 
 .editor-main{
   flex:1;
@@ -398,11 +370,13 @@ svg{
   position:relative;
 }
 
-/* Explorer */
+/* =====================================================
+   EXPLORER
+===================================================== */
 
 .explorer{
   position:absolute;
-  z-index:30;
+  z-index:120;
   top:0;
   bottom:0;
   left:0;
@@ -414,9 +388,7 @@ svg{
   box-shadow:10px 0 25px rgba(0,0,0,.2);
 }
 
-.explorer.open{
-  transform:translateX(0);
-}
+.explorer.open{transform:translateX(0)}
 
 .explorer-head{
   height:48px;
@@ -434,9 +406,7 @@ svg{
   color:#7d858e;
 }
 
-.file-list{
-  padding:8px;
-}
+.file-list{padding:8px}
 
 .folder{
   color:#929aa3;
@@ -469,7 +439,9 @@ svg{
   height:16px;
 }
 
-/* Editor area */
+/* =====================================================
+   CODE AREA
+===================================================== */
 
 .code-area{
   flex:1;
@@ -543,11 +515,264 @@ svg{
   tab-size:2;
 }
 
-.code::selection{
-  background:#35452d;
+/* =====================================================
+   SCENE EDITOR
+===================================================== */
+
+.scene-area{
+  flex:1;
+  min-width:0;
+  display:none;
+  flex-direction:column;
+  background:#090c0f;
+  position:relative;
 }
 
-/* Bottom panel */
+.scene-area.active{display:flex}
+
+.scene-toolbar{
+  height:42px;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:0 7px;
+  background:#11151a;
+  border-bottom:1px solid #252b32;
+  overflow:auto;
+}
+
+.scene-tool{
+  min-width:37px;
+  height:32px;
+  padding:0 9px;
+  border-radius:7px;
+  background:none;
+  color:#737c85;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  font-size:10px;
+}
+
+.scene-tool svg{
+  width:16px;
+  height:16px;
+}
+
+.scene-tool.active{
+  color:#91e864;
+  background:#1a2025;
+}
+
+.scene-workspace{
+  flex:1;
+  min-height:0;
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(#14191e 1px,transparent 1px),
+    linear-gradient(90deg,#14191e 1px,transparent 1px);
+  background-size:24px 24px;
+}
+
+.scene-world{
+  position:absolute;
+  width:600px;
+  height:360px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:#0d1115;
+  border:1px solid #343b43;
+  box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+
+.world-label{
+  position:absolute;
+  left:10px;
+  top:8px;
+  color:#4e5963;
+  font:10px ui-monospace,monospace;
+}
+
+.scene-object{
+  position:absolute;
+  cursor:pointer;
+  user-select:none;
+}
+
+.object-body{
+  width:70px;
+  height:70px;
+  border-radius:10px;
+  background:#91e864;
+  box-shadow:0 0 0 1px rgba(255,255,255,.12);
+}
+
+.object-food{
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  background:#e86464;
+}
+
+.scene-object.selected .object-body,
+.scene-object.selected .object-food{
+  outline:2px solid #91e864;
+  outline-offset:4px;
+}
+
+.selection-label{
+  position:absolute;
+  top:-21px;
+  left:0;
+  color:#91e864;
+  font-size:9px;
+  white-space:nowrap;
+  display:none;
+}
+
+.scene-object.selected .selection-label{display:block}
+
+.scene-status{
+  position:absolute;
+  bottom:8px;
+  left:10px;
+  padding:5px 7px;
+  background:rgba(7,9,11,.8);
+  border:1px solid #272e35;
+  border-radius:5px;
+  color:#68727b;
+  font:9px ui-monospace,monospace;
+}
+
+/* =====================================================
+   INSPECTOR
+===================================================== */
+
+.inspector{
+  position:absolute;
+  z-index:140;
+  right:0;
+  top:0;
+  bottom:0;
+  width:275px;
+  background:#101419;
+  border-left:1px solid #272d34;
+  transform:translateX(100%);
+  transition:.2s;
+  box-shadow:-10px 0 25px rgba(0,0,0,.2);
+  overflow:auto;
+}
+
+.inspector.open{transform:translateX(0)}
+
+.inspector-head{
+  height:48px;
+  padding:0 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #242a31;
+}
+
+.inspector-head strong{
+  font-size:12px;
+}
+
+.inspector-close{
+  width:32px;
+  height:32px;
+  background:none;
+  color:#78818a;
+}
+
+.inspector-empty{
+  padding:30px 20px;
+  color:#626b74;
+  font-size:12px;
+  text-align:center;
+  line-height:18px;
+}
+
+.inspector-section{
+  border-bottom:1px solid #242a31;
+  padding-bottom:8px;
+}
+
+.inspector-section-title{
+  padding:13px 13px 9px;
+  color:#7b848d;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.8px;
+}
+
+.property{
+  min-height:39px;
+  padding:4px 12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.property label{
+  width:70px;
+  color:#8d969f;
+  font-size:11px;
+}
+
+.property input,
+.property select{
+  flex:1;
+  min-width:0;
+  height:31px;
+  border:1px solid #292f36;
+  background:#090c10;
+  color:#dce1e5;
+  border-radius:6px;
+  padding:0 8px;
+  outline:none;
+  font-size:11px;
+}
+
+.property input:focus,
+.property select:focus{
+  border-color:#91e864;
+}
+
+.vec{
+  display:flex;
+  gap:4px;
+  flex:1;
+}
+
+.vec input{
+  width:50%;
+}
+
+.component{
+  margin:6px 10px;
+  border:1px solid #282e35;
+  border-radius:7px;
+  overflow:hidden;
+}
+
+.component-title{
+  height:34px;
+  padding:0 9px;
+  display:flex;
+  align-items:center;
+  background:#171c21;
+  color:#b0b7be;
+  font-size:11px;
+}
+
+/* =====================================================
+   BOTTOM PANEL
+===================================================== */
 
 .bottom-panel{
   height:190px;
@@ -582,9 +807,7 @@ svg{
   letter-spacing:.5px;
 }
 
-.panel-tab.active{
-  color:#91e864;
-}
+.panel-tab.active{color:#91e864}
 
 .output{
   flex:1;
@@ -594,19 +817,13 @@ svg{
   color:#9ca5ad;
 }
 
-.output-line{
-  margin-bottom:3px;
-}
+.output-line{margin-bottom:3px}
+.output-line.success{color:#91e864}
+.output-line.error{color:#ed7474}
 
-.output-line.success{
-  color:#91e864;
-}
-
-.output-line.error{
-  color:#ed7474;
-}
-
-/* Mobile tools */
+/* =====================================================
+   TOOL DOCK
+===================================================== */
 
 .tool-dock{
   height:47px;
@@ -633,24 +850,22 @@ svg{
   background:#1a2025;
 }
 
-.tool svg{
-  width:19px;
-}
+.tool svg{width:19px}
 
-/* Preview */
+/* =====================================================
+   PREVIEW
+===================================================== */
 
 .preview{
   position:absolute;
   inset:0;
-  z-index:80;
+  z-index:250;
   display:none;
   flex-direction:column;
   background:#07090b;
 }
 
-.preview.show{
-  display:flex;
-}
+.preview.show{display:flex}
 
 .preview-header{
   height:58px;
@@ -677,7 +892,7 @@ svg{
 }
 
 .game-screen{
-  width:min(92vw,430px);
+  width:min(92vw,600px);
   aspect-ratio:16/10;
   border:1px solid #343b43;
   border-radius:10px;
@@ -723,7 +938,9 @@ svg{
   font-size:11px;
 }
 
-/* Toast */
+/* =====================================================
+   TOAST
+===================================================== */
 
 .toast{
   position:absolute;
@@ -739,7 +956,7 @@ svg{
   opacity:0;
   pointer-events:none;
   transition:.2s;
-  z-index:200;
+  z-index:500;
   white-space:nowrap;
 }
 
@@ -747,6 +964,28 @@ svg{
   opacity:1;
   transform:translateX(-50%) translateY(0);
 }
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:700px){
+
+  .inspector{
+    width:min(290px,88vw);
+  }
+
+  .explorer{
+    width:min(265px,86vw);
+  }
+
+  .scene-world{
+    width:520px;
+    height:320px;
+  }
+
+}
+
 </style>
 </head>
 
@@ -758,87 +997,87 @@ svg{
 
 <section id="dashboard" class="screen active">
 
-  <header class="topbar">
+<header class="topbar">
 
-    <div class="brand">
+  <div class="brand">
 
-      <div class="logo">
-        <svg viewBox="0 0 24 24" stroke-width="2">
-          <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
-          <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
-          <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
-        </svg>
-      </div>
-
-      Snake Forge
-
-    </div>
-
-    <button class="menu">
-      <svg viewBox="0 0 24 24" width="21">
-        <circle cx="12" cy="5" r="1"/>
-        <circle cx="12" cy="12" r="1"/>
-        <circle cx="12" cy="19" r="1"/>
-      </svg>
-    </button>
-
-  </header>
-
-  <main class="dashboard-content">
-
-    <div class="welcome">
-      <h1>Welcome back</h1>
-      <p>Build your next game.</p>
-    </div>
-
-    <button class="new-project" onclick="openNewProject()">
+    <div class="logo">
       <svg viewBox="0 0 24 24" stroke-width="2">
-        <path d="M12 5v14"/>
-        <path d="M5 12h14"/>
+        <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
+        <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
+        <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
       </svg>
-      NEW PROJECT
-    </button>
+    </div>
 
-    <section class="section">
+    Snake Forge
 
-      <div class="section-head">
-        <span>RECENT PROJECTS</span>
-        <button>View all</button>
-      </div>
+  </div>
 
-      <div id="projectsList"></div>
+  <button class="menu">
+    <svg viewBox="0 0 24 24" width="21">
+      <circle cx="12" cy="5" r="1"/>
+      <circle cx="12" cy="12" r="1"/>
+      <circle cx="12" cy="19" r="1"/>
+    </svg>
+  </button>
 
-    </section>
+</header>
 
-  </main>
+<main class="dashboard-content">
 
-  <nav class="bottom-nav">
+  <div class="welcome">
+    <h1>Welcome back</h1>
+    <p>Build your next game.</p>
+  </div>
 
-    <button class="nav active">
-      <svg viewBox="0 0 24 24" stroke-width="1.8">
-        <path d="m3 10 9-7 9 7"/>
-        <path d="M5 9v11h14V9"/>
-        <path d="M9 20v-6h6v6"/>
-      </svg>
-      Home
-    </button>
+  <button class="new-project" onclick="openNewProject()">
+    <svg viewBox="0 0 24 24" stroke-width="2">
+      <path d="M12 5v14"/>
+      <path d="M5 12h14"/>
+    </svg>
+    NEW PROJECT
+  </button>
 
-    <button class="nav">
-      <svg viewBox="0 0 24 24" stroke-width="1.8">
-        <path d="M4 5h6l2 2h8v12H4z"/>
-      </svg>
-      Projects
-    </button>
+  <section class="section">
 
-    <button class="nav">
-      <svg viewBox="0 0 24 24" stroke-width="1.8">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
-      </svg>
-      Settings
-    </button>
+    <div class="section-head">
+      <span>RECENT PROJECTS</span>
+      <button onclick="renderProjects()">Refresh</button>
+    </div>
 
-  </nav>
+    <div id="projectsList"></div>
+
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+
+  <button class="nav active">
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="m3 10 9-7 9 7"/>
+      <path d="M5 9v11h14V9"/>
+      <path d="M9 20v-6h6v6"/>
+    </svg>
+    Home
+  </button>
+
+  <button class="nav" onclick="showToast('Projects')">
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="M4 5h6l2 2h8v12H4z"/>
+    </svg>
+    Projects
+  </button>
+
+  <button class="nav" onclick="showToast('Settings')">
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
+    </svg>
+    Settings
+  </button>
+
+</nav>
 
 </section>
 
@@ -854,12 +1093,10 @@ svg{
     <h2>New Project</h2>
     <p>Create a new game project.</p>
 
-    <input
-      id="projectName"
+    <input id="projectName"
       class="input"
       placeholder="Project name"
-      maxlength="40"
-    >
+      maxlength="40">
 
     <div class="sheet-buttons">
 
@@ -884,249 +1121,492 @@ svg{
 
 <section id="editor" class="screen">
 
-  <header class="editor-header">
+<header class="editor-header">
 
-    <button class="icon-btn" onclick="backToDashboard()">
+  <button class="icon-btn" onclick="backToDashboard()">
+    <svg viewBox="0 0 24 24" stroke-width="2">
+      <path d="m15 18-6-6 6-6"/>
+    </svg>
+  </button>
+
+  <button class="icon-btn" onclick="toggleExplorer()">
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="M4 5h6l2 2h8v12H4z"/>
+      <path d="M8 11h8"/>
+      <path d="M8 15h6"/>
+    </svg>
+  </button>
+
+  <div class="editor-title">
+    <strong id="editorProjectName">Project</strong>
+    <small>Snake Forge Editor</small>
+  </div>
+
+  <button class="run-btn" onclick="runProject()">
+    <svg viewBox="0 0 24 24" stroke-width="2.2">
+      <path d="m9 5 10 7-10 7z"/>
+    </svg>
+  </button>
+
+</header>
+
+
+<main class="editor-main">
+
+<!-- =====================================================
+     EXPLORER
+===================================================== -->
+
+<aside id="explorer" class="explorer">
+
+  <div class="explorer-head">
+    <span>PROJECT</span>
+
+    <button class="icon-btn" onclick="toggleExplorer()">
+      <svg viewBox="0 0 24 24">
+        <path d="m6 6 12 12"/>
+        <path d="m18 6-12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="file-list">
+
+    <div class="folder">SNAKE FORGE</div>
+
+    <button class="file active" onclick="openFile('main.cpp')">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 4h12v16H6z"/>
+        <path d="M9 8h6"/>
+        <path d="M9 12h6"/>
+        <path d="M9 16h4"/>
+      </svg>
+      main.cpp
+    </button>
+
+    <button class="file" onclick="openFile('game.cpp')">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 4h12v16H6z"/>
+        <path d="M9 8h6"/>
+        <path d="M9 12h6"/>
+      </svg>
+      game.cpp
+    </button>
+
+    <button class="file" onclick="openFile('player.cpp')">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 4h12v16H6z"/>
+        <path d="M9 8h6"/>
+        <path d="M9 12h4"/>
+      </svg>
+      player.cpp
+    </button>
+
+    <div class="folder">ASSETS</div>
+
+    <button class="file" onclick="showToast('Asset browser')">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 5h16v14H4z"/>
+        <circle cx="9" cy="10" r="1.5"/>
+        <path d="m6 16 4-4 3 3 2-2 3 3"/>
+      </svg>
+      textures
+    </button>
+
+  </div>
+
+</aside>
+
+
+<!-- =====================================================
+     CODE
+===================================================== -->
+
+<section id="codeArea" class="code-area">
+
+  <div class="tabs">
+
+    <button id="tab-main" class="tab active">
+      main.cpp
+    </button>
+
+  </div>
+
+  <div class="code-wrapper">
+
+    <div id="lineNumbers" class="line-numbers"></div>
+
+    <textarea
+      id="code"
+      class="code"
+      spellcheck="false"
+      autocapitalize="off"
+      autocorrect="off"
+      autocomplete="off"
+      oninput="updateEditor()"
+      onscroll="syncLines()"
+    ></textarea>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     SCENE
+===================================================== -->
+
+<section id="sceneArea" class="scene-area">
+
+  <div class="scene-toolbar">
+
+    <button class="scene-tool active" id="selectTool"
+      onclick="setSceneTool('select')">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <path d="m6 3 13 9-6 1-3 7z"/>
+      </svg>
+      Select
+    </button>
+
+    <button class="scene-tool" onclick="setSceneTool('move')">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <path d="M12 3v18"/>
+        <path d="m8 7 4-4 4 4"/>
+        <path d="m8 17 4 4 4-4"/>
+        <path d="M3 12h18"/>
+      </svg>
+      Move
+    </button>
+
+    <button class="scene-tool" onclick="addSceneObject('Player')">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <rect x="5" y="5" width="14" height="14" rx="2"/>
+        <path d="M9 12h6"/>
+        <path d="M12 9v6"/>
+      </svg>
+      Object
+    </button>
+
+    <button class="scene-tool" onclick="addSceneObject('Food')">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <circle cx="12" cy="12" r="7"/>
+      </svg>
+      Sprite
+    </button>
+
+    <button class="scene-tool" onclick="focusScene()">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <path d="M5 9V5h4"/>
+        <path d="M19 9V5h-4"/>
+        <path d="M5 15v4h4"/>
+        <path d="M19 15v4h-4"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <div id="sceneWorkspace" class="scene-workspace">
+
+    <div id="sceneWorld" class="scene-world">
+
+      <div class="world-label">
+        WORLD / MAIN SCENE
+      </div>
+
+      <div id="playerObject"
+        class="scene-object selected"
+        style="left:100px;top:120px"
+        onclick="selectObject(event,'Player')">
+
+        <span class="selection-label">Player</span>
+        <div class="object-body"></div>
+
+      </div>
+
+      <div id="foodObject"
+        class="scene-object"
+        style="left:390px;top:190px"
+        onclick="selectObject(event,'Food')">
+
+        <span class="selection-label">Food</span>
+        <div class="object-food"></div>
+
+      </div>
+
+    </div>
+
+    <div class="scene-status">
+      MAIN SCENE · 2 OBJECTS
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     INSPECTOR
+===================================================== -->
+
+<aside id="inspector" class="inspector">
+
+  <div class="inspector-head">
+
+    <strong>INSPECTOR</strong>
+
+    <button class="inspector-close" onclick="toggleInspector()">
+      <svg viewBox="0 0 24 24" width="17">
+        <path d="m6 6 12 12"/>
+        <path d="m18 6-12 12"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <div id="inspectorContent">
+
+    <div class="inspector-section">
+
+      <div class="inspector-section-title">
+        OBJECT
+      </div>
+
+      <div class="property">
+        <label>Name</label>
+        <input id="propName" value="Player"
+          oninput="changeObjectName(this.value)">
+      </div>
+
+      <div class="property">
+        <label>Type</label>
+        <select id="propType">
+          <option>Node</option>
+          <option>Sprite</option>
+          <option>Character</option>
+          <option>Camera</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="inspector-section">
+
+      <div class="inspector-section-title">
+        TRANSFORM
+      </div>
+
+      <div class="property">
+        <label>Position</label>
+        <div class="vec">
+          <input id="posX" type="number"
+            oninput="changePosition()">
+          <input id="posY" type="number"
+            oninput="changePosition()">
+        </div>
+      </div>
+
+      <div class="property">
+        <label>Scale</label>
+        <div class="vec">
+          <input id="scaleX" type="number" step=".1" value="1">
+          <input id="scaleY" type="number" step=".1" value="1">
+        </div>
+      </div>
+
+      <div class="property">
+        <label>Rotation</label>
+        <input id="rotation" type="number" value="0">
+      </div>
+
+    </div>
+
+    <div class="inspector-section">
+
+      <div class="inspector-section-title">
+        COMPONENTS
+      </div>
+
+      <div class="component">
+
+        <div class="component-title">
+          Transform
+        </div>
+
+        <div class="property">
+          <label>Visible</label>
+          <select>
+            <option>True</option>
+            <option>False</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="component">
+
+        <div class="component-title">
+          Renderer
+        </div>
+
+        <div class="property">
+          <label>Layer</label>
+          <input value="Default">
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</aside>
+
+
+</main>
+
+
+<!-- =====================================================
+     CONSOLE
+===================================================== -->
+
+<section id="bottomPanel" class="bottom-panel">
+
+  <div class="panel-tabs">
+
+    <button class="panel-tab active">
+      OUTPUT
+    </button>
+
+    <button class="panel-tab">
+      ERRORS
+    </button>
+
+    <button class="panel-tab">
+      DEBUG
+    </button>
+
+  </div>
+
+  <div id="output" class="output">
+
+    <div class="output-line">
+      Snake Forge Editor initialized.
+    </div>
+
+    <div class="output-line">
+      Ready.
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     TOOL DOCK
+===================================================== -->
+
+<div class="tool-dock">
+
+  <button class="tool active" onclick="showCode()">
+
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="m8 8-4 4 4 4"/>
+      <path d="m16 8 4 4-4 4"/>
+      <path d="m14 5-4 14"/>
+    </svg>
+
+  </button>
+
+  <button class="tool" onclick="showScene()">
+
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <rect x="4" y="4" width="16" height="16" rx="2"/>
+      <circle cx="9" cy="9" r="1.5"/>
+      <path d="m5 17 4-4 3 3 3-4 4 5"/>
+    </svg>
+
+  </button>
+
+  <button class="tool" onclick="openPreview()">
+
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <rect x="4" y="5" width="16" height="14" rx="2"/>
+      <path d="m10 9 5 3-5 3z"/>
+    </svg>
+
+  </button>
+
+  <button class="tool" onclick="togglePanel()">
+
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="M4 5h16v14H4z"/>
+      <path d="M4 15h16"/>
+    </svg>
+
+  </button>
+
+  <button class="tool" onclick="toggleInspector()">
+
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="M4 5h16v14H4z"/>
+      <path d="M15 5v14"/>
+      <path d="M8 9h4"/>
+      <path d="M8 13h4"/>
+    </svg>
+
+  </button>
+
+</div>
+
+
+<!-- =====================================================
+     PREVIEW
+===================================================== -->
+
+<section id="preview" class="preview">
+
+  <header class="preview-header">
+
+    <button class="icon-btn" onclick="closePreview()">
       <svg viewBox="0 0 24 24" stroke-width="2">
         <path d="m15 18-6-6 6-6"/>
       </svg>
     </button>
 
-    <button class="icon-btn" onclick="toggleExplorer()">
-      <svg viewBox="0 0 24 24" stroke-width="1.8">
-        <path d="M4 5h6l2 2h8v12H4z"/>
-        <path d="M8 11h8"/>
-        <path d="M8 15h6"/>
-      </svg>
-    </button>
-
-    <div class="editor-title">
-      <strong id="editorProjectName">Project</strong>
-      <small>Snake Forge Editor</small>
+    <div class="preview-title">
+      GAME PREVIEW
     </div>
 
-    <button class="run-btn" onclick="runProject()">
-      <svg viewBox="0 0 24 24" stroke-width="2.2">
+    <button class="icon-btn" onclick="runProject()">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
         <path d="m9 5 10 7-10 7z"/>
       </svg>
     </button>
 
   </header>
 
+  <div class="game">
 
-  <main class="editor-main">
+    <div class="game-screen">
 
-    <!-- EXPLORER -->
+      <div class="grid"></div>
 
-    <aside id="explorer" class="explorer">
-
-      <div class="explorer-head">
-        <span>PROJECT</span>
-
-        <button class="icon-btn" onclick="toggleExplorer()">
-          <svg viewBox="0 0 24 24">
-            <path d="m6 6 12 12"/>
-            <path d="m18 6-12 12"/>
-          </svg>
-        </button>
+      <div class="game-info">
+        SCORE 0000
       </div>
 
-      <div class="file-list">
-
-        <div class="folder">SNAKE FORGE</div>
-
-        <button class="file active" onclick="openFile('main.cpp')">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 4h12v16H6z"/>
-            <path d="M9 8h6"/>
-            <path d="M9 12h6"/>
-            <path d="M9 16h4"/>
-          </svg>
-          main.cpp
-        </button>
-
-        <button class="file" onclick="openFile('game.cpp')">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 4h12v16H6z"/>
-            <path d="M9 8h6"/>
-            <path d="M9 12h6"/>
-          </svg>
-          game.cpp
-        </button>
-
-        <button class="file" onclick="openFile('player.cpp')">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 4h12v16H6z"/>
-            <path d="M9 8h6"/>
-            <path d="M9 12h4"/>
-          </svg>
-          player.cpp
-        </button>
-
-        <div class="folder">ASSETS</div>
-
-        <button class="file">
-          <svg viewBox="0 0 24 24">
-            <path d="M4 5h16v14H4z"/>
-            <circle cx="9" cy="10" r="1.5"/>
-            <path d="m6 16 4-4 3 3 2-2 3 3"/>
-          </svg>
-          textures
-        </button>
-
-      </div>
-
-    </aside>
-
-
-    <!-- CODE -->
-
-    <section class="code-area">
-
-      <div class="tabs">
-
-        <button id="tab-main" class="tab active">
-          main.cpp
-        </button>
-
-      </div>
-
-      <div class="code-wrapper">
-
-        <div id="lineNumbers" class="line-numbers"></div>
-
-        <textarea
-          id="code"
-          class="code"
-          spellcheck="false"
-          autocapitalize="off"
-          autocorrect="off"
-          autocomplete="off"
-          oninput="updateEditor()"
-          onscroll="syncLines()"
-        ></textarea>
-
-      </div>
-
-      <div class="tool-dock">
-
-        <button class="tool active" onclick="showToast('Code')">
-          <svg viewBox="0 0 24 24" stroke-width="1.8">
-            <path d="m8 8-4 4 4 4"/>
-            <path d="m16 8 4 4-4 4"/>
-            <path d="m14 5-4 14"/>
-          </svg>
-        </button>
-
-        <button class="tool" onclick="showToast('Scene')">
-          <svg viewBox="0 0 24 24" stroke-width="1.8">
-            <rect x="4" y="4" width="16" height="16" rx="2"/>
-            <circle cx="9" cy="9" r="1.5"/>
-            <path d="m5 17 4-4 3 3 3-4 4 5"/>
-          </svg>
-        </button>
-
-        <button class="tool" onclick="openPreview()">
-          <svg viewBox="0 0 24 24" stroke-width="1.8">
-            <rect x="4" y="5" width="16" height="14" rx="2"/>
-            <path d="m10 9 5 3-5 3z"/>
-          </svg>
-        </button>
-
-        <button class="tool" onclick="togglePanel()">
-          <svg viewBox="0 0 24 24" stroke-width="1.8">
-            <path d="M4 5h16v14H4z"/>
-            <path d="M4 15h16"/>
-          </svg>
-        </button>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- CONSOLE -->
-
-  <section id="bottomPanel" class="bottom-panel">
-
-    <div class="panel-tabs">
-
-      <button class="panel-tab active">
-        OUTPUT
-      </button>
-
-      <button class="panel-tab">
-        ERRORS
-      </button>
-
-      <button class="panel-tab">
-        DEBUG
-      </button>
+      <div class="snake"></div>
 
     </div>
 
-    <div id="output" class="output">
+  </div>
 
-      <div class="output-line">
-        Snake Forge Editor initialized.
-      </div>
+  <div class="preview-footer">
+    Preview Runtime
+  </div>
 
-      <div class="output-line">
-        Ready.
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- PREVIEW -->
-
-  <section id="preview" class="preview">
-
-    <header class="preview-header">
-
-      <button class="icon-btn" onclick="closePreview()">
-        <svg viewBox="0 0 24 24" stroke-width="2">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-      </button>
-
-      <div class="preview-title">
-        GAME PREVIEW
-      </div>
-
-      <button class="icon-btn" onclick="runProject()">
-        <svg viewBox="0 0 24 24" stroke-width="1.8">
-          <path d="m9 5 10 7-10 7z"/>
-        </svg>
-      </button>
-
-    </header>
-
-    <div class="game">
-
-      <div class="game-screen">
-
-        <div class="grid"></div>
-
-        <div class="game-info">
-          SCORE 0000
-        </div>
-
-        <div class="snake"></div>
-
-      </div>
-
-    </div>
-
-    <div class="preview-footer">
-      Preview Runtime
-    </div>
-
-  </section>
+</section>
 
 </section>
 
@@ -1135,19 +1615,22 @@ svg{
 
 
 <script>
+
 /* =====================================================
    STORAGE
 ===================================================== */
 
-const STORAGE_KEY = "snakeForgeProjects";
-const FILES_KEY = "snakeForgeFiles";
+const STORAGE_KEY="snakeForgeProjects";
+const FILES_KEY="snakeForgeFiles";
 
-let currentProject = null;
-let currentFile = "main.cpp";
+let currentProject=null;
+let currentFile="main.cpp";
+let selectedObject="Player";
+let sceneTool="select";
 
-const defaultFiles = {
+const defaultFiles={
 
-  "main.cpp":
+"main.cpp":
 `#include <iostream>
 
 int main() {
@@ -1157,7 +1640,7 @@ int main() {
     return 0;
 }`,
 
-  "game.cpp":
+"game.cpp":
 `#include "game.h"
 
 void Game::start() {
@@ -1166,7 +1649,7 @@ void Game::start() {
 
 }`,
 
-  "player.cpp":
+"player.cpp":
 `class Player {
 
 public:
@@ -1183,7 +1666,7 @@ public:
 
 
 /* =====================================================
-   DASHBOARD
+   PROJECTS
 ===================================================== */
 
 function getProjects(){
@@ -1191,9 +1674,9 @@ function getProjects(){
   try{
     return JSON.parse(
       localStorage.getItem(STORAGE_KEY)
-    ) || [];
+    )||[];
   }catch{
-    return [];
+    return[];
   }
 
 }
@@ -1209,15 +1692,12 @@ function saveProjects(projects){
 
 function renderProjects(){
 
-  const list =
-    document.getElementById("projectsList");
-
-  const projects =
-    getProjects();
+  const list=document.getElementById("projectsList");
+  const projects=getProjects();
 
   if(!projects.length){
 
-    list.innerHTML = `
+    list.innerHTML=`
       <div class="project-card">
         <div class="project-icon">
           <svg viewBox="0 0 24 24">
@@ -1241,40 +1721,39 @@ function renderProjects(){
     return;
   }
 
-  list.innerHTML =
-    projects.slice(0,5).map(p => `
+  list.innerHTML=projects.slice(0,5).map(p=>`
 
-      <button class="project-card"
-        onclick="openProject(${JSON.stringify(p.name)})">
+    <button class="project-card"
+      onclick="openProject(${JSON.stringify(p.name)})">
 
-        <div class="project-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M7 4h10"/>
-            <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
-            <path d="M9 14h6"/>
-            <path d="M12 11v6"/>
-          </svg>
-        </div>
-
-        <div class="project-info">
-
-          <div class="project-name">
-            ${escapeHTML(p.name)}
-          </div>
-
-          <div class="project-meta">
-            Last opened: Today
-          </div>
-
-        </div>
-
-        <svg class="arrow" viewBox="0 0 24 24">
-          <path d="m9 18 6-6-6-6"/>
+      <div class="project-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 4h10"/>
+          <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
+          <path d="M9 14h6"/>
+          <path d="M12 11v6"/>
         </svg>
+      </div>
 
-      </button>
+      <div class="project-info">
 
-    `).join("");
+        <div class="project-name">
+          ${escapeHTML(p.name)}
+        </div>
+
+        <div class="project-meta">
+          Last opened: Today
+        </div>
+
+      </div>
+
+      <svg class="arrow" viewBox="0 0 24 24">
+        <path d="m9 18 6-6-6-6"/>
+      </svg>
+
+    </button>
+
+  `).join("");
 
 }
 
@@ -1305,39 +1784,33 @@ function closeNewProject(){
 
   document
     .getElementById("projectName")
-    .value = "";
+    .value="";
 
 }
 
 function createProject(){
 
-  const input =
-    document.getElementById("projectName");
-
-  const name =
-    input.value.trim();
+  const input=document.getElementById("projectName");
+  const name=input.value.trim();
 
   if(!name){
     input.focus();
     return;
   }
 
-  const projects = getProjects();
+  const projects=getProjects();
 
-  const project = {
+  const project={
     id:Date.now(),
     name,
     createdAt:new Date().toISOString()
   };
 
   projects.unshift(project);
-
   saveProjects(projects);
 
   closeNewProject();
-
   renderProjects();
-
   openProject(name);
 
 }
@@ -1349,7 +1822,7 @@ function createProject(){
 
 function openProject(name){
 
-  currentProject = name;
+  currentProject=name;
 
   document
     .getElementById("dashboard")
@@ -1361,14 +1834,15 @@ function openProject(name){
 
   document
     .getElementById("editorProjectName")
-    .textContent = name;
+    .textContent=name;
 
   loadFiles();
-
   loadFile("main.cpp");
 
+  showCode();
+
   addOutput(
-    "Opened project: " + name,
+    "Opened project: "+name,
     "success"
   );
 
@@ -1381,11 +1855,8 @@ function openProject(name){
 
 function loadFiles(){
 
-  const key =
-    FILES_KEY + "_" + currentProject;
-
-  const saved =
-    localStorage.getItem(key);
+  const key=FILES_KEY+"_"+currentProject;
+  const saved=localStorage.getItem(key);
 
   if(!saved){
 
@@ -1400,14 +1871,13 @@ function loadFiles(){
 
 function getFiles(){
 
-  const key =
-    FILES_KEY + "_" + currentProject;
+  const key=FILES_KEY+"_"+currentProject;
 
   try{
 
     return JSON.parse(
       localStorage.getItem(key)
-    ) || {...defaultFiles};
+    )||{...defaultFiles};
 
   }catch{
 
@@ -1419,8 +1889,7 @@ function getFiles(){
 
 function saveFiles(files){
 
-  const key =
-    FILES_KEY + "_" + currentProject;
+  const key=FILES_KEY+"_"+currentProject;
 
   localStorage.setItem(
     key,
@@ -1438,28 +1907,23 @@ function openFile(file){
 
   saveCurrentFile();
 
-  currentFile = file;
+  currentFile=file;
 
-  const files = getFiles();
+  const files=getFiles();
 
-  document
-    .getElementById("code")
-    .value = files[file] || "";
+  document.getElementById("code").value=
+    files[file]||"";
 
-  document
-    .querySelectorAll(".file")
-    .forEach(el => {
-
+  document.querySelectorAll(".file")
+    .forEach(el=>{
       el.classList.toggle(
         "active",
-        el.textContent.trim() === file
+        el.textContent.trim()===file
       );
-
     });
 
-  document
-    .getElementById("tab-main")
-    .textContent = file;
+  document.getElementById("tab-main")
+    .textContent=file;
 
   updateLines();
 
@@ -1467,14 +1931,15 @@ function openFile(file){
 
 function loadFile(file){
 
-  currentFile = file;
+  currentFile=file;
 
-  const files = getFiles();
+  const files=getFiles();
 
-  document
-    .getElementById("code")
-    .value =
-      files[file] || "";
+  document.getElementById("code").value=
+    files[file]||"";
+
+  document.getElementById("tab-main")
+    .textContent=file;
 
   updateLines();
 
@@ -1482,11 +1947,11 @@ function loadFile(file){
 
 function saveCurrentFile(){
 
-  if(!currentProject) return;
+  if(!currentProject)return;
 
-  const files = getFiles();
+  const files=getFiles();
 
-  files[currentFile] =
+  files[currentFile]=
     document.getElementById("code").value;
 
   saveFiles(files);
@@ -1495,28 +1960,27 @@ function saveCurrentFile(){
 
 
 /* =====================================================
-   EDITOR
+   CODE EDITOR
 ===================================================== */
 
 function updateEditor(){
 
   saveCurrentFile();
-
   updateLines();
 
 }
 
 function updateLines(){
 
-  const code =
-    document.getElementById("code").value;
+  const code=document.getElementById("code").value;
 
-  const count =
-    Math.max(1,code.split("\n").length);
+  const count=Math.max(
+    1,
+    code.split("\n").length
+  );
 
-  document
-    .getElementById("lineNumbers")
-    .innerHTML =
+  document.getElementById("lineNumbers")
+    .innerHTML=
       Array.from(
         {length:count},
         (_,i)=>i+1
@@ -1526,13 +1990,10 @@ function updateLines(){
 
 function syncLines(){
 
-  const code =
-    document.getElementById("code");
+  const code=document.getElementById("code");
 
-  document
-    .getElementById("lineNumbers")
-    .scrollTop =
-      code.scrollTop;
+  document.getElementById("lineNumbers")
+    .scrollTop=code.scrollTop;
 
 }
 
@@ -1551,35 +2012,263 @@ function toggleExplorer(){
 
 
 /* =====================================================
+   MODE SWITCHING
+===================================================== */
+
+function showCode(){
+
+  document
+    .getElementById("codeArea")
+    .style.display="flex";
+
+  document
+    .getElementById("sceneArea")
+    .classList.remove("active");
+
+  document
+    .querySelectorAll(".tool")
+    .forEach((el,i)=>{
+      if(i===0)el.classList.add("active");
+      else el.classList.remove("active");
+    });
+
+}
+
+function showScene(){
+
+  document
+    .getElementById("codeArea")
+    .style.display="none";
+
+  document
+    .getElementById("sceneArea")
+    .classList.add("active");
+
+  document
+    .querySelectorAll(".tool")
+    .forEach((el,i)=>{
+      if(i===1)el.classList.add("active");
+      else el.classList.remove("active");
+    });
+
+  updateInspector();
+
+}
+
+
+/* =====================================================
+   SCENE
+===================================================== */
+
+function setSceneTool(tool){
+
+  sceneTool=tool;
+
+  document
+    .querySelectorAll(".scene-tool")
+    .forEach(el=>el.classList.remove("active"));
+
+  if(tool==="select"){
+    document
+      .getElementById("selectTool")
+      .classList.add("active");
+  }
+
+  showToast(
+    tool==="move" ? "Move tool" : "Select tool"
+  );
+
+}
+
+function selectObject(event,name){
+
+  event.stopPropagation();
+
+  selectedObject=name;
+
+  document
+    .querySelectorAll(".scene-object")
+    .forEach(el=>{
+      el.classList.remove("selected");
+    });
+
+  const object=document.getElementById(
+    name==="Player"
+      ?"playerObject"
+      :"foodObject"
+  );
+
+  if(object){
+    object.classList.add("selected");
+  }
+
+  updateInspector();
+
+}
+
+function updateInspector(){
+
+  const object=
+    selectedObject==="Player"
+      ?document.getElementById("playerObject")
+      :document.getElementById("foodObject");
+
+  if(!object)return;
+
+  document.getElementById("propName").value=
+    selectedObject;
+
+  document.getElementById("posX").value=
+    parseInt(object.style.left)||0;
+
+  document.getElementById("posY").value=
+    parseInt(object.style.top)||0;
+
+}
+
+function changePosition(){
+
+  const object=
+    selectedObject==="Player"
+      ?document.getElementById("playerObject")
+      :document.getElementById("foodObject");
+
+  if(!object)return;
+
+  const x=
+    parseInt(document.getElementById("posX").value)||0;
+
+  const y=
+    parseInt(document.getElementById("posY").value)||0;
+
+  object.style.left=x+"px";
+  object.style.top=y+"px";
+
+}
+
+function changeObjectName(value){
+
+  const object=
+    selectedObject==="Player"
+      ?document.getElementById("playerObject")
+      :document.getElementById("foodObject");
+
+  if(!object)return;
+
+  const label=
+    object.querySelector(".selection-label");
+
+  if(label)label.textContent=value||selectedObject;
+
+}
+
+function addSceneObject(type){
+
+  const world=document.getElementById("sceneWorld");
+
+  const object=document.createElement("div");
+
+  const id=Date.now();
+
+  object.className="scene-object";
+  object.style.left="250px";
+  object.style.top="130px";
+
+  object.innerHTML=`
+
+    <span class="selection-label">
+      ${type}_${id}
+    </span>
+
+    ${
+      type==="Food"
+      ?'<div class="object-food"></div>'
+      :'<div class="object-body"></div>'
+    }
+
+  `;
+
+  object.onclick=function(e){
+
+    e.stopPropagation();
+
+    document
+      .querySelectorAll(".scene-object")
+      .forEach(el=>el.classList.remove("selected"));
+
+    object.classList.add("selected");
+
+    selectedObject=type;
+
+    document.getElementById("propName").value=
+      type+"_"+id;
+
+    document.getElementById("posX").value=250;
+    document.getElementById("posY").value=130;
+
+    document
+      .getElementById("inspector")
+      .classList.add("open");
+
+  };
+
+  world.appendChild(object);
+
+  document
+    .getElementById("inspector")
+    .classList.add("open");
+
+  showToast(type+" added");
+
+}
+
+function focusScene(){
+
+  document
+    .getElementById("sceneWorld")
+    .style.transform="translate(-50%,-50%)";
+
+  showToast("Scene centered");
+
+}
+
+
+/* =====================================================
+   INSPECTOR
+===================================================== */
+
+function toggleInspector(){
+
+  document
+    .getElementById("inspector")
+    .classList.toggle("open");
+
+}
+
+
+/* =====================================================
    CONSOLE
 ===================================================== */
 
 function addOutput(text,type=""){
 
-  const output =
+  const output=
     document.getElementById("output");
 
-  const line =
+  const line=
     document.createElement("div");
 
-  line.className =
-    "output-line " + type;
-
-  line.textContent =
-    text;
+  line.className="output-line "+type;
+  line.textContent=text;
 
   output.appendChild(line);
-
-  output.scrollTop =
-    output.scrollHeight;
+  output.scrollTop=output.scrollHeight;
 
 }
 
 function clearOutput(){
 
-  document
-    .getElementById("output")
-    .innerHTML = "";
+  document.getElementById("output").innerHTML="";
 
 }
 
@@ -1600,12 +2289,25 @@ function runProject(){
   );
 
   addOutput(
-    "Project: " + currentProject
+    "Project: "+currentProject
   );
 
   addOutput(
-    "Compiling " + currentFile + "..."
+    "Preparing scene..."
   );
+
+  setTimeout(()=>{
+
+    addOutput(
+      "Scene loaded successfully.",
+      "success"
+    );
+
+    addOutput(
+      "Compiling "+currentFile+"..."
+    );
+
+  },250);
 
   setTimeout(()=>{
 
@@ -1621,7 +2323,7 @@ function runProject(){
 
     openPreview();
 
-  },500);
+  },700);
 
 }
 
@@ -1661,7 +2363,7 @@ function togglePanel(){
 
 
 /* =====================================================
-   DASHBOARD RETURN
+   DASHBOARD
 ===================================================== */
 
 function backToDashboard(){
@@ -1676,6 +2378,14 @@ function backToDashboard(){
     .getElementById("dashboard")
     .classList.add("active");
 
+  document
+    .getElementById("explorer")
+    .classList.remove("open");
+
+  document
+    .getElementById("inspector")
+    .classList.remove("open");
+
   renderProjects();
 
 }
@@ -1689,20 +2399,18 @@ let toastTimer;
 
 function showToast(message){
 
-  const toast =
+  const toast=
     document.getElementById("toast");
 
-  toast.textContent =
-    message;
+  toast.textContent=message;
 
   toast.classList.add("show");
 
   clearTimeout(toastTimer);
 
-  toastTimer =
-    setTimeout(()=>{
-      toast.classList.remove("show");
-    },1400);
+  toastTimer=setTimeout(()=>{
+    toast.classList.remove("show");
+  },1400);
 
 }
 
@@ -1713,11 +2421,9 @@ function showToast(message){
 
 function escapeHTML(text){
 
-  const div =
-    document.createElement("div");
+  const div=document.createElement("div");
 
-  div.textContent =
-    text;
+  div.textContent=text;
 
   return div.innerHTML;
 
@@ -1732,13 +2438,9 @@ document
   .getElementById("projectName")
   .addEventListener("keydown",e=>{
 
-    if(e.key === "Enter"){
-      createProject();
-    }
+    if(e.key==="Enter")createProject();
 
-    if(e.key === "Escape"){
-      closeNewProject();
-    }
+    if(e.key==="Escape")closeNewProject();
 
   });
 
@@ -1747,32 +2449,44 @@ document
   .getElementById("code")
   .addEventListener("keydown",e=>{
 
-    if(e.key === "Tab"){
+    if(e.key==="Tab"){
 
       e.preventDefault();
 
-      const textarea = e.target;
+      const textarea=e.target;
 
-      const start =
-        textarea.selectionStart;
+      const start=textarea.selectionStart;
+      const end=textarea.selectionEnd;
 
-      const end =
-        textarea.selectionEnd;
-
-      textarea.value =
+      textarea.value=
         textarea.value.substring(0,start)
-        + "  "
-        + textarea.value.substring(end);
+        +"  "
+        +textarea.value.substring(end);
 
-      textarea.selectionStart =
-        textarea.selectionEnd =
-          start + 2;
+      textarea.selectionStart=
+        textarea.selectionEnd=
+        start+2;
 
       updateEditor();
 
     }
 
   });
+
+
+/* =====================================================
+   SCENE BACKGROUND TAP
+===================================================== */
+
+document
+  .getElementById("sceneWorkspace")
+  .addEventListener("click",()=>{
+
+    document
+      .querySelectorAll(".scene-object")
+      .forEach(el=>el.classList.remove("selected"));
+
+});
 
 
 /* =====================================================
