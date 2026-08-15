@@ -1016,6 +1016,9 @@ svg{
 .dict-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;background:#11151a;border:1px solid #242a31;border-radius:8px;margin-bottom:6px}.dict-command{font:700 11px monospace;color:#20c968}.dict-name{font-size:10px;color:#8c949d;text-align:right}.settings-grid{display:grid;gap:8px}.settings-grid label{font-size:10px;color:#8c949d}.settings-grid input,.settings-grid select{margin-top:4px}.audio-list{display:grid;gap:7px}.audio-item{display:flex;align-items:center;gap:8px;padding:9px;background:#11151a;border:1px solid #242a31;border-radius:8px}.audio-item span{flex:1;font-size:11px}
 @media(max-width:700px){.scene-panel{width:150px}.scene-panel.right{width:165px}.scene-fab{right:12px}.tile-palette{left:8px;right:8px;top:auto;height:110px}.tile-tools{right:8px}.tile-editor canvas{padding-bottom:115px}.asset-grid2{grid-template-columns:repeat(2,1fr)}}
 
+
+/* HOME / PROJECTS / SETTINGS */
+.resource-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}.resource-card{min-height:125px;padding:16px;text-align:left;border:1px solid #292929;border-radius:14px;background:#171717;color:#fff;display:flex;flex-direction:column;gap:7px}.resource-card.wide{grid-column:1/-1}.resource-card b{font-size:28px}.resource-card strong{font-size:15px}.resource-card span{font-size:11px;color:#777;line-height:1.35}.project-row{display:flex;align-items:center;gap:6px}.project-open{flex:1;display:flex;align-items:center;background:transparent;color:inherit;text-align:left;padding:0}.project-delete{width:44px;height:44px;border-radius:9px;background:#4a1717;color:#ff9b9b}.dict-add{display:grid;grid-template-columns:1fr 1fr auto;gap:7px;margin:10px 0}.dict-item button{margin-left:auto}.dict-item{min-height:48px}.project-meta{color:#777;font-size:10px}@media(max-width:600px){.dict-add{grid-template-columns:1fr}.resource-card{min-height:115px}}
 </style>
 </head>
 
@@ -1026,91 +1029,32 @@ svg{
 ===================================================== -->
 
 <section id="dashboard" class="screen active">
-
-<header class="topbar">
-
-  <div class="brand">
-
-    <div class="logo">
-      <svg viewBox="0 0 24 24" stroke-width="2">
-        <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
-        <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
-        <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
-      </svg>
-    </div>
-
-    Snake Forge
-
-  </div>
-
-  <button class="menu">
-    <svg viewBox="0 0 24 24" width="21">
-      <circle cx="12" cy="5" r="1"/>
-      <circle cx="12" cy="12" r="1"/>
-      <circle cx="12" cy="19" r="1"/>
-    </svg>
-  </button>
-
-</header>
-
+<header class="topbar"><div class="brand"><div class="logo"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/><path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/><circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/></svg></div>My Engine</div><button class="menu" onclick="showToast('My Engine')">⋮</button></header>
 <main class="dashboard-content">
-
-  <div class="welcome">
-    <h1>Welcome back</h1>
-    <p>Build your next game.</p>
-  </div>
-
-  <button class="new-project" onclick="openNewProject()">
-    <svg viewBox="0 0 24 24" stroke-width="2">
-      <path d="M12 5v14"/>
-      <path d="M5 12h14"/>
-    </svg>
-    NEW PROJECT
-  </button>
-
-  <section class="section">
-
-    <div class="section-head">
-      <span>RECENT PROJECTS</span>
-      <button onclick="renderProjects()">Refresh</button>
-    </div>
-
-    <div id="projectsList"></div>
-
-  </section>
-
+<div class="welcome"><h1>Crie seus recursos</h1><p>Arte, tilemaps, sons, assets e cenários ficam disponíveis para importar em qualquer projeto.</p></div>
+<div class="resource-grid">
+<button class="resource-card" onclick="openResource('art')"><b>🎨</b><strong>Arte</strong><span>Sprite Studio profissional</span></button>
+<button class="resource-card" onclick="openResource('tilemap')"><b>🧱</b><strong>Tilemap</strong><span>Crie mapas e tiles reutilizáveis</span></button>
+<button class="resource-card" onclick="openResource('audio')"><b>🎵</b><strong>Sound</strong><span>Biblioteca e recursos de áudio</span></button>
+<button class="resource-card" onclick="openResource('assets')"><b>📦</b><strong>Assets</strong><span>Biblioteca global de recursos</span></button>
+<button class="resource-card wide" onclick="openResource('scene')"><b>🗺️</b><strong>Cenário</strong><span>Crie props e cenários para reutilizar</span></button>
+</div>
 </main>
-
 <nav class="bottom-nav">
+<button class="nav active" onclick="showDashboard()">⌂<span>Home</span></button>
+<button class="nav" onclick="showProjectsScreen()">▣<span>Projects</span></button>
+<button class="nav" onclick="showSettingsScreen()">⚙<span>Settings</span></button>
+</nav></section>
 
-  <button class="nav active">
-    <svg viewBox="0 0 24 24" stroke-width="1.8">
-      <path d="m3 10 9-7 9 7"/>
-      <path d="M5 9v11h14V9"/>
-      <path d="M9 20v-6h6v6"/>
-    </svg>
-    Home
-  </button>
+<section id="projectsScreen" class="screen">
+<header class="topbar"><div class="brand">📁 Projects</div><button class="menu" onclick="openNewProject()">＋</button></header>
+<main class="dashboard-content"><div class="welcome"><h1>Projetos</h1><p>Abra, continue ou exclua seus jogos.</p></div><button class="new-project" onclick="openNewProject()">＋ NEW PROJECT</button><section class="section"><div class="section-head"><span>ALL PROJECTS</span><button onclick="renderProjects()">Refresh</button></div><div id="projectsList"></div></section></main>
+<nav class="bottom-nav"><button class="nav" onclick="showDashboard()">⌂<span>Home</span></button><button class="nav active" onclick="showProjectsScreen()">▣<span>Projects</span></button><button class="nav" onclick="showSettingsScreen()">⚙<span>Settings</span></button></nav></section>
 
-  <button class="nav" onclick="showToast('Projects')">
-    <svg viewBox="0 0 24 24" stroke-width="1.8">
-      <path d="M4 5h6l2 2h8v12H4z"/>
-    </svg>
-    Projects
-  </button>
-
-  <button class="nav" onclick="showToast('Settings')">
-    <svg viewBox="0 0 24 24" stroke-width="1.8">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
-    </svg>
-    Settings
-  </button>
-
-</nav>
-
-</section>
-
+<section id="settingsScreen" class="screen">
+<header class="topbar"><div class="brand">⚙ Settings</div></header>
+<main class="dashboard-content"><div class="welcome"><h1>Configurações</h1><p>Personalize a My Engine.</p></div><section class="section"><div class="section-head"><span>DICIONÁRIO</span><button onclick="resetDictionary()">Restaurar</button></div><div class="tool-card"><p class="tool-muted">Dê apelidos aos comandos. Exemplo: <b>cout | renomear</b> permite escrever <b>renomear</b> no código e a engine traduz para <b>cout</b>.</p><div class="dict-add"><input id="dictOriginal" class="input" placeholder="Comando original (ex: cout)"><input id="dictAlias" class="input" placeholder="Apelido (ex: renomear)"><button class="create" onclick="addDictionaryAlias()">＋ Adicionar</button></div></div><input id="settingsDictSearch" class="input" placeholder="Pesquisar comando ou apelido..." oninput="renderSettingsDictionary()"><div id="settingsDictList"></div></section></main>
+<nav class="bottom-nav"><button class="nav" onclick="showDashboard()">⌂<span>Home</span></button><button class="nav" onclick="showProjectsScreen()">▣<span>Projects</span></button><button class="nav active" onclick="showSettingsScreen()">⚙<span>Settings</span></button></nav></section>
 
 <!-- =====================================================
      NEW PROJECT
@@ -1723,71 +1667,15 @@ function saveProjects(projects){
 }
 
 function renderProjects(){
-
-  const list=document.getElementById("projectsList");
+  const list=document.getElementById("projectsList"); if(!list)return;
   const projects=getProjects();
-
-  if(!projects.length){
-
-    list.innerHTML=`
-      <div class="project-card">
-        <div class="project-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 5v14"/>
-            <path d="M5 12h14"/>
-          </svg>
-        </div>
-
-        <div class="project-info">
-          <div class="project-name">
-            No projects yet
-          </div>
-
-          <div class="project-meta">
-            Create your first game
-          </div>
-        </div>
-      </div>
-    `;
-
-    return;
-  }
-
-  list.innerHTML=projects.slice(0,5).map(p=>`
-
-    <button class="project-card"
-      onclick="openProject(${JSON.stringify(p.name)})">
-
-      <div class="project-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M7 4h10"/>
-          <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
-          <path d="M9 14h6"/>
-          <path d="M12 11v6"/>
-        </svg>
-      </div>
-
-      <div class="project-info">
-
-        <div class="project-name">
-          ${escapeHTML(p.name)}
-        </div>
-
-        <div class="project-meta">
-          Last opened: Today
-        </div>
-
-      </div>
-
-      <svg class="arrow" viewBox="0 0 24 24">
-        <path d="m9 18 6-6-6-6"/>
-      </svg>
-
-    </button>
-
-  `).join("");
-
+  if(!projects.length){list.innerHTML='<div class="project-card"><div class="project-info"><div class="project-name">Nenhum projeto</div><div class="project-meta">Crie seu primeiro jogo.</div></div></div>';return;}
+  list.innerHTML=projects.map(p=>`<div class="project-card project-row"><button class="project-open" onclick="openProjectById(${p.id})"><div class="project-icon">🎮</div><div class="project-info"><div class="project-name">${escapeHTML(p.name)}</div><div class="project-meta">Criado ${new Date(p.createdAt).toLocaleDateString()}</div></div></button><button class="project-delete" onclick="deleteProject(${p.id},event)">🗑️</button></div>`).join("");
 }
+
+function openProjectById(id){const p=getProjects().find(x=>x.id===id);if(p)openProject(p.name);}
+function deleteProject(id,e){if(e)e.stopPropagation();const p=getProjects().find(x=>x.id===id);if(!p)return;if(!confirm(`Excluir o projeto "${p.name}"? Esta ação remove também os arquivos salvos do projeto.`))return;saveProjects(getProjects().filter(x=>x.id!==id));localStorage.removeItem(FILES_KEY+"_"+p.name);if(currentProject===p.name){currentProject=null;}renderProjects();showProjectsScreen();showToast('Projeto excluído');}
+
 
 
 /* =====================================================
@@ -1843,7 +1731,7 @@ function createProject(){
 
   closeNewProject();
   renderProjects();
-  openProject(name);
+  showProjectsScreen();
 
 }
 
@@ -2398,6 +2286,20 @@ function togglePanel(){
    DASHBOARD
 ===================================================== */
 
+function hideScreens(){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));}
+function showDashboard(){hideScreens();document.getElementById('dashboard').classList.add('active');renderProjects();}
+function showProjectsScreen(){hideScreens();document.getElementById('projectsScreen').classList.add('active');renderProjects();}
+function showSettingsScreen(){hideScreens();document.getElementById('settingsScreen').classList.add('active');renderSettingsDictionary();}
+function openResource(name){openEngineTools();setTimeout(()=>enginePage(name),30);}
+const DICT_SETTINGS_KEY='myengine_dictionary_aliases';
+const DEFAULT_DICTIONARY=[['cout',''],['mostrar',''],['esperar',''],['mover',''],['girar',''],['criar_sprite',''],['tocar_audio',''],['parar_audio',''],['colidir',''],['se',''],['enquanto',''],['variavel',''],['cena',''],['tile',''],['salvar','']];
+function getDictionary(){try{return JSON.parse(localStorage.getItem(DICT_SETTINGS_KEY))||DEFAULT_DICTIONARY.map(x=>[x[0],x[1]]);}catch{return DEFAULT_DICTIONARY.map(x=>[x[0],x[1]]);}}
+function saveDictionary(d){localStorage.setItem(DICT_SETTINGS_KEY,JSON.stringify(d));}
+function renderSettingsDictionary(){const el=document.getElementById('settingsDictList');if(!el)return;const q=(document.getElementById('settingsDictSearch')?.value||'').toLowerCase();const d=getDictionary();el.innerHTML=d.filter(x=>(x[0]+' '+x[1]).toLowerCase().includes(q)).map((x,i)=>`<div class="dict-item"><span><b class="dict-command">${escapeHTML(x[0])}</b>${x[1]?` <span class="dict-name">→ ${escapeHTML(x[1])}</span>`:''}</span><button class="tool-btn" onclick="removeDictionaryAlias(${i})">🗑️</button></div>`).join('')||'<div class="tool-muted">Nenhum comando encontrado.</div>';}
+function addDictionaryAlias(){const o=document.getElementById('dictOriginal').value.trim();const a=document.getElementById('dictAlias').value.trim();if(!o||!a)return;const d=getDictionary();const i=d.findIndex(x=>x[0]===o);if(i>=0)d[i][1]=a;else d.push([o,a]);saveDictionary(d);document.getElementById('dictOriginal').value='';document.getElementById('dictAlias').value='';renderSettingsDictionary();showToast('Apelido salvo');}
+function removeDictionaryAlias(i){const d=getDictionary();if(!d[i])return;if(!confirm('Remover este comando do dicionário?'))return;d.splice(i,1);saveDictionary(d);renderSettingsDictionary();}
+function resetDictionary(){if(!confirm('Restaurar o dicionário padrão?'))return;saveDictionary(DEFAULT_DICTIONARY.map(x=>[x[0],x[1]]));renderSettingsDictionary();}
+
 function backToDashboard(){
 
   saveCurrentFile();
@@ -2406,9 +2308,7 @@ function backToDashboard(){
     .getElementById("editor")
     .classList.remove("active");
 
-  document
-    .getElementById("dashboard")
-    .classList.add("active");
+  document.getElementById("projectsScreen").classList.add("active");
 
   document
     .getElementById("explorer")
@@ -2538,7 +2438,7 @@ function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();saveTile2();saveAssets2();saveProject2();showToast('My Engine salvo')}
 const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
 function renderDict2(){const q=(document.getElementById('dictSearch2')?.value||'').toLowerCase();document.getElementById('dictList2').innerHTML=DICT2.filter(x=>(x[0]+' '+x[1]).toLowerCase().includes(q)).map(x=>`<div class="dict-item"><span class="dict-command">${x[0]}</span><span class="dict-name">${x[1]}</span></div>`).join('')}
-function engineTranslate(){let s=document.getElementById('engineCode').value;let out=s.replace(/mostrar\s*\((.*?)\)/g,'std::cout << $1;').replace(/variavel\s+(\w+)\s*=\s*(.*)/g,'auto $1 = $2;').replace(/se\s*\((.*?)\)/g,'if($1)');document.getElementById('engineTerminal').textContent=out}
+function engineTranslate(){let s=document.getElementById('engineCode').value;for(const [original,alias] of getDictionary()){if(alias){const re=new RegExp('\\b'+alias.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g');s=s.replace(re,original)}}let out=s.replace(/mostrar\s*\((.*?)\)/g,'std::cout << $1;').replace(/variavel\s+(\w+)\s*=\s*(.*)/g,'auto $1 = $2;').replace(/se\s*\((.*?)\)/g,'if($1)');document.getElementById('engineTerminal').textContent=out}
 function engineRunCode(){engineTranslate();document.getElementById('engineTerminal').textContent+='\n\n[My Engine] Código enviado para execução.'}
 function engineCodeSave(){localStorage.setItem('myengine_code',document.getElementById('engineCode').value);document.getElementById('engineTerminal').textContent='Código salvo localmente.'}
 /* ART — PROFESSIONAL SPRITE STUDIO */
@@ -2653,7 +2553,7 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
       <button data-tool="assets" onclick="enginePage('assets')">📦 Assets</button>
       <button data-tool="audio" onclick="enginePage('audio')">🎵 Áudio</button>
       <button data-tool="project" onclick="enginePage('project')">⚙️ Projeto</button>
-      <button data-tool="dictionary" onclick="enginePage('dictionary')">📖 Dicionário</button>
+      
     </nav>
 
     <main id="tool-code" class="engine-page active">
