@@ -92,106 +92,6 @@ svg{
   padding:28px 18px 100px;
 }
 
-.home-hint{
-  margin:0;
-  color:#687079;
-  font-size:13px;
-}
-
-.home-tools-section{margin-top:30px}
-.home-tools-section .section-head{align-items:flex-start}
-.home-tools-section .section-head > div{width:100%}
-.home-tools-section .section-head span{display:block;margin-bottom:5px}
-.home-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.home-tool-card{min-height:142px;padding:15px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:5px;text-align:left;background:#11151a;border:1px solid #242a31;border-radius:13px;cursor:pointer;transition:transform .12s,background .12s,border-color .12s}
-.home-tool-card:active{transform:scale(.98);background:#171c21;border-color:#91e864}
-.home-tool-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;background:#171c21;font-size:22px;margin-bottom:3px}
-.home-tool-title{font-size:15px;font-weight:800}
-.home-tool-desc{color:#737c85;font-size:10px;line-height:1.35}
-.home-tool-wide{grid-column:1 / -1;min-height:118px}
-
-.projects-content{
-  flex:1;
-  overflow:auto;
-  padding:28px 18px 100px;
-}
-
-.projects-heading{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:18px;
-}
-
-.projects-heading h1{
-  margin:0 0 5px;
-  font-size:27px;
-}
-
-.projects-heading p{
-  margin:0;
-  color:#818992;
-  font-size:13px;
-}
-
-.projects-refresh{
-  background:#171c21;
-  color:#91e864;
-  border:1px solid #293039;
-  border-radius:9px;
-  padding:9px 12px;
-  font-size:12px;
-}
-
-.projects-empty{
-  padding:42px 20px;
-  text-align:center;
-  background:#11151a;
-  border:1px dashed #2a3037;
-  border-radius:14px;
-  color:#727a83;
-}
-
-.projects-empty strong{
-  display:block;
-  color:#edf0f2;
-  font-size:16px;
-  margin-bottom:6px;
-}
-
-
-/* =====================================================
-   SETTINGS
-===================================================== */
-.settings-content{
-  flex:1;
-  overflow:auto;
-  padding:24px 18px 100px;
-}
-.settings-heading h1{margin:0 0 5px;font-size:27px}
-.settings-heading p{margin:0;color:#818992;font-size:13px}
-.settings-list{display:grid;gap:10px;margin-top:22px}
-.settings-card{width:100%;display:flex;align-items:center;gap:13px;padding:14px;background:#11151a;border:1px solid #242a31;border-radius:13px;text-align:left}
-.settings-card:active{background:#171c21}
-.settings-card-icon{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border-radius:11px;background:#171c21;font-size:22px}
-.settings-card-body{flex:1;min-width:0}
-.settings-card-title{font-size:14px;font-weight:800}
-.settings-card-desc{margin-top:4px;color:#737c85;font-size:10px;line-height:1.35}
-.settings-arrow{color:#68717a;font-size:22px}
-.dictionary-head{margin-top:22px}
-.dictionary-toolbar{display:flex;gap:7px;align-items:center;margin-top:12px}
-.dictionary-toolbar .tool-input{flex:1}
-.dictionary-list{display:grid;gap:7px;margin-top:10px}
-.dictionary-row{display:grid;grid-template-columns:minmax(90px,1fr) 18px minmax(90px,1fr) auto;gap:7px;align-items:center;padding:9px;background:#11151a;border:1px solid #242a31;border-radius:10px}
-.dictionary-row input{min-width:0;height:36px;background:#0b0e11;color:#fff;border:1px solid #303841;border-radius:7px;padding:0 9px;outline:none;font:12px monospace}
-.dictionary-row .pipe{color:#68717a;text-align:center;font-weight:800}
-.dictionary-row .dict-delete{width:34px;height:34px;border-radius:7px;background:#8f2525;color:#fff}
-.dictionary-empty{padding:28px 15px;text-align:center;color:#737c85;background:#11151a;border:1px dashed #2a3037;border-radius:10px;font-size:11px}
-.dictionary-help{margin-top:8px;color:#68717a;font-size:10px;line-height:1.45}
-@media(max-width:430px){.dictionary-row{grid-template-columns:1fr 14px 1fr auto}.dictionary-row input{font-size:11px;padding:0 7px}}
-
-
 .welcome h1{
   margin:0 0 7px;
   font-size:27px;
@@ -244,44 +144,18 @@ svg{
 .project-card{
   width:100%;
   min-height:88px;
-  padding:9px;
+  padding:15px;
   background:#11151a;
   border:1px solid #242a31;
   border-radius:13px;
   display:flex;
   align-items:center;
-  gap:9px;
+  gap:13px;
   text-align:left;
   margin-bottom:9px;
 }
 
 .project-card:active{background:#171b20}
-.project-open{
-  flex:1;
-  min-width:0;
-  min-height:68px;
-  padding:6px;
-  display:flex;
-  align-items:center;
-  gap:13px;
-  background:transparent;
-  text-align:left;
-  border-radius:9px;
-}
-.project-open:active{background:#171b20}
-.project-delete{
-  width:38px;
-  height:38px;
-  flex:0 0 38px;
-  border-radius:9px;
-  display:grid;
-  place-items:center;
-  background:#261619;
-  color:#ff7272;
-  border:1px solid #4b252a;
-}
-.project-delete:active{background:#8f2525;color:#fff}
-.project-delete svg{width:18px}
 
 .project-icon{
   width:48px;
@@ -1126,18 +1000,21 @@ svg{
 .engine-nav button.active{background:#91e864;color:#091006;border-color:#91e864}
 .engine-page{display:none;flex:1;min-height:0;overflow:auto;padding:12px}.engine-page.active{display:block}
 .tool-card{background:#11151a;border:1px solid #242a31;border-radius:12px;padding:12px;margin-bottom:10px}.tool-title{font-weight:800;margin-bottom:5px}.tool-muted{color:#747d86;font-size:11px}.tool-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.tool-btn{min-height:38px;padding:0 11px;border-radius:8px;background:#20262d;color:#fff;border:1px solid #303841}.tool-btn.primary{background:#2878ff;border-color:#2878ff}.tool-btn.green{background:#20c968;color:#071409}.tool-input{width:100%;height:38px;background:#0b0e11;color:#fff;border:1px solid #303841;border-radius:8px;padding:0 10px;outline:none}
-/* integrated pixel art */
-.art-wrap{position:relative;height:48vh;min-height:300px;background:#ddd;border-radius:10px;overflow:hidden;border:1px solid #333;touch-action:none}.art-wrap canvas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;background:#fff;touch-action:none}.art-info{position:absolute;bottom:8px;left:8px;padding:5px 7px;border-radius:6px;background:#000b;color:#fff;font:10px monospace}
-.art-toolbar{display:flex;gap:6px;overflow:auto;padding:7px 0}.art-toolbar button{flex:0 0 auto;width:42px;height:38px;border-radius:7px;background:#20262d}.art-toolbar button.active{background:#2878ff}.art-controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+/* =====================================================
+   PROFESSIONAL MOBILE SPRITE STUDIO
+===================================================== */
+.art-studio{display:grid;grid-template-columns:1fr 250px;gap:10px;min-height:0}.art-main{min-width:0}.art-stage{position:relative;height:62vh;min-height:420px;background:#080b0f;border:1px solid #2b333c;border-radius:14px;overflow:hidden;touch-action:none;box-shadow:inset 0 0 0 1px #000}.art-stage canvas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;touch-action:none;box-shadow:0 0 0 1px #333}.art-stage .art-overlay{position:absolute;inset:0;pointer-events:none}.art-topbar{display:flex;gap:6px;align-items:center;overflow:auto;padding:7px 0}.art-toolstrip{display:flex;gap:5px;overflow:auto;padding:7px;background:#0f1419;border:1px solid #252d35;border-radius:11px}.art-toolstrip button,.art-mini-btn{flex:0 0 auto;height:38px;min-width:40px;padding:0 9px;border-radius:8px;background:#1b2229;border:1px solid #303943;color:#dfe6ed}.art-toolstrip button.active{background:#2878ff;border-color:#2878ff;color:#fff}.art-stagebar{position:absolute;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;pointer-events:none;z-index:5}.art-stagebar>div{display:flex;gap:5px;pointer-events:auto}.art-badge{padding:6px 8px;border-radius:7px;background:#090d12e8;border:1px solid #303841;font:10px monospace;color:#aeb7c0}.art-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.art-panel{background:#11161c;border:1px solid #252d35;border-radius:11px;padding:9px}.art-panel-title{font-size:10px;font-weight:900;color:#9aa4ae;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}.art-side{min-width:0;max-height:calc(62vh + 104px);overflow:auto}.art-side .art-panel{margin-bottom:8px}.art-color-row{display:flex;gap:7px;align-items:center}.art-color-row input[type=color]{width:48px;height:40px;padding:2px;border-radius:8px;background:#0b0e11;border:1px solid #303841}.art-color-row input[type=text]{flex:1}.art-palette{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.art-swatch{aspect-ratio:1;border-radius:6px;border:1px solid #3b434c;padding:0}.art-swatch.active{outline:2px solid #fff;outline-offset:1px}.art-layers,.art-frames{display:grid;gap:5px}.art-layer,.art-frame{display:flex;align-items:center;gap:6px;min-height:35px;padding:5px 7px;border-radius:7px;background:#171d23;border:1px solid #2a323a;font-size:10px}.art-layer.active,.art-frame.active{background:#2878ff;color:#fff;border-color:#2878ff}.art-layer span,.art-frame span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.art-layer button,.art-frame button{width:26px;height:26px;border-radius:5px;background:#252d35}.art-range{width:100%}.art-stat{font:10px monospace;color:#7f8993}.art-hint{font-size:10px;line-height:1.45;color:#717b85}.art-file{display:grid;gap:6px}.art-file input{height:35px}.art-select-box{position:absolute;border:1px dashed #fff;box-shadow:0 0 0 1px #000;pointer-events:none;z-index:4}.art-onion{opacity:.35;pointer-events:none}.art-ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;pointer-events:none}.art-checker{background-color:#d7d7d7;background-image:linear-gradient(45deg,#c0c0c0 25%,transparent 25%),linear-gradient(-45deg,#c0c0c0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#c0c0c0 75%),linear-gradient(-45deg,transparent 75%,#c0c0c0 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}.art-kbd{display:inline-block;padding:1px 4px;border:1px solid #444;border-radius:4px;background:#191d22;font:9px monospace;color:#aaa}
+@media(max-width:900px){.art-studio{grid-template-columns:1fr}.art-side{max-height:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.art-side .art-panel{margin:0}.art-stage{height:55vh;min-height:360px}.art-bottom{grid-template-columns:1fr 1fr}.art-bottom .art-panel:last-child{grid-column:1/-1}}
+@media(max-width:560px){.art-side{grid-template-columns:1fr}.art-stage{height:52vh;min-height:330px}.art-bottom{grid-template-columns:1fr}.art-bottom .art-panel:last-child{grid-column:auto}.art-toolstrip button{min-width:38px;padding:0 7px}.art-stagebar{top:6px;left:6px;right:6px}}
 /* integrated scene */
 .scene-editor{position:relative;height:62vh;min-height:380px;background:#080c10;border:1px solid #242a31;border-radius:11px;overflow:hidden;touch-action:none}.scene-editor canvas{width:100%;height:100%;display:block;touch-action:none}.scene-panel{position:absolute;top:8px;left:8px;width:180px;max-height:calc(100% - 16px);overflow:auto;background:#0e1217ee;border:1px solid #303841;border-radius:9px;padding:8px}.scene-panel.right{left:auto;right:8px;width:200px}.scene-panel h4{margin:0 0 7px;font-size:10px;color:#8c949d}.scene-node{width:100%;text-align:left;background:#171c21;color:#aeb6bf;border-radius:6px;padding:8px;margin-bottom:4px;font-size:10px}.scene-node.selected{background:#2878ff;color:#fff}.scene-fab{position:absolute;right:215px;bottom:12px;width:46px;height:46px;border-radius:50%;background:#2878ff;font-size:20px}.scene-toolbar2{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;background:#0e1217ee;border:1px solid #303841;padding:5px;border-radius:9px;z-index:4}.scene-toolbar2 button{width:36px;height:32px;border-radius:6px;background:#20262d}.scene-toolbar2 button.active{background:#2878ff}
 /* integrated tilemap */
 .tile-editor{position:relative;height:62vh;min-height:380px;background:#12161b;border:1px solid #242a31;border-radius:11px;overflow:hidden}.tile-editor canvas{width:100%;height:100%;display:block;touch-action:none}.tile-palette{position:absolute;right:8px;top:52px;bottom:8px;width:155px;overflow:auto;background:#0e1217ee;border:1px solid #303841;border-radius:9px;padding:8px}.tile-grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.tile-grid2 button{aspect-ratio:1;border-radius:6px;background:#222;border:1px solid #343b44;font-size:18px}.tile-grid2 button.active{outline:2px solid #2878ff}.tile-tools{position:absolute;top:8px;left:8px;right:175px;display:flex;gap:5px;overflow:auto;z-index:3}.tile-tools button{height:38px;flex:0 0 auto;padding:0 10px;border-radius:7px;background:#20262d}.tile-tools button.active{background:#2878ff}
 /* assets */
-.asset-toolbar{display:flex;gap:7px;overflow:auto;margin:8px 0}.asset-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.asset-item{position:relative;min-height:110px;background:#11151a;border:1px solid #242a31;border-radius:10px;overflow:hidden}.asset-preview2{height:75px;display:grid;place-items:center;background:#0b0e11;font-size:35px}.asset-preview2 img{width:100%;height:100%;object-fit:contain}.asset-meta{padding:6px;font-size:10px}.asset-actions2{display:flex;gap:5px;padding:0 6px 6px}.asset-actions2 .tool-btn{min-height:28px;padding:0 7px;font-size:9px}.asset-del{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:6px;background:#8f2525}.folder-row{display:flex;gap:7px;overflow:auto;margin-bottom:8px}.folder-chip{padding:7px 10px;border-radius:7px;background:#171c21;color:#aeb6bf;font-size:10px}.folder-chip.active{background:#2878ff;color:#fff}
+.asset-toolbar{display:flex;gap:7px;overflow:auto;margin:8px 0}.asset-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.asset-item{position:relative;min-height:110px;background:#11151a;border:1px solid #242a31;border-radius:10px;overflow:hidden}.asset-preview2{height:75px;display:grid;place-items:center;background:#0b0e11;font-size:35px}.asset-preview2 img{width:100%;height:100%;object-fit:contain}.asset-meta{padding:6px;font-size:10px}.asset-del{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:6px;background:#8f2525}.folder-row{display:flex;gap:7px;overflow:auto;margin-bottom:8px}.folder-chip{padding:7px 10px;border-radius:7px;background:#171c21;color:#aeb6bf;font-size:10px}.folder-chip.active{background:#2878ff;color:#fff}
 /* dictionary/project/audio */
 .dict-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;background:#11151a;border:1px solid #242a31;border-radius:8px;margin-bottom:6px}.dict-command{font:700 11px monospace;color:#20c968}.dict-name{font-size:10px;color:#8c949d;text-align:right}.settings-grid{display:grid;gap:8px}.settings-grid label{font-size:10px;color:#8c949d}.settings-grid input,.settings-grid select{margin-top:4px}.audio-list{display:grid;gap:7px}.audio-item{display:flex;align-items:center;gap:8px;padding:9px;background:#11151a;border:1px solid #242a31;border-radius:8px}.audio-item span{flex:1;font-size:11px}
-@media(max-width:700px){.home-tools-grid{grid-template-columns:1fr 1fr}.home-tool-wide{grid-column:1 / -1}.scene-panel{width:150px}.scene-panel.right{width:165px}.scene-fab{right:12px}.tile-palette{left:8px;right:8px;top:auto;height:110px}.tile-tools{right:8px}.tile-editor canvas{padding-bottom:115px}.asset-grid2{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.scene-panel{width:150px}.scene-panel.right{width:165px}.scene-fab{right:12px}.tile-palette{left:8px;right:8px;top:auto;height:110px}.tile-tools{right:8px}.tile-editor canvas{padding-bottom:115px}.asset-grid2{grid-template-columns:repeat(2,1fr)}}
 
 </style>
 </head>
@@ -1180,7 +1057,7 @@ svg{
 
   <div class="welcome">
     <h1>Welcome back</h1>
-    <p>Crie seus recursos antes de montar o projeto.</p>
+    <p>Build your next game.</p>
   </div>
 
   <button class="new-project" onclick="openNewProject()">
@@ -1191,45 +1068,15 @@ svg{
     NEW PROJECT
   </button>
 
-  <section class="section home-tools-section">
+  <section class="section">
+
     <div class="section-head">
-      <div>
-        <span>ENGINE TOOLS</span>
-        <p class="home-hint">Crie props, arte e recursos para importar depois nos seus projetos.</p>
-      </div>
+      <span>RECENT PROJECTS</span>
+      <button onclick="renderProjects()">Refresh</button>
     </div>
 
-    <div class="home-tools-grid">
-      <button class="home-tool-card" onclick="openEngineTools('art','dashboard')">
-        <span class="home-tool-icon">🎨</span>
-        <span class="home-tool-title">Arte</span>
-        <span class="home-tool-desc">Pixel art, sprites e animações.</span>
-      </button>
+    <div id="projectsList"></div>
 
-      <button class="home-tool-card" onclick="openEngineTools('tilemap','dashboard')">
-        <span class="home-tool-icon">🧱</span>
-        <span class="home-tool-title">Tilemap</span>
-        <span class="home-tool-desc">Monte mapas e conjuntos de tiles.</span>
-      </button>
-
-      <button class="home-tool-card" onclick="openEngineTools('audio','dashboard')">
-        <span class="home-tool-icon">🎵</span>
-        <span class="home-tool-title">Sound</span>
-        <span class="home-tool-desc">Crie e organize recursos de áudio.</span>
-      </button>
-
-      <button class="home-tool-card" onclick="openEngineTools('assets','dashboard')">
-        <span class="home-tool-icon">📦</span>
-        <span class="home-tool-title">Assets</span>
-        <span class="home-tool-desc">Biblioteca global de recursos.</span>
-      </button>
-
-      <button class="home-tool-card home-tool-wide" onclick="openEngineTools('scene','dashboard')">
-        <span class="home-tool-icon">🗺️</span>
-        <span class="home-tool-title">Cenário</span>
-        <span class="home-tool-desc">Crie props, organize objetos e prepare cenários para importar nos projetos.</span>
-      </button>
-    </div>
   </section>
 
 </main>
@@ -1245,14 +1092,14 @@ svg{
     Home
   </button>
 
-  <button class="nav" onclick="showProjectsScreen()">
+  <button class="nav" onclick="showToast('Projects')">
     <svg viewBox="0 0 24 24" stroke-width="1.8">
       <path d="M4 5h6l2 2h8v12H4z"/>
     </svg>
     Projects
   </button>
 
-  <button class="nav" onclick="showSettingsScreen()">
+  <button class="nav" onclick="showToast('Settings')">
     <svg viewBox="0 0 24 24" stroke-width="1.8">
       <circle cx="12" cy="12" r="3"/>
       <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
@@ -1260,143 +1107,6 @@ svg{
     Settings
   </button>
 
-</nav>
-
-</section>
-
-
-<!-- =====================================================
-     SETTINGS
-===================================================== -->
-
-<section id="settings" class="screen">
-
-<header class="topbar">
-  <div class="brand">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" stroke-width="2">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
-      </svg>
-    </div>
-    Settings
-  </div>
-  <button class="menu" onclick="showDashboardScreen()">
-    <svg viewBox="0 0 24 24" width="21"><path d="m15 18-6-6 6-6"/></svg>
-  </button>
-</header>
-
-<main class="settings-content">
-  <div class="settings-heading">
-    <h1>Settings</h1>
-    <p>Configure a engine e personalize os comandos.</p>
-  </div>
-
-  <div class="settings-list">
-    <button class="settings-card" onclick="openSettingsDictionary()">
-      <span class="settings-card-icon">📖</span>
-      <span class="settings-card-body">
-        <span class="settings-card-title">Dicionário</span>
-        <span class="settings-card-desc">Dê apelidos aos comandos. Ex.: <b>cout | renomear</b>.</span>
-      </span>
-      <span class="settings-arrow">›</span>
-    </button>
-  </div>
-
-  <div id="settingsDictionary" style="display:none">
-    <div class="dictionary-head">
-      <div class="settings-heading">
-        <h1>Dicionário de comandos</h1>
-        <p>O comando original fica à esquerda e o apelido que você escolheu fica à direita.</p>
-      </div>
-      <div class="dictionary-toolbar">
-        <input id="settingsDictSearch" class="tool-input" placeholder="Pesquisar comando ou apelido..." oninput="renderSettingsDictionary()">
-        <button class="tool-btn primary" onclick="addDictionaryCommand()">＋ Adicionar</button><button class="tool-btn" onclick="resetDictionary2()">↺ Padrão</button>
-      </div>
-      <div class="dictionary-help">
-        Exemplo: <b>cout | renomear</b>. No código, <b>renomear</b> será convertido para <b>cout</b>. Deixe o apelido vazio para não criar um nome alternativo.
-      </div>
-      <div id="settingsDictionaryList" class="dictionary-list"></div>
-    </div>
-  </div>
-</main>
-
-<nav class="bottom-nav">
-  <button class="nav" onclick="showDashboardScreen()">
-    <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg>
-    Home
-  </button>
-  <button class="nav" onclick="showProjectsScreen()">
-    <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 5h6l2 2h8v12H4z"/></svg>
-    Projects
-  </button>
-  <button class="nav active">
-    <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/></svg>
-    Settings
-  </button>
-</nav>
-
-</section>
-
-
-<!-- =====================================================
-     PROJECTS
-===================================================== -->
-
-<section id="projects" class="screen">
-
-<header class="topbar">
-  <div class="brand">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" stroke-width="2">
-        <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
-        <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
-        <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
-      </svg>
-    </div>
-    Projects
-  </div>
-  <button class="menu" onclick="showDashboardScreen()">
-    <svg viewBox="0 0 24 24" width="21">
-      <path d="m15 18-6-6 6-6"/>
-    </svg>
-  </button>
-</header>
-
-<main class="projects-content">
-  <div class="projects-heading">
-    <div>
-      <h1>Your projects</h1>
-      <p id="projectsCount">0 projects</p>
-    </div>
-    <button class="projects-refresh" onclick="renderProjects()">Refresh</button>
-  </div>
-
-  <div id="projectsList"></div>
-</main>
-
-<nav class="bottom-nav">
-  <button class="nav" onclick="showDashboardScreen()">
-    <svg viewBox="0 0 24 24" stroke-width="1.8">
-      <path d="m3 10 9-7 9 7"/>
-      <path d="M5 9v11h14V9"/>
-      <path d="M9 20v-6h6v6"/>
-    </svg>
-    Home
-  </button>
-  <button class="nav active">
-    <svg viewBox="0 0 24 24" stroke-width="1.8">
-      <path d="M4 5h6l2 2h8v12H4z"/>
-    </svg>
-    Projects
-  </button>
-  <button class="nav" onclick="showSettingsScreen()">
-    <svg viewBox="0 0 24 24" stroke-width="1.8">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
-    </svg>
-    Settings
-  </button>
 </nav>
 
 </section>
@@ -1988,25 +1698,6 @@ public:
 
 
 /* =====================================================
-   DASHBOARD / PROJECTS NAVIGATION
-===================================================== */
-
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(screen=>screen.classList.remove('active'));
-  const target=document.getElementById(id);
-  if(target)target.classList.add('active');
-}
-
-function showDashboardScreen(){
-  showScreen('dashboard');
-}
-
-function showProjectsScreen(){
-  showScreen('projects');
-  renderProjects();
-}
-
-/* =====================================================
    PROJECTS
 ===================================================== */
 
@@ -2034,110 +1725,68 @@ function saveProjects(projects){
 function renderProjects(){
 
   const list=document.getElementById("projectsList");
-  if(!list)return;
-
   const projects=getProjects();
-  const count=document.getElementById("projectsCount");
-
-  if(count){
-    count.textContent=projects.length===1 ? "1 project" : projects.length+" projects";
-  }
 
   if(!projects.length){
+
     list.innerHTML=`
-      <div class="projects-empty">
-        <strong>No projects yet</strong>
-        Create your first game with NEW PROJECT. Your projects live only in this tab.
-      </div>
-    `;
-    return;
-  }
-
-  list.innerHTML=projects.map((p,index)=>{
-    const id=p.id ?? index;
-    const safeId=String(id).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-    return `
       <div class="project-card">
-        <button class="project-open" onclick="openProjectById('${safeId}')" aria-label="Abrir projeto ${escapeHTML(p.name)}">
-          <div class="project-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M7 4h10"/>
-              <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
-              <path d="M9 14h6"/>
-              <path d="M12 11v6"/>
-            </svg>
-          </div>
-          <div class="project-info">
-            <div class="project-name">${escapeHTML(p.name)}</div>
-            <div class="project-meta">Último acesso: ${p.lastOpened ? new Date(p.lastOpened).toLocaleDateString() : "Hoje"}</div>
-          </div>
-          <svg class="arrow" viewBox="0 0 24 24">
-            <path d="m9 18 6-6-6-6"/>
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 5v14"/>
+            <path d="M5 12h14"/>
           </svg>
-        </button>
-        <button type="button" class="project-delete" onclick="deleteProjectById('${safeId}')" aria-label="Excluir ${escapeHTML(p.name)}" title="Excluir projeto">
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path d="M4 7h16"/>
-            <path d="M9 7V4h6v3"/>
-            <path d="M7 7l1 13h8l1-13"/>
-            <path d="M10 11v5M14 11v5"/>
-          </svg>
-        </button>
+        </div>
+
+        <div class="project-info">
+          <div class="project-name">
+            No projects yet
+          </div>
+
+          <div class="project-meta">
+            Create your first game
+          </div>
+        </div>
       </div>
     `;
-  }).join("");
-}
 
-function openProjectById(id){
-  const projects=getProjects();
-  const project=projects.find(p=>String(p.id ?? "")===String(id));
-  if(!project){
-    showToast("Projeto não encontrado");
-    renderProjects();
     return;
   }
-  openProject(project);
-}
 
-function deleteProjectById(id){
-  const projects=getProjects();
-  const normalizedId=String(id);
-  const index=projects.findIndex((p,i)=>String(p.id ?? i)===normalizedId);
+  list.innerHTML=projects.slice(0,5).map(p=>`
 
-  if(index<0){
-    showToast("Projeto não encontrado");
-    renderProjects();
-    return false;
-  }
+    <button class="project-card"
+      onclick="openProject(${JSON.stringify(p.name)})">
 
-  const project=projects[index];
-  const confirmed=window.confirm(
-    `Excluir o projeto "${project.name}"?\n\nOs arquivos salvos desse projeto também serão apagados. Essa ação não pode ser desfeita.`
-  );
-  if(!confirmed)return false;
+      <div class="project-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 4h10"/>
+          <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
+          <path d="M9 14h6"/>
+          <path d="M12 11v6"/>
+        </svg>
+      </div>
 
-  // Remove o projeto da lista primeiro.
-  projects.splice(index,1);
-  saveProjects(projects);
+      <div class="project-info">
 
-  // Remove os arquivos associados ao projeto.
-  try{
-    localStorage.removeItem(FILES_KEY+"_"+project.name);
-    localStorage.removeItem("myengine_project_assets_"+project.name);
-  }catch(err){
-    console.warn("Não foi possível limpar os dados do projeto:",err);
-  }
+        <div class="project-name">
+          ${escapeHTML(p.name)}
+        </div>
 
-  if(String(currentProject||"")===String(project.name||"")){
-    currentProject=null;
-    currentFile="main.cpp";
-    showProjectsScreen();
-  }else{
-    renderProjects();
-  }
+        <div class="project-meta">
+          Last opened: Today
+        </div>
 
-  showToast("Projeto excluído");
-  return true;
+      </div>
+
+      <svg class="arrow" viewBox="0 0 24 24">
+        <path d="m9 18 6-6-6-6"/>
+      </svg>
+
+    </button>
+
+  `).join("");
+
 }
 
 
@@ -2186,8 +1835,7 @@ function createProject(){
   const project={
     id:Date.now(),
     name,
-    createdAt:new Date().toISOString(),
-    lastOpened:new Date().toISOString()
+    createdAt:new Date().toISOString()
   };
 
   projects.unshift(project);
@@ -2204,29 +1852,9 @@ function createProject(){
    OPEN PROJECT
 ===================================================== */
 
-function openProject(projectOrName){
+function openProject(name){
 
-  const projects=getProjects();
-  const project=typeof projectOrName === "object"
-    ? projectOrName
-    : projects.find(p=>p.name===projectOrName);
-
-  if(!project){
-    showToast("Projeto não encontrado");
-    showProjectsScreen();
-    return;
-  }
-
-  currentProject=project.name;
-
-  const storedProject=projects.find(p=>
-    (project.id != null && p.id===project.id) || p.name===project.name
-  );
-
-  if(storedProject){
-    storedProject.lastOpened=new Date().toISOString();
-    saveProjects(projects);
-  }
+  currentProject=name;
 
   document
     .getElementById("dashboard")
@@ -2238,7 +1866,7 @@ function openProject(projectOrName){
 
   document
     .getElementById("editorProjectName")
-    .textContent=project.name;
+    .textContent=name;
 
   loadFiles();
   loadFile("main.cpp");
@@ -2778,9 +2406,8 @@ function backToDashboard(){
     .getElementById("editor")
     .classList.remove("active");
 
-  // Ao sair do editor, volta para a lista de projetos.
   document
-    .getElementById("projects")
+    .getElementById("dashboard")
     .classList.add("active");
 
   document
@@ -2905,93 +2532,76 @@ updateLines();
 /* =====================================================
    MY ENGINE INTEGRATED LOGIC
 ===================================================== */
-let engineToolsReturnScreen='editor';
-function openEngineTools(page='code',returnScreen='editor'){
-  engineToolsReturnScreen=returnScreen||'editor';
-  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
-  document.getElementById('engineTools').classList.add('active');
-  enginePage(page);
-  engineInitAll();
-}
-function closeEngineTools(){
-  document.getElementById('engineTools').classList.remove('active');
-  const target=document.getElementById(engineToolsReturnScreen)||document.getElementById('editor');
-  target.classList.add('active');
-  if(engineToolsReturnScreen==='projects')renderProjects();
-}
-function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap')tileResize2();if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();}
+function openEngineTools(){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById('engineTools').classList.add('active');enginePage('code');engineInitAll()}
+function closeEngineTools(){document.getElementById('engineTools').classList.remove('active');document.getElementById('editor').classList.add('active')}
+function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap')tileResize2();if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();saveTile2();saveAssets2();saveProject2();showToast('My Engine salvo')}
-const DICT_DEFAULT=[
-  {command:'cout',desc:'Saída padrão C++',alias:''},
-  {command:'cin',desc:'Entrada padrão C++',alias:''},
-  {command:'if',desc:'Condição',alias:'se'},
-  {command:'while',desc:'Laço de repetição',alias:'enquanto'},
-  {command:'auto',desc:'Declaração automática de variável',alias:'variavel'},
-  {command:'mostrar',desc:'Atalho da engine para saída',alias:''},
-  {command:'esperar',desc:'Aguarda em milissegundos',alias:''},
-  {command:'mover',desc:'Move um objeto',alias:''},
-  {command:'girar',desc:'Rotaciona um objeto',alias:''},
-  {command:'criar_sprite',desc:'Cria um sprite',alias:''},
-  {command:'tocar_audio',desc:'Executa um áudio',alias:''},
-  {command:'parar_audio',desc:'Para um áudio',alias:''},
-  {command:'colidir',desc:'Verifica colisão',alias:''},
-  {command:'cena',desc:'Acessa a cena',alias:''},
-  {command:'tile',desc:'Acessa um tile',alias:''},
-  {command:'salvar',desc:'Salva o projeto',alias:''}
-];
-let DICT2=[];
-function loadDictionary2(){
-  try{DICT2=JSON.parse(localStorage.getItem('myengine_dictionary2')||'null')||DICT_DEFAULT.map(x=>({...x}));}
-  catch(e){DICT2=DICT_DEFAULT.map(x=>({...x}));}
-}
-function saveDictionary2(){localStorage.setItem('myengine_dictionary2',JSON.stringify(DICT2));}
-function escapeHtml2(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#039;')}
-function renderSettingsDictionary(){
-  const el=document.getElementById('settingsDictionaryList'); if(!el)return;
-  const q=(document.getElementById('settingsDictSearch')?.value||'').trim().toLowerCase();
-  const rows=DICT2.map((x,i)=>({...x,i})).filter(x=>(x.command+' '+x.alias+' '+x.desc).toLowerCase().includes(q));
-  el.innerHTML=rows.map(x=>`<div class="dictionary-row">
-    <input value="${escapeHtml2(x.command)}" aria-label="Comando original" onchange="updateDictionaryCommand(${x.i},this.value)">
-    <span class="pipe">|</span>
-    <input value="${escapeHtml2(x.alias)}" placeholder="apelido" aria-label="Apelido" onchange="updateDictionaryAlias(${x.i},this.value)">
-    <button class="dict-delete" onclick="deleteDictionaryCommand(${x.i})">×</button>
-  </div>`).join('') || '<div class="dictionary-empty">Nenhum comando encontrado.</div>';
-}
-function updateDictionaryCommand(i,v){v=v.trim();if(!v)return renderSettingsDictionary();DICT2[i].command=v;saveDictionary2();renderSettingsDictionary();}
-function updateDictionaryAlias(i,v){DICT2[i].alias=v.trim();saveDictionary2();renderSettingsDictionary();}
-function addDictionaryCommand(){DICT2.push({command:'novo_comando',desc:'Comando personalizado',alias:''});saveDictionary2();renderSettingsDictionary();setTimeout(()=>{const inputs=document.querySelectorAll('#settingsDictionaryList .dictionary-row input');const last=inputs[inputs.length-2];if(last){last.focus();last.select()}},30);}
-function deleteDictionaryCommand(i){if(!confirm('Remover este comando do dicionário?'))return;DICT2.splice(i,1);saveDictionary2();renderSettingsDictionary();}
-function resetDictionary2(){if(!confirm('Restaurar o dicionário padrão?'))return;DICT2=DICT_DEFAULT.map(x=>({...x}));saveDictionary2();renderSettingsDictionary();}
-function openSettingsDictionary(){const panel=document.getElementById('settingsDictionary');panel.style.display='block';renderSettingsDictionary();panel.scrollIntoView({behavior:'smooth',block:'start'});}
-function showSettingsScreen(){loadDictionary2();showScreen('settings');renderSettingsDictionary();}
-function applyDictionaryAliases(s){
-  const entries=DICT2.filter(x=>x.alias&&x.command).sort((a,b)=>b.alias.length-a.alias.length);
-  for(const x of entries){const escaped=x.alias.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');s=s.replace(new RegExp('\\b'+escaped+'\\b','g'),x.command);}
-  return s;
-}
-function renderDict2(){renderSettingsDictionary()}
-function engineTranslate(){
-  let s=document.getElementById('engineCode').value;
-  s=applyDictionaryAliases(s);
-  let out=s.replace(/mostrar\s*\((.*?)\)/g,'std::cout << $1;').replace(/variavel\s+(\w+)\s*=\s*(.*)/g,'auto $1 = $2;').replace(/se\s*\((.*?)\)/g,'if($1)').replace(/enquanto\s*\((.*?)\)/g,'while($1)');
-  document.getElementById('engineTerminal').textContent=out;
-}
+const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
+function renderDict2(){const q=(document.getElementById('dictSearch2')?.value||'').toLowerCase();document.getElementById('dictList2').innerHTML=DICT2.filter(x=>(x[0]+' '+x[1]).toLowerCase().includes(q)).map(x=>`<div class="dict-item"><span class="dict-command">${x[0]}</span><span class="dict-name">${x[1]}</span></div>`).join('')}
+function engineTranslate(){let s=document.getElementById('engineCode').value;let out=s.replace(/mostrar\s*\((.*?)\)/g,'std::cout << $1;').replace(/variavel\s+(\w+)\s*=\s*(.*)/g,'auto $1 = $2;').replace(/se\s*\((.*?)\)/g,'if($1)');document.getElementById('engineTerminal').textContent=out}
 function engineRunCode(){engineTranslate();document.getElementById('engineTerminal').textContent+='\n\n[My Engine] Código enviado para execução.'}
 function engineCodeSave(){localStorage.setItem('myengine_code',document.getElementById('engineCode').value);document.getElementById('engineTerminal').textContent='Código salvo localmente.'}
-/* ART */
-let artCtx2,artDrawing2=false,artTool2='pen',artHist2=[],artFuture2=[];
-function artInit2(){const c=document.getElementById('artCanvas2');artCtx2=c.getContext('2d');artCtx2.imageSmoothingEnabled=false;c.addEventListener('pointerdown',e=>{artSaveState2();artDrawing2=true;artPaint2(e)});c.addEventListener('pointermove',e=>{if(artDrawing2)artPaint2(e)});['pointerup','pointercancel','pointerleave'].forEach(t=>c.addEventListener(t,()=>artDrawing2=false));artResize2()}
-function artResize2(){const w=document.getElementById('artWrap2');const c=document.getElementById('artCanvas2');if(!w||!c)return;const z=Math.max(4,Math.floor(Math.min(w.clientWidth,w.clientHeight)/c.width));c.style.width=(c.width*z)+'px';c.style.height=(c.height*z)+'px'}
-function artPos2(e){const c=document.getElementById('artCanvas2'),r=c.getBoundingClientRect();return{x:Math.floor((e.clientX-r.left)/r.width*c.width),y:Math.floor((e.clientY-r.top)/r.height*c.height)}}
-function artPaint2(e){const c=document.getElementById('artCanvas2'),p=artPos2(e);document.getElementById('artInfo2').textContent=p.x+', '+p.y;if(p.x<0||p.y<0||p.x>=c.width||p.y>=c.height)return;let size=+document.getElementById('artSizeRange2').value;if(artTool2==='fill'){artCtx2.fillStyle=document.getElementById('artColor2').value;artCtx2.fillRect(0,0,c.width,c.height);return}artCtx2.fillStyle=artTool2==='erase'?'#fff':document.getElementById('artColor2').value;artCtx2.fillRect(p.x-size/2,p.y-size/2,size,size)}
-function artSaveState2(){const c=document.getElementById('artCanvas2');artHist2.push(artCtx2.getImageData(0,0,c.width,c.height));if(artHist2.length>30)artHist2.shift();artFuture2=[]}
-function artUndo2(){if(!artHist2.length)return;const c=document.getElementById('artCanvas2');artFuture2.push(artCtx2.getImageData(0,0,c.width,c.height));artCtx2.putImageData(artHist2.pop(),0,0)}
-function artRedo2(){if(!artFuture2.length)return;const c=document.getElementById('artCanvas2');artHist2.push(artCtx2.getImageData(0,0,c.width,c.height));artCtx2.putImageData(artFuture2.pop(),0,0)}
-function artClear2(){artSaveState2();artCtx2.clearRect(0,0,64,64);artCtx2.fillStyle='#fff';artCtx2.fillRect(0,0,64,64)}
-function setArtToolUI(){document.querySelectorAll('.art-toolbar button').forEach((b,i)=>b.classList.toggle('active',(artTool2==='pen'&&i===0)||(artTool2==='erase'&&i===1)||(artTool2==='fill'&&i===2)))}
-function newArt2(){const n=+prompt('Tamanho: 16, 32, 64 ou 128','64');if(![16,32,64,128].includes(n))return;const c=document.getElementById('artCanvas2');c.width=c.height=n;artCtx2.imageSmoothingEnabled=false;artCtx2.fillStyle='#fff';artCtx2.fillRect(0,0,n,n);artHist2=[];artFuture2=[];document.getElementById('artSize2').textContent=n+' × '+n;artResize2()}
-function saveArt2(){const c=document.getElementById('artCanvas2');localStorage.setItem('myengine_arte',JSON.stringify({width:c.width,height:c.height,data:c.toDataURL()}))}
-function loadArt2(){const d=JSON.parse(localStorage.getItem('myengine_arte')||'null');if(!d)return;const c=document.getElementById('artCanvas2'),im=new Image();im.onload=()=>{c.width=d.width;c.height=d.height;artCtx2.drawImage(im,0,0);document.getElementById('artSize2').textContent=d.width+' × '+d.height;artResize2()};im.src=d.data}
+/* ART — PROFESSIONAL SPRITE STUDIO */
+let artCtx2;
+let art2={w:32,h:32,tool:'pencil',color:'#111111',size:1,zoom:12,grid:true,onion:false,frame:0,layer:0,layers:[],frames:[],history:[],future:[],drawing:false,last:null,pan:null,playing:false,fps:8};
+const ART_TOOLS=['pencil','eraser','fill','line','rect','circle','picker','select','move'];
+function artBlank(w=32,h=32){return {name:'Frame 1',layers:[{name:'Layer 1',visible:true,locked:false,opacity:1,data:new ImageData(w,h)}]}}
+function artInit2(){
+  const c=document.getElementById('artCanvas2'); if(!c)return; artCtx2=c.getContext('2d',{willReadFrequently:true}); artCtx2.imageSmoothingEnabled=false;
+  if(!art2.layers.length){art2.frames=[artBlank(32,32)];art2.layers=art2.frames[0].layers}
+  artBindCanvas2(); artRender2(); artResize2();
+}
+function artBindCanvas2(){const c=document.getElementById('artCanvas2');if(c.dataset.bound)return;c.dataset.bound='1';
+  c.addEventListener('pointerdown',artPointerDown2);c.addEventListener('pointermove',artPointerMove2);['pointerup','pointercancel','pointerleave'].forEach(t=>c.addEventListener(t,artPointerUp2));
+  document.getElementById('artStage2').addEventListener('wheel',e=>{e.preventDefault();art2.zoom=Math.max(2,Math.min(48,art2.zoom*(e.deltaY<0?1.12:.89)));artResize2()},{passive:false});
+}
+function artActiveLayer2(){return art2.frames[art2.frame]?.layers[art2.layer]}
+function artComposite2(frameIndex=art2.frame){const fr=art2.frames[frameIndex];const o=document.createElement('canvas');o.width=art2.w;o.height=art2.h;const x=o.getContext('2d');x.imageSmoothingEnabled=false;fr.layers.forEach(l=>{if(!l.visible)return;x.globalAlpha=l.opacity;x.putImageData(l.data,0,0)});x.globalAlpha=1;return o}
+function artEnsureFrame2(){if(!art2.frames.length)art2.frames=[artBlank(art2.w,art2.h)];art2.frames.forEach(f=>f.layers.forEach(l=>{if(l.data.width!==art2.w||l.data.height!==art2.h)l.data=new ImageData(art2.w,art2.h)}));art2.layers=art2.frames[art2.frame].layers}
+function artSnapshot2(){return JSON.stringify({w:art2.w,h:art2.h,frame:art2.frame,layer:art2.layer,frames:art2.frames.map(f=>({name:f.name,layers:f.layers.map(l=>({name:l.name,visible:l.visible,locked:l.locked,opacity:l.opacity,data:Array.from(l.data.data)}))}))})}
+function artRestore2(raw){const d=JSON.parse(raw);art2.w=d.w;art2.h=d.h;art2.frame=d.frame;art2.layer=d.layer;art2.frames=d.frames.map(f=>({name:f.name,layers:f.layers.map(l=>({name:l.name,visible:l.visible,locked:l.locked,opacity:l.opacity,data:new ImageData(new Uint8ClampedArray(l.data),d.w,d.h)}))}));artEnsureFrame2();artResize2();artRender2()}
+function artSaveState2(){art2.history.push(artSnapshot2());if(art2.history.length>50)art2.history.shift();art2.future=[]}
+function artUndo2(){if(!art2.history.length)return;art2.future.push(artSnapshot2());artRestore2(art2.history.pop())}
+function artRedo2(){if(!art2.future.length)return;art2.history.push(artSnapshot2());artRestore2(art2.future.pop())}
+function artPos2(e){const c=document.getElementById('artCanvas2'),r=c.getBoundingClientRect();return{x:Math.floor((e.clientX-r.left)/r.width*art2.w),y:Math.floor((e.clientY-r.top)/r.height*art2.h)}}
+function artPaintPixel2(x,y){const l=artActiveLayer2();if(!l||l.locked||x<0||y<0||x>=art2.w||y>=art2.h)return;const s=Math.max(1,art2.size|0);for(let yy=-Math.floor(s/2);yy<Math.ceil(s/2);yy++)for(let xx=-Math.floor(s/2);xx<Math.ceil(s/2);xx++){let X=x+xx,Y=y+yy;if(X<0||Y<0||X>=art2.w||Y>=art2.h)continue;const i=(Y*art2.w+X)*4;if(art2.tool==='eraser'){l.data.data[i]=0;l.data.data[i+1]=0;l.data.data[i+2]=0;l.data.data[i+3]=0}else{const m=artHex2(art2.color);l.data.data.set([...m,255],i)}}}
+function artHex2(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function artLine2(x0,y0,x1,y1,fn){let dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,err=dx+dy;while(true){fn(x0,y0);if(x0===x1&&y0===y1)break;let e2=2*err;if(e2>=dy){err+=dy;x0+=sx}if(e2<=dx){err+=dx;y0+=sy}}}
+function artFlood2(x,y){const l=artActiveLayer2();if(!l||l.locked)return;const d=l.data.data,i=(y*art2.w+x)*4,target=[d[i],d[i+1],d[i+2],d[i+3]],fill=art2.tool==='eraser'?[0,0,0,0]:[...artHex2(art2.color),255];if(target.every((v,j)=>v===fill[j]))return;const q=[[x,y]],seen=new Uint8Array(art2.w*art2.h);while(q.length){const [X,Y]=q.pop();if(X<0||Y<0||X>=art2.w||Y>=art2.h)continue;const k=Y*art2.w+X;if(seen[k])continue;const j=k*4;if(d[j]!==target[0]||d[j+1]!==target[1]||d[j+2]!==target[2]||d[j+3]!==target[3])continue;seen[k]=1;d.set(fill,j);q.push([X+1,Y],[X-1,Y],[X,Y+1],[X,Y-1])}}
+function artShape2(a,b){const l=artActiveLayer2();if(!l||l.locked)return;const [x0,y0]=[Math.min(a.x,b.x),Math.min(a.y,b.y)],[x1,y1]=[Math.max(a.x,b.x),Math.max(a.y,b.y)];if(art2.tool==='line')artLine2(a.x,a.y,b.x,b.y,(x,y)=>artPaintPixel2(x,y));else if(art2.tool==='rect'){for(let x=x0;x<=x1;x++){artPaintPixel2(x,y0);artPaintPixel2(x,y1)}for(let y=y0;y<=y1;y++){artPaintPixel2(x0,y);artPaintPixel2(x1,y)}}else if(art2.tool==='circle'){const cx=(a.x+b.x)/2,cy=(a.y+b.y)/2,rx=Math.abs(b.x-a.x)/2,ry=Math.abs(b.y-a.y)/2;for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++)for(let x=Math.floor(cx-rx);x<=Math.ceil(cx+rx);x++){const v=((x-cx)**2/(rx||1)**2)+((y-cy)**2/(ry||1)**2);if(v>=.75&&v<=1.25)artPaintPixel2(x,y)}}}
+function artPointerDown2(e){e.preventDefault();const p=artPos2(e);art2.drawing=true;art2.last=p;artSaveState2();if(art2.tool==='picker'){const l=artActiveLayer2(),i=(p.y*art2.w+p.x)*4;art2.color='#'+[0,1,2].map(k=>l.data.data[i+k].toString(16).padStart(2,'0')).join('');artSyncUI2();artRender2();return}if(art2.tool==='fill')artFlood2(p.x,p.y);else if(['line','rect','circle'].includes(art2.tool)){}else if(art2.tool==='select'||art2.tool==='move'){art2.selectStart=p}else artPaintPixel2(p.x,p.y);artRender2()}
+function artPointerMove2(e){if(!art2.drawing)return;const p=artPos2(e);document.getElementById('artInfo2').textContent=`${p.x}, ${p.y}`;if(['line','rect','circle'].includes(art2.tool)){artRender2(p);return}if(art2.tool==='select'||art2.tool==='move')return;artLine2(art2.last.x,art2.last.y,p.x,p.y,(x,y)=>artPaintPixel2(x,y));art2.last=p;artRender2()}
+function artPointerUp2(e){if(!art2.drawing)return;const p=artPos2(e);if(['line','rect','circle'].includes(art2.tool))artShape2(art2.last,p);art2.drawing=false;art2.last=null;artRender2();}
+function artResize2(){const stage=document.getElementById('artStage2'),c=document.getElementById('artCanvas2');if(!stage||!c)return;const size=Math.max(2,Math.floor(Math.min(stage.clientWidth-28,stage.clientHeight-28)/Math.max(1,art2.w)*Math.max(1,art2.zoom)));c.style.width=(art2.w*size/art2.zoom)+'px';c.style.height=(art2.h*size/art2.zoom)+'px';artRender2()}
+function artRender2(previewPoint=null){const c=document.getElementById('artCanvas2');if(!c||!artCtx2)return;c.width=art2.w;c.height=art2.h;artCtx2.clearRect(0,0,c.width,c.height);artCtx2.imageSmoothingEnabled=false;if(art2.onion&&art2.frames.length>1){const prev=(art2.frame-1+art2.frames.length)%art2.frames.length;artCtx2.save();artCtx2.globalAlpha=.28;artCtx2.putImageData(artComposite2(prev).getContext('2d').getImageData(0,0,art2.w,art2.h),0,0);artCtx2.restore()}artCtx2.putImageData(artComposite2().getContext('2d').getImageData(0,0,art2.w,art2.h),0,0);document.getElementById('artSize2').textContent=`${art2.w} × ${art2.h} • F${art2.frame+1}/${art2.frames.length}`;document.getElementById('artInfo2').textContent=`${art2.w}×${art2.h} • ${Math.round(art2.zoom*100/12)}%`;if(art2.grid&&art2.zoom>=6){artCtx2.save();artCtx2.strokeStyle='rgba(80,90,100,.28)';artCtx2.lineWidth=1/art2.zoom;for(let x=0;x<=art2.w;x++){artCtx2.beginPath();artCtx2.moveTo(x,0);artCtx2.lineTo(x,art2.h);artCtx2.stroke()}for(let y=0;y<=art2.h;y++){artCtx2.beginPath();artCtx2.moveTo(0,y);artCtx2.lineTo(art2.w,y);artCtx2.stroke()}artCtx2.restore()}artRenderLists2()}
+function artRenderLists2(){const L=document.getElementById('artLayers2'),F=document.getElementById('artFrames2');if(L)L.innerHTML=art2.frames[art2.frame].layers.map((l,i)=>`<div class="art-layer ${i===art2.layer?'active':''}"><button onclick="event.stopPropagation();artToggleLayer2(${i})">${l.visible?'👁':'🚫'}</button><span onclick="artSelectLayer2(${i})">${l.name}</span><button onclick="artRenameLayer2(${i})">✎</button></div>`).join('');if(F)F.innerHTML=art2.frames.map((f,i)=>`<div class="art-frame ${i===art2.frame?'active':''}" onclick="artSelectFrame2(${i})"><span>${i+1}. ${f.name}</span><button onclick="event.stopPropagation();artDuplicateFrame2(${i})">⧉</button></div>`).join('');const s=document.getElementById('artLayerOpacity2');if(s)s.value=Math.round((artActiveLayer2()?.opacity||1)*100);const on=document.getElementById('artOnionBtn2');if(on)on.classList.toggle('active',art2.onion);}
+function artSyncUI2(){document.getElementById('artColor2').value=art2.color;if(document.getElementById('artHex2'))document.getElementById('artHex2').value=art2.color;document.getElementById('artSizeRange2').value=art2.size;document.getElementById('artSizeValue2').textContent=art2.size;document.querySelectorAll('[data-art-tool]').forEach(b=>b.classList.toggle('active',b.dataset.artTool===art2.tool));document.getElementById('artGridBtn2')?.classList.toggle('active',art2.grid)}
+function setArtToolUI(){artSyncUI2()}
+function artSelectLayer2(i){artSaveState2();art2.layer=i;artRender2()}
+function artToggleLayer2(i){artSaveState2();art2.frames[art2.frame].layers[i].visible=!art2.frames[art2.frame].layers[i].visible;artRender2()}
+function artRenameLayer2(i){const n=prompt('Nome da camada',art2.frames[art2.frame].layers[i].name);if(n){artSaveState2();art2.frames[art2.frame].layers[i].name=n;artRender2()}}
+function artAddLayer2(){artSaveState2();art2.frames[art2.frame].layers.push({name:`Layer ${art2.frames[art2.frame].layers.length+1}`,visible:true,locked:false,opacity:1,data:new ImageData(art2.w,art2.h)});art2.layer=art2.frames[art2.frame].layers.length-1;artRender2()}
+function artDeleteLayer2(){if(art2.frames[art2.frame].layers.length<=1)return;artSaveState2();art2.frames[art2.frame].layers.splice(art2.layer,1);art2.layer=Math.max(0,art2.layer-1);artRender2()}
+function artSelectFrame2(i){art2.frame=i;art2.layer=Math.min(art2.layer,art2.frames[i].layers.length-1);art2.layers=art2.frames[i].layers;artRender2()}
+function artAddFrame2(){artSaveState2();const f=artBlank(art2.w,art2.h);f.name=`Frame ${art2.frames.length+1}`;art2.frames.push(f);art2.frame=art2.frames.length-1;art2.layer=0;artRender2()}
+function artDuplicateFrame2(i=art2.frame){artSaveState2();const src=art2.frames[i];const f={name:`Frame ${art2.frames.length+1}`,layers:src.layers.map(l=>({name:l.name,visible:l.visible,locked:l.locked,opacity:l.opacity,data:new ImageData(new Uint8ClampedArray(l.data.data),art2.w,art2.h)}))};art2.frames.splice(i+1,0,f);art2.frame=i+1;art2.layer=0;artRender2()}
+function artDeleteFrame2(){if(art2.frames.length<=1)return;artSaveState2();art2.frames.splice(art2.frame,1);art2.frame=Math.max(0,art2.frame-1);art2.layer=0;artRender2()}
+function artNewDoc2(){const w=+prompt('Largura do sprite','32'),h=+prompt('Altura do sprite',String(w));if(!w||!h||w>512||h>512)return;artSaveState2();art2.w=w;art2.h=h;art2.frame=0;art2.layer=0;art2.frames=[artBlank(w,h)];artRender2();artResize2()}
+function artClear2(){artSaveState2();art2.frames[art2.frame].layers.forEach(l=>l.data=new ImageData(art2.w,art2.h));artRender2()}
+function artSetZoom2(v){art2.zoom=Math.max(2,Math.min(48,+v));document.getElementById('artZoom2').textContent=Math.round(art2.zoom*100/12)+'%';artResize2()}
+function artExportPNG2(){const o=artComposite2();const a=document.createElement('a');a.href=o.toDataURL('image/png');a.download='sprite.png';a.click()}
+function artExportSheet2(){const gap=0,o=document.createElement('canvas');o.width=art2.w*art2.frames.length;o.height=art2.h;const x=o.getContext('2d');x.imageSmoothingEnabled=false;art2.frames.forEach((_,i)=>x.drawImage(artComposite2(i),i*art2.w,0));const a=document.createElement('a');a.href=o.toDataURL('image/png');a.download='spritesheet.png';a.click()}
+function artImportImage2(input){const f=input.files?.[0];if(!f)return;const im=new Image();im.onload=()=>{artSaveState2();art2.w=im.naturalWidth;art2.h=im.naturalHeight;const cv=document.createElement('canvas');cv.width=art2.w;cv.height=art2.h;const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(im,0,0);const fr=artBlank(art2.w,art2.h);fr.layers[0].data=x.getImageData(0,0,art2.w,art2.h);art2.frames=[fr];art2.frame=art2.layer=0;artRender2();artResize2()};im.src=URL.createObjectURL(f);input.value=''}
+function artSetColor2(v){if(!/^#[0-9a-f]{6}$/i.test(v))return;art2.color=v;const h=document.getElementById('artHex2');if(h)h.value=v;const c=document.getElementById('artColor2');if(c)c.value=v;artSyncUI2()}
+function artSetOpacity2(v){const l=artActiveLayer2();if(!l)return;artSaveState2();l.opacity=+v/100;artRender2()}
+function artSave2(){const data=artSnapshot2();localStorage.setItem('myengine_arte_pro',data);saveArtAsset2();showToast('Sprite Studio salvo')}
+function saveArt2(){artSave2()}
+function loadArt2(){const d=localStorage.getItem('myengine_arte_pro');if(d){artRestore2(d)}else{artRender2()}}
+function saveArtAsset2(){try{const o=artComposite2();const data=o.toDataURL('image/png');assets2=assets2||[];assets2=assets2.filter(a=>a.id!=='generated-art');assets2.push({id:'generated-art',name:'Sprite Studio.png',type:'image/png',data,folder:'root',source:'art-studio'});saveAssets2?.();renderAssets2?.()}catch(e){}}
+function artPlay2(){art2.playing=!art2.playing;const b=document.getElementById('artPlay2');if(b)b.textContent=art2.playing?'⏸':'▶';if(art2.playing){const tick=()=>{if(!art2.playing)return;art2.frame=(art2.frame+1)%art2.frames.length;artRender2();setTimeout(tick,1000/Math.max(1,art2.fps))};tick()}}
+function artAddPalette2(){const v=prompt('HEX da cor','#ffcc00');if(!v||!/^(#)?[0-9a-f]{6}$/i.test(v))return;v=v.startsWith('#')?v:'#'+v;const p=JSON.parse(localStorage.getItem('myengine_art_palette')||'[]');if(!p.includes(v))p.push(v);localStorage.setItem('myengine_art_palette',JSON.stringify(p));artRenderPalette2()}
+function artRenderPalette2(){const el=document.getElementById('artPalette2');if(!el)return;const defaults=['#111111','#ffffff','#ff3b30','#ffcc00','#34c759','#00c7be','#0a84ff','#5e5ce6','#bf5af2','#ff2d55','#8e8e93','#a2845e'];const p=[...defaults,...JSON.parse(localStorage.getItem('myengine_art_palette')||'[]')];el.innerHTML=p.map(c=>`<button class="art-swatch" style="background:${c}" title="${c}" onclick="artSetColor2('${c}')"></button>`).join('')}
+document.addEventListener('keydown',e=>{if(!document.getElementById('tool-art')?.classList.contains('active'))return;if(e.target.matches('input,textarea'))return;const k=e.key.toLowerCase();const map={pencil:'p',eraser:'e',fill:'f',line:'l',rect:'r',circle:'c',picker:'i',select:'s',move:'m'};const tool=Object.keys(map).find(x=>map[x]===k);if(tool){art2.tool=tool;artSyncUI2()}if(k==='z'&&(e.ctrlKey||e.metaKey)){e.preventDefault();e.shiftKey?artRedo2():artUndo2()}if(k==='y'&&(e.ctrlKey||e.metaKey)){e.preventDefault();artRedo2()}if(k==='g'){art2.grid=!art2.grid;artRender2()}});
 /* SCENE */
 let sceneCtx2,sceneObjs2=[],sceneSel2=null,sceneTool2='select',sceneGrid2=true,sceneSnap2=true,sceneCam2={x:0,y:0,z:1},sceneDrag2=null;
 function sceneInit2(){const c=document.getElementById('sceneCanvas2');sceneCtx2=c.getContext('2d');c.addEventListener('pointerdown',sceneDown2);c.addEventListener('pointermove',sceneMove2);['pointerup','pointercancel'].forEach(t=>c.addEventListener(t,()=>sceneDrag2=null));sceneLoad2();sceneResize2()}
@@ -3014,14 +2624,13 @@ function tilePaint2(e){const c=document.getElementById('tileCanvas2'),r=c.getBou
 function tileRender2(){if(!tileCtx2)return;const c=document.getElementById('tileCanvas2'),w=c.clientWidth,h=c.clientHeight;tileCtx2.clearRect(0,0,w,h);tileCtx2.fillStyle='#12161b';tileCtx2.fillRect(0,0,w,h);const size=32*tileZoom2;Object.entries(tileMap2).forEach(([k,v])=>{const [x,y]=k.split(',').map(Number),colors=['#4f9a45','#795548','#2979ff','#e2bd42','#8050a5','#222','#ddd','#b64d4d','#c87535','#6ba34a','#777','#3988d4'];tileCtx2.fillStyle=colors[v]||'#222';tileCtx2.fillRect(x*size,y*size,size,size)});if(tileGrid2){tileCtx2.strokeStyle='#2a323a';for(let x=0;x<w;x+=size){tileCtx2.beginPath();tileCtx2.moveTo(x,0);tileCtx2.lineTo(x,h);tileCtx2.stroke()}for(let y=0;y<h;y+=size){tileCtx2.beginPath();tileCtx2.moveTo(0,y);tileCtx2.lineTo(w,y);tileCtx2.stroke()}}}
 function tileToolUI2(){document.querySelectorAll('#tilePalette2 button').forEach((b,i)=>b.classList.toggle('active',i===tileId2));document.querySelectorAll('.tile-tools button').forEach((b,i)=>b.classList.toggle('active',(tileMode2==='paint'&&i===0)||(tileMode2==='erase'&&i===1)))}function saveTile2(){localStorage.setItem('myengine_tilemap',JSON.stringify(tileMap2))}function loadTile2(){tileMap2=JSON.parse(localStorage.getItem('myengine_tilemap')||'{}')}
 /* ASSETS */
-let assets2=[],assetFolder2='root';function importAssets2(e){[...e.target.files].forEach(f=>{const reader=new FileReader();reader.onload=()=>{assets2.push({id:Date.now()+Math.random(),name:f.name,type:f.type||'file',data:reader.result,folder:assetFolder2});saveAssets2();renderAssets2();};if(f.type.startsWith('image/')||f.type.startsWith('audio/'))reader.readAsDataURL(f);else reader.readAsText(f)});e.target.value=''}function renderAssets2(){const q=(document.getElementById('assetSearch2').value||'').toLowerCase();const arr=assets2.filter(x=>x.name.toLowerCase().includes(q));document.getElementById('assetCount2').textContent=arr.length+' itens';document.getElementById('assetGrid2').innerHTML=arr.map(x=>`<div class="asset-item"><div class="asset-preview2">${x.type.startsWith('image/')?`<img src="${x.data}">`:(x.type.startsWith('audio/')?'🎵':'📄')}</div><div class="asset-meta">${x.name}</div><div class="asset-actions2"><button class="tool-btn" onclick="importAssetToCurrentProject2(${x.id})">${currentProject?'Importar no projeto':'Importar'}</button><button class="asset-del" onclick="deleteAsset2(${x.id})">×</button></div></div>`).join('')||'<div class="tool-muted">Nenhum asset nesta pasta.</div>';document.getElementById('folderRow2').innerHTML='<button class="folder-chip active">📦 Biblioteca global</button>'}
-function importAssetToCurrentProject2(id){if(!currentProject){showToast('Abra um projeto para importar');return}const asset=assets2.find(x=>x.id===id);if(!asset)return;const key='myengine_project_assets_'+currentProject;let list=JSON.parse(localStorage.getItem(key)||'[]');if(!list.some(x=>x.id===id))list.push(asset);localStorage.setItem(key,JSON.stringify(list));showToast(asset.name+' importado para '+currentProject)}
+let assets2=[],assetFolder2='root';function importAssets2(e){[...e.target.files].forEach(f=>{const reader=new FileReader();reader.onload=()=>{assets2.push({id:Date.now()+Math.random(),name:f.name,type:f.type||'file',data:reader.result,folder:assetFolder2});saveAssets2();renderAssets2();};if(f.type.startsWith('image/')||f.type.startsWith('audio/'))reader.readAsDataURL(f);else reader.readAsText(f)});e.target.value=''}function renderAssets2(){const q=(document.getElementById('assetSearch2')?.value||'').toLowerCase();const a=assets2.filter(x=>(x.folder||'root')===assetFolder2&&x.name.toLowerCase().includes(q));document.getElementById('assetCount2').textContent=assets2.length+' itens';document.getElementById('assetGrid2').innerHTML=a.map(x=>`<div class="asset-item"><div class="asset-preview2">${x.type.startsWith('image/')?`<img src="${x.data}">`:x.type.startsWith('audio/')?'🎵':'📄'}</div><div class="asset-meta">${x.name}</div><button class="asset-del" onclick="deleteAsset2(${x.id})">×</button></div>`).join('')||'<div class="tool-muted">Nenhum asset nesta pasta.</div>';document.getElementById('folderRow2').innerHTML='<button class="folder-chip active">📦 root</button>'}
 function deleteAsset2(id){assets2=assets2.filter(x=>x.id!==id);saveAssets2();renderAssets2()}function saveAssets2(){localStorage.setItem('myengine_assets2',JSON.stringify(assets2))}function loadAssets2(){assets2=JSON.parse(localStorage.getItem('myengine_assets2')||'[]')}
 function newFolder2(){const n=prompt('Nome da pasta');if(n)showToast('Pasta '+n+' criada nesta sessão.')}function newTextAsset2(){const n=prompt('Nome do asset','novo.txt');if(n)assets2.push({id:Date.now(),name:n,type:'text/plain',data:'',folder:'root'}),saveAssets2(),renderAssets2()}
 function renderAudio2(){const a=assets2.filter(x=>x.type.startsWith('audio/'));document.getElementById('audioList2').innerHTML=a.map(x=>`<div class="audio-item"><span>🎵 ${x.name}</span><audio controls src="${x.data}" style="max-width:150px"></audio></div>`).join('')||'<div class="tool-card tool-muted">Nenhum áudio importado.</div>'}
 /* PROJECT */
 function saveProject2(){const d={name:document.getElementById('projectName2').value,resolution:document.getElementById('projectResolution2').value,pixel:document.getElementById('projectPixel2').value,bg:document.getElementById('projectBg2').value};localStorage.setItem('myengine_project2',JSON.stringify(d));showToast('Configuração salva')}function loadProject2(){const d=JSON.parse(localStorage.getItem('myengine_project2')||'null');if(!d)return;document.getElementById('projectName2').value=d.name||'';document.getElementById('projectResolution2').value=d.resolution||'1280x720';document.getElementById('projectPixel2').value=d.pixel||'true';document.getElementById('projectBg2').value=d.bg||'#090b0e'}function exportProject2(){const d=JSON.stringify({project:JSON.parse(localStorage.getItem('myengine_project2')||'{}'),scene:sceneObjs2,tilemap:tileMap2,assets:assets2},null,2),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:'application/json'}));a.download='myengine-project.json';a.click()}
-function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();sceneInit2();tileInit2();loadAssets2();loadProject2();loadTile2();document.getElementById('engineCode').value=localStorage.getItem('myengine_code')||document.getElementById('engineCode').value;window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});loadDictionary2();renderSettingsDictionary();}}
+function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;artInit2();loadArt2();artRenderPalette2();sceneInit2();tileInit2();loadAssets2();loadProject2();loadTile2();document.getElementById('engineCode').value=localStorage.getItem('myengine_code')||document.getElementById('engineCode').value;window.addEventListener('resize',()=>{artResize2();sceneResize2();tileResize2()});renderDict2();}}
 
 </script>
 
@@ -3044,7 +2653,7 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
       <button data-tool="assets" onclick="enginePage('assets')">📦 Assets</button>
       <button data-tool="audio" onclick="enginePage('audio')">🎵 Áudio</button>
       <button data-tool="project" onclick="enginePage('project')">⚙️ Projeto</button>
-      
+      <button data-tool="dictionary" onclick="enginePage('dictionary')">📖 Dicionário</button>
     </nav>
 
     <main id="tool-code" class="engine-page active">
@@ -3053,11 +2662,41 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
     </main>
 
     <main id="tool-art" class="engine-page">
-      <div class="tool-card"><div class="tool-title">🎨 Pixel Art</div><div class="tool-muted" id="artSize2">64 × 64</div></div>
-      <div class="art-toolbar"><button id="artPen" class="active" onclick="artTool2='pen';setArtToolUI()">✏️</button><button onclick="artTool2='erase';setArtToolUI()">🧹</button><button onclick="artTool2='fill';setArtToolUI()">🪣</button><button onclick="artUndo2()">↶</button><button onclick="artRedo2()">↷</button><button onclick="artClear2()">🗑️</button></div>
-      <div class="art-wrap" id="artWrap2"><canvas id="artCanvas2" width="64" height="64"></canvas><div class="art-info" id="artInfo2">0, 0</div></div>
-      <div class="art-controls"><div class="tool-card"><label class="tool-muted">Cor</label><input id="artColor2" type="color" value="#111111" class="tool-input" style="padding:2px;height:42px"></div><div class="tool-card"><label class="tool-muted">Tamanho</label><input id="artSizeRange2" type="range" min="1" max="12" value="2" class="tool-input" style="padding:0"></div></div>
-      <div class="tool-row"><button class="tool-btn" onclick="newArt2()">Novo 16/32/64/128</button><button class="tool-btn primary" onclick="saveArt2()">💾 Salvar</button><button class="tool-btn" onclick="loadArt2()">Carregar</button></div>
+      <div class="art-topbar">
+        <div class="tool-card" style="margin:0;flex:1"><div class="tool-title">🎨 Sprite Studio</div><div class="tool-muted" id="artSize2">32 × 32 • F1/1</div></div>
+        <button class="art-mini-btn" onclick="artNewDoc2()">＋</button><button class="art-mini-btn" onclick="artSave2()">💾</button>
+      </div>
+      <div class="art-studio">
+        <section class="art-main">
+          <div class="art-toolstrip" id="artTools2">
+            <button data-art-tool="pencil" class="active" onclick="art2.tool='pencil';artSyncUI2()">✏️<small>Pencil</small></button>
+            <button data-art-tool="eraser" onclick="art2.tool='eraser';artSyncUI2()">🧽<small>Eraser</small></button>
+            <button data-art-tool="fill" onclick="art2.tool='fill';artSyncUI2()">🪣<small>Fill</small></button>
+            <button data-art-tool="line" onclick="art2.tool='line';artSyncUI2()">╱<small>Line</small></button>
+            <button data-art-tool="rect" onclick="art2.tool='rect';artSyncUI2()">▭<small>Rect</small></button>
+            <button data-art-tool="circle" onclick="art2.tool='circle';artSyncUI2()">○<small>Circle</small></button>
+            <button data-art-tool="picker" onclick="art2.tool='picker';artSyncUI2()">🖌️<small>Picker</small></button>
+            <button data-art-tool="select" onclick="art2.tool='select';artSyncUI2()">▣<small>Select</small></button>
+            <button data-art-tool="move" onclick="art2.tool='move';artSyncUI2()">✋<small>Move</small></button>
+            <button onclick="artUndo2()">↶<small>Undo</small></button><button onclick="artRedo2()">↷<small>Redo</small></button>
+          </div>
+          <div class="art-stage art-checker" id="artStage2">
+            <canvas id="artCanvas2" width="32" height="32"></canvas>
+            <div class="art-stagebar"><div><span class="art-badge" id="artInfo2">0, 0</span></div><div><button class="art-mini-btn" id="artGridBtn2" onclick="art2.grid=!art2.grid;artSyncUI2();artRender2()">▦</button><button class="art-mini-btn" id="artOnionBtn2" onclick="art2.onion=!art2.onion;artRender2()">🧅</button></div></div>
+          </div>
+          <div class="art-bottom">
+            <div class="art-panel"><div class="art-panel-title">Brush</div><div class="art-color-row"><input id="artColor2" type="color" value="#111111" onchange="artSetColor2(this.value)"><input id="artHex2" class="tool-input" value="#111111" onchange="artSetColor2(this.value)"></div><input id="artSizeRange2" class="art-range" type="range" min="1" max="32" value="1" oninput="art2.size=+this.value;document.getElementById('artSizeValue2').textContent=this.value"><div class="art-stat">Size: <span id="artSizeValue2">1</span> px</div></div>
+            <div class="art-panel"><div class="art-panel-title">View</div><input class="art-range" type="range" min="2" max="48" value="12" oninput="artSetZoom2(this.value)"><div class="art-stat">Zoom <span id="artZoom2">100%</span></div><div class="tool-row"><button class="tool-btn" onclick="art2.grid=!art2.grid;artRender2()">Grid</button><button class="tool-btn" onclick="artClear2()">Limpar</button></div></div>
+            <div class="art-panel"><div class="art-panel-title">Export / Import</div><div class="tool-row"><button class="tool-btn primary" onclick="artExportPNG2()">PNG</button><button class="tool-btn" onclick="artExportSheet2()">Spritesheet</button><label class="tool-btn" style="display:grid;place-items:center;cursor:pointer">Importar<input type="file" accept="image/*" hidden onchange="artImportImage2(this)"></label></div></div>
+          </div>
+        </section>
+        <aside class="art-side">
+          <div class="art-panel"><div class="art-panel-title">Paleta</div><div id="artPalette2" class="art-palette"></div><button class="tool-btn" style="width:100%;margin-top:7px" onclick="artAddPalette2()">＋ Nova cor</button></div>
+          <div class="art-panel"><div class="art-panel-title">Layers</div><div id="artLayers2" class="art-layers"></div><div class="tool-row"><button class="tool-btn primary" onclick="artAddLayer2()">＋ Layer</button><button class="tool-btn" onclick="artDeleteLayer2()">Excluir</button></div><label class="tool-muted">Opacidade <input id="artLayerOpacity2" class="art-range" type="range" min="0" max="100" value="100" oninput="artSetOpacity2(this.value)"></label></div>
+          <div class="art-panel"><div class="art-panel-title">Animation</div><div class="tool-row"><button class="tool-btn primary" id="artPlay2" onclick="artPlay2()">▶</button><button class="tool-btn" onclick="artAddFrame2()">＋ Frame</button><button class="tool-btn" onclick="artDuplicateFrame2()">⧉</button><button class="tool-btn" onclick="artDeleteFrame2()">−</button></div><input class="art-range" type="range" min="1" max="30" value="8" oninput="art2.fps=+this.value;document.getElementById('artFps2').textContent=this.value"><div class="art-stat">FPS: <span id="artFps2">8</span></div><div id="artFrames2" class="art-frames" style="margin-top:7px"></div></div>
+          <div class="art-panel"><div class="art-panel-title">Workflow</div><div class="art-hint">Desenhe com precisão pixel-perfect. <span class="art-kbd">P</span> Pencil · <span class="art-kbd">E</span> Eraser · <span class="art-kbd">F</span> Fill · <span class="art-kbd">G</span> Grid.</div><div class="tool-row"><button class="tool-btn" onclick="artNewDoc2()">Novo sprite</button><button class="tool-btn green" onclick="artSave2()">Salvar recurso</button></div></div>
+        </aside>
+      </div>
     </main>
 
     <main id="tool-scene" class="engine-page">
@@ -3081,6 +2720,9 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
     <main id="tool-project" class="engine-page">
       <div class="tool-card"><div class="tool-title">⚙️ Project Manager</div><div class="tool-muted">Configurações persistentes do projeto atual.</div></div><div class="tool-card settings-grid"><label>Nome<input id="projectName2" class="tool-input"></label><label>Resolução<input id="projectResolution2" class="tool-input" value="1280x720"></label><label>Pixel art<select id="projectPixel2" class="tool-input"><option value="true">Ativado</option><option value="false">Desativado</option></select></label><label>Cor de fundo<input id="projectBg2" type="color" value="#090b0e" class="tool-input" style="padding:2px"></label><div class="tool-row"><button class="tool-btn primary" onclick="saveProject2()">💾 Salvar configuração</button><button class="tool-btn" onclick="exportProject2()">Exportar JSON</button></div></div></main>
 
+    <main id="tool-dictionary" class="engine-page">
+      <div class="tool-card"><div class="tool-title">📖 Dicionário</div><input id="dictSearch2" class="tool-input" placeholder="Pesquisar comando..." oninput="renderDict2()"></div><div id="dictList2"></div>
+    </main>
   </div>
 </section>
 
