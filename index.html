@@ -2,9 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Snake Forge</title>
 
 <style>
@@ -17,328 +15,272 @@ html,body{
   margin:0;
   width:100%;
   height:100%;
-  background:#0b0d10;
-  color:#f1f3f5;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   overflow:hidden;
+  background:#090b0e;
+  color:#edf0f2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+
+button,input,textarea{
+  font:inherit;
 }
 
 button{
-  font:inherit;
   border:0;
   color:inherit;
 }
 
-.app{
-  width:100%;
-  height:100%;
-  display:flex;
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
   flex-direction:column;
 }
 
-/* HEADER */
+.screen.active{
+  display:flex;
+}
 
-.header{
+/* =========================
+   DASHBOARD
+========================= */
+
+.topbar{
   height:64px;
   min-height:64px;
-  padding:0 18px;
+  padding:0 17px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  border-bottom:1px solid #20242a;
   background:#0d1014;
+  border-bottom:1px solid #20252b;
 }
 
 .brand{
   display:flex;
   align-items:center;
-  gap:11px;
-  font-size:17px;
+  gap:10px;
   font-weight:700;
-  letter-spacing:.3px;
 }
 
 .logo{
   width:30px;
   height:30px;
   border-radius:8px;
-  background:#171b20;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:#171c21;
+  display:grid;
+  place-items:center;
+}
+
+svg{
+  fill:none;
+  stroke:currentColor;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 .logo svg{
   width:19px;
-  height:19px;
-  stroke:#8ee35d;
-  fill:none;
-  stroke-width:2;
+  color:#91e864;
 }
 
 .menu{
   width:38px;
   height:38px;
+  background:none;
   border-radius:9px;
-  background:transparent;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:grid;
+  place-items:center;
+  color:#8c949d;
 }
 
 .menu:active{
-  background:#1a1e23;
+  background:#191d22;
 }
 
-.menu svg{
-  width:21px;
-  height:21px;
-  stroke:#aeb4bb;
-}
-
-/* CONTENT */
-
-.content{
+.dashboard-content{
   flex:1;
-  overflow-y:auto;
+  overflow:auto;
   padding:28px 18px 100px;
-}
-
-.welcome{
-  margin-bottom:25px;
 }
 
 .welcome h1{
   margin:0 0 7px;
   font-size:27px;
-  line-height:1.1;
-  font-weight:700;
 }
 
 .welcome p{
   margin:0;
-  color:#858c95;
+  color:#818992;
   font-size:14px;
 }
 
-/* NEW PROJECT */
-
 .new-project{
   width:100%;
-  height:62px;
+  height:60px;
+  margin-top:25px;
   border-radius:12px;
-  background:#8ee35d;
+  background:#91e864;
   color:#091006;
+  font-weight:750;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:10px;
-  font-size:15px;
-  font-weight:700;
-  box-shadow:0 8px 25px rgba(142,227,93,.08);
-  transition:.15s;
-}
-
-.new-project:active{
-  transform:scale(.98);
-  background:#7bd94d;
+  gap:9px;
 }
 
 .new-project svg{
   width:21px;
-  height:21px;
-  stroke:#091006;
 }
 
-/* SECTIONS */
+.new-project:active{
+  transform:scale(.985);
+}
 
 .section{
   margin-top:34px;
 }
 
-.section-title{
+.section-head{
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
   margin-bottom:13px;
 }
 
-.section-title h2{
-  margin:0;
-  font-size:12px;
-  letter-spacing:1.2px;
-  color:#747b84;
+.section-head span{
+  color:#707882;
+  font-size:11px;
   font-weight:700;
+  letter-spacing:1.2px;
 }
 
-.section-title button{
+.section-head button{
   background:none;
-  color:#8ee35d;
+  color:#91e864;
   font-size:12px;
-  font-weight:600;
 }
 
-/* PROJECT CARD */
-
-.project{
+.project-card{
   width:100%;
   min-height:88px;
-  padding:16px;
-  border:1px solid #22272e;
+  padding:15px;
+  background:#11151a;
+  border:1px solid #242a31;
   border-radius:13px;
-  background:#111419;
   display:flex;
   align-items:center;
-  gap:14px;
+  gap:13px;
   text-align:left;
-  transition:.15s;
 }
 
-.project:active{
-  transform:scale(.985);
-  background:#15191e;
+.project-card:active{
+  background:#171b20;
 }
 
 .project-icon{
-  width:49px;
-  height:49px;
-  flex-shrink:0;
+  width:48px;
+  height:48px;
   border-radius:11px;
   background:#191e24;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:grid;
+  place-items:center;
+  color:#91e864;
 }
 
 .project-icon svg{
   width:24px;
-  height:24px;
-  stroke:#8ee35d;
 }
 
 .project-info{
-  min-width:0;
   flex:1;
+  min-width:0;
 }
 
 .project-name{
   font-size:15px;
   font-weight:650;
-  margin-bottom:6px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
 .project-meta{
+  margin-top:5px;
+  color:#727a83;
   font-size:12px;
-  color:#737a83;
 }
 
-.project-arrow{
+.arrow{
   width:18px;
-  height:18px;
-  stroke:#626971;
-  flex-shrink:0;
+  color:#606871;
 }
-
-/* EMPTY */
-
-.empty{
-  padding:30px 15px;
-  border:1px dashed #272c33;
-  border-radius:13px;
-  text-align:center;
-  color:#666e77;
-  font-size:13px;
-}
-
-/* BOTTOM NAV */
 
 .bottom-nav{
-  position:fixed;
+  position:absolute;
+  bottom:0;
   left:0;
   right:0;
-  bottom:0;
   height:76px;
-  padding:7px 14px env(safe-area-inset-bottom);
+  padding-bottom:env(safe-area-inset-bottom);
+  background:#0d1014;
+  border-top:1px solid #20252b;
   display:flex;
-  align-items:center;
-  justify-content:space-around;
-  background:rgba(13,16,20,.96);
-  border-top:1px solid #20242a;
-  backdrop-filter:blur(15px);
-  z-index:20;
 }
 
-.nav-item{
-  width:31%;
-  height:58px;
+.nav{
+  flex:1;
   background:none;
+  color:#687079;
   display:flex;
   flex-direction:column;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   gap:5px;
-  color:#646b73;
   font-size:10px;
 }
 
-.nav-item svg{
+.nav svg{
   width:21px;
   height:21px;
-  stroke:currentColor;
 }
 
-.nav-item.active{
-  color:#8ee35d;
+.nav.active{
+  color:#91e864;
 }
 
-.nav-item:active{
-  background:#171b20;
-  border-radius:10px;
-}
+/* =========================
+   NEW PROJECT SHEET
+========================= */
 
-/* MODAL */
-
-.modal{
-  position:fixed;
+.overlay{
+  position:absolute;
   inset:0;
   background:rgba(0,0,0,.68);
   display:none;
   align-items:flex-end;
-  z-index:50;
+  z-index:100;
 }
 
-.modal.show{
+.overlay.show{
   display:flex;
 }
 
 .sheet{
   width:100%;
-  padding:22px 18px calc(22px + env(safe-area-inset-bottom));
-  background:#111419;
-  border-top:1px solid #272c33;
+  background:#12161b;
+  border-top:1px solid #292f36;
   border-radius:20px 20px 0 0;
-  animation:up .2s ease;
-}
-
-@keyframes up{
-  from{
-    transform:translateY(100%);
-  }
-  to{
-    transform:translateY(0);
-  }
+  padding:22px 18px calc(22px + env(safe-area-inset-bottom));
 }
 
 .sheet h2{
-  margin:0 0 6px;
+  margin:0 0 7px;
   font-size:20px;
 }
 
 .sheet p{
-  margin:0 0 20px;
+  margin:0 0 18px;
   color:#777f88;
   font-size:13px;
 }
@@ -346,27 +288,25 @@ button{
 .input{
   width:100%;
   height:52px;
-  padding:0 14px;
-  border:1px solid #292e35;
+  border:1px solid #2a3037;
+  background:#090c10;
+  color:#fff;
   border-radius:10px;
   outline:none;
-  background:#0b0e12;
-  color:#fff;
-  font-size:15px;
+  padding:0 14px;
 }
 
 .input:focus{
-  border-color:#8ee35d;
+  border-color:#91e864;
 }
 
-.sheet-actions{
+.sheet-buttons{
   display:flex;
   gap:10px;
-  margin-top:14px;
+  margin-top:13px;
 }
 
-.cancel,
-.create{
+.sheet-buttons button{
   flex:1;
   height:50px;
   border-radius:10px;
@@ -374,32 +314,456 @@ button{
 }
 
 .cancel{
-  background:#1b1f24;
-  color:#aeb4bb;
+  background:#1b2026;
+  color:#aeb5bc;
 }
 
 .create{
-  background:#8ee35d;
+  background:#91e864;
   color:#091006;
 }
 
-.hidden{
-  display:none!important;
+/* =========================
+   EDITOR
+========================= */
+
+.editor-header{
+  height:58px;
+  min-height:58px;
+  background:#0d1014;
+  border-bottom:1px solid #242930;
+  display:flex;
+  align-items:center;
+  padding:0 9px;
+  gap:7px;
+}
+
+.icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:9px;
+  background:none;
+  color:#9ca4ac;
+  display:grid;
+  place-items:center;
+}
+
+.icon-btn:active{
+  background:#191e23;
+}
+
+.icon-btn svg{
+  width:20px;
+  height:20px;
+}
+
+.editor-title{
+  flex:1;
+  min-width:0;
+}
+
+.editor-title strong{
+  display:block;
+  font-size:14px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.editor-title small{
+  display:block;
+  margin-top:2px;
+  color:#707881;
+  font-size:10px;
+}
+
+.run-btn{
+  width:42px;
+  height:40px;
+  border-radius:9px;
+  background:#91e864;
+  color:#091006;
+  display:grid;
+  place-items:center;
+}
+
+.run-btn svg{
+  width:19px;
+}
+
+.editor-main{
+  flex:1;
+  display:flex;
+  min-height:0;
+  position:relative;
+}
+
+/* Explorer */
+
+.explorer{
+  position:absolute;
+  z-index:30;
+  top:0;
+  bottom:0;
+  left:0;
+  width:245px;
+  background:#101419;
+  border-right:1px solid #272d34;
+  transform:translateX(-100%);
+  transition:.2s;
+  box-shadow:10px 0 25px rgba(0,0,0,.2);
+}
+
+.explorer.open{
+  transform:translateX(0);
+}
+
+.explorer-head{
+  height:48px;
+  padding:0 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #22272e;
+}
+
+.explorer-head span{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+  color:#7d858e;
+}
+
+.file-list{
+  padding:8px;
+}
+
+.folder{
+  color:#929aa3;
+  padding:10px 8px;
+  font-size:12px;
+  font-weight:650;
+}
+
+.file{
+  width:100%;
+  height:39px;
+  padding:0 9px;
+  background:none;
+  color:#aab1b8;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border-radius:7px;
+  text-align:left;
+  font-size:13px;
+}
+
+.file.active{
+  background:#1a2026;
+  color:#91e864;
+}
+
+.file svg{
+  width:16px;
+  height:16px;
+}
+
+/* Editor area */
+
+.code-area{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  background:#0a0d10;
+}
+
+.tabs{
+  height:42px;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  overflow:auto;
+  background:#11151a;
+  border-bottom:1px solid #252b32;
+}
+
+.tab{
+  height:42px;
+  padding:0 15px;
+  background:#11151a;
+  color:#727b84;
+  border-right:1px solid #22272e;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.tab.active{
+  color:#e7ebee;
+  background:#0a0d10;
+  box-shadow:inset 0 2px #91e864;
+}
+
+.code-wrapper{
+  flex:1;
+  min-height:0;
+  position:relative;
+  overflow:hidden;
+}
+
+.line-numbers{
+  position:absolute;
+  top:0;
+  left:0;
+  width:42px;
+  bottom:0;
+  padding:13px 7px 80px 0;
+  text-align:right;
+  color:#454d56;
+  font:12px/21px ui-monospace,SFMono-Regular,Menlo,monospace;
+  user-select:none;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.code{
+  position:absolute;
+  inset:0;
+  padding:13px 12px 80px 50px;
+  resize:none;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#d9dee3;
+  caret-color:#91e864;
+  font:12px/21px ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre;
+  overflow:auto;
+  tab-size:2;
+}
+
+.code::selection{
+  background:#35452d;
+}
+
+/* Bottom panel */
+
+.bottom-panel{
+  height:190px;
+  min-height:190px;
+  background:#0e1216;
+  border-top:1px solid #292f36;
+  display:flex;
+  flex-direction:column;
+  transition:.2s;
+}
+
+.bottom-panel.collapsed{
+  height:39px;
+  min-height:39px;
+}
+
+.panel-tabs{
+  height:39px;
+  min-height:39px;
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid #242a31;
+}
+
+.panel-tab{
+  height:39px;
+  padding:0 14px;
+  background:none;
+  color:#68717a;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.5px;
+}
+
+.panel-tab.active{
+  color:#91e864;
+}
+
+.output{
+  flex:1;
+  overflow:auto;
+  padding:10px 12px;
+  font:11px/18px ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:#9ca5ad;
+}
+
+.output-line{
+  margin-bottom:3px;
+}
+
+.output-line.success{
+  color:#91e864;
+}
+
+.output-line.error{
+  color:#ed7474;
+}
+
+/* Mobile tools */
+
+.tool-dock{
+  height:47px;
+  min-height:47px;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  background:#11151a;
+  border-top:1px solid #252b32;
+}
+
+.tool{
+  width:42px;
+  height:38px;
+  border-radius:8px;
+  background:none;
+  color:#747d86;
+  display:grid;
+  place-items:center;
+}
+
+.tool.active{
+  color:#91e864;
+  background:#1a2025;
+}
+
+.tool svg{
+  width:19px;
+}
+
+/* Preview */
+
+.preview{
+  position:absolute;
+  inset:0;
+  z-index:80;
+  display:none;
+  flex-direction:column;
+  background:#07090b;
+}
+
+.preview.show{
+  display:flex;
+}
+
+.preview-header{
+  height:58px;
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  border-bottom:1px solid #252b32;
+  background:#0d1014;
+}
+
+.preview-title{
+  flex:1;
+  text-align:center;
+  font-size:13px;
+  font-weight:650;
+}
+
+.game{
+  flex:1;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+
+.game-screen{
+  width:min(92vw,430px);
+  aspect-ratio:16/10;
+  border:1px solid #343b43;
+  border-radius:10px;
+  background:#0d1115;
+  position:relative;
+  overflow:hidden;
+}
+
+.grid{
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(#171c21 1px,transparent 1px),
+    linear-gradient(90deg,#171c21 1px,transparent 1px);
+  background-size:24px 24px;
+}
+
+.snake{
+  position:absolute;
+  width:18px;
+  height:18px;
+  background:#91e864;
+  border-radius:4px;
+  left:45%;
+  top:45%;
+  box-shadow:22px 0 #6fbd4c,44px 0 #4e8b36;
+}
+
+.game-info{
+  position:absolute;
+  top:12px;
+  left:12px;
+  font-size:11px;
+  color:#91e864;
+}
+
+.preview-footer{
+  height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#68717a;
+  font-size:11px;
+}
+
+/* Toast */
+
+.toast{
+  position:absolute;
+  left:50%;
+  bottom:92px;
+  transform:translateX(-50%) translateY(20px);
+  padding:10px 15px;
+  border-radius:9px;
+  background:#20262c;
+  border:1px solid #30373f;
+  color:#e7ebee;
+  font-size:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+  z-index:200;
+  white-space:nowrap;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
 
-  <!-- HEADER -->
-  <header class="header">
+<section id="dashboard" class="screen active">
+
+  <header class="topbar">
 
     <div class="brand">
 
       <div class="logo">
-        <svg viewBox="0 0 24 24">
+        <svg viewBox="0 0 24 24" stroke-width="2">
           <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
           <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
           <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
@@ -410,9 +774,8 @@ button{
 
     </div>
 
-    <button class="menu" onclick="openMenu()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="2" stroke-linecap="round">
+    <button class="menu">
+      <svg viewBox="0 0 24 24" width="21">
         <circle cx="12" cy="5" r="1"/>
         <circle cx="12" cy="12" r="1"/>
         <circle cx="12" cy="19" r="1"/>
@@ -421,160 +784,84 @@ button{
 
   </header>
 
-
-  <!-- CONTENT -->
-  <main class="content">
+  <main class="dashboard-content">
 
     <div class="welcome">
       <h1>Welcome back</h1>
       <p>Build your next game.</p>
     </div>
 
-
     <button class="new-project" onclick="openNewProject()">
-
-      <svg viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2"
-           stroke-linecap="round">
+      <svg viewBox="0 0 24 24" stroke-width="2">
         <path d="M12 5v14"/>
         <path d="M5 12h14"/>
       </svg>
-
       NEW PROJECT
-
     </button>
 
-
-    <!-- RECENT -->
     <section class="section">
 
-      <div class="section-title">
-        <h2>RECENT PROJECTS</h2>
-
-        <button onclick="showProjects()">
-          View all
-        </button>
+      <div class="section-head">
+        <span>RECENT PROJECTS</span>
+        <button>View all</button>
       </div>
 
-
-      <div id="projectsList">
-
-        <button class="project" onclick="openProject('My First Game')">
-
-          <div class="project-icon">
-
-            <svg viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="1.8"
-                 stroke-linecap="round" stroke-linejoin="round">
-              <path d="M7 4h10"/>
-              <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
-              <path d="M9 14h6"/>
-              <path d="M12 11v6"/>
-            </svg>
-
-          </div>
-
-          <div class="project-info">
-
-            <div class="project-name">
-              My First Game
-            </div>
-
-            <div class="project-meta">
-              Last opened: Today
-            </div>
-
-          </div>
-
-          <svg class="project-arrow"
-               viewBox="0 0 24 24"
-               fill="none"
-               stroke="currentColor"
-               stroke-width="2"
-               stroke-linecap="round"
-               stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6"/>
-          </svg>
-
-        </button>
-
-      </div>
+      <div id="projectsList"></div>
 
     </section>
 
   </main>
 
-
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
 
-    <button class="nav-item active" onclick="navigate('home')">
-
-      <svg viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round">
+    <button class="nav active">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
         <path d="m3 10 9-7 9 7"/>
         <path d="M5 9v11h14V9"/>
         <path d="M9 20v-6h6v6"/>
       </svg>
-
       Home
-
     </button>
 
-
-    <button class="nav-item" onclick="navigate('projects')">
-
-      <svg viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round" stroke-linejoin="round">
+    <button class="nav">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
         <path d="M4 5h6l2 2h8v12H4z"/>
       </svg>
-
       Projects
-
     </button>
 
-
-    <button class="nav-item" onclick="navigate('settings')">
-
-      <svg viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.8"
-           stroke-linecap="round">
+    <button class="nav">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
         <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.4v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6v-2.4h.9a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L8 8.6l1.7-1.7.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h2.4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1z"/>
+        <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
       </svg>
-
       Settings
-
     </button>
 
   </nav>
 
-</div>
+</section>
 
 
-<!-- NEW PROJECT MODAL -->
+<!-- =====================================================
+     NEW PROJECT
+===================================================== -->
 
-<div class="modal" id="newProjectModal"
-     onclick="outsideClose(event)">
+<div id="newProjectOverlay" class="overlay">
 
   <div class="sheet">
 
     <h2>New Project</h2>
-
     <p>Create a new game project.</p>
 
     <input
       id="projectName"
       class="input"
-      type="text"
       placeholder="Project name"
       maxlength="40"
-      autocomplete="off"
     >
 
-    <div class="sheet-actions">
+    <div class="sheet-buttons">
 
       <button class="cancel" onclick="closeNewProject()">
         Cancel
@@ -591,13 +878,313 @@ button{
 </div>
 
 
-<script>
+<!-- =====================================================
+     EDITOR
+===================================================== -->
 
-/* =========================
-   PROJECT STORAGE
-========================= */
+<section id="editor" class="screen">
+
+  <header class="editor-header">
+
+    <button class="icon-btn" onclick="backToDashboard()">
+      <svg viewBox="0 0 24 24" stroke-width="2">
+        <path d="m15 18-6-6 6-6"/>
+      </svg>
+    </button>
+
+    <button class="icon-btn" onclick="toggleExplorer()">
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <path d="M4 5h6l2 2h8v12H4z"/>
+        <path d="M8 11h8"/>
+        <path d="M8 15h6"/>
+      </svg>
+    </button>
+
+    <div class="editor-title">
+      <strong id="editorProjectName">Project</strong>
+      <small>Snake Forge Editor</small>
+    </div>
+
+    <button class="run-btn" onclick="runProject()">
+      <svg viewBox="0 0 24 24" stroke-width="2.2">
+        <path d="m9 5 10 7-10 7z"/>
+      </svg>
+    </button>
+
+  </header>
+
+
+  <main class="editor-main">
+
+    <!-- EXPLORER -->
+
+    <aside id="explorer" class="explorer">
+
+      <div class="explorer-head">
+        <span>PROJECT</span>
+
+        <button class="icon-btn" onclick="toggleExplorer()">
+          <svg viewBox="0 0 24 24">
+            <path d="m6 6 12 12"/>
+            <path d="m18 6-12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="file-list">
+
+        <div class="folder">SNAKE FORGE</div>
+
+        <button class="file active" onclick="openFile('main.cpp')">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 4h12v16H6z"/>
+            <path d="M9 8h6"/>
+            <path d="M9 12h6"/>
+            <path d="M9 16h4"/>
+          </svg>
+          main.cpp
+        </button>
+
+        <button class="file" onclick="openFile('game.cpp')">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 4h12v16H6z"/>
+            <path d="M9 8h6"/>
+            <path d="M9 12h6"/>
+          </svg>
+          game.cpp
+        </button>
+
+        <button class="file" onclick="openFile('player.cpp')">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 4h12v16H6z"/>
+            <path d="M9 8h6"/>
+            <path d="M9 12h4"/>
+          </svg>
+          player.cpp
+        </button>
+
+        <div class="folder">ASSETS</div>
+
+        <button class="file">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 5h16v14H4z"/>
+            <circle cx="9" cy="10" r="1.5"/>
+            <path d="m6 16 4-4 3 3 2-2 3 3"/>
+          </svg>
+          textures
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- CODE -->
+
+    <section class="code-area">
+
+      <div class="tabs">
+
+        <button id="tab-main" class="tab active">
+          main.cpp
+        </button>
+
+      </div>
+
+      <div class="code-wrapper">
+
+        <div id="lineNumbers" class="line-numbers"></div>
+
+        <textarea
+          id="code"
+          class="code"
+          spellcheck="false"
+          autocapitalize="off"
+          autocorrect="off"
+          autocomplete="off"
+          oninput="updateEditor()"
+          onscroll="syncLines()"
+        ></textarea>
+
+      </div>
+
+      <div class="tool-dock">
+
+        <button class="tool active" onclick="showToast('Code')">
+          <svg viewBox="0 0 24 24" stroke-width="1.8">
+            <path d="m8 8-4 4 4 4"/>
+            <path d="m16 8 4 4-4 4"/>
+            <path d="m14 5-4 14"/>
+          </svg>
+        </button>
+
+        <button class="tool" onclick="showToast('Scene')">
+          <svg viewBox="0 0 24 24" stroke-width="1.8">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <circle cx="9" cy="9" r="1.5"/>
+            <path d="m5 17 4-4 3 3 3-4 4 5"/>
+          </svg>
+        </button>
+
+        <button class="tool" onclick="openPreview()">
+          <svg viewBox="0 0 24 24" stroke-width="1.8">
+            <rect x="4" y="5" width="16" height="14" rx="2"/>
+            <path d="m10 9 5 3-5 3z"/>
+          </svg>
+        </button>
+
+        <button class="tool" onclick="togglePanel()">
+          <svg viewBox="0 0 24 24" stroke-width="1.8">
+            <path d="M4 5h16v14H4z"/>
+            <path d="M4 15h16"/>
+          </svg>
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- CONSOLE -->
+
+  <section id="bottomPanel" class="bottom-panel">
+
+    <div class="panel-tabs">
+
+      <button class="panel-tab active">
+        OUTPUT
+      </button>
+
+      <button class="panel-tab">
+        ERRORS
+      </button>
+
+      <button class="panel-tab">
+        DEBUG
+      </button>
+
+    </div>
+
+    <div id="output" class="output">
+
+      <div class="output-line">
+        Snake Forge Editor initialized.
+      </div>
+
+      <div class="output-line">
+        Ready.
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- PREVIEW -->
+
+  <section id="preview" class="preview">
+
+    <header class="preview-header">
+
+      <button class="icon-btn" onclick="closePreview()">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="preview-title">
+        GAME PREVIEW
+      </div>
+
+      <button class="icon-btn" onclick="runProject()">
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="m9 5 10 7-10 7z"/>
+        </svg>
+      </button>
+
+    </header>
+
+    <div class="game">
+
+      <div class="game-screen">
+
+        <div class="grid"></div>
+
+        <div class="game-info">
+          SCORE 0000
+        </div>
+
+        <div class="snake"></div>
+
+      </div>
+
+    </div>
+
+    <div class="preview-footer">
+      Preview Runtime
+    </div>
+
+  </section>
+
+</section>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+/* =====================================================
+   STORAGE
+===================================================== */
 
 const STORAGE_KEY = "snakeForgeProjects";
+const FILES_KEY = "snakeForgeFiles";
+
+let currentProject = null;
+let currentFile = "main.cpp";
+
+const defaultFiles = {
+
+  "main.cpp":
+`#include <iostream>
+
+int main() {
+
+    std::cout << "Hello, Snake Forge!";
+
+    return 0;
+}`,
+
+  "game.cpp":
+`#include "game.h"
+
+void Game::start() {
+
+    // Game initialization
+
+}`,
+
+  "player.cpp":
+`class Player {
+
+public:
+
+    void update() {
+
+        // Player logic
+
+    }
+
+};`
+
+};
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
 
 function getProjects(){
 
@@ -605,7 +1192,7 @@ function getProjects(){
     return JSON.parse(
       localStorage.getItem(STORAGE_KEY)
     ) || [];
-  }catch(e){
+  }catch{
     return [];
   }
 
@@ -620,44 +1207,107 @@ function saveProjects(projects){
 
 }
 
+function renderProjects(){
 
-/* =========================
+  const list =
+    document.getElementById("projectsList");
+
+  const projects =
+    getProjects();
+
+  if(!projects.length){
+
+    list.innerHTML = `
+      <div class="project-card">
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 5v14"/>
+            <path d="M5 12h14"/>
+          </svg>
+        </div>
+
+        <div class="project-info">
+          <div class="project-name">
+            No projects yet
+          </div>
+
+          <div class="project-meta">
+            Create your first game
+          </div>
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML =
+    projects.slice(0,5).map(p => `
+
+      <button class="project-card"
+        onclick="openProject(${JSON.stringify(p.name)})">
+
+        <div class="project-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 4h10"/>
+            <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
+            <path d="M9 14h6"/>
+            <path d="M12 11v6"/>
+          </svg>
+        </div>
+
+        <div class="project-info">
+
+          <div class="project-name">
+            ${escapeHTML(p.name)}
+          </div>
+
+          <div class="project-meta">
+            Last opened: Today
+          </div>
+
+        </div>
+
+        <svg class="arrow" viewBox="0 0 24 24">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+
+      </button>
+
+    `).join("");
+
+}
+
+
+/* =====================================================
    NEW PROJECT
-========================= */
+===================================================== */
 
 function openNewProject(){
 
-  const modal =
-    document.getElementById("newProjectModal");
-
-  modal.classList.add("show");
+  document
+    .getElementById("newProjectOverlay")
+    .classList.add("show");
 
   setTimeout(()=>{
-    document.getElementById("projectName").focus();
+    document
+      .getElementById("projectName")
+      .focus();
   },100);
 
 }
 
-
 function closeNewProject(){
 
   document
-    .getElementById("newProjectModal")
+    .getElementById("newProjectOverlay")
     .classList.remove("show");
 
-  document.getElementById("projectName").value = "";
+  document
+    .getElementById("projectName")
+    .value = "";
 
 }
-
-
-function outsideClose(event){
-
-  if(event.target.id === "newProjectModal"){
-    closeNewProject();
-  }
-
-}
-
 
 function createProject(){
 
@@ -675,15 +1325,9 @@ function createProject(){
   const projects = getProjects();
 
   const project = {
-
-    id: Date.now(),
-
-    name:name,
-
-    createdAt:new Date().toISOString(),
-
-    lastOpened:new Date().toISOString()
-
+    id:Date.now(),
+    name,
+    createdAt:new Date().toISOString()
   };
 
   projects.unshift(project);
@@ -694,193 +1338,399 @@ function createProject(){
 
   renderProjects();
 
-  /*
-    Próxima etapa:
-    abrir o Project Editor do Snake Forge.
-  */
-
   openProject(name);
 
 }
 
 
-/* =========================
-   PROJECT LIST
-========================= */
+/* =====================================================
+   OPEN PROJECT
+===================================================== */
 
-function renderProjects(){
+function openProject(name){
 
-  const container =
-    document.getElementById("projectsList");
+  currentProject = name;
 
-  const projects =
-    getProjects();
+  document
+    .getElementById("dashboard")
+    .classList.remove("active");
 
-  if(projects.length === 0){
+  document
+    .getElementById("editor")
+    .classList.add("active");
 
-    container.innerHTML = `
-      <div class="empty">
-        No projects yet.
-      </div>
-    `;
+  document
+    .getElementById("editorProjectName")
+    .textContent = name;
 
-    return;
+  loadFiles();
 
-  }
+  loadFile("main.cpp");
 
-  const recent =
-    projects.slice(0,5);
-
-  container.innerHTML =
-    recent.map(project => `
-
-      <button
-        class="project"
-        onclick="openProject('${escapeHtml(project.name)}')">
-
-        <div class="project-icon">
-
-          <svg viewBox="0 0 24 24"
-               fill="none"
-               stroke="currentColor"
-               stroke-width="1.8"
-               stroke-linecap="round"
-               stroke-linejoin="round">
-
-            <path d="M7 4h10"/>
-            <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
-            <path d="M9 14h6"/>
-            <path d="M12 11v6"/>
-
-          </svg>
-
-        </div>
-
-        <div class="project-info">
-
-          <div class="project-name">
-            ${escapeHtml(project.name)}
-          </div>
-
-          <div class="project-meta">
-            Project
-          </div>
-
-        </div>
-
-        <svg class="project-arrow"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="2">
-
-          <path d="m9 18 6-6-6-6"/>
-
-        </svg>
-
-      </button>
-
-    `).join("");
+  addOutput(
+    "Opened project: " + name,
+    "success"
+  );
 
 }
 
 
-function escapeHtml(text){
+/* =====================================================
+   FILE SYSTEM
+===================================================== */
+
+function loadFiles(){
+
+  const key =
+    FILES_KEY + "_" + currentProject;
+
+  const saved =
+    localStorage.getItem(key);
+
+  if(!saved){
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(defaultFiles)
+    );
+
+  }
+
+}
+
+function getFiles(){
+
+  const key =
+    FILES_KEY + "_" + currentProject;
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem(key)
+    ) || {...defaultFiles};
+
+  }catch{
+
+    return {...defaultFiles};
+
+  }
+
+}
+
+function saveFiles(files){
+
+  const key =
+    FILES_KEY + "_" + currentProject;
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(files)
+  );
+
+}
+
+
+/* =====================================================
+   FILE OPEN
+===================================================== */
+
+function openFile(file){
+
+  saveCurrentFile();
+
+  currentFile = file;
+
+  const files = getFiles();
+
+  document
+    .getElementById("code")
+    .value = files[file] || "";
+
+  document
+    .querySelectorAll(".file")
+    .forEach(el => {
+
+      el.classList.toggle(
+        "active",
+        el.textContent.trim() === file
+      );
+
+    });
+
+  document
+    .getElementById("tab-main")
+    .textContent = file;
+
+  updateLines();
+
+}
+
+function loadFile(file){
+
+  currentFile = file;
+
+  const files = getFiles();
+
+  document
+    .getElementById("code")
+    .value =
+      files[file] || "";
+
+  updateLines();
+
+}
+
+function saveCurrentFile(){
+
+  if(!currentProject) return;
+
+  const files = getFiles();
+
+  files[currentFile] =
+    document.getElementById("code").value;
+
+  saveFiles(files);
+
+}
+
+
+/* =====================================================
+   EDITOR
+===================================================== */
+
+function updateEditor(){
+
+  saveCurrentFile();
+
+  updateLines();
+
+}
+
+function updateLines(){
+
+  const code =
+    document.getElementById("code").value;
+
+  const count =
+    Math.max(1,code.split("\n").length);
+
+  document
+    .getElementById("lineNumbers")
+    .innerHTML =
+      Array.from(
+        {length:count},
+        (_,i)=>i+1
+      ).join("<br>");
+
+}
+
+function syncLines(){
+
+  const code =
+    document.getElementById("code");
+
+  document
+    .getElementById("lineNumbers")
+    .scrollTop =
+      code.scrollTop;
+
+}
+
+
+/* =====================================================
+   EXPLORER
+===================================================== */
+
+function toggleExplorer(){
+
+  document
+    .getElementById("explorer")
+    .classList.toggle("open");
+
+}
+
+
+/* =====================================================
+   CONSOLE
+===================================================== */
+
+function addOutput(text,type=""){
+
+  const output =
+    document.getElementById("output");
+
+  const line =
+    document.createElement("div");
+
+  line.className =
+    "output-line " + type;
+
+  line.textContent =
+    text;
+
+  output.appendChild(line);
+
+  output.scrollTop =
+    output.scrollHeight;
+
+}
+
+function clearOutput(){
+
+  document
+    .getElementById("output")
+    .innerHTML = "";
+
+}
+
+
+/* =====================================================
+   RUN
+===================================================== */
+
+function runProject(){
+
+  saveCurrentFile();
+
+  clearOutput();
+
+  addOutput(
+    "Snake Forge Runtime",
+    "success"
+  );
+
+  addOutput(
+    "Project: " + currentProject
+  );
+
+  addOutput(
+    "Compiling " + currentFile + "..."
+  );
+
+  setTimeout(()=>{
+
+    addOutput(
+      "Build completed successfully.",
+      "success"
+    );
+
+    addOutput(
+      "Runtime started.",
+      "success"
+    );
+
+    openPreview();
+
+  },500);
+
+}
+
+
+/* =====================================================
+   PREVIEW
+===================================================== */
+
+function openPreview(){
+
+  document
+    .getElementById("preview")
+    .classList.add("show");
+
+}
+
+function closePreview(){
+
+  document
+    .getElementById("preview")
+    .classList.remove("show");
+
+}
+
+
+/* =====================================================
+   PANEL
+===================================================== */
+
+function togglePanel(){
+
+  document
+    .getElementById("bottomPanel")
+    .classList.toggle("collapsed");
+
+}
+
+
+/* =====================================================
+   DASHBOARD RETURN
+===================================================== */
+
+function backToDashboard(){
+
+  saveCurrentFile();
+
+  document
+    .getElementById("editor")
+    .classList.remove("active");
+
+  document
+    .getElementById("dashboard")
+    .classList.add("active");
+
+  renderProjects();
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer;
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent =
+    message;
+
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer =
+    setTimeout(()=>{
+      toast.classList.remove("show");
+    },1400);
+
+}
+
+
+/* =====================================================
+   UTIL
+===================================================== */
+
+function escapeHTML(text){
 
   const div =
     document.createElement("div");
 
-  div.textContent = text;
+  div.textContent =
+    text;
 
   return div.innerHTML;
 
 }
 
 
-/* =========================
-   OPEN PROJECT
-========================= */
-
-function openProject(name){
-
-  /*
-    Aqui será conectado o Editor.
-    Por enquanto identificamos o projeto
-    selecionado.
-
-    Não usamos alert(), mantendo a
-    interface limpa para mobile.
-  */
-
-  console.log(
-    "Opening Snake Forge project:",
-    name
-  );
-
-}
-
-
-/* =========================
-   NAVIGATION
-========================= */
-
-function navigate(section){
-
-  document
-    .querySelectorAll(".nav-item")
-    .forEach(item =>
-      item.classList.remove("active")
-    );
-
-  const items =
-    document.querySelectorAll(".nav-item");
-
-  if(section === "home"){
-
-    items[0].classList.add("active");
-
-  }
-
-  if(section === "projects"){
-
-    items[1].classList.add("active");
-
-    showProjects();
-
-  }
-
-  if(section === "settings"){
-
-    items[2].classList.add("active");
-
-    console.log("Settings");
-
-  }
-
-}
-
-
-function showProjects(){
-
-  console.log("Project Manager");
-
-}
-
-
-function openMenu(){
-
-  console.log("Snake Forge menu");
-
-}
-
-
-/* =========================
-   ENTER = CREATE
-========================= */
+/* =====================================================
+   KEYBOARD
+===================================================== */
 
 document
   .getElementById("projectName")
-  .addEventListener("keydown",function(e){
+  .addEventListener("keydown",e=>{
 
     if(e.key === "Enter"){
       createProject();
@@ -893,11 +1743,44 @@ document
   });
 
 
-/* =========================
+document
+  .getElementById("code")
+  .addEventListener("keydown",e=>{
+
+    if(e.key === "Tab"){
+
+      e.preventDefault();
+
+      const textarea = e.target;
+
+      const start =
+        textarea.selectionStart;
+
+      const end =
+        textarea.selectionEnd;
+
+      textarea.value =
+        textarea.value.substring(0,start)
+        + "  "
+        + textarea.value.substring(end);
+
+      textarea.selectionStart =
+        textarea.selectionEnd =
+          start + 2;
+
+      updateEditor();
+
+    }
+
+  });
+
+
+/* =====================================================
    INIT
-========================= */
+===================================================== */
 
 renderProjects();
+updateLines();
 
 </script>
 
