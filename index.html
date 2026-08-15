@@ -5064,5 +5064,462 @@ document.addEventListener("snake:audioplay",e=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — 8/9 SCRIPT API
+===================================================== */
+.se-script-panel{
+  position:absolute;left:8px;top:44px;width:min(320px,86vw);max-height:55vh;
+  overflow:auto;padding:9px;background:#080d12ee;border:1px solid #29343d;
+  border-radius:7px;color:#8796a2;font:8px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;
+  display:none;z-index:16;box-shadow:0 12px 35px #0008;backdrop-filter:blur(8px)
+}
+.se-script-panel.show{display:block}
+.se-script-title{display:flex;align-items:center;justify-content:space-between;color:#cbd5dd;font-weight:800;letter-spacing:.08em;margin-bottom:7px}
+.se-script-grid{display:grid;grid-template-columns:1fr auto;gap:3px 10px}
+.se-script-key{color:#62717d}.se-script-value{color:#aab5be;text-align:right}.se-script-value.good{color:#a9e99a}
+.se-script-log{margin-top:7px;padding-top:7px;border-top:1px solid #1f2932}
+.se-script-log-line{padding:3px 0;border-bottom:1px solid #182129;color:#7c8a95}
+.runtime-btn.script-on{color:#a9e99a;border-color:#34543a;background:#142019}
+@media(max-width:700px){.se-script-panel{left:8px;top:42px;width:min(300px,88vw)}}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — 8/9: SCRIPT API
+   Runtime scripting bridge for Nodes, Scene, Input, Physics,
+   Animation, Audio, Assets and dictionary aliases.
+===================================================== */
+(function(){
+"use strict";
+
+const RT = window.SnakeEngine = window.SnakeEngine || {};
+RT.runtime = RT.runtime || {};
+
+class SnakeScriptRuntime{
+  constructor(){
+    this.enabled=true;
+    this.instances=new Map();
+    this.logs=[];
+    this.errors=[];
+    this.stats={scripts:0,updates:0,errors:0};
+    this.globals={};
+  }
+
+  createContext(node){
+    const api=this.buildAPI(node);
+    return Object.freeze(api);
+  }
+
+  buildAPI(node){
+    const runtime=this;
+    return {
+      node,
+      self:node,
+      scene:{
+        find(name){return snakeRuntime.graph?.find(name)||null},
+        all(type=null){
+          const items=[];
+          snakeRuntime.graph?.traverse(n=>{
+            if(n!==snakeRuntime.graph.root&&(!type||n.type===type))items.push(n);
+          });
+          return items;
+        },
+        create(type="Node",name="Node",options={}){
+          const n=new SnakeNode(name,type);
+          if(options.x!=null)n.transform.x=Number(options.x)||0;
+          if(options.y!=null)n.transform.y=Number(options.y)||0;
+          if(options.rotation!=null)n.transform.rotation=Number(options.rotation)||0;
+          if(options.scaleX!=null)n.transform.scaleX=Number(options.scaleX)||1;
+          if(options.scaleY!=null)n.transform.scaleY=Number(options.scaleY)||1;
+          snakeRuntime.graph?.add(n);
+          return n;
+        },
+        destroy(target){
+          const n=typeof target==="string"?snakeRuntime.graph?.find(target):target;
+          if(n)snakeRuntime.graph?.remove(n);
+        }
+      },
+      transform:{
+        get x(){return node?.transform?.x||0},
+        set x(v){if(node)node.transform.x=Number(v)||0},
+        get y(){return node?.transform?.y||0},
+        set y(v){if(node)node.transform.y=Number(v)||0},
+        get rotation(){return node?.transform?.rotation||0},
+        set rotation(v){if(node)node.transform.rotation=Number(v)||0},
+        move(x,y){if(node){node.transform.x+=Number(x)||0;node.transform.y+=Number(y)||0}},
+        set(x,y){if(node){node.transform.x=Number(x)||0;node.transform.y=Number(y)||0}}
+      },
+      input:{
+        down(action){return !!SnakeInput.down(action)},
+        pressed(action){return !!SnakeInput.pressed(action)},
+        released(action){return !!SnakeInput.released(action)},
+        axis(name){return SnakeInput.axis(name)},
+        vector(){return SnakeInput.vector()},
+        pointer(){return SnakeInput.pointer?.()||null},
+        gamepad(){return SnakeInput.gamepad?.()||null}
+      },
+      physics:{
+        get body(){return node?.getComponent?.(RT.runtime.PhysicsBody)||null},
+        velocity(x,y){
+          const b=node?.getComponent?.(RT.runtime.PhysicsBody);
+          if(b)b.setVelocity(x,y);
+        },
+        force(x,y){node?.getComponent?.(RT.runtime.PhysicsBody)?.addForce(x,y)},
+        impulse(x,y){node?.getComponent?.(RT.runtime.PhysicsBody)?.addImpulse(x,y)},
+        raycast(x1,y1,x2,y2,mask){return window.Physics?.raycast(x1,y1,x2,y2,mask)||null},
+        overlap(x,y,w,h,mask){return window.Physics?.overlap(x,y,w,h,mask)||[]}
+      },
+      animation:{
+        play(name,restart=false){return Animation.play(node,name,restart)},
+        pause(){Animation.pause(node)},
+        resume(){Animation.resume(node)},
+        speed(v){Animation.speed(node,v)},
+        setBool(name,v){Animation.setBool(node,name,v)},
+        setFloat(name,v){Animation.setFloat(node,name,v)},
+        setTrigger(name){Animation.setTrigger(node,name)},
+        state(){return Animation.state(node)}
+      },
+      audio:{
+        play(ref,options){return AudioSystem.play(ref,options)},
+        sfx(ref,options){return AudioSystem.playSfx(ref,options)},
+        music(ref,options){return AudioSystem.playMusic(ref,options)},
+        stop(ref){return AudioSystem.stop(ref)}
+      },
+      assets:{
+        get(ref){
+          const list=typeof assets2!=="undefined"?assets2:[];
+          return list.find(a=>a.id===ref||a.name===ref)||null;
+        },
+        all(type=null){
+          const list=typeof assets2!=="undefined"?assets2:[];
+          return type?list.filter(a=>String(a.type||"").startsWith(type)):list.slice();
+        }
+      },
+      log(...args){runtime.log("log",node?.name||"Script",args)},
+      warn(...args){runtime.log("warn",node?.name||"Script",args)},
+      error(...args){runtime.log("error",node?.name||"Script",args)},
+      time:{
+        get delta(){return snakeRuntime.dt||0},
+        get elapsed(){return snakeRuntime.elapsed||0},
+        get frame(){return snakeRuntime.frames||0}
+      }
+    };
+  }
+
+  compile(source,node,name="script"){
+    const translated=this.translateAliases(source);
+    const wrapped=`
+      "use strict";
+      return (function(API){
+        const {node,self,scene,transform,input,physics,animation,audio,assets,log,warn,error,time}=API;
+        ${translated}
+        return {
+          start: typeof start==="function"?start:null,
+          update: typeof update==="function"?update:null,
+          destroy: typeof destroy==="function"?destroy:null,
+          onCollisionEnter: typeof onCollisionEnter==="function"?onCollisionEnter:null,
+          onCollisionStay: typeof onCollisionStay==="function"?onCollisionStay:null,
+          onCollisionExit: typeof onCollisionExit==="function"?onCollisionExit:null,
+          onTriggerEnter: typeof onTriggerEnter==="function"?onTriggerEnter:null,
+          onTriggerStay: typeof onTriggerStay==="function"?onTriggerStay:null,
+          onTriggerExit: typeof onTriggerExit==="function"?onTriggerExit:null
+        };
+      });
+    `;
+    try{
+      const factory=new Function(wrapped)();
+      const api=this.createContext(node);
+      const hooks=factory(api)||{};
+      return {name,node,api,hooks,source,translated,started:false};
+    }catch(err){
+      this.reportError(name,err);
+      return null;
+    }
+  }
+
+  attach(node,source,name="script"){
+    const inst=this.compile(source,node,name);
+    if(!inst)return null;
+    this.instances.set(node.id+":"+name,inst);
+    this.stats.scripts=this.instances.size;
+    return inst;
+  }
+
+  detach(node,name=null){
+    for(const [key,inst] of [...this.instances]){
+      if(inst.node!==node)continue;
+      if(name&&inst.name!==name)continue;
+      try{inst.hooks.destroy?.call(inst.api)}catch(e){this.reportError(inst.name,e)}
+      this.instances.delete(key);
+    }
+    this.stats.scripts=this.instances.size;
+  }
+
+  start(){
+    for(const inst of this.instances.values()){
+      if(inst.started)continue;
+      inst.started=true;
+      try{inst.hooks.start?.call(inst.api)}catch(e){this.reportError(inst.name,e)}
+    }
+  }
+
+  update(dt){
+    if(!this.enabled)return;
+    for(const inst of this.instances.values()){
+      if(!inst.started){
+        inst.started=true;
+        try{inst.hooks.start?.call(inst.api)}catch(e){this.reportError(inst.name,e)}
+      }
+      try{
+        inst.hooks.update?.call(inst.api,dt);
+        this.stats.updates++;
+      }catch(e){this.reportError(inst.name,e)}
+    }
+  }
+
+  dispatchCollision(kind,detail){
+    const map={
+      collisionenter:"onCollisionEnter",
+      collisionstay:"onCollisionStay",
+      collisionexit:"onCollisionExit",
+      triggerenter:"onTriggerEnter",
+      triggerstay:"onTriggerStay",
+      triggerexit:"onTriggerExit"
+    };
+    const hook=map[kind];
+    if(!hook)return;
+    for(const inst of this.instances.values()){
+      const fn=inst.hooks[hook];
+      if(typeof fn!=="function")continue;
+      try{
+        if(inst.node===detail.a)fn.call(inst.api,detail.b,detail);
+        else if(inst.node===detail.b)fn.call(inst.api,detail.a,detail);
+      }catch(e){this.reportError(inst.name,e)}
+    }
+  }
+
+  translateAliases(source){
+    let s=String(source||"");
+    try{
+      const d=typeof getDictionary==="function"?getDictionary():[];
+      for(const [original,alias] of d){
+        if(!alias)continue;
+        const esc=alias.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+        s=s.replace(new RegExp("\\b"+esc+"\\b","g"),original);
+      }
+    }catch(e){}
+    return s;
+  }
+
+  log(type,scope,args){
+    const text=args.map(v=>{
+      if(typeof v==="string")return v;
+      try{return JSON.stringify(v)}catch{return String(v)}
+    }).join(" ");
+    const entry={type,scope,text,time:performance.now()};
+    this.logs.push(entry);
+    if(this.logs.length>30)this.logs.shift();
+    if(typeof addOutput==="function")addOutput("["+scope+"] "+text,type==="error"?"error":type==="warn"?"":"success");
+    updateScriptPanel();
+  }
+
+  reportError(scope,err){
+    this.stats.errors++;
+    this.errors.push({scope,message:err?.message||String(err)});
+    if(this.errors.length>20)this.errors.shift();
+    if(typeof addOutput==="function")addOutput("[Script "+scope+"] "+(err?.message||String(err)),"error");
+    console.error(err);
+    updateScriptPanel();
+  }
+
+  clear(){
+    this.instances.clear();
+    this.stats={scripts:0,updates:0,errors:0};
+    this.logs=[];
+    this.errors=[];
+  }
+
+  bindProjectScripts(){
+    this.clear();
+    if(!snakeRuntime.graph)return;
+    const files=(typeof projectWorkspace!=="undefined"&&projectWorkspace.files)||getFiles?.()||{};
+    const jsFiles=Object.keys(files).filter(n=>/\.(js|snake)$/i.test(n));
+
+    const player=snakeRuntime.playerNode;
+    if(player){
+      // Prefer explicit player.js / player.snake, then any first script file.
+      const playerFile=jsFiles.find(n=>/^player\.(js|snake)$/i.test(n))||jsFiles[0];
+      if(playerFile)this.attach(player,files[playerFile],playerFile);
+    }
+
+    // Node metadata can point to script filenames.
+    snakeRuntime.graph.traverse(node=>{
+      const scriptName=node.meta?.script;
+      if(scriptName&&files[scriptName])this.attach(node,files[scriptName],scriptName);
+    });
+
+    this.start();
+    updateScriptPanel();
+  }
+}
+
+const Scripts=new SnakeScriptRuntime();
+RT.runtime.ScriptRuntime=SnakeScriptRuntime;
+RT.runtime.Scripts=Scripts;
+RT.Scripts=Scripts;
+window.Scripts=Scripts;
+
+// Default scripting file for projects that do not have one yet.
+function ensureDefaultGameScript(){
+  if(typeof projectWorkspace==="undefined"||!projectWorkspace.files)return;
+  if(!projectWorkspace.files["player.js"]){
+    projectWorkspace.files["player.js"]=`function start(){
+  log("Player ready");
+}
+
+function update(dt){
+  const move=input.vector();
+  const body=physics.body;
+
+  if(body){
+    body.velocity.x=move.x*180;
+    body.velocity.y=move.y*180;
+  }
+
+  if(input.pressed("primary")){
+    animation.setTrigger("attack");
+  }
+}
+
+function onCollisionEnter(other){
+  log("Collision with", other.name);
+}`;
+    projectWorkspace.dirty=true;
+    if(typeof saveProjectWorkspace==="function")saveProjectWorkspace();
+    if(typeof renderProjectExplorer==="function")renderProjectExplorer();
+  }
+}
+
+const previousOpenProjectScript=openProject;
+openProject=function(name){
+  previousOpenProjectScript(name);
+  setTimeout(ensureDefaultGameScript,0);
+};
+
+// Bind scripts each time Play builds a runtime scene.
+const previousRuntimeBuildSceneScript=runtimeBuildScene;
+runtimeBuildScene=function(){
+  previousRuntimeBuildSceneScript();
+  Scripts.bindProjectScripts();
+};
+
+// Run scripts after input is sampled and before the physical world resolves.
+const previousRuntimeUpdateScript=runtimeUpdate;
+runtimeUpdate=function(dt){
+  Scripts.update(dt);
+  previousRuntimeUpdateScript(dt);
+};
+
+// Keep collision callbacks available to game scripts.
+["collisionenter","collisionstay","collisionexit","triggerenter","triggerstay","triggerexit"].forEach(kind=>{
+  document.addEventListener("snake:"+kind,e=>Scripts.dispatchCollision(kind,e.detail));
+});
+
+// Stop/cleanup script instances when exiting runtime.
+const previousRuntimeStopScript=runtimeStop;
+runtimeStop=function(){
+  for(const inst of Scripts.instances.values()){
+    try{inst.hooks.destroy?.call(inst.api)}catch(e){}
+  }
+  Scripts.clear();
+  previousRuntimeStopScript();
+};
+
+// Project code editor gets JavaScript/Snake files without removing C++ support.
+const previousProjectNewFileScript=window.projectNewFile;
+window.projectNewFile=function(){
+  if(!currentProject)return;
+  const name=prompt("Nome do arquivo","script.js");
+  if(!name)return;
+  if(projectWorkspace.files[name])return showToast("Arquivo já existe");
+  projectWorkspace.files[name]=/\.js$|\.snake$/i.test(name)
+    ? `function start(){\n  log("start");\n}\n\nfunction update(dt){\n\n}\n`
+    : "";
+  currentFile=name;
+  projectWorkspace.activeFile=name;
+  document.getElementById("code").value=projectWorkspace.files[name];
+  projectWorkspace.dirty=true;
+  renderProjectExplorer();
+  renderProjectTabs();
+  updateLines();
+  updateProjectStatus();
+  showToast("Arquivo criado");
+};
+
+// Script API documentation available from the console/global for later UI.
+window.SnakeScriptAPI={
+  Node:"scene.find(name), scene.create(type,name,options), scene.destroy(node)",
+  Transform:"transform.x / y / rotation, transform.move(x,y), transform.set(x,y)",
+  Input:"input.down(), input.pressed(), input.released(), input.axis(), input.vector()",
+  Physics:"physics.body, physics.velocity(), physics.force(), physics.impulse(), physics.raycast()",
+  Animation:"animation.play(), pause(), resume(), speed(), setBool(), setFloat(), setTrigger()",
+  Audio:"audio.play(), audio.sfx(), audio.music(), audio.stop()",
+  Assets:"assets.get(), assets.all()",
+  Time:"time.delta, time.elapsed, time.frame"
+};
+
+let scriptPanelOpen=false;
+function toggleScriptDebug(){
+  scriptPanelOpen=!scriptPanelOpen;
+  document.getElementById("scriptPanel")?.classList.toggle("show",scriptPanelOpen);
+  document.getElementById("scriptDebugBtn")?.classList.toggle("script-on",scriptPanelOpen);
+  updateScriptPanel();
+}
+
+function updateScriptPanel(){
+  const panel=document.getElementById("scriptPanel");
+  if(!panel)return;
+  const recent=Scripts.logs.slice(-6).reverse();
+  panel.innerHTML=`
+    <div class="se-script-title"><span>SCRIPT API</span><span>${Scripts.enabled?"ACTIVE":"PAUSED"}</span></div>
+    <div class="se-script-grid">
+      <span class="se-script-key">Instances</span><span class="se-script-value good">${Scripts.instances.size}</span>
+      <span class="se-script-key">Updates</span><span class="se-script-value">${Scripts.stats.updates}</span>
+      <span class="se-script-key">Errors</span><span class="se-script-value">${Scripts.stats.errors}</span>
+      <span class="se-script-key">Dictionary</span><span class="se-script-value">${typeof getDictionary==="function"?getDictionary().filter(x=>x[1]).length:0} aliases</span>
+    </div>
+    <div class="se-script-log">
+      ${recent.length?recent.map(x=>`<div class="se-script-log-line">[${escapeHTML(x.scope)}] ${escapeHTML(x.text)}</div>`).join(""):"<div class='se-script-log-line'>No script output.</div>"}
+    </div>`;
+}
+
+(function installScriptUI(){
+  const stage=document.querySelector("#preview .runtime-stage");
+  if(stage&&!document.getElementById("scriptPanel")){
+    const panel=document.createElement("div");
+    panel.id="scriptPanel";
+    panel.className="se-script-panel";
+    stage.appendChild(panel);
+  }
+
+  const header=document.querySelector("#preview .preview-header");
+  if(header&&!document.getElementById("scriptDebugBtn")){
+    const btn=document.createElement("button");
+    btn.id="scriptDebugBtn";
+    btn.className="runtime-btn";
+    btn.title="Script API debug";
+    btn.setAttribute("aria-label","Script API debug");
+    btn.innerHTML='<svg class="ui-icon" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></svg>';
+    btn.onclick=toggleScriptDebug;
+    const meta=header.querySelector(".preview-meta");
+    header.insertBefore(btn,meta||null);
+  }
+})();
+
+})();
+</script>
+
 </body>
 </html>
