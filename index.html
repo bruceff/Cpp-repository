@@ -1146,15 +1146,229 @@ int main() {
     </div>
 </section>
 <!-- OTHER MODULES -->
-<section id="assetsPage" class="page module-page">
-    <div class="module-header">
-        <h1>📦 Assets</h1>
-        <p>Gerenciamento dos recursos do projeto.</p>
+<!-- =====================================================
+     ASSETS
+===================================================== -->
+<section id="assetsPage" class="page assets-page">
+
+    <div class="assets-header">
+
+        <div>
+            <div class="assets-title">📦 Assets</div>
+            <div class="assets-subtitle">
+                Gerencie os recursos do seu projeto.
+            </div>
+        </div>
+
+        <button class="assets-add-button"
+                onclick="abrirMenuAssets()">
+            ＋
+        </button>
+
     </div>
-    <div class="coming-soon">
-        📦<br><br>
-        <strong>Asset Manager</strong><br>
-        Em desenvolvimento.
+
+    <!-- PESQUISA -->
+
+    <div class="assets-search-box">
+
+        <span>🔍</span>
+
+        <input
+            id="assetsSearch"
+            type="text"
+            placeholder="Pesquisar assets..."
+            oninput="filtrarAssets()"
+        >
+
+    </div>
+
+    <!-- NAVEGAÇÃO -->
+
+    <div class="assets-navigation">
+
+        <button
+            class="asset-folder-button active"
+            onclick="abrirPastaAssets('Todos')"
+            id="assetFolderTodos">
+
+            📦 Todos
+
+        </button>
+
+        <button
+            class="asset-folder-button"
+            onclick="abrirPastaAssets('Sprites')">
+
+            🖼️ Sprites
+
+        </button>
+
+        <button
+            class="asset-folder-button"
+            onclick="abrirPastaAssets('Tilesets')">
+
+            🧱 Tilesets
+
+        </button>
+
+        <button
+            class="asset-folder-button"
+            onclick="abrirPastaAssets('Audio')">
+
+            🎵 Áudio
+
+        </button>
+
+        <button
+            class="asset-folder-button"
+            onclick="abrirPastaAssets('Cenas')">
+
+            🗺️ Cenas
+
+        </button>
+
+        <button
+            class="asset-folder-button"
+            onclick="abrirPastaAssets('Scripts')">
+
+            📝 Scripts
+
+        </button>
+
+        <button
+            class="asset-folder-button"
+            onclick="abrirPastaAssets('Outros')">
+
+            📄 Outros
+
+        </button>
+
+    </div>
+
+    <!-- BARRA -->
+
+    <div class="assets-toolbar">
+
+        <span id="assetsCurrentFolder">
+            📦 Todos
+        </span>
+
+        <span id="assetsCount">
+            0 itens
+        </span>
+
+    </div>
+
+    <!-- GRID -->
+
+    <div
+        class="assets-grid"
+        id="assetsGrid">
+    </div>
+
+    <!-- VAZIO -->
+
+    <div
+        class="assets-empty"
+        id="assetsEmpty">
+
+        <div class="assets-empty-icon">
+            📦
+        </div>
+
+        <strong>Nenhum asset</strong>
+
+        <span>
+            Importe arquivos ou crie uma pasta
+            para começar.
+        </span>
+
+        <button onclick="abrirMenuAssets()">
+            ＋ Adicionar asset
+        </button>
+
+    </div>
+
+</section>
+
+<!-- =====================================================
+     ASSETS MENU
+===================================================== -->
+
+<div
+    class="assets-action-menu"
+    id="assetsActionMenu">
+
+    <button onclick="fecharMenuAssets(); importarAssets()">
+        📥 Importar arquivo
+    </button>
+
+    <button onclick="fecharMenuAssets(); criarPastaAsset()">
+        📁 Nova pasta
+    </button>
+
+    <button onclick="fecharMenuAssets(); criarAssetExemplo()">
+        🧪 Criar asset de teste
+    </button>
+
+</div>
+
+<input
+    type="file"
+    id="assetFileInput"
+    multiple
+    hidden
+    onchange="processarArquivosAssets(event)"
+>
+
+<!-- =====================================================
+     ASSET INSPECTOR
+===================================================== -->
+
+<div
+    class="asset-modal"
+    id="assetModal">
+
+    <div class="asset-modal-box">
+
+        <div class="asset-modal-header">
+
+            <strong id="assetModalTitle">
+                Asset
+            </strong>
+
+            <button onclick="fecharAssetModal()">
+                ×
+            </button>
+
+        </div>
+
+        <div
+            class="asset-preview"
+            id="assetPreview">
+        </div>
+
+        <div
+            class="asset-information"
+            id="assetInformation">
+        </div>
+
+        <div class="asset-modal-actions">
+
+            <button onclick="renomearAssetAtual()">
+                ✏️ Renomear
+            </button>
+
+            <button onclick="excluirAssetAtual()"
+                    class="asset-danger">
+                🗑️ Excluir
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
     </div>
 </section>
 <section id="audioPage" class="page module-page">
