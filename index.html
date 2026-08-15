@@ -4,3874 +4,5078 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>My Engine</title>
+
 <style>
 *{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
+
 html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    background:#0c0c0c;
-    color:#fff;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    overflow:hidden;
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#0c0c0c;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  overflow:hidden;
 }
+
 button{
-    border:0;
-    color:#fff;
-    font-weight:700;
-    cursor:pointer;
+  border:0;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
 }
-button:active{
-    transform:scale(.97);
+
+input,textarea,select{
+  font-family:inherit;
 }
-.header{
-    height:60px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#111;
-    border-bottom:1px solid #292929;
-    font-size:20px;
-    font-weight:900;
-    position:relative;
-    z-index:500;
-}
-.menu-button{
-    position:absolute;
-    left:9px;
-    top:9px;
-    width:42px;
-    height:42px;
-    border-radius:10px;
-    background:#202020;
-    border:1px solid #333;
-    font-size:22px;
-}
-.side-menu{
-    position:fixed;
-    left:-285px;
-    top:0;
-    width:280px;
-    height:100%;
-    background:#111;
-    border-right:1px solid #333;
-    z-index:1000;
-    transition:left .22s ease;
-    padding-top:65px;
-    box-shadow:10px 0 30px rgba(0,0,0,.55);
-}
-.side-menu.open{
-    left:0;
-}
-.menu-overlay{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.6);
-    z-index:999;
-}
-.menu-overlay.open{
-    display:block;
-}
-.menu-title{
-    padding:15px 20px;
-    font-size:11px;
-    letter-spacing:1px;
-    color:#666;
-    font-weight:900;
-}
-.menu-item{
-    width:100%;
-    min-height:51px;
-    padding:0 20px;
-    display:flex;
-    align-items:center;
-    gap:13px;
-    background:transparent;
-    border-bottom:1px solid #222;
-    color:#aaa;
-    text-align:left;
-    font-size:14px;
-}
-.menu-item.active{
-    background:#2878ff;
-    color:#fff;
-}
+
 .page{
-    display:none;
-    height:calc(100vh - 60px);
-    overflow:auto;
+  display:none;
+  height:calc(100vh - 60px);
+  overflow:auto;
 }
+
 .page.active{
-    display:block;
+  display:block;
 }
-/* HOME */
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#111;
+  border-bottom:1px solid #292929;
+  font-size:20px;
+  font-weight:900;
+  position:relative;
+  z-index:500;
+}
+
+.menu-button{
+  position:absolute;
+  left:9px;
+  top:9px;
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  background:#202020;
+  border:1px solid #333;
+  font-size:22px;
+}
+
+.side-menu{
+  position:fixed;
+  left:-285px;
+  top:0;
+  width:280px;
+  height:100%;
+  background:#111;
+  border-right:1px solid #333;
+  z-index:1000;
+  transition:.22s;
+  padding-top:65px;
+  box-shadow:10px 0 30px rgba(0,0,0,.55);
+}
+
+.side-menu.open{
+  left:0;
+}
+
+.menu-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  z-index:999;
+}
+
+.menu-overlay.open{
+  display:block;
+}
+
+.menu-title{
+  padding:15px 20px;
+  font-size:11px;
+  color:#666;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.menu-item{
+  width:100%;
+  min-height:51px;
+  padding:0 20px;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  background:transparent;
+  border-bottom:1px solid #222;
+  color:#aaa;
+  text-align:left;
+  font-size:14px;
+}
+
+.menu-item.active{
+  background:#2878ff;
+  color:#fff;
+}
+
+/* =========================
+   HOME
+========================= */
+
 .home{
-    padding:20px;
+  padding:20px;
 }
+
 .hero{
-    padding:24px;
-    border:1px solid #292929;
-    border-radius:16px;
-    background:linear-gradient(145deg,#181818,#101010);
-    margin-bottom:14px;
+  padding:24px;
+  border:1px solid #292929;
+  border-radius:16px;
+  background:linear-gradient(145deg,#181818,#101010);
+  margin-bottom:14px;
 }
+
 .hero h1{
-    margin:0 0 7px;
-    font-size:28px;
+  margin:0 0 7px;
+  font-size:28px;
 }
+
 .hero p{
-    margin:0;
-    color:#777;
-    font-size:14px;
-    line-height:1.5;
+  margin:0;
+  color:#777;
+  line-height:1.5;
 }
+
 .cards{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
 }
+
 .card{
-    min-height:115px;
-    padding:15px;
-    border:1px solid #292929;
-    border-radius:13px;
-    background:#171717;
-    cursor:pointer;
+  min-height:115px;
+  padding:15px;
+  border:1px solid #292929;
+  border-radius:13px;
+  background:#171717;
 }
+
 .card-icon{
-    font-size:25px;
-    margin-bottom:7px;
+  font-size:25px;
+  margin-bottom:7px;
 }
+
 .card-title{
-    font-weight:900;
-    font-size:14px;
+  font-weight:900;
 }
+
 .card-description{
-    margin-top:5px;
-    color:#777;
-    font-size:11px;
-    line-height:1.4;
+  margin-top:5px;
+  color:#777;
+  font-size:11px;
 }
-/* CODE */
+
+/* =========================
+   GENERIC
+========================= */
+
+.module-page{
+  padding:20px;
+}
+
+.module-header{
+  padding:20px;
+  background:#171717;
+  border:1px solid #292929;
+  border-radius:14px;
+  margin-bottom:15px;
+}
+
+.module-header h1{
+  margin:0 0 7px;
+}
+
+.module-header p{
+  margin:0;
+  color:#777;
+}
+
+.coming-soon{
+  padding:30px;
+  text-align:center;
+  background:#121212;
+  border:1px dashed #333;
+  border-radius:13px;
+  color:#777;
+}
+
+/* =========================
+   CODE
+========================= */
+
 .editor-area{
-    padding:15px;
+  padding:15px;
 }
+
 .label{
-    color:#888;
-    font-size:12px;
-    font-weight:800;
-    margin-bottom:7px;
+  color:#888;
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:7px;
 }
+
 .editor-wrapper{
-    display:flex;
-    height:42vh;
-    min-height:280px;
-    overflow:hidden;
-    border:1px solid #333;
-    border-radius:10px;
-    background:#181818;
+  display:flex;
+  height:42vh;
+  min-height:280px;
+  overflow:hidden;
+  border:1px solid #333;
+  border-radius:10px;
+  background:#181818;
 }
+
 .line-numbers{
-    width:43px;
-    flex-shrink:0;
-    padding:15px 8px 15px 0;
-    background:#151515;
-    color:#666;
-    text-align:right;
-    font:15px/1.5 monospace;
-    overflow:hidden;
+  width:43px;
+  padding:15px 8px 15px 0;
+  background:#151515;
+  color:#666;
+  text-align:right;
+  font:15px/1.5 monospace;
+  overflow:hidden;
 }
+
 .editor{
-    width:100%;
-    height:100%;
-    resize:none;
-    outline:0;
-    border:0;
-    padding:15px;
-    background:#181818;
-    color:#f4f4f4;
-    font:15px/1.5 monospace;
-    white-space:pre;
-    tab-size:4;
+  width:100%;
+  height:100%;
+  resize:none;
+  outline:0;
+  border:0;
+  padding:15px;
+  background:#181818;
+  color:#f4f4f4;
+  font:15px/1.5 monospace;
+  white-space:pre;
 }
+
 .buttons{
-    display:flex;
-    gap:7px;
-    padding:0 15px 15px;
+  display:flex;
+  gap:7px;
+  padding:0 15px 15px;
 }
+
 .buttons button{
-    flex:1;
-    min-height:45px;
-    border-radius:9px;
+  flex:1;
+  min-height:45px;
+  border-radius:9px;
 }
-.run{background:#20c968;}
-.input-button{background:#8e44ad;}
-.save{background:#2878ff;}
-.clear{background:#292929;}
+
+.run{background:#20c968}
+.input-button{background:#8e44ad}
+.save{background:#2878ff}
+.clear{background:#292929}
+
 .translation-area,
 .terminal-area,
 .saved-area{
-    padding:0 15px 18px;
+  padding:0 15px 18px;
 }
+
 .translation,
 .terminal{
-    min-height:130px;
-    padding:14px;
-    border-radius:9px;
-    border:1px solid #292929;
-    font:13px/1.5 monospace;
-    white-space:pre-wrap;
-    overflow:auto;
+  min-height:130px;
+  padding:14px;
+  border-radius:9px;
+  border:1px solid #292929;
+  font:13px/1.5 monospace;
+  white-space:pre-wrap;
+  overflow:auto;
 }
+
 .translation{
-    background:#080808;
-    color:#8ab4ff;
+  background:#080808;
+  color:#8ab4ff;
 }
+
 .terminal{
-    background:#030303;
-    color:#00ff66;
+  background:#030303;
+  color:#00ff66;
 }
+
 .input-area{
-    display:none;
-    margin-top:8px;
+  display:none;
+  margin-top:8px;
 }
+
 .stdin-input{
-    width:100%;
-    min-height:90px;
-    padding:12px;
-    resize:vertical;
-    background:#0b0b0b;
-    color:#fff;
-    border:1px solid #333;
-    border-radius:8px;
-    outline:0;
-    font:14px monospace;
+  width:100%;
+  min-height:90px;
+  padding:12px;
+  background:#0b0b0b;
+  color:#fff;
+  border:1px solid #333;
+  border-radius:8px;
+  outline:0;
+  font:14px monospace;
 }
+
 .status{
-    color:#777;
-    font-size:11px;
-    margin-top:6px;
+  color:#777;
+  font-size:11px;
+  margin-top:6px;
 }
+
 .saved-title{
-    display:flex;
-    justify-content:space-between;
-    color:#888;
-    font-size:12px;
-    font-weight:800;
-    margin-bottom:8px;
+  display:flex;
+  justify-content:space-between;
+  color:#888;
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:8px;
 }
+
 .saved-list{
-    display:flex;
-    flex-direction:column;
-    gap:7px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
+
 .saved-item{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:10px;
-    background:#181818;
-    border:1px solid #292929;
-    border-radius:9px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px;
+  background:#181818;
+  border:1px solid #292929;
+  border-radius:9px;
 }
+
 .saved-name{
-    flex:1;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
+
 .saved-actions{
-    display:flex;
-    gap:5px;
+  display:flex;
+  gap:5px;
 }
+
 .saved-actions button{
-    min-height:32px;
-    padding:6px 9px;
-    border-radius:7px;
-    font-size:10px;
+  min-height:32px;
+  padding:6px 9px;
+  border-radius:7px;
+  font-size:10px;
 }
-.open-btn{background:#333;}
-.delete-btn{background:#8f2525;}
-/* ART */
+
+.open-btn{background:#333}
+.delete-btn{background:#8f2525}
+
+/* =========================
+   ART
+========================= */
+
 .art-page{
-    padding:10px;
-    background:#fff;
-    color:#111;
+  padding:10px;
 }
+
 .art-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:8px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
 }
+
 .art-title{
-    font-size:18px;
-    font-weight:900;
+  font-size:18px;
+  font-weight:900;
 }
+
 .art-size{
-    color:#777;
-    font-size:11px;
+  color:#777;
+  font-size:11px;
 }
+
 .art-toolbar{
-    display:flex;
-    gap:6px;
-    overflow-x:auto;
-    padding:7px;
-    background:#151515;
-    border:1px solid #292929;
-    border-radius:11px;
-    margin-bottom:8px;
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding:7px;
+  background:#151515;
+  border:1px solid #292929;
+  border-radius:11px;
 }
+
 .tool{
-    flex:0 0 46px;
-    height:43px;
-    background:#202020;
-    border:1px solid #333;
-    border-radius:8px;
+  flex:0 0 46px;
+  height:43px;
+  background:#202020;
+  border:1px solid #333;
+  border-radius:8px;
 }
+
 .tool.active{
-    background:#2878ff;
+  background:#2878ff;
 }
+
 .canvas-area{
-    position:relative;
-    width:100%;
-    height:58vh;
-    min-height:370px;
-    overflow:hidden;
-    background:#fff;
-    border:1px solid #999;
-    border-radius:13px;
-    touch-action:none;
+  position:relative;
+  width:100%;
+  height:58vh;
+  min-height:370px;
+  margin-top:8px;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid #292929;
+  border-radius:13px;
+  touch-action:none;
 }
+
 #artCanvas{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    transform-origin:center;
-    image-rendering:pixelated;
-    touch-action:none;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  image-rendering:pixelated;
+  touch-action:none;
 }
+
 .canvas-info{
-    position:absolute;
-    left:8px;
-    bottom:8px;
-    padding:6px 8px;
-    background:rgba(0,0,0,.7);
-    color:#fff;
-    border-radius:6px;
-    font:10px monospace;
-    pointer-events:none;
+  position:absolute;
+  left:8px;
+  bottom:8px;
+  padding:6px 8px;
+  background:rgba(0,0,0,.7);
+  border-radius:6px;
+  font:10px monospace;
 }
+
 .art-controls{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:7px;
-    margin-top:8px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:8px;
 }
+
 .control-box{
-    padding:10px;
-    background:#151515;
-    color:#fff;
-    border:1px solid #292929;
-    border-radius:9px;
+  padding:10px;
+  background:#151515;
+  border:1px solid #292929;
+  border-radius:9px;
 }
+
 .control-label{
-    display:block;
-    color:#888;
-    font-size:10px;
-    font-weight:800;
-    margin-bottom:7px;
+  display:block;
+  color:#888;
+  font-size:10px;
+  font-weight:800;
+  margin-bottom:7px;
 }
+
 input[type=color]{
-    width:100%;
-    height:38px;
+  width:100%;
+  height:38px;
 }
+
 input[type=range]{
-    width:100%;
+  width:100%;
 }
+
 .art-actions{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:6px;
-    margin-top:8px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin-top:8px;
 }
+
 .art-action{
-    background:#202020;
-    border:1px solid #333;
-    border-radius:8px;
-    min-height:41px;
-    font-size:10px;
+  background:#202020;
+  border:1px solid #333;
+  border-radius:8px;
+  min-height:41px;
+  font-size:10px;
 }
-/* MODULES */
-.module-page{
-    padding:20px;
+
+.art-action.primary{
+  background:#2878ff;
 }
-.module-header{
-    padding:20px;
-    background:#171717;
-    border:1px solid #292929;
-    border-radius:14px;
-    margin-bottom:15px;
-}
-.module-header h1{
-    margin:0 0 7px;
-    font-size:24px;
-}
-.module-header p{
-    margin:0;
-    color:#777;
-    font-size:13px;
-}
-.coming-soon{
-    padding:30px;
-    text-align:center;
-    background:#121212;
-    border:1px dashed #333;
-    border-radius:13px;
-    color:#777;
-}
-/* DICTIONARY */
-.dictionary-page{
-    padding:15px;
-}
-.dictionary-header{
-    padding:20px;
-    background:#171717;
-    border:1px solid #292929;
-    border-radius:14px;
-    margin-bottom:12px;
-}
-.dictionary-header h1{
-    margin:0 0 7px;
-}
-.dictionary-header p{
-    margin:0;
-    color:#777;
-    font-size:13px;
-}
-.dictionary-search{
-    width:100%;
-    padding:13px;
-    background:#111;
-    border:1px solid #333;
-    border-radius:9px;
-    color:#fff;
-    outline:0;
-    margin-bottom:10px;
-}
-.dictionary-category{
-    margin:14px 0 7px;
-    color:#2878ff;
-    font-size:11px;
-    font-weight:900;
-    text-transform:uppercase;
-}
-.dictionary-item{
-    display:flex;
-    gap:9px;
-    padding:11px;
-    background:#181818;
-    border:1px solid #292929;
-    border-radius:8px;
-    margin-bottom:5px;
-}
-.dictionary-command{
-    color:#20c968;
-    font-family:monospace;
-    font-weight:900;
-}
-.dictionary-arrow{
-    color:#555;
-}
-.dictionary-name{
-    color:#ddd;
-}
-/* SCENE */
+
+/* =========================
+   SCENE
+========================= */
+
 .scene-page{
-    position:relative;
-    background:#0a0d10;
-    overflow:hidden;
+  position:relative;
+  height:calc(100vh - 60px);
+  background:#0a0d10;
+  overflow:hidden;
 }
-.scene-page.active{
-    display:block;
-}
-.scene-toolbar{
-    position:absolute;
-    left:8px;
-    right:8px;
-    top:8px;
-    height:48px;
-    z-index:80;
-    display:flex;
-    align-items:center;
-    gap:5px;
-    padding:5px;
-    overflow-x:auto;
-    background:rgba(18,18,20,.94);
-    border:1px solid #303030;
-    border-radius:11px;
-}
-.scene-toolbar button{
-    flex:0 0 auto;
-    height:36px;
-    min-width:38px;
-    padding:0 10px;
-    border-radius:7px;
-    background:#232323;
-    border:1px solid #363636;
-    font-size:12px;
-}
-.scene-toolbar button.active{
-    background:#2878ff;
-}
+
 .scene-world{
-    position:absolute;
-    inset:0;
-    overflow:hidden;
-    background:#111;
-    touch-action:none;
+  position:absolute;
+  inset:0;
 }
+
 #sceneCanvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    touch-action:none;
+  width:100%;
+  height:100%;
+  touch-action:none;
 }
-.scene-hud{
-    position:absolute;
-    left:10px;
-    bottom:10px;
-    z-index:70;
-    padding:7px 9px;
-    background:rgba(0,0,0,.7);
-    border:1px solid #333;
-    border-radius:7px;
-    font:10px monospace;
-    color:#aaa;
-    pointer-events:none;
+
+.scene-toolbar{
+  position:absolute;
+  top:8px;
+  left:8px;
+  right:8px;
+  height:48px;
+  display:flex;
+  gap:5px;
+  align-items:center;
+  padding:5px;
+  overflow-x:auto;
+  background:rgba(18,18,20,.95);
+  border:1px solid #303030;
+  border-radius:11px;
+  z-index:50;
 }
+
+.scene-toolbar button{
+  flex:0 0 auto;
+  height:36px;
+  padding:0 10px;
+  border-radius:7px;
+  background:#232323;
+  border:1px solid #363636;
+}
+
+.scene-toolbar button.active{
+  background:#2878ff;
+}
+
 .scene-hierarchy,
 .scene-inspector{
-    position:absolute;
-    top:65px;
-    bottom:8px;
-    z-index:75;
-    background:rgba(17,17,17,.96);
-    border:1px solid #333;
-    border-radius:11px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
+  position:absolute;
+  top:65px;
+  bottom:8px;
+  width:220px;
+  background:rgba(17,17,17,.96);
+  border:1px solid #333;
+  border-radius:11px;
+  z-index:60;
+  overflow:auto;
 }
+
 .scene-hierarchy{
-    left:8px;
-    width:210px;
+  left:8px;
 }
+
 .scene-inspector{
-    right:8px;
-    width:230px;
+  right:8px;
+  width:235px;
 }
+
 .panel-title{
-    height:39px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 10px;
-    border-bottom:1px solid #292929;
-    color:#aaa;
-    font-size:11px;
-    font-weight:900;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 10px;
+  border-bottom:1px solid #292929;
+  color:#aaa;
+  font-size:11px;
+  font-weight:900;
 }
+
 .panel-title button{
-    height:28px;
-    width:30px;
-    padding:0;
-    background:#2878ff;
-    border-radius:6px;
+  background:#2878ff;
+  width:30px;
+  height:28px;
+  border-radius:6px;
 }
+
 .hierarchy-list{
-    flex:1;
-    overflow:auto;
-    padding:5px;
+  padding:5px;
 }
+
 .scene-node{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    height:35px;
-    padding:0 7px;
-    border-radius:6px;
-    color:#aaa;
-    font-size:11px;
-    margin-bottom:2px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  height:35px;
+  padding:0 7px;
+  border-radius:6px;
+  color:#aaa;
+  font-size:11px;
 }
+
 .scene-node.selected{
-    background:#2878ff;
-    color:#fff;
+  background:#2878ff;
+  color:#fff;
 }
-.node-icon{
-    width:20px;
-    text-align:center;
-}
+
 .node-name{
-    flex:1;
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
+  flex:1;
 }
-.node-eye{
-    font-size:12px;
-}
+
 .inspector-body{
-    flex:1;
-    overflow:auto;
-    padding:10px;
+  padding:10px;
 }
+
 .inspector-empty{
-    padding:30px 10px;
-    text-align:center;
-    color:#666;
-    font-size:11px;
-    line-height:1.5;
+  padding:30px 10px;
+  text-align:center;
+  color:#666;
+  font-size:11px;
 }
-.inspector-section{
-    margin-bottom:15px;
-}
-.inspector-section-title{
-    color:#2878ff;
-    font-size:10px;
-    font-weight:900;
-    margin-bottom:7px;
-    text-transform:uppercase;
-}
+
 .field{
-    margin-bottom:8px;
+  margin-bottom:8px;
 }
+
 .field label{
-    display:block;
-    color:#777;
-    font-size:9px;
-    margin-bottom:4px;
+  display:block;
+  color:#777;
+  font-size:9px;
+  margin-bottom:4px;
 }
+
 .field input{
-    width:100%;
-    height:34px;
-    padding:7px;
-    background:#0d0d0d;
-    border:1px solid #333;
-    border-radius:6px;
-    color:#fff;
-    outline:0;
-    font-size:12px;
+  width:100%;
+  height:34px;
+  padding:7px;
+  background:#0d0d0d;
+  border:1px solid #333;
+  border-radius:6px;
+  color:#fff;
 }
-.transform-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px;
-}
-.inspector-buttons{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px;
-}
-.inspector-buttons button{
-    min-height:35px;
-    border-radius:6px;
-    background:#292929;
-    font-size:10px;
-}
-.inspector-buttons .danger{
-    background:#8f2525;
-}
+
 .scene-add{
-    position:absolute;
-    right:250px;
-    bottom:15px;
-    z-index:90;
-    width:55px;
-    height:55px;
-    border-radius:50%;
-    background:#2878ff;
-    font-size:25px;
+  position:absolute;
+  right:250px;
+  bottom:15px;
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#2878ff;
+  font-size:25px;
+  z-index:80;
 }
+
 .scene-add-menu{
-    position:absolute;
-    right:250px;
-    bottom:78px;
-    z-index:91;
-    display:none;
-    width:180px;
-    padding:6px;
-    background:#171717;
-    border:1px solid #333;
-    border-radius:10px;
+  position:absolute;
+  right:250px;
+  bottom:78px;
+  width:180px;
+  display:none;
+  padding:6px;
+  background:#171717;
+  border:1px solid #333;
+  border-radius:10px;
+  z-index:90;
 }
+
 .scene-add-menu.open{
-    display:block;
+  display:block;
 }
+
 .scene-add-menu button{
-    display:block;
-    width:100%;
-    height:38px;
-    background:transparent;
-    border-bottom:1px solid #252525;
-    text-align:left;
-    font-size:11px;
-    padding:0 10px;
+  width:100%;
+  height:38px;
+  background:transparent;
+  text-align:left;
+  border-bottom:1px solid #252525;
 }
-.mobile-inspector-button{
-    display:none;
+
+.scene-hud{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  padding:7px 9px;
+  background:rgba(0,0,0,.7);
+  border-radius:7px;
+  font:10px monospace;
+  color:#aaa;
+  z-index:40;
 }
-/* TILEMAP */
+
+/* =========================
+   TILEMAP
+========================= */
+
 .tilemap-page{
-    padding:0;
-    background:#090c10;
-    overflow:hidden;
+  position:relative;
+  height:calc(100vh - 60px);
+  background:#0b0d10;
+  overflow:hidden;
 }
-.tilemap-editor{
-    position:relative;
-    width:100%;
-    height:100%;
-    overflow:hidden;
+
+.tm-toolbar{
+  position:absolute;
+  top:8px;
+  left:8px;
+  right:8px;
+  height:48px;
+  display:flex;
+  gap:5px;
+  align-items:center;
+  overflow-x:auto;
+  padding:5px;
+  background:rgba(18,18,20,.95);
+  border:1px solid #303030;
+  border-radius:11px;
+  z-index:30;
 }
-.tilemap-canvas-wrap{
-    position:absolute;
-    inset:0;
-    background:#111820;
-    touch-action:none;
+
+.tm-toolbar button{
+  height:36px;
+  min-width:40px;
+  padding:0 9px;
+  border-radius:7px;
+  background:#232323;
+  border:1px solid #363636;
 }
-#tileCanvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    touch-action:none;
+
+.tm-toolbar button.active{
+  background:#2878ff;
 }
-.tilemap-toolbar{
-    position:absolute;
-    left:8px;
-    right:8px;
-    top:8px;
-    z-index:100;
-    display:flex;
-    gap:5px;
-    padding:6px;
-    overflow-x:auto;
-    background:rgba(18,18,20,.95);
-    border:1px solid #333;
-    border-radius:11px;
+
+.tm-canvas-wrap{
+  position:absolute;
+  top:64px;
+  left:0;
+  right:190px;
+  bottom:0;
+  background:#12161b;
+  touch-action:none;
 }
-.tilemap-toolbar button{
-    min-width:42px;
-    height:38px;
-    padding:0 10px;
-    background:#232323;
-    border:1px solid #363636;
-    border-radius:7px;
-    font-size:11px;
+
+#tmCanvas{
+  width:100%;
+  height:100%;
 }
-.tilemap-toolbar button.active{
-    background:#2878ff;
+
+.tm-palette{
+  position:absolute;
+  right:8px;
+  top:64px;
+  bottom:8px;
+  width:175px;
+  padding:10px;
+  background:#111;
+  border:1px solid #333;
+  border-radius:11px;
+  overflow:auto;
 }
-.tile-palette{
-    position:absolute;
-    left:8px;
-    bottom:8px;
-    width:230px;
-    max-height:190px;
-    z-index:90;
-    background:rgba(17,17,17,.96);
-    border:1px solid #333;
-    border-radius:11px;
-    padding:8px;
-    overflow:auto;
+
+.tm-title{
+  color:#888;
+  font-size:10px;
+  font-weight:900;
+  margin-bottom:8px;
 }
-.palette-title{
-    color:#777;
-    font-size:10px;
-    font-weight:900;
-    margin-bottom:7px;
-}
+
 .tile-grid{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
-    gap:5px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
 }
+
 .tile-choice{
-    aspect-ratio:1;
-    border-radius:5px;
-    border:2px solid #333;
-    cursor:pointer;
+  aspect-ratio:1;
+  border-radius:7px;
+  border:1px solid #333;
+  background:#222;
+  font-size:20px;
 }
+
 .tile-choice.active{
-    border-color:#fff;
+  outline:2px solid #2878ff;
 }
-.tile-info{
-    position:absolute;
+
+.tm-hud{
+  position:absolute;
+  bottom:10px;
+  left:10px;
+  padding:7px 9px;
+  background:#000b;
+  border-radius:7px;
+  font:10px monospace;
+}
+
+/* =========================
+   ASSETS
+========================= */
+
+.assets-page{
+  padding:16px;
+  background:#090909;
+}
+
+.assets-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+
+.assets-title{
+  font-size:27px;
+  font-weight:900;
+}
+
+.assets-count{
+  color:#777;
+  font-size:12px;
+}
+
+.assets-search{
+  height:48px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 15px;
+  background:#1c1c1e;
+  border-radius:14px;
+  margin-bottom:12px;
+}
+
+.assets-search span{
+  color:#999;
+  font-size:25px;
+}
+
+.assets-search input{
+  flex:1;
+  height:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  font-size:17px;
+}
+
+.assets-actions{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding-bottom:5px;
+}
+
+.assets-action{
+  flex:0 0 auto;
+  min-height:38px;
+  padding:0 13px;
+  border-radius:9px;
+  background:#202020;
+  border:1px solid #333;
+  font-size:11px;
+}
+
+.assets-action.primary{
+  background:#2878ff;
+  border-color:#2878ff;
+}
+
+.assets-breadcrumb{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  overflow-x:auto;
+  margin:14px 0;
+  color:#777;
+  font-size:12px;
+}
+
+.crumb{
+  background:transparent;
+  color:#4c9aff;
+  padding:3px;
+  white-space:nowrap;
+}
+
+.assets-section-title{
+  color:#888;
+  font-size:12px;
+  font-weight:900;
+  margin:14px 0 8px;
+}
+
+.folder-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.folder-card{
+  position:relative;
+  min-height:118px;
+  padding:14px;
+  background:#171717;
+  border:1px solid #292929;
+  border-radius:14px;
+  cursor:pointer;
+}
+
+.folder-icon{
+  font-size:45px;
+  margin-bottom:8px;
+}
+
+.folder-name{
+  font-size:14px;
+  font-weight:800;
+}
+
+.folder-meta{
+  margin-top:4px;
+  color:#666;
+  font-size:10px;
+}
+
+.folder-more,
+.asset-menu{
+  position:absolute;
+  right:8px;
+  top:8px;
+  width:30px;
+  height:30px;
+  border-radius:7px;
+  background:#252525;
+  color:#aaa;
+}
+
+.asset-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.asset-card{
+  position:relative;
+  overflow:hidden;
+  background:#171717;
+  border:1px solid #292929;
+  border-radius:14px;
+  cursor:pointer;
+}
+
+.asset-preview{
+  height:120px;
+  display:grid;
+  place-items:center;
+  background:#101010;
+  font-size:48px;
+}
+
+.asset-preview img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  image-rendering:auto;
+}
+
+.asset-info{
+  padding:10px;
+}
+
+.asset-name{
+  font-size:12px;
+  font-weight:800;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.asset-type{
+  margin-top:4px;
+  color:#666;
+  font-size:9px;
+}
+
+.asset-menu{
+  z-index:5;
+}
+
+.assets-drop{
+  margin-top:14px;
+  padding:20px;
+  text-align:center;
+  border:1px dashed #444;
+  border-radius:12px;
+  color:#777;
+  font-size:11px;
+}
+
+.assets-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  background:#000b;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.assets-modal.open{
+  display:flex;
+}
+
+.assets-modal-box{
+  width:100%;
+  max-width:400px;
+  padding:20px;
+  background:#181818;
+  border:1px solid #333;
+  border-radius:14px;
+}
+
+.assets-modal-box h3{
+  margin-top:0;
+}
+
+.assets-modal-box input,
+.assets-modal-box select{
+  width:100%;
+  height:44px;
+  margin-bottom:10px;
+  padding:10px;
+  border:1px solid #333;
+  border-radius:8px;
+  background:#0d0d0d;
+  color:#fff;
+  outline:0;
+}
+
+.modal-row{
+  display:flex;
+  gap:7px;
+}
+
+.modal-row button{
+  flex:1;
+  min-height:42px;
+  border-radius:8px;
+  background:#333;
+}
+
+.modal-row .confirm{
+  background:#2878ff;
+}
+
+.asset-context{
+  display:none;
+  position:fixed;
+  width:180px;
+  padding:5px;
+  background:#191919;
+  border:1px solid #444;
+  border-radius:10px;
+  z-index:4000;
+  box-shadow:0 10px 30px #000;
+}
+
+.asset-context.open{
+  display:block;
+}
+
+.asset-context button{
+  width:100%;
+  height:38px;
+  background:transparent;
+  text-align:left;
+  padding:0 10px;
+  border-bottom:1px solid #292929;
+}
+
+.asset-context .danger{
+  color:#ff6666;
+}
+
+/* =========================
+   DICTIONARY
+========================= */
+
+.dictionary-page{
+  padding:15px;
+}
+
+.dictionary-header{
+  padding:20px;
+  background:#171717;
+  border:1px solid #292929;
+  border-radius:14px;
+  margin-bottom:12px;
+}
+
+.dictionary-header h1{
+  margin:0 0 7px;
+}
+
+.dictionary-header p{
+  margin:0;
+  color:#777;
+}
+
+.dictionary-search{
+  width:100%;
+  padding:13px;
+  background:#111;
+  border:1px solid #333;
+  border-radius:9px;
+  color:#fff;
+  outline:0;
+  margin-bottom:10px;
+}
+
+.dictionary-category{
+  margin:14px 0 7px;
+  color:#2878ff;
+  font-size:11px;
+  font-weight:900;
+}
+
+.dictionary-item{
+  display:flex;
+  gap:9px;
+  padding:11px;
+  background:#181818;
+  border:1px solid #292929;
+  border-radius:8px;
+  margin-bottom:5px;
+}
+
+.dictionary-command{
+  color:#20c968;
+  font-family:monospace;
+  font-weight:900;
+}
+
+.dictionary-arrow{
+  color:#555;
+}
+
+.dictionary-name{
+  color:#ddd;
+}
+
+/* =========================
+   MODAL CODE
+========================= */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  background:#000b;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.modal-box{
+  width:100%;
+  max-width:400px;
+  padding:20px;
+  background:#181818;
+  border:1px solid #333;
+  border-radius:13px;
+}
+
+.modal-box input{
+  width:100%;
+  padding:12px;
+  margin:10px 0 15px;
+  background:#0d0d0d;
+  border:1px solid #333;
+  color:#fff;
+  border-radius:7px;
+}
+
+.modal-buttons{
+  display:flex;
+  gap:7px;
+}
+
+.modal-buttons button{
+  flex:1;
+  min-height:42px;
+  border-radius:7px;
+}
+
+.cancel{
+  background:#333;
+}
+
+.confirm{
+  background:#2878ff;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+  .scene-hierarchy,
+  .scene-inspector{
+    display:none;
+    left:8px;
+    right:8px;
+    top:auto;
+    bottom:8px;
+    width:auto;
+    height:42vh;
+  }
+
+  .scene-hierarchy.mobile-open,
+  .scene-inspector.mobile-open{
+    display:block;
+  }
+
+  .scene-add{
+    right:14px;
+    bottom:14px;
+  }
+
+  .scene-add-menu{
+    right:14px;
+    bottom:76px;
+  }
+
+  .mobile-btn{
+    display:block!important;
+  }
+
+  .tm-canvas-wrap{
+    right:0;
+    bottom:145px;
+  }
+
+  .tm-palette{
+    top:auto;
+    left:8px;
     right:8px;
     bottom:8px;
-    z-index:90;
-    padding:7px 9px;
-    background:rgba(0,0,0,.7);
-    border:1px solid #333;
-    border-radius:7px;
-    color:#aaa;
-    font:10px monospace;
+    width:auto;
+    height:125px;
+  }
+
+  .tile-grid{
+    grid-template-columns:repeat(8,1fr);
+  }
+
+  .folder-grid,
+  .asset-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
-@media(max-width:700px){
-    .scene-hierarchy,
-    .scene-inspector{
-        width:calc(100vw - 16px);
-        left:8px;
-        right:8px;
-        top:auto;
-        bottom:8px;
-        height:43vh;
-        display:none;
-    }
-    .scene-hierarchy.mobile-open,
-    .scene-inspector.mobile-open{
-        display:flex;
-    }
-    .mobile-inspector-button{
-        display:block;
-    }
-    .scene-add{
-        right:14px;
-        bottom:14px;
-    }
-    .scene-add-menu{
-        right:14px;
-        bottom:76px;
-    }
-    .tile-palette{
-        width:calc(100vw - 16px);
-        max-height:155px;
-    }
-}
-/* MODAL */
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:2000;
-    background:rgba(0,0,0,.75);
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-}
-.modal-box{
-    width:100%;
-    max-width:400px;
-    padding:20px;
-    background:#181818;
-    border:1px solid #333;
-    border-radius:13px;
-}
-.modal-box h2{
-    margin-top:0;
-}
-.modal-box input{
-    width:100%;
-    padding:12px;
-    background:#0d0d0d;
-    border:1px solid #333;
-    color:#fff;
-    border-radius:7px;
-    outline:0;
-    margin:10px 0 15px;
-}
-.modal-buttons{
-    display:flex;
-    gap:7px;
-}
-.modal-buttons button{
-    flex:1;
-    min-height:42px;
-    border-radius:7px;
-}
-.cancel{background:#333;}
-.confirm{background:#2878ff;}
 </style>
 </head>
+
 <body>
-<!-- MENU -->
-<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- =========================
+     MENU
+========================= -->
+
+<div class="menu-overlay" id="menuOverlay" onclick="fecharMenu()"></div>
+
 <div class="side-menu" id="sideMenu">
-    <div class="menu-title">MY ENGINE</div>
-    <button class="menu-item active" data-page="home">🏠 Início</button>
-    <button class="menu-item" data-page="codePage">📝 Código</button>
-    <button class="menu-item" data-page="artPage">🎨 Arte</button>
-    <button class="menu-item" data-page="scenePage">🗺️ Cena</button>
-    <button class="menu-item" data-page="tilemapPage">🧱 Tilemap</button>
-    <button class="menu-item" data-page="assetsPage">📦 Assets</button>
-    <button class="menu-item" data-page="audioPage">🎵 Áudio</button>
-    <button class="menu-item" data-page="projectPage">⚙️ Projeto</button>
-    <button class="menu-item" data-page="dictionaryPage">📖 Dicionário</button>
+
+  <div class="menu-title">MY ENGINE</div>
+
+  <button class="menu-item active" onclick="abrirPagina('home')">
+    🏠 Início
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('codePage')">
+    📝 Código
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('artPage')">
+    🎨 Arte
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('scenePage')">
+    🗺️ Cena
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('tilemapPage')">
+    🧱 Tilemap
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('assetsPage')">
+    📦 Assets
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('audioPage')">
+    🎵 Áudio
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('projectPage')">
+    ⚙️ Projeto
+  </button>
+
+  <button class="menu-item" onclick="abrirPagina('dictionaryPage')">
+    📖 Dicionário
+  </button>
+
 </div>
+
 <header class="header">
-    <button class="menu-button" id="menuButton">☰</button>
-    MY ENGINE
+  <button class="menu-button" onclick="abrirMenu()">☰</button>
+  MY ENGINE
 </header>
-<!-- HOME -->
+
+<!-- =========================
+     HOME
+========================= -->
+
 <section id="home" class="page active home">
-    <div class="hero">
-        <h1>Minha Engine</h1>
-        <p>Ambiente de desenvolvimento mobile para criação de jogos 2D.</p>
+
+  <div class="hero">
+    <h1>Minha Engine</h1>
+    <p>
+      Ambiente de desenvolvimento mobile
+      para criação de jogos 2D.
+    </p>
+  </div>
+
+  <div class="cards">
+
+    <div class="card" onclick="abrirPagina('codePage')">
+      <div class="card-icon">📝</div>
+      <div class="card-title">Código</div>
+      <div class="card-description">Escreva e execute C++.</div>
     </div>
-    <div class="cards">
-        <div class="card" data-page="codePage">
-            <div class="card-icon">📝</div>
-            <div class="card-title">Código</div>
-            <div class="card-description">Escreva e execute C++.</div>
-        </div>
-        <div class="card" data-page="artPage">
-            <div class="card-icon">🎨</div>
-            <div class="card-title">Arte</div>
-            <div class="card-description">Crie sprites diretamente no celular.</div>
-        </div>
-        <div class="card" data-page="scenePage">
-            <div class="card-icon">🗺️</div>
-            <div class="card-title">Cena</div>
-            <div class="card-description">Construa mundos RPG.</div>
-        </div>
-        <div class="card" data-page="tilemapPage">
-            <div class="card-icon">🧱</div>
-            <div class="card-title">Tilemap</div>
-            <div class="card-description">Construa mapas baseados em tiles.</div>
-        </div>
-        <div class="card" data-page="dictionaryPage">
-            <div class="card-icon">📖</div>
-            <div class="card-title">Dicionário</div>
-            <div class="card-description">Personalize comandos.</div>
-        </div>
-        <div class="card" data-page="projectPage">
-            <div class="card-icon">⚙️</div>
-            <div class="card-title">Projeto</div>
-            <div class="card-description">Configurações do projeto.</div>
-        </div>
+
+    <div class="card" onclick="abrirPagina('artPage')">
+      <div class="card-icon">🎨</div>
+      <div class="card-title">Arte</div>
+      <div class="card-description">Crie sprites diretamente no celular.</div>
     </div>
+
+    <div class="card" onclick="abrirPagina('scenePage')">
+      <div class="card-icon">🗺️</div>
+      <div class="card-title">Cena</div>
+      <div class="card-description">Construa mundos RPG.</div>
+    </div>
+
+    <div class="card" onclick="abrirPagina('tilemapPage')">
+      <div class="card-icon">🧱</div>
+      <div class="card-title">Tilemap</div>
+      <div class="card-description">Construa mapas baseados em tiles.</div>
+    </div>
+
+    <div class="card" onclick="abrirPagina('assetsPage')">
+      <div class="card-icon">📦</div>
+      <div class="card-title">Assets</div>
+      <div class="card-description">Gerencie os recursos do projeto.</div>
+    </div>
+
+    <div class="card" onclick="abrirPagina('dictionaryPage')">
+      <div class="card-icon">📖</div>
+      <div class="card-title">Dicionário</div>
+      <div class="card-description">Personalize comandos.</div>
+    </div>
+
+  </div>
+
 </section>
-<!-- CODE -->
+
+<!-- =========================
+     CODE
+========================= -->
+
 <section id="codePage" class="page">
-    <div class="editor-area">
-        <div class="label">CÓDIGO MY ENGINE / C++</div>
-        <div class="editor-wrapper">
-            <div class="line-numbers" id="lineNumbers"></div>
-            <textarea
-                id="code"
-                class="editor"
-                spellcheck="false"
-                autocapitalize="off"
-                autocomplete="off"
-                autocorrect="off">#include <iostream>
+
+  <div class="editor-area">
+
+    <div class="label">CÓDIGO MY ENGINE / C++</div>
+
+    <div class="editor-wrapper">
+
+      <div class="line-numbers" id="lineNumbers"></div>
+
+      <textarea
+        id="code"
+        class="editor"
+        spellcheck="false"
+        autocapitalize="off"
+        autocomplete="off"
+        autocorrect="off">#include <iostream>
+
 int main() {
-    manda o papo "Olá, mundo!" << endl;
+    std::cout << "Olá, mundo!";
     return 0;
 }</textarea>
-        </div>
+
     </div>
-    <div class="buttons">
-        <button class="run" id="runButton">
-            ▶ EXECUTAR
-        </button>
-        <button class="input-button" id="inputButton">
-            ⌨ ENTRADA
-        </button>
-        <button class="save" id="saveButton">
-            💾 SALVAR
-        </button>
-        <button class="clear" id="clearButton">
-            LIMPAR
-        </button>
+
+  </div>
+
+  <div class="buttons">
+
+    <button class="run" id="runButton" onclick="executar()">
+      ▶ EXECUTAR
+    </button>
+
+    <button class="input-button" onclick="alternarEntrada()">
+      ⌨ ENTRADA
+    </button>
+
+    <button class="save" onclick="abrirSalvar()">
+      💾 SALVAR
+    </button>
+
+    <button class="clear" onclick="limparCodigo()">
+      LIMPAR
+    </button>
+
+  </div>
+
+  <div class="translation-area">
+
+    <div class="label">CÓDIGO TRADUZIDO</div>
+
+    <div class="translation" id="translatedCode">
+      &gt; O código traduzido aparecerá aqui antes da execução.
     </div>
-    <div class="translation-area">
-        <div class="label">CÓDIGO TRADUZIDO</div>
-        <div class="translation" id="translatedCode">
-            &gt; O código traduzido aparecerá aqui antes da execução.
-        </div>
+
+  </div>
+
+  <div class="terminal-area">
+
+    <div class="label">TERMINAL</div>
+
+    <div class="terminal" id="terminal">
+      &gt; Aguardando execução...
     </div>
-    <div class="terminal-area">
-        <div class="label">TERMINAL</div>
-        <div class="terminal" id="terminal">
-            &gt; Aguardando execução...
-        </div>
-        <div class="input-area" id="inputArea">
-            <textarea
-                class="stdin-input"
-                id="stdinInput"
-                placeholder="Digite a entrada do programa..."></textarea>
-        </div>
-        <div class="status" id="status"></div>
+
+    <div class="input-area" id="inputArea">
+
+      <textarea
+        class="stdin-input"
+        id="stdinInput"
+        placeholder="Digite a entrada do programa..."></textarea>
+
     </div>
-    <div class="saved-area">
-        <div class="saved-title">
-            <span>MEUS CÓDIGOS</span>
-            <span id="savedCount">0</span>
-        </div>
-        <div class="saved-list" id="savedList"></div>
+
+    <div class="status" id="status"></div>
+
+  </div>
+
+  <div class="saved-area">
+
+    <div class="saved-title">
+      <span>MEUS CÓDIGOS</span>
+      <span id="savedCount">0</span>
     </div>
+
+    <div class="saved-list" id="savedList"></div>
+
+  </div>
+
 </section>
-<!-- ART -->
+
+<!-- =========================
+     ART
+========================= -->
+
 <section id="artPage" class="page art-page">
-    <div class="art-top">
-        <div class="art-title">🎨 Editor de Arte</div>
-        <div class="art-size" id="artSize">32 × 32</div>
+
+  <div class="art-top">
+
+    <div class="art-title">
+      🎨 Editor de Arte
     </div>
-    <div class="art-toolbar">
-        <button class="tool active" id="pencilTool">✏️</button>
-        <button class="tool" id="eraserTool">🧽</button>
-        <button class="tool" id="clearArtTool">🗑️</button>
-        <button class="tool" id="undoArtTool">↩️</button>
-        <button class="tool" id="redoArtTool">↪️</button>
-        <button class="tool" id="gridArtTool">🔲</button>
-        <button class="tool" id="resetArtTool">1:1</button>
+
+    <div class="art-size" id="artSize">
+      32 × 32
     </div>
-    <div class="canvas-area" id="canvasArea">
-        <canvas id="artCanvas" width="32" height="32"></canvas>
-        <div class="canvas-info" id="canvasInfo">
-            Zoom: 100%
-        </div>
+
+  </div>
+
+  <div class="art-toolbar">
+
+    <button class="tool active"
+      id="pencilTool"
+      onclick="selecionarFerramenta('pencil')">
+      ✏️
+    </button>
+
+    <button class="tool"
+      id="eraserTool"
+      onclick="selecionarFerramenta('eraser')">
+      🧽
+    </button>
+
+    <button class="tool"
+      onclick="limparCanvas()">
+      🗑️
+    </button>
+
+    <button class="tool"
+      onclick="desfazer()">
+      ↩️
+    </button>
+
+    <button class="tool"
+      onclick="refazer()">
+      ↪️
+    </button>
+
+    <button class="tool"
+      onclick="alternarGrade()">
+      🔲
+    </button>
+
+    <button class="tool"
+      onclick="zoomArtIn()">
+      +
+    </button>
+
+    <button class="tool"
+      onclick="zoomArtOut()">
+      −
+    </button>
+
+    <button class="tool"
+      onclick="resetArtZoom()">
+      1:1
+    </button>
+
+  </div>
+
+  <div class="canvas-area" id="canvasArea">
+
+    <canvas
+      id="artCanvas"
+      width="32"
+      height="32">
+    </canvas>
+
+    <div class="canvas-info" id="canvasInfo">
+      Zoom: 100%
     </div>
-    <div class="art-controls">
-        <div class="control-box">
-            <span class="control-label">COR</span>
-            <input
-                type="color"
-                id="colorPicker"
-                value="#000000">
-        </div>
-        <div class="control-box">
-            <span class="control-label">TAMANHO</span>
-            <input
-                type="range"
-                id="brushSize"
-                min="1"
-                max="8"
-                value="1">
-        </div>
+
+  </div>
+
+  <div class="art-controls">
+
+    <div class="control-box">
+      <span class="control-label">COR</span>
+      <input type="color" id="colorPicker" value="#000000">
     </div>
-    <div class="art-actions">
-        <button class="art-action" id="newArtButton">🆕 NOVO</button>
-        <button class="art-action" id="saveArtButton">💾 SALVAR</button>
-        <button class="art-action" id="loadArtButton">📂 ABRIR</button>
-        <button class="art-action" id="zoomArtButton">🔍 ZOOM</button>
+
+    <div class="control-box">
+      <span class="control-label">TAMANHO</span>
+      <input
+        type="range"
+        id="brushSize"
+        min="1"
+        max="8"
+        value="1">
     </div>
+
+  </div>
+
+  <div class="art-actions">
+
+    <button class="art-action primary"
+      onclick="novoCanvas()">
+      🆕 NOVO
+    </button>
+
+    <button class="art-action"
+      onclick="salvarArte()">
+      💾 SALVAR
+    </button>
+
+    <button class="art-action"
+      onclick="carregarArte()">
+      📂 ABRIR
+    </button>
+
+    <button class="art-action"
+      onclick="resetArtZoom()">
+      🔍 ZOOM
+    </button>
+
+  </div>
+
 </section>
-<!-- SCENE -->
+
+<!-- =========================
+     SCENE
+========================= -->
+
 <section id="scenePage" class="page scene-page">
-    <div class="scene-world" id="sceneWorld">
-        <canvas id="sceneCanvas"></canvas>
+
+  <div class="scene-world">
+    <canvas id="sceneCanvas"></canvas>
+  </div>
+
+  <div class="scene-toolbar">
+
+    <button
+      id="sceneSelectTool"
+      class="active"
+      onclick="sceneTool('select')">
+      ↖ Selecionar
+    </button>
+
+    <button onclick="sceneToggleGrid()">
+      ▦ Grid
+    </button>
+
+    <button onclick="sceneToggleSnap()">
+      🧲 Snap
+    </button>
+
+    <button onclick="sceneZoomOut()">
+      −
+    </button>
+
+    <button onclick="sceneZoomIn()">
+      +
+    </button>
+
+    <button onclick="sceneResetCamera()">
+      ⌂
+    </button>
+
+    <button onclick="sceneUndo()">
+      ↩
+    </button>
+
+    <button onclick="sceneRedo()">
+      ↪
+    </button>
+
+    <button onclick="sceneSave()">
+      💾
+    </button>
+
+    <button onclick="sceneLoad()">
+      📂
+    </button>
+
+    <button
+      class="mobile-btn"
+      style="display:none"
+      onclick="toggleSceneHierarchy()">
+      ☰
+    </button>
+
+    <button
+      class="mobile-btn"
+      style="display:none"
+      onclick="toggleSceneInspector()">
+      ⚙
+    </button>
+
+  </div>
+
+  <div class="scene-hierarchy" id="sceneHierarchy">
+
+    <div class="panel-title">
+      HIERARQUIA
+      <button onclick="openSceneAdd()">+</button>
     </div>
-    <div class="scene-toolbar">
-        <button id="sceneSelectTool" class="active">↖ Selecionar</button>
-        <button id="sceneMoveTool">✋ Mover</button>
-        <button id="sceneGridButton">▦ Grid</button>
-        <button id="sceneSnapButton">🧲 Snap</button>
-        <button id="sceneZoomOutButton">−</button>
-        <button id="sceneZoomInButton">+</button>
-        <button id="sceneResetButton">⌂</button>
-        <button id="sceneUndoButton">↩</button>
-        <button id="sceneRedoButton">↪</button>
-        <button id="sceneSaveButton">💾</button>
-        <button id="sceneLoadButton">📂</button>
-        <button id="sceneExportButton">⇩</button>
-        <button id="sceneImportButton">⇧</button>
-        <button id="sceneHierarchyButton" class="mobile-inspector-button">☰</button>
-        <button id="sceneInspectorButton" class="mobile-inspector-button">⚙</button>
+
+    <div class="hierarchy-list" id="hierarchyList"></div>
+
+  </div>
+
+  <div class="scene-inspector" id="sceneInspector">
+
+    <div class="panel-title">
+      INSPETOR
+      <button onclick="closeSceneInspector()">×</button>
     </div>
-    <div class="scene-hierarchy" id="sceneHierarchy">
-        <div class="panel-title">
-            <span>HIERARQUIA</span>
-            <button id="sceneHierarchyAdd">+</button>
-        </div>
-        <div class="hierarchy-list" id="hierarchyList"></div>
+
+    <div class="inspector-body" id="inspectorBody">
+      <div class="inspector-empty">
+        Selecione um objeto.
+      </div>
     </div>
-    <div class="scene-inspector" id="sceneInspector">
-        <div class="panel-title">
-            <span>INSPETOR</span>
-            <button id="closeInspectorButton">×</button>
-        </div>
-        <div class="inspector-body" id="inspectorBody">
-            <div class="inspector-empty">
-                Selecione um objeto<br>
-                para editar suas propriedades.
-            </div>
-        </div>
-    </div>
-    <button class="scene-add" id="sceneAddButton">+</button>
-    <div class="scene-add-menu" id="sceneAddMenu">
-        <button data-type="player">🧍 Player</button>
-        <button data-type="tile">🟩 Tile / Bloco</button>
-        <button data-type="decoration">🌲 Decoração</button>
-        <button data-type="enemy">👾 Inimigo</button>
-        <button data-type="item">💰 Item</button>
-        <button data-type="text">📝 Texto</button>
-        <button data-type="empty">📦 Objeto vazio</button>
-    </div>
-    <div class="scene-hud" id="sceneHud">
-        X: 0 | Y: 0 | Zoom: 100%
-    </div>
+
+  </div>
+
+  <button
+    class="scene-add"
+    onclick="openSceneAdd()">
+    +
+  </button>
+
+  <div class="scene-add-menu" id="sceneAddMenu">
+
+    <button onclick="addSceneObject('player')">
+      🧍 Player
+    </button>
+
+    <button onclick="addSceneObject('tile')">
+      🟩 Tile
+    </button>
+
+    <button onclick="addSceneObject('decoration')">
+      🌲 Decoração
+    </button>
+
+    <button onclick="addSceneObject('enemy')">
+      👾 Inimigo
+    </button>
+
+    <button onclick="addSceneObject('item')">
+      💰 Item
+    </button>
+
+    <button onclick="addSceneObject('text')">
+      📝 Texto
+    </button>
+
+  </div>
+
+  <div class="scene-hud" id="sceneHud">
+    X: 0 | Y: 0 | Zoom: 100%
+  </div>
+
 </section>
-<!-- TILEMAP -->
+
+<!-- =========================
+     TILEMAP
+========================= -->
+
 <section id="tilemapPage" class="page tilemap-page">
-    <div class="tilemap-editor">
-        <div class="tilemap-canvas-wrap" id="tilemapCanvasWrap">
-            <canvas id="tileCanvas"></canvas>
-        </div>
-        <div class="tilemap-toolbar">
-            <button id="tilePaintButton" class="active">🖌️ Pintar</button>
-            <button id="tileEraseButton">🧽 Apagar</button>
-            <button id="tileFillButton">🪣 Preencher</button>
-            <button id="tileGridButton">▦ Grid</button>
-            <button id="tileZoomOutButton">−</button>
-            <button id="tileZoomInButton">+</button>
-            <button id="tileResetButton">⌂</button>
-            <button id="tileClearButton">🗑️</button>
-            <button id="tileSaveButton">💾</button>
-        </div>
-        <div class="tile-palette">
-            <div class="palette-title">PALETA DE TILES</div>
-            <div class="tile-grid" id="tileGrid"></div>
-        </div>
-        <div class="tile-info" id="tileInfo">
-            Tile: 1 | Zoom: 100%
-        </div>
+
+  <div class="tm-toolbar">
+
+    <button
+      id="tmPaint"
+      class="active"
+      onclick="tmMode('paint')">
+      ✏️ Pintar
+    </button>
+
+    <button onclick="tmMode('erase')">
+      🧽 Apagar
+    </button>
+
+    <button onclick="tmToggleGrid()">
+      ▦ Grid
+    </button>
+
+    <button onclick="tmZoomOut()">
+      −
+    </button>
+
+    <button onclick="tmZoomIn()">
+      +
+    </button>
+
+    <button onclick="tmClear()">
+      🗑️
+    </button>
+
+    <button onclick="tmSave()">
+      💾
+    </button>
+
+  </div>
+
+  <div class="tm-canvas-wrap">
+    <canvas id="tmCanvas"></canvas>
+  </div>
+
+  <aside class="tm-palette">
+
+    <div class="tm-title">
+      TILES
     </div>
+
+    <div
+      class="tile-grid"
+      id="tileGrid">
+    </div>
+
+  </aside>
+
+  <div class="tm-hud" id="tmHud">
+    Tile: 1 | Zoom: 100%
+  </div>
+
 </section>
-<!-- OTHER MODULES -->
-<!-- =====================================================
+
+<!-- =========================
      ASSETS
-===================================================== -->
+========================= -->
+
 <section id="assetsPage" class="page assets-page">
 
-    <div class="assets-header">
+  <div class="assets-head">
 
-        <div>
-            <div class="assets-title">📦 Assets</div>
-            <div class="assets-subtitle">
-                Gerencie os recursos do seu projeto.
-            </div>
-        </div>
-
-        <button class="assets-add-button"
-                onclick="abrirMenuAssets()">
-            ＋
-        </button>
-
+    <div class="assets-title">
+      📦 Assets
     </div>
 
-    <!-- PESQUISA -->
-
-    <div class="assets-search-box">
-
-        <span>🔍</span>
-
-        <input
-            id="assetsSearch"
-            type="text"
-            placeholder="Pesquisar assets..."
-            oninput="filtrarAssets()"
-        >
-
+    <div class="assets-count" id="assetsCount">
+      0 itens
     </div>
 
-    <!-- NAVEGAÇÃO -->
+  </div>
 
-    <div class="assets-navigation">
+  <div class="assets-search">
 
-        <button
-            class="asset-folder-button active"
-            onclick="abrirPastaAssets('Todos')"
-            id="assetFolderTodos">
+    <span>⌕</span>
 
-            📦 Todos
+    <input
+      id="assetsSearch"
+      placeholder="Buscar"
+      oninput="renderAssets()">
 
-        </button>
+  </div>
 
-        <button
-            class="asset-folder-button"
-            onclick="abrirPastaAssets('Sprites')">
+  <div class="assets-actions">
 
-            🖼️ Sprites
-
-        </button>
-
-        <button
-            class="asset-folder-button"
-            onclick="abrirPastaAssets('Tilesets')">
-
-            🧱 Tilesets
-
-        </button>
-
-        <button
-            class="asset-folder-button"
-            onclick="abrirPastaAssets('Audio')">
-
-            🎵 Áudio
-
-        </button>
-
-        <button
-            class="asset-folder-button"
-            onclick="abrirPastaAssets('Cenas')">
-
-            🗺️ Cenas
-
-        </button>
-
-        <button
-            class="asset-folder-button"
-            onclick="abrirPastaAssets('Scripts')">
-
-            📝 Scripts
-
-        </button>
-
-        <button
-            class="asset-folder-button"
-            onclick="abrirPastaAssets('Outros')">
-
-            📄 Outros
-
-        </button>
-
-    </div>
-
-    <!-- BARRA -->
-
-    <div class="assets-toolbar">
-
-        <span id="assetsCurrentFolder">
-            📦 Todos
-        </span>
-
-        <span id="assetsCount">
-            0 itens
-        </span>
-
-    </div>
-
-    <!-- GRID -->
-
-    <div
-        class="assets-grid"
-        id="assetsGrid">
-    </div>
-
-    <!-- VAZIO -->
-
-    <div
-        class="assets-empty"
-        id="assetsEmpty">
-
-        <div class="assets-empty-icon">
-            📦
-        </div>
-
-        <strong>Nenhum asset</strong>
-
-        <span>
-            Importe arquivos ou crie uma pasta
-            para começar.
-        </span>
-
-        <button onclick="abrirMenuAssets()">
-            ＋ Adicionar asset
-        </button>
-
-    </div>
-
-</section>
-
-<!-- =====================================================
-     ASSETS MENU
-===================================================== -->
-
-<div
-    class="assets-action-menu"
-    id="assetsActionMenu">
-
-    <button onclick="fecharMenuAssets(); importarAssets()">
-        📥 Importar arquivo
+    <button
+      class="assets-action primary"
+      onclick="abrirImportAssets()">
+      ＋ Importar
     </button>
 
-    <button onclick="fecharMenuAssets(); criarPastaAsset()">
-        📁 Nova pasta
+    <button
+      class="assets-action"
+      onclick="abrirNovaPasta()">
+      📁 Nova pasta
     </button>
 
-    <button onclick="fecharMenuAssets(); criarAssetExemplo()">
-        🧪 Criar asset de teste
+    <button
+      class="assets-action"
+      onclick="abrirNovoAsset()">
+      ✚ Novo asset
     </button>
 
-</div>
+    <button
+      class="assets-action"
+      onclick="renderAssets()">
+      ↻ Atualizar
+    </button>
 
-<input
-    type="file"
+  </div>
+
+  <div
+    class="assets-breadcrumb"
+    id="assetsBreadcrumb">
+  </div>
+
+  <div class="assets-section-title">
+    Pastas
+  </div>
+
+  <div
+    class="folder-grid"
+    id="folderGrid">
+  </div>
+
+  <div class="assets-section-title">
+    Arquivos
+  </div>
+
+  <div
+    class="asset-grid"
+    id="assetGrid">
+  </div>
+
+  <div
+    class="assets-drop"
+    onclick="abrirImportAssets()">
+
+    📥<br><br>
+    Toque aqui para importar
+    imagens, áudio ou outros arquivos.
+
+  </div>
+
+  <input
     id="assetFileInput"
+    type="file"
     multiple
     hidden
-    onchange="processarArquivosAssets(event)"
->
+    onchange="importarArquivos(event)">
 
-<!-- =====================================================
-     ASSET INSPECTOR
-===================================================== -->
+</section>
+
+<!-- =========================
+     AUDIO
+========================= -->
+
+<section id="audioPage" class="page module-page">
+
+  <div class="module-header">
+
+    <h1>🎵 Áudio</h1>
+
+    <p>
+      Gerenciamento de músicas e efeitos sonoros.
+    </p>
+
+  </div>
+
+  <div class="coming-soon">
+
+    🎵<br><br>
+
+    <strong>Audio Manager</strong>
+
+    <br><br>
+
+    Os arquivos de áudio importados
+    pelos Assets poderão ser utilizados aqui.
+
+  </div>
+
+</section>
+
+<!-- =========================
+     PROJECT
+========================= -->
+
+<section id="projectPage" class="page module-page">
+
+  <div class="module-header">
+
+    <h1>⚙️ Projeto</h1>
+
+    <p>
+      Configurações da My Engine.
+    </p>
+
+  </div>
+
+  <div class="coming-soon">
+
+    ⚙️<br><br>
+
+    <strong>Project Manager</strong>
+
+    <br><br>
+
+    Configurações do projeto.
+
+  </div>
+
+</section>
+
+<!-- =========================
+     DICTIONARY
+========================= -->
+
+<section id="dictionaryPage" class="page dictionary-page">
+
+  <div class="dictionary-header">
+
+    <h1>📖 Dicionário</h1>
+
+    <p>
+      Personalize os comandos da My Engine.
+    </p>
+
+  </div>
+
+  <input
+    class="dictionary-search"
+    id="dictionarySearch"
+    placeholder="Pesquisar comando..."
+    oninput="filtrarDicionario()">
+
+  <div id="dictionaryList"></div>
+
+</section>
+
+<!-- =========================
+     CODE MODAL
+========================= -->
+
+<div class="modal" id="saveModal">
+
+  <div class="modal-box">
+
+    <h2>Salvar código</h2>
+
+    <input
+      id="codeName"
+      placeholder="Nome do código">
+
+    <div class="modal-buttons">
+
+      <button
+        class="cancel"
+        onclick="fecharSalvar()">
+        CANCELAR
+      </button>
+
+      <button
+        class="confirm"
+        onclick="salvarCodigo()">
+        SALVAR
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     ASSET MODAL
+========================= -->
 
 <div
-    class="asset-modal"
-    id="assetModal">
+  class="assets-modal"
+  id="assetsModal">
 
-    <div class="asset-modal-box">
+  <div class="assets-modal-box">
 
-        <div class="asset-modal-header">
+    <h3>Novo asset</h3>
 
-            <strong id="assetModalTitle">
-                Asset
-            </strong>
-
-            <button onclick="fecharAssetModal()">
-                ×
-            </button>
-
-        </div>
-
-        <div
-            class="asset-preview"
-            id="assetPreview">
-        </div>
-
-        <div
-            class="asset-information"
-            id="assetInformation">
-        </div>
-
-        <div class="asset-modal-actions">
-
-            <button onclick="renomearAssetAtual()">
-                ✏️ Renomear
-            </button>
-
-            <button onclick="excluirAssetAtual()"
-                    class="asset-danger">
-                🗑️ Excluir
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-    </div>
-</section>
-<section id="audioPage" class="page module-page">
-    <div class="module-header">
-        <h1>🎵 Áudio</h1>
-        <p>Músicas e efeitos sonoros.</p>
-    </div>
-    <div class="coming-soon">
-        🎵<br><br>
-        <strong>Audio Manager</strong><br>
-        Em desenvolvimento.
-    </div>
-</section>
-<section id="projectPage" class="page module-page">
-    <div class="module-header">
-        <h1>⚙️ Projeto</h1>
-        <p>Configurações gerais da My Engine.</p>
-    </div>
-    <div class="coming-soon">
-        ⚙️<br><br>
-        <strong>Project Manager</strong><br>
-        Em desenvolvimento.
-    </div>
-</section>
-<!-- DICTIONARY -->
-<section id="dictionaryPage" class="page dictionary-page">
-    <div class="dictionary-header">
-        <h1>📖 Dicionário</h1>
-        <p>
-            Personalize os comandos da My Engine.
-        </p>
-    </div>
     <input
-        class="dictionary-search"
-        id="dictionarySearch"
-        placeholder="Pesquisar comando...">
-    <div id="dictionaryList"></div>
-</section>
-<!-- SAVE MODAL -->
-<div class="modal" id="saveModal">
-    <div class="modal-box">
-        <h2>Salvar código</h2>
-        <input
-            id="codeName"
-            placeholder="Nome do código">
-        <div class="modal-buttons">
-            <button class="cancel" id="cancelSaveButton">
-                CANCELAR
-            </button>
-            <button class="confirm" id="confirmSaveButton">
-                SALVAR
-            </button>
-        </div>
+      id="assetNameInput"
+      placeholder="Nome do asset">
+
+    <select id="assetTypeInput">
+
+      <option value="sprite">
+        🖼️ Sprite
+      </option>
+
+      <option value="texture">
+        🎨 Texture
+      </option>
+
+      <option value="tile">
+        🧱 Tile
+      </option>
+
+      <option value="audio">
+        🎵 Áudio
+      </option>
+
+      <option value="font">
+        🔤 Fonte
+      </option>
+
+      <option value="data">
+        📄 Dados
+      </option>
+
+    </select>
+
+    <div class="modal-row">
+
+      <button onclick="fecharAssetsModal()">
+        CANCELAR
+      </button>
+
+      <button
+        class="confirm"
+        onclick="confirmarNovoAsset()">
+        CRIAR
+      </button>
+
     </div>
+
+  </div>
+
 </div>
+
+<!-- =========================
+     FOLDER MODAL
+========================= -->
+
+<div
+  class="assets-modal"
+  id="folderModal">
+
+  <div class="assets-modal-box">
+
+    <h3>Nova pasta</h3>
+
+    <input
+      id="folderNameInput"
+      placeholder="Nome da pasta">
+
+    <div class="modal-row">
+
+      <button onclick="fecharFolderModal()">
+        CANCELAR
+      </button>
+
+      <button
+        class="confirm"
+        onclick="confirmarNovaPasta()">
+        CRIAR
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     ASSET CONTEXT
+========================= -->
+
+<div
+  class="asset-context"
+  id="assetContext">
+
+  <button onclick="contextOpen()">
+    Abrir
+  </button>
+
+  <button onclick="contextRename()">
+    Renomear
+  </button>
+
+  <button onclick="contextDuplicate()">
+    Duplicar
+  </button>
+
+  <button
+    class="danger"
+    onclick="contextDelete()">
+    Excluir
+  </button>
+
+</div>
+
 <script>
-/* =========================================================
-   UTILIDADES
-========================================================= */
-function $(id){
-    return document.getElementById(id);
-}
-function safeJSON(key,fallback){
-    try{
-        const value=localStorage.getItem(key);
-        return value ? JSON.parse(value) : fallback;
-    }catch(e){
-        return fallback;
-    }
-}
-/* =========================================================
-   NAVEGAÇÃO
-========================================================= */
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+const $ = id => document.getElementById(id);
+
+
+/* =====================================================
+   MENU / NAVEGAÇÃO
+===================================================== */
+
 function abrirMenu(){
-    $("sideMenu").classList.add("open");
-    $("menuOverlay").classList.add("open");
+  $("sideMenu").classList.add("open");
+  $("menuOverlay").classList.add("open");
 }
+
 function fecharMenu(){
-    $("sideMenu").classList.remove("open");
-    $("menuOverlay").classList.remove("open");
+  $("sideMenu").classList.remove("open");
+  $("menuOverlay").classList.remove("open");
 }
+
 function abrirPagina(id){
-    document.querySelectorAll(".page").forEach(page=>{
-        page.classList.remove("active");
+
+  document
+    .querySelectorAll(".page")
+    .forEach(p=>p.classList.remove("active"));
+
+  const page = $(id);
+
+  if(!page)return;
+
+  page.classList.add("active");
+
+  document
+    .querySelectorAll(".menu-item")
+    .forEach(b=>b.classList.remove("active"));
+
+  document
+    .querySelectorAll(".menu-item")
+    .forEach(b=>{
+      if((b.getAttribute("onclick")||"")
+        .includes("'"+id+"'")){
+        b.classList.add("active");
+      }
     });
-    const page=$(id);
-    if(!page)return;
-    page.classList.add("active");
-    document.querySelectorAll(".menu-item").forEach(button=>{
-        button.classList.toggle(
-            "active",
-            button.dataset.page===id
-        );
-    });
-    fecharMenu();
-    if(id==="scenePage"){
-        setTimeout(()=>{
-            sceneResize();
-            sceneRender();
-        },50);
-    }
-    if(id==="artPage"){
-        setTimeout(()=>{
-            aplicarArtCamera();
-        },50);
-    }
-    if(id==="tilemapPage"){
-        setTimeout(()=>{
-            tileResize();
-            tileRender();
-        },50);
-    }
+
+  fecharMenu();
+
+  if(id==="artPage"){
+    setTimeout(aplicarArtCamera,50);
+  }
+
+  if(id==="scenePage"){
+    setTimeout(sceneResize,50);
+  }
+
+  if(id==="tilemapPage"){
+    setTimeout(tmResize,50);
+  }
+
+  if(id==="assetsPage"){
+    renderAssets();
+  }
 }
-$("menuButton").onclick=abrirMenu;
-$("menuOverlay").onclick=fecharMenu;
-document.querySelectorAll(".menu-item").forEach(button=>{
-    button.onclick=()=>{
-        abrirPagina(button.dataset.page);
-    };
-});
-document.querySelectorAll(".card").forEach(card=>{
-    card.onclick=()=>{
-        abrirPagina(card.dataset.page);
-    };
-});
-/* =========================================================
-   CÓDIGO / TRADUTOR
-========================================================= */
-const editor=$("code");
+
+
+/* =====================================================
+   CODE
+===================================================== */
+
+const editor = $("code");
+
 function atualizarLinhas(){
-    const quantidade=editor.value.split("\n").length;
-    let html="";
-    for(let i=1;i<=quantidade;i++){
-        html+=i+"<br>";
-    }
-    $("lineNumbers").innerHTML=html;
+
+  $("lineNumbers").innerHTML =
+    editor.value
+      .split("\n")
+      .map((_,i)=>i+1)
+      .join("<br>");
 }
+
 editor.addEventListener("input",atualizarLinhas);
+
 editor.addEventListener("scroll",()=>{
-    $("lineNumbers").scrollTop=editor.scrollTop;
+  $("lineNumbers").scrollTop =
+    editor.scrollTop;
 });
-editor.addEventListener("keydown",event=>{
-    if(event.key==="Tab"){
-        event.preventDefault();
-        const start=editor.selectionStart;
-        const end=editor.selectionEnd;
-        editor.value=
-            editor.value.substring(0,start)+
-            "    "+
-            editor.value.substring(end);
-        editor.selectionStart=
-        editor.selectionEnd=
-            start+4;
-        atualizarLinhas();
-    }
-});
-/*
-    Dicionário padrão.
-    O usuário pode alterar posteriormente
-    pela aba Dicionário.
-*/
-const tradutorPadrao={
-    "manda o papo":"std::cout <<",
-    "qual foi":"std::cerr <<",
-    "endl":"std::endl",
-    "visao":"std::cin",
-    "abraça o papo":"std::getline",
-    "numero":"int",
-    "decimal":"float",
-    "decimal^":"double",
-    "letra":"char",
-    "txt":"std::string",
-    "tlgd":"bool",
-    "auto":"auto",
-    "resto da divisao":"%",
-    "nova linha":"\\n"
-};
-function obterDicionario(){
-    const salvo=safeJSON(
-        "myengine_dicionario",
-        null
-    );
-    return salvo || {...tradutorPadrao};
-}
-function regexEscape(text){
-    return text.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&"
-    );
-}
-function traduzirCodigo(codigo){
-    let resultado=codigo;
-    const dict=obterDicionario();
-    Object.entries(dict)
-    .sort((a,b)=>b[0].length-a[0].length)
-    .forEach(([original,tradução])=>{
-        if(!original.trim())return;
-        resultado=resultado.replace(
-            new RegExp(
-                regexEscape(original),
-                "g"
-            ),
-            tradução
-        );
-    });
-    /*
-       Permite escrever:
-       manda o papo "Olá"
-       e transformar corretamente em:
-       std::cout << "Olá"
-    */
-    resultado=resultado.replace(
-        /std::cout\s+(".*?")/g,
-        "std::cout << $1"
-    );
-    resultado=resultado.replace(
-        /std::cerr\s+(".*?")/g,
-        "std::cerr << $1"
-    );
-    return resultado;
-}
-function encode64(text){
-    return btoa(
-        unescape(
-            encodeURIComponent(text)
-        )
-    );
-}
-function decode64(text){
-    try{
-        return decodeURIComponent(
-            escape(atob(text))
-        );
-    }catch{
-        return atob(text);
-    }
-}
-async function executar(){
-    const codigo=editor.value;
-    if(!codigo.trim()){
-        $("terminal").textContent=
-            "> Nenhum código para executar.";
-        return;
-    }
-    const traduzido=traduzirCodigo(codigo);
-    $("translatedCode").textContent=traduzido;
-    $("terminal").textContent=
-        "> Enviando código traduzido para Judge0...";
-    $("status").textContent="";
-    $("runButton").disabled=true;
-    try{
-        const resposta=await fetch(
-            "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
-            {
-                method:"POST",
-                headers:{
-                    "Content-Type":
-                        "application/json"
-                },
-                body:JSON.stringify({
-                    language_id:54,
-                    source_code:
-                        encode64(traduzido),
-                    stdin:
-                        $("stdinInput").value
-                        ?
-                        encode64(
-                            $("stdinInput").value
-                        )
-                        :
-                        ""
-                })
-            }
-        );
-        const resultado=await resposta.json();
-        let saida="";
-        if(resultado.stdout){
-            saida+=decode64(
-                resultado.stdout
-            );
-        }
-        if(resultado.stderr){
-            saida+=
-                (saida?"\n":"")+
-                decode64(
-                    resultado.stderr
-                );
-        }
-        if(resultado.compile_output){
-            saida+=
-                (saida?"\n":"")+
-                decode64(
-                    resultado.compile_output
-                );
-        }
-        if(!saida){
-            saida=
-                "> "+
-                (
-                    resultado.status &&
-                    resultado.status.description
-                    ?
-                    resultado.status.description
-                    :
-                    "Executado."
-                );
-        }
-        $("terminal").textContent=saida;
-        if(resultado.time){
-            $("status").textContent=
-                "Tempo: "+
-                resultado.time+
-                "s";
-        }
-    }catch(error){
-        $("terminal").textContent=
-            "> ERRO DE CONEXÃO\n"+
-            error.message;
-    }finally{
-        $("runButton").disabled=false;
-    }
-}
-$("runButton").onclick=executar;
-$("inputButton").onclick=()=>{
-    $("inputArea").style.display=
-        $("inputArea").style.display==="block"
-        ?
-        "none"
-        :
-        "block";
-};
-function limparCodigo(){
-    editor.value="";
-    $("stdinInput").value="";
-    $("translatedCode").textContent=
-        "> O código traduzido aparecerá aqui antes da execução.";
-    $("terminal").textContent=
-        "> Terminal limpo.";
-    $("status").textContent="";
+
+editor.addEventListener("keydown",e=>{
+
+  if(e.key==="Tab"){
+
+    e.preventDefault();
+
+    const start=editor.selectionStart;
+    const end=editor.selectionEnd;
+
+    editor.value =
+      editor.value.slice(0,start)+
+      "    "+
+      editor.value.slice(end);
+
+    editor.selectionStart=
+    editor.selectionEnd=start+4;
+
     atualizarLinhas();
+  }
+
+});
+
+function alternarEntrada(){
+
+  $("inputArea").style.display =
+    $("inputArea").style.display==="block"
+      ? "none"
+      : "block";
 }
-$("clearButton").onclick=limparCodigo;
-/* =========================================================
-   SALVAMENTO DE CÓDIGO
-========================================================= */
-function abrirSalvar(){
-    $("saveModal").style.display="flex";
-}
-function fecharSalvar(){
-    $("saveModal").style.display="none";
-}
-$("saveButton").onclick=abrirSalvar;
-$("cancelSaveButton").onclick=fecharSalvar;
-$("confirmSaveButton").onclick=()=>{
-    let nome=$("codeName").value.trim();
-    if(!nome){
-        nome="Código sem nome";
-    }
-    const lista=safeJSON(
-        "cpp_codigos",
-        []
-    );
-    lista.push({
-        id:Date.now(),
-        nome:nome,
-        codigo:editor.value
-    });
-    localStorage.setItem(
-        "cpp_codigos",
-        JSON.stringify(lista)
-    );
-    $("codeName").value="";
-    fecharSalvar();
-    carregarCodigos();
+
+const tradutorPadrao={
+
+  "manda o papo":"std::cout <<",
+  "qual foi":"std::cerr <<",
+  "endl":"std::endl",
+  "nova linha":"\\n",
+  "visao":"std::cin",
+  "abraça o papo":"std::getline",
+  "numero":"int",
+  "decimal":"float",
+  "decimal^":"double",
+  "letra":"char",
+  "txt":"std::string",
+  "tlgd":"bool",
+  "resto da divisao":"%"
+
 };
-function carregarCodigos(){
-    const lista=safeJSON(
-        "cpp_codigos",
-        []
-    );
-    $("savedList").innerHTML="";
-    $("savedCount").textContent=
-        lista.length;
-    lista.forEach(item=>{
-        const div=document.createElement("div");
-        div.className="saved-item";
-        const nome=document.createElement("div");
-        nome.className="saved-name";
-        nome.textContent=item.nome;
-        const actions=
-            document.createElement("div");
-        actions.className="saved-actions";
-        const abrir=
-            document.createElement("button");
-        abrir.className="open-btn";
-        abrir.textContent="ABRIR";
-        abrir.onclick=()=>{
-            editor.value=item.codigo;
-            atualizarLinhas();
-            abrirPagina("codePage");
-        };
-        const excluir=
-            document.createElement("button");
-        excluir.className="delete-btn";
-        excluir.textContent="X";
-        excluir.onclick=()=>{
-            const novaLista=
-                lista.filter(
-                    x=>x.id!==item.id
-                );
-            localStorage.setItem(
-                "cpp_codigos",
-                JSON.stringify(novaLista)
-            );
-            carregarCodigos();
-        };
-        actions.append(
-            abrir,
-            excluir
-        );
-        div.append(
-            nome,
-            actions
-        );
-        $("savedList").appendChild(div);
-    });
+
+function obterDicionario(){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem(
+        "myengine_dicionario"
+      )
+    ) || {...tradutorPadrao};
+
+  }catch{
+
+    return {...tradutorPadrao};
+
+  }
+
 }
-/* =========================================================
-   DICIONÁRIO
-========================================================= */
-const categoriasDicionario=[
-    ["Saída","manda o papo","std::cout <<"],
-    ["Saída","qual foi","std::cerr <<"],
-    ["Saída","endl","std::endl"],
-    ["Entrada","visao","std::cin"],
-    ["Entrada","abraça o papo","std::getline"],
-    ["Tipos","numero","int"],
-    ["Tipos","decimal","float"],
-    ["Tipos","decimal^","double"],
-    ["Tipos","letra","char"],
-    ["Tipos","txt","std::string"],
-    ["Tipos","tlgd","bool"],
-    ["Tipos","auto","auto"],
-    ["Operadores","+=","+="],
-    ["Operadores","-=","-="],
-    ["Operadores","*=","*="],
-    ["Operadores","/=","/="],
-    ["Operadores","resto da divisao","%"],
-    ["Controle","if","if"],
-    ["Controle","else","else"],
-    ["Controle","for","for"],
-    ["Controle","while","while"],
-    ["Controle","do","do"],
-    ["Controle","switch","switch"],
-    ["Controle","case","case"],
-    ["Controle","break","break"],
-    ["Controle","continue","continue"],
-    ["Controle","return","return"],
-    ["Lógica","and","&&"],
-    ["Lógica","or","||"],
-    ["Lógica","not","!"],
-    ["C++","class","class"],
-    ["C++","struct","struct"],
-    ["C++","public","public"],
-    ["C++","private","private"],
-    ["C++","protected","protected"],
-    ["C++","const","const"],
-    ["C++","static","static"],
-    ["C++","void","void"],
-    ["C++","nullptr","nullptr"]
-];
-function renderizarDicionario(filtro=""){
-    const lista=$("dictionaryList");
-    lista.innerHTML="";
-    let categoriaAtual="";
-    categoriasDicionario
-    .filter(item=>
-        (
-            item[1]+" "+item[2]
+
+function regexEscape(t){
+
+  return t.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+
+}
+
+function traduzirCodigo(codigo){
+
+  let resultado=codigo;
+
+  Object
+    .entries(obterDicionario())
+    .sort((a,b)=>b[0].length-a[0].length)
+    .forEach(([a,b])=>{
+
+      if(!a.trim())return;
+
+      resultado=
+        resultado.replace(
+          new RegExp(
+            regexEscape(a),
+            "gi"
+          ),
+          b
+        );
+
+    });
+
+  return resultado;
+}
+
+function decodificarBase64(t){
+
+  try{
+
+    return decodeURIComponent(
+      escape(atob(t))
+    );
+
+  }catch{
+
+    return atob(t);
+
+  }
+
+}
+
+async function executar(){
+
+  const codigo=editor.value;
+
+  if(!codigo.trim())return;
+
+  const traduzido=
+    traduzirCodigo(codigo);
+
+  $("translatedCode")
+    .textContent=traduzido;
+
+  $("terminal")
+    .textContent=
+      "> Enviando código para Judge0...";
+
+  $("runButton").disabled=true;
+
+  try{
+
+    const source=
+      btoa(
+        unescape(
+          encodeURIComponent(
+            traduzido
+          )
         )
-        .toLowerCase()
-        .includes(
-            filtro.toLowerCase()
-        )
-    )
-    .forEach(item=>{
-        if(item[0]!==categoriaAtual){
-            categoriaAtual=item[0];
-            const categoria=
-                document.createElement("div");
-            categoria.className=
-                "dictionary-category";
-            categoria.textContent=
-                categoriaAtual;
-            lista.appendChild(categoria);
+      );
+
+    const input=
+      $("stdinInput").value;
+
+    const stdin=
+      input
+        ? btoa(
+            unescape(
+              encodeURIComponent(input)
+            )
+          )
+        : "";
+
+    const resposta=
+      await fetch(
+        "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
+        {
+          method:"POST",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            language_id:54,
+            source_code:source,
+            stdin:stdin
+          })
         }
-        const linha=
-            document.createElement("div");
-        linha.className=
-            "dictionary-item";
-        linha.innerHTML=
-            "<span class='dictionary-command'>"+
-            item[1]+
-            "</span>"+
-            "<span class='dictionary-arrow'>→</span>"+
-            "<span class='dictionary-name'>"+
-            item[2]+
-            "</span>";
-        lista.appendChild(linha);
-    });
+      );
+
+    const resultado=
+      await resposta.json();
+
+    let saida="";
+
+    if(resultado.stdout)
+      saida+=
+        decodificarBase64(
+          resultado.stdout
+        );
+
+    if(resultado.stderr)
+      saida+=
+        (saida?"\n":"")+
+        decodificarBase64(
+          resultado.stderr
+        );
+
+    if(resultado.compile_output)
+      saida+=
+        (saida?"\n":"")+
+        decodificarBase64(
+          resultado.compile_output
+        );
+
+    $("terminal").textContent=
+      saida ||
+      "> "+
+      (
+        resultado.status?.description ||
+        "Executado."
+      );
+
+    $("status").textContent=
+      resultado.time
+        ? "Tempo: "+resultado.time+"s"
+        : "";
+
+  }catch(e){
+
+    $("terminal").textContent=
+      "> ERRO\n"+
+      e.message;
+
+  }finally{
+
+    $("runButton").disabled=false;
+
+  }
+
 }
-$("dictionarySearch").oninput=event=>{
-    renderizarDicionario(
-        event.target.value
+
+function limparCodigo(){
+
+  editor.value="";
+
+  $("stdinInput").value="";
+
+  $("translatedCode").textContent=
+    "> O código traduzido aparecerá aqui antes da execução.";
+
+  $("terminal").textContent=
+    "> Terminal limpo.";
+
+  $("status").textContent="";
+
+  atualizarLinhas();
+
+}
+
+function abrirSalvar(){
+
+  $("saveModal").style.display="flex";
+
+}
+
+function fecharSalvar(){
+
+  $("saveModal").style.display="none";
+
+}
+
+function salvarCodigo(){
+
+  const nome=
+    $("codeName").value.trim() ||
+    "Código sem nome";
+
+  const lista=
+    JSON.parse(
+      localStorage.getItem(
+        "cpp_codigos"
+      ) || "[]"
     );
-};
-/* =========================================================
-   ARTE
-========================================================= */
+
+  lista.push({
+    id:Date.now(),
+    nome:nome,
+    codigo:editor.value
+  });
+
+  localStorage.setItem(
+    "cpp_codigos",
+    JSON.stringify(lista)
+  );
+
+  $("codeName").value="";
+
+  fecharSalvar();
+
+  carregarCodigos();
+
+}
+
+function carregarCodigos(){
+
+  const lista=
+    JSON.parse(
+      localStorage.getItem(
+        "cpp_codigos"
+      ) || "[]"
+    );
+
+  $("savedList").innerHTML="";
+
+  $("savedCount").textContent=
+    lista.length;
+
+  lista.forEach(item=>{
+
+    const div=
+      document.createElement("div");
+
+    div.className="saved-item";
+
+    div.innerHTML=`
+
+      <div class="saved-name">
+        ${item.nome}
+      </div>
+
+      <div class="saved-actions">
+
+        <button class="open-btn">
+          ABRIR
+        </button>
+
+        <button class="delete-btn">
+          X
+        </button>
+
+      </div>
+
+    `;
+
+    div
+      .querySelector(".open-btn")
+      .onclick=()=>{
+
+        editor.value=item.codigo;
+
+        atualizarLinhas();
+
+        abrirPagina("codePage");
+
+      };
+
+    div
+      .querySelector(".delete-btn")
+      .onclick=()=>{
+
+        const novaLista=
+          lista.filter(
+            x=>x.id!==item.id
+          );
+
+        localStorage.setItem(
+          "cpp_codigos",
+          JSON.stringify(novaLista)
+        );
+
+        carregarCodigos();
+
+      };
+
+    $("savedList")
+      .appendChild(div);
+
+  });
+
+}
+
+
+/* =====================================================
+   ART
+===================================================== */
+
 const artCanvas=$("artCanvas");
-const artCtx=artCanvas.getContext("2d");
+const artCtx=
+  artCanvas.getContext("2d");
+const artArea=$("canvasArea");
+
 let artTool="pencil";
 let artZoom=1;
 let artDrawing=false;
-let artPointers=new Map();
 let artHistory=[];
 let artFuture=[];
-let artInitialDistance=0;
-let artInitialZoom=1;
+
 artCtx.imageSmoothingEnabled=false;
-function selecionarFerramenta(tool){
-    artTool=tool;
-    $("pencilTool")
-        .classList.toggle(
-            "active",
-            tool==="pencil"
-        );
-    $("eraserTool")
-        .classList.toggle(
-            "active",
-            tool==="eraser"
-        );
+
+function selecionarFerramenta(t){
+
+  artTool=t;
+
+  document
+    .querySelectorAll(".art-toolbar .tool")
+    .forEach(x=>x.classList.remove("active"));
+
+  $(t==="pencil"
+      ?"pencilTool"
+      :"eraserTool")
+    .classList.add("active");
+
 }
-$("pencilTool").onclick=()=>{
-    selecionarFerramenta("pencil");
-};
-$("eraserTool").onclick=()=>{
-    selecionarFerramenta("eraser");
-};
+
 function aplicarArtCamera(){
-    const area=$("canvasArea");
-    const size=Math.max(
-        256,
+
+  const size=
+    Math.max(
+      256,
+      Math.min(
+        512,
         Math.min(
-            512,
-            Math.min(
-                area.clientWidth,
-                area.clientHeight
-            )
+          artArea.clientWidth,
+          artArea.clientHeight
         )
+      )
     );
-    artCanvas.style.width=
-        size*artZoom+"px";
-    artCanvas.style.height=
-        size*artZoom+"px";
-    $("canvasInfo").textContent=
-        "Zoom: "+
-        Math.round(
-            artZoom*100
-        )+
-        "%";
+
+  artCanvas.style.width=
+    size*artZoom+"px";
+
+  artCanvas.style.height=
+    size*artZoom+"px";
+
+  $("canvasInfo").textContent=
+    "Zoom: "+
+    Math.round(artZoom*100)+
+    "%";
+
 }
+
+function zoomArtIn(){
+
+  artZoom=
+    Math.min(
+      8,
+      artZoom*1.25
+    );
+
+  aplicarArtCamera();
+
+}
+
+function zoomArtOut(){
+
+  artZoom=
+    Math.max(
+      .25,
+      artZoom/1.25
+    );
+
+  aplicarArtCamera();
+
+}
+
 function resetArtZoom(){
-    artZoom=1;
-    aplicarArtCamera();
+
+  artZoom=1;
+
+  aplicarArtCamera();
+
 }
-$("resetArtTool").onclick=resetArtZoom;
-$("zoomArtButton").onclick=()=>{
-    artZoom=
-        artZoom>=4
-        ?
-        1
-        :
-        artZoom*1.5;
-    aplicarArtCamera();
-};
-function artPixel(event){
-    const rect=
-        artCanvas.getBoundingClientRect();
-    return{
-        x:Math.floor(
-            (event.clientX-rect.left)/
-            rect.width*
-            artCanvas.width
-        ),
-        y:Math.floor(
-            (event.clientY-rect.top)/
-            rect.height*
-            artCanvas.height
-        )
-    };
+
+function artPixel(e){
+
+  const r=
+    artCanvas.getBoundingClientRect();
+
+  return{
+
+    x:Math.floor(
+      (e.clientX-r.left)/
+      r.width*
+      artCanvas.width
+    ),
+
+    y:Math.floor(
+      (e.clientY-r.top)/
+      r.height*
+      artCanvas.height
+    )
+
+  };
+
 }
-function artPaint(event){
-    const point=artPixel(event);
-    if(
-        point.x<0 ||
-        point.y<0 ||
-        point.x>=artCanvas.width ||
-        point.y>=artCanvas.height
-    ){
-        return;
-    }
-    const size=
-        parseInt(
-            $("brushSize").value
-        );
-    if(artTool==="eraser"){
-        artCtx.globalCompositeOperation=
-            "destination-out";
-    }else{
-        artCtx.globalCompositeOperation=
-            "source-over";
-        artCtx.fillStyle=
-            $("colorPicker").value;
-    }
-    artCtx.fillRect(
-        point.x-Math.floor(size/2),
-        point.y-Math.floor(size/2),
-        size,
-        size
+
+function artPaint(e){
+
+  const p=artPixel(e);
+
+  if(
+    p.x<0||
+    p.y<0||
+    p.x>=artCanvas.width||
+    p.y>=artCanvas.height
+  )return;
+
+  const size=
+    Number(
+      $("brushSize").value
     );
-    artCtx.globalCompositeOperation=
-        "source-over";
+
+  artCtx.globalCompositeOperation=
+    artTool==="eraser"
+      ? "destination-out"
+      : "source-over";
+
+  if(artTool==="pencil")
+    artCtx.fillStyle=
+      $("colorPicker").value;
+
+  artCtx.fillRect(
+    p.x-Math.floor(size/2),
+    p.y-Math.floor(size/2),
+    size,
+    size
+  );
+
+  artCtx.globalCompositeOperation=
+    "source-over";
+
 }
-function artDistance(a,b){
-    return Math.hypot(
-        a.clientX-b.clientX,
-        a.clientY-b.clientY
-    );
-}
+
 artCanvas.addEventListener(
-    "pointerdown",
-    event=>{
-        event.preventDefault();
-        artCanvas.setPointerCapture(
-            event.pointerId
-        );
-        artPointers.set(
-            event.pointerId,
-            event
-        );
-        if(artPointers.size>=2){
-            artDrawing=false;
-            const points=[
-                ...artPointers.values()
-            ];
-            artInitialDistance=
-                artDistance(
-                    points[0],
-                    points[1]
-                );
-            artInitialZoom=artZoom;
-            return;
-        }
-        artHistory.push(
-            artCtx.getImageData(
-                0,
-                0,
-                artCanvas.width,
-                artCanvas.height
-            )
-        );
-        artFuture=[];
-        artDrawing=true;
-        artPaint(event);
-    },
-    {passive:false}
-);
-artCanvas.addEventListener(
-    "pointermove",
-    event=>{
-        if(
-            !artPointers.has(
-                event.pointerId
-            )
-        ){
-            return;
-        }
-        artPointers.set(
-            event.pointerId,
-            event
-        );
-        if(artPointers.size>=2){
-            event.preventDefault();
-            const points=[
-                ...artPointers.values()
-            ];
-            const distance=
-                artDistance(
-                    points[0],
-                    points[1]
-                );
-            if(artInitialDistance){
-                artZoom=
-                    Math.max(
-                        .5,
-                        Math.min(
-                            8,
-                            artInitialZoom*
-                            distance/
-                            artInitialDistance
-                        )
-                    );
-                aplicarArtCamera();
-            }
-            return;
-        }
-        if(artDrawing){
-            event.preventDefault();
-            artPaint(event);
-        }
-    },
-    {passive:false}
-);
-function artPointerUp(event){
-    artPointers.delete(
-        event.pointerId
-    );
-    if(artPointers.size===0){
-        artDrawing=false;
-    }
-}
-artCanvas.addEventListener(
-    "pointerup",
-    artPointerUp
-);
-artCanvas.addEventListener(
-    "pointercancel",
-    artPointerUp
-);
-function limparCanvas(){
-    artCtx.clearRect(
+  "pointerdown",
+  e=>{
+
+    e.preventDefault();
+
+    artHistory.push(
+      artCtx.getImageData(
         0,
         0,
         artCanvas.width,
         artCanvas.height
+      )
     );
-}
-$("clearArtTool").onclick=limparCanvas;
-$("undoArtTool").onclick=()=>{
-    if(!artHistory.length)return;
-    artFuture.push(
-        artCtx.getImageData(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        )
+
+    artFuture=[];
+
+    artDrawing=true;
+
+    artPaint(e);
+
+    artCanvas.setPointerCapture?.(
+      e.pointerId
     );
-    artCtx.putImageData(
-        artHistory.pop(),
-        0,
-        0
-    );
-};
-$("redoArtTool").onclick=()=>{
-    if(!artFuture.length)return;
-    artHistory.push(
-        artCtx.getImageData(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        )
-    );
-    artCtx.putImageData(
-        artFuture.pop(),
-        0,
-        0
-    );
-};
-$("gridArtTool").onclick=()=>{
-    if(artCanvas.style.backgroundImage){
-        artCanvas.style.backgroundImage=
-            "none";
-    }else{
-        artCanvas.style.backgroundImage=
-            "linear-gradient(#aaa 1px,transparent 1px),"+
-            "linear-gradient(90deg,#aaa 1px,transparent 1px)";
-        artCanvas.style.backgroundSize=
-            "calc(100% / 32) calc(100% / 32)";
+
+  }
+);
+
+artCanvas.addEventListener(
+  "pointermove",
+  e=>{
+
+    if(!artDrawing)return;
+
+    e.preventDefault();
+
+    artPaint(e);
+
+  }
+);
+
+["pointerup","pointercancel"]
+.forEach(type=>{
+
+  artCanvas.addEventListener(
+    type,
+    ()=>{
+      artDrawing=false;
     }
-};
-$("newArtButton").onclick=()=>{
-    const valor=prompt(
+  );
+
+});
+
+function limparCanvas(){
+
+  artCtx.clearRect(
+    0,
+    0,
+    artCanvas.width,
+    artCanvas.height
+  );
+
+}
+
+function desfazer(){
+
+  if(!artHistory.length)return;
+
+  artFuture.push(
+    artCtx.getImageData(
+      0,
+      0,
+      artCanvas.width,
+      artCanvas.height
+    )
+  );
+
+  artCtx.putImageData(
+    artHistory.pop(),
+    0,
+    0
+  );
+
+}
+
+function refazer(){
+
+  if(!artFuture.length)return;
+
+  artHistory.push(
+    artCtx.getImageData(
+      0,
+      0,
+      artCanvas.width,
+      artCanvas.height
+    )
+  );
+
+  artCtx.putImageData(
+    artFuture.pop(),
+    0,
+    0
+  );
+
+}
+
+function alternarGrade(){
+
+  if(artCanvas.style.backgroundImage){
+
+    artCanvas.style.backgroundImage="none";
+
+  }else{
+
+    artCanvas.style.backgroundImage=
+      "linear-gradient(#aaa 1px,transparent 1px),"+
+      "linear-gradient(90deg,#aaa 1px,transparent 1px)";
+
+    artCanvas.style.backgroundSize=
+      "calc(100% / "+
+      artCanvas.width+
+      ") calc(100% / "+
+      artCanvas.height+
+      ")";
+
+  }
+
+}
+
+function novoCanvas(){
+
+  const n=
+    parseInt(
+      prompt(
         "Tamanho: 16, 32, 64 ou 128",
         "32"
+      )
     );
-    const tamanho=parseInt(valor);
-    if(
-        ![16,32,64,128]
-        .includes(tamanho)
-    ){
-        return;
-    }
-    artCanvas.width=tamanho;
-    artCanvas.height=tamanho;
+
+  if(
+    ![16,32,64,128]
+    .includes(n)
+  )return;
+
+  artCanvas.width=n;
+  artCanvas.height=n;
+
+  artCtx.clearRect(
+    0,
+    0,
+    n,
+    n
+  );
+
+  $("artSize").textContent=
+    n+" × "+n;
+
+  artHistory=[];
+  artFuture=[];
+
+  aplicarArtCamera();
+
+}
+
+function salvarArte(){
+
+  localStorage.setItem(
+    "myengine_arte",
+    artCanvas.toDataURL()
+  );
+
+  alert("Arte salva.");
+
+}
+
+function carregarArte(){
+
+  const src=
+    localStorage.getItem(
+      "myengine_arte"
+    );
+
+  if(!src){
+
+    alert("Nenhuma arte salva.");
+
+    return;
+
+  }
+
+  const img=new Image();
+
+  img.onload=()=>{
+
     artCtx.clearRect(
-        0,
-        0,
-        tamanho,
-        tamanho
+      0,
+      0,
+      artCanvas.width,
+      artCanvas.height
     );
-    $("artSize").textContent=
-        tamanho+" × "+tamanho;
-    artZoom=1;
-    aplicarArtCamera();
-};
-$("saveArtButton").onclick=()=>{
-    localStorage.setItem(
-        "myengine_arte",
-        artCanvas.toDataURL()
+
+    artCtx.drawImage(
+      img,
+      0,
+      0,
+      artCanvas.width,
+      artCanvas.height
     );
-    alert("Arte salva.");
-};
-$("loadArtButton").onclick=()=>{
-    const src=
-        localStorage.getItem(
-            "myengine_arte"
-        );
-    if(!src){
-        alert("Nenhuma arte salva.");
-        return;
-    }
-    const image=new Image();
-    image.onload=()=>{
-        artCtx.clearRect(
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
-        artCtx.drawImage(
-            image,
-            0,
-            0,
-            artCanvas.width,
-            artCanvas.height
-        );
-    };
-    image.src=src;
-};
-/* =========================================================
-   SCENE ENGINE
-========================================================= */
+
+  };
+
+  img.src=src;
+
+}
+
+
+/* =====================================================
+   SCENE
+===================================================== */
+
 const sceneCanvas=$("sceneCanvas");
-const sceneWorld=$("sceneWorld");
-const sceneCtx=sceneCanvas.getContext("2d");
+const sceneCtx=
+  sceneCanvas.getContext("2d");
+
 let sceneCamera={
+  x:0,
+  y:0,
+  zoom:1
+};
+
+let sceneGrid={
+  enabled:true,
+  size:32
+};
+
+let sceneSnap=true;
+let sceneObjects=[];
+let sceneSelected=null;
+let sceneHistory=[];
+let sceneFuture=[];
+let sceneId=1;
+
+function sceneResize(){
+
+  const r=
+    sceneCanvas.parentElement
+      .getBoundingClientRect();
+
+  const dpr=
+    window.devicePixelRatio||1;
+
+  sceneCanvas.width=
+    r.width*dpr;
+
+  sceneCanvas.height=
+    r.height*dpr;
+
+  sceneCanvas.style.width=
+    r.width+"px";
+
+  sceneCanvas.style.height=
+    r.height+"px";
+
+  sceneCtx.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
+
+  sceneRender();
+
+}
+
+function sceneWorldToScreen(x,y){
+
+  const w=
+    sceneCanvas.clientWidth;
+
+  const h=
+    sceneCanvas.clientHeight;
+
+  return{
+
+    x:w/2+
+      (x-sceneCamera.x)*
+      sceneCamera.zoom,
+
+    y:h/2+
+      (y-sceneCamera.y)*
+      sceneCamera.zoom
+
+  };
+
+}
+
+function sceneRender(){
+
+  const w=
+    sceneCanvas.clientWidth;
+
+  const h=
+    sceneCanvas.clientHeight;
+
+  sceneCtx.clearRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+  sceneCtx.fillStyle="#0d1218";
+
+  sceneCtx.fillRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+  if(sceneGrid.enabled){
+
+    const size=
+      sceneGrid.size*
+      sceneCamera.zoom;
+
+    sceneCtx.strokeStyle=
+      "rgba(255,255,255,.06)";
+
+    sceneCtx.beginPath();
+
+    for(
+      let x=
+        w/2-
+        sceneCamera.x*
+        sceneCamera.zoom;
+      x<w;
+      x+=size
+    ){
+
+      sceneCtx.moveTo(x,0);
+      sceneCtx.lineTo(x,h);
+
+    }
+
+    for(
+      let y=
+        h/2-
+        sceneCamera.y*
+        sceneCamera.zoom;
+      y<h;
+      y+=size
+    ){
+
+      sceneCtx.moveTo(0,y);
+      sceneCtx.lineTo(w,y);
+
+    }
+
+    sceneCtx.stroke();
+
+  }
+
+  sceneObjects.forEach(o=>{
+
+    const p=
+      sceneWorldToScreen(
+        o.x,
+        o.y
+      );
+
+    sceneCtx.fillStyle=
+      o.color;
+
+    sceneCtx.fillRect(
+      p.x-
+        o.width*
+        sceneCamera.zoom/
+        2,
+
+      p.y-
+        o.height*
+        sceneCamera.zoom/
+        2,
+
+      o.width*
+        sceneCamera.zoom,
+
+      o.height*
+        sceneCamera.zoom
+    );
+
+    if(sceneSelected===o.id){
+
+      sceneCtx.strokeStyle=
+        "#58a6ff";
+
+      sceneCtx.lineWidth=3;
+
+      sceneCtx.strokeRect(
+        p.x-
+          o.width*
+          sceneCamera.zoom/
+          2-3,
+
+        p.y-
+          o.height*
+          sceneCamera.zoom/
+          2-3,
+
+        o.width*
+          sceneCamera.zoom+6,
+
+        o.height*
+          sceneCamera.zoom+6
+      );
+
+    }
+
+  });
+
+  $("sceneHud").textContent=
+    "X: "+
+    Math.round(sceneCamera.x)+
+    " | Y: "+
+    Math.round(sceneCamera.y)+
+    " | Zoom: "+
+    Math.round(sceneCamera.zoom*100)+
+    "%";
+
+}
+
+function sceneTool(){
+
+}
+
+function sceneZoomIn(){
+
+  sceneCamera.zoom=
+    Math.min(
+      8,
+      sceneCamera.zoom*1.2
+    );
+
+  sceneRender();
+
+}
+
+function sceneZoomOut(){
+
+  sceneCamera.zoom=
+    Math.max(
+      .2,
+      sceneCamera.zoom/1.2
+    );
+
+  sceneRender();
+
+}
+
+function sceneResetCamera(){
+
+  sceneCamera={
     x:0,
     y:0,
     zoom:1
-};
-let sceneGrid={
-    enabled:true,
-    size:32
-};
-let sceneSnap=true;
-let sceneToolMode="select";
-let sceneObjects=[];
-let sceneSelected=[];
-let sceneHistory=[];
-let sceneFuture=[];
-let scenePointers=new Map();
-let sceneGesture=false;
-let sceneStartDistance=0;
-let sceneStartZoom=1;
-let sceneDragObject=null;
-let sceneDragStart=null;
-let sceneId=1;
-function sceneResize(){
-    const rect=
-        sceneWorld.getBoundingClientRect();
-    const dpr=
-        window.devicePixelRatio||1;
-    sceneCanvas.width=
-        rect.width*dpr;
-    sceneCanvas.height=
-        rect.height*dpr;
-    sceneCanvas.style.width=
-        rect.width+"px";
-    sceneCanvas.style.height=
-        rect.height+"px";
-    sceneCtx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-    sceneRender();
+  };
+
+  sceneRender();
+
 }
-function sceneWorldToScreen(x,y){
-    return{
-        x:
-            sceneWorld.clientWidth/2+
-            (x-sceneCamera.x)*
-            sceneCamera.zoom,
-        y:
-            sceneWorld.clientHeight/2+
-            (y-sceneCamera.y)*
-            sceneCamera.zoom
-    };
+
+function sceneToggleGrid(){
+
+  sceneGrid.enabled=
+    !sceneGrid.enabled;
+
+  sceneRender();
+
 }
-function sceneScreenToWorld(x,y){
-    return{
-        x:
-            sceneCamera.x+
-            (x-sceneWorld.clientWidth/2)/
-            sceneCamera.zoom,
-        y:
-            sceneCamera.y+
-            (y-sceneWorld.clientHeight/2)/
-            sceneCamera.zoom
-    };
+
+function sceneToggleSnap(){
+
+  sceneSnap=!sceneSnap;
+
 }
-function sceneRender(){
-    const width=sceneWorld.clientWidth;
-    const height=sceneWorld.clientHeight;
-    sceneCtx.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-    sceneCtx.fillStyle="#0d1218";
-    sceneCtx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-    if(sceneGrid.enabled){
-        const size=
-            sceneGrid.size*
-            sceneCamera.zoom;
-        if(size>=4){
-            const center=
-                sceneWorldToScreen(0,0);
-            sceneCtx.strokeStyle=
-                "rgba(255,255,255,.055)";
-            sceneCtx.lineWidth=1;
-            sceneCtx.beginPath();
-            for(
-                let x=center.x%size;
-                x<width;
-                x+=size
-            ){
-                sceneCtx.moveTo(x,0);
-                sceneCtx.lineTo(x,height);
-            }
-            for(
-                let y=center.y%size;
-                y<height;
-                y+=size
-            ){
-                sceneCtx.moveTo(0,y);
-                sceneCtx.lineTo(width,y);
-            }
-            sceneCtx.stroke();
-        }
-    }
-    sceneObjects
-    .filter(o=>o.visible!==false)
-    .sort(
-        (a,b)=>
-            (a.layer||0)-
-            (b.layer||0)
-    )
-    .forEach(sceneDrawObject);
-    sceneSelected.forEach(id=>{
-        const object=
-            sceneObjects.find(
-                o=>o.id===id
-            );
-        if(!object)return;
-        const p=
-            sceneWorldToScreen(
-                object.x,
-                object.y
-            );
-        sceneCtx.save();
-        sceneCtx.translate(
-            p.x,
-            p.y
-        );
-        sceneCtx.rotate(
-            (object.rotation||0)*
-            Math.PI/180
-        );
-        sceneCtx.strokeStyle="#58a6ff";
-        sceneCtx.lineWidth=2;
-        sceneCtx.setLineDash([5,4]);
-        sceneCtx.strokeRect(
-            -object.width*
-                sceneCamera.zoom/2-3,
-            -object.height*
-                sceneCamera.zoom/2-3,
-            object.width*
-                sceneCamera.zoom+6,
-            object.height*
-                sceneCamera.zoom+6
-        );
-        sceneCtx.restore();
-    });
-    $("sceneHud").textContent=
-        "X: "+
-        Math.round(sceneCamera.x)+
-        " | Y: "+
-        Math.round(sceneCamera.y)+
-        " | Zoom: "+
-        Math.round(
-            sceneCamera.zoom*100
-        )+
-        "%";
+
+function openSceneAdd(){
+
+  $("sceneAddMenu")
+    .classList.toggle("open");
+
 }
-function sceneColor(type){
-    return{
-        player:"#2e8bff",
-        tile:"#52a447",
-        decoration:"#4f9a45",
-        enemy:"#d64c4c",
-        item:"#e2bd42",
-        text:"#fff",
-        empty:"#777"
-    }[type]||"#888";
-}
-function sceneIcon(type){
-    return{
-        player:"🧍",
-        tile:"🟩",
-        decoration:"🌲",
-        enemy:"👾",
-        item:"💰",
-        text:"📝",
-        empty:"📦"
-    }[type]||"□";
-}
-function sceneDrawObject(object){
-    const p=
-        sceneWorldToScreen(
-            object.x,
-            object.y
-        );
-    sceneCtx.save();
-    sceneCtx.translate(
-        p.x,
-        p.y
-    );
-    sceneCtx.rotate(
-        (object.rotation||0)*
-        Math.PI/180
-    );
-    sceneCtx.globalAlpha=
-        object.opacity===undefined
-        ?
-        1
-        :
-        object.opacity;
-    if(object.type==="text"){
-        sceneCtx.fillStyle=
-            object.color||"#fff";
-        sceneCtx.font=
-            Math.max(
-                10,
-                16*sceneCamera.zoom
-            )+
-            "px sans-serif";
-        sceneCtx.textAlign="center";
-        sceneCtx.textBaseline="middle";
-        sceneCtx.fillText(
-            object.text||"Texto",
-            0,
-            0
-        );
-    }else{
-        const width=
-            object.width*
-            sceneCamera.zoom;
-        const height=
-            object.height*
-            sceneCamera.zoom;
-        sceneCtx.fillStyle=
-            object.color||
-            sceneColor(object.type);
-        sceneCtx.fillRect(
-            -width/2,
-            -height/2,
-            width,
-            height
-        );
-        sceneCtx.strokeStyle=
-            "rgba(255,255,255,.25)";
-        sceneCtx.strokeRect(
-            -width/2,
-            -height/2,
-            width,
-            height
-        );
-    }
-    sceneCtx.restore();
-}
-function scenePushHistory(){
-    sceneHistory.push(
-        JSON.stringify(
-            sceneObjects
-        )
-    );
-    if(sceneHistory.length>40){
-        sceneHistory.shift();
-    }
-    sceneFuture=[];
-}
+
 function addSceneObject(type){
-    const sizes={
-        player:[32,48],
-        tile:[32,32],
-        decoration:[48,64],
-        enemy:[32,32],
-        item:[24,24],
-        text:[80,24],
-        empty:[32,32]
-    };
-    const names={
-        player:"Player",
-        tile:"Tile",
-        decoration:"Decoração",
-        enemy:"Inimigo",
-        item:"Item",
-        text:"Texto",
-        empty:"Objeto"
-    };
-    let x=sceneCamera.x;
-    let y=sceneCamera.y;
-    if(sceneSnap){
-        x=Math.round(
-            x/sceneGrid.size
-        )*sceneGrid.size;
-        y=Math.round(
-            y/sceneGrid.size
-        )*sceneGrid.size;
-    }
-    const size=
-        sizes[type]||
-        [32,32];
-    scenePushHistory();
-    const object={
-        id:sceneId++,
-        name:
-            names[type]+
-            " "+
-            (sceneObjects.length+1),
-        type:type,
-        x:x,
-        y:y,
-        width:size[0],
-        height:size[1],
-        rotation:0,
-        layer:0,
-        visible:true,
-        opacity:1,
-        color:sceneColor(type),
-        text:
-            type==="text"
-            ?
-            "Texto"
-            :
-            ""
-    };
-    sceneObjects.push(object);
-    sceneSelected=[
-        object.id
-    ];
-    renderHierarchy();
-    renderInspector();
-    sceneRender();
-    $("sceneAddMenu")
-        .classList.remove("open");
-}
-function sceneHitTest(x,y){
-    for(
-        let i=sceneObjects.length-1;
-        i>=0;
-        i--
-    ){
-        const object=
-            sceneObjects[i];
-        if(object.visible===false)
-            continue;
-        if(
-            Math.abs(x-object.x)<=
-                object.width/2 &&
-            Math.abs(y-object.y)<=
-                object.height/2
-        ){
-            return object;
-        }
-    }
-    return null;
-}
-function selectSceneObject(object){
-    if(!object){
-        sceneSelected=[];
-    }else{
-        sceneSelected=[
-            object.id
-        ];
-    }
-    renderHierarchy();
-    renderInspector();
-    sceneRender();
-}
-sceneCanvas.addEventListener(
-    "pointerdown",
-    event=>{
-        event.preventDefault();
-        sceneCanvas.setPointerCapture(
-            event.pointerId
-        );
-        scenePointers.set(
-            event.pointerId,
-            event
-        );
-        if(scenePointers.size>=2){
-            sceneGesture=true;
-            const points=[
-                ...scenePointers.values()
-            ];
-            sceneStartDistance=
-                Math.hypot(
-                    points[0].clientX-
-                    points[1].clientX,
-                    points[0].clientY-
-                    points[1].clientY
-                );
-            sceneStartZoom=
-                sceneCamera.zoom;
-            sceneDragObject=null;
-            return;
-        }
-        if(sceneToolMode!=="select")
-            return;
-        const rect=
-            sceneWorld.getBoundingClientRect();
-        const screenX=
-            event.clientX-
-            rect.left;
-        const screenY=
-            event.clientY-
-            rect.top;
-        const world=
-            sceneScreenToWorld(
-                screenX,
-                screenY
-            );
-        const object=
-            sceneHitTest(
-                world.x,
-                world.y
-            );
-        selectSceneObject(object);
-        if(object){
-            scenePushHistory();
-            sceneDragObject=object;
-            sceneDragStart={
-                x:world.x,
-                y:world.y,
-                ox:object.x,
-                oy:object.y
-            };
-        }
+
+  const info={
+
+    player:{
+      name:"Player",
+      color:"#2e8bff",
+      width:32,
+      height:48
     },
-    {passive:false}
-);
-sceneCanvas.addEventListener(
-    "pointermove",
-    event=>{
-        if(!scenePointers.has(
-            event.pointerId
-        )){
-            return;
-        }
-        scenePointers.set(
-            event.pointerId,
-            event
-        );
-        if(scenePointers.size>=2){
-            event.preventDefault();
-            const points=[
-                ...scenePointers.values()
-            ];
-            const distance=
-                Math.hypot(
-                    points[0].clientX-
-                    points[1].clientX,
-                    points[0].clientY-
-                    points[1].clientY
-                );
-            if(sceneStartDistance){
-                sceneCamera.zoom=
-                    Math.max(
-                        .2,
-                        Math.min(
-                            8,
-                            sceneStartZoom*
-                            distance/
-                            sceneStartDistance
-                        )
-                    );
-                sceneRender();
-            }
-            return;
-        }
-        if(
-            sceneDragObject &&
-            !sceneGesture
-        ){
-            const rect=
-                sceneWorld.getBoundingClientRect();
-            const screenX=
-                event.clientX-
-                rect.left;
-            const screenY=
-                event.clientY-
-                rect.top;
-            const world=
-                sceneScreenToWorld(
-                    screenX,
-                    screenY
-                );
-            let x=
-                sceneDragStart.ox+
-                (
-                    world.x-
-                    sceneDragStart.x
-                );
-            let y=
-                sceneDragStart.oy+
-                (
-                    world.y-
-                    sceneDragStart.y
-                );
-            if(sceneSnap){
-                x=Math.round(
-                    x/sceneGrid.size
-                )*sceneGrid.size;
-                y=Math.round(
-                    y/sceneGrid.size
-                )*sceneGrid.size;
-            }
-            sceneDragObject.x=x;
-            sceneDragObject.y=y;
-            renderInspector();
-            sceneRender();
-        }
+
+    tile:{
+      name:"Tile",
+      color:"#52a447",
+      width:32,
+      height:32
     },
-    {passive:false}
-);
-function scenePointerUp(event){
-    scenePointers.delete(
-        event.pointerId
+
+    decoration:{
+      name:"Decoração",
+      color:"#4f9a45",
+      width:48,
+      height:64
+    },
+
+    enemy:{
+      name:"Inimigo",
+      color:"#d64c4c",
+      width:32,
+      height:32
+    },
+
+    item:{
+      name:"Item",
+      color:"#e2bd42",
+      width:24,
+      height:24
+    },
+
+    text:{
+      name:"Texto",
+      color:"#fff",
+      width:80,
+      height:24
+    }
+
+  }[type];
+
+  if(!info)return;
+
+  sceneHistory.push(
+    JSON.stringify(sceneObjects)
+  );
+
+  const obj={
+
+    id:sceneId++,
+
+    name:
+      info.name+
+      " "+
+      (sceneObjects.length+1),
+
+    x:sceneCamera.x,
+    y:sceneCamera.y,
+
+    width:info.width,
+    height:info.height,
+
+    color:info.color
+
+  };
+
+  sceneObjects.push(obj);
+
+  sceneSelected=obj.id;
+
+  $("sceneAddMenu")
+    .classList.remove("open");
+
+  renderHierarchy();
+
+  renderInspector();
+
+  sceneRender();
+
+}
+
+function renderHierarchy(){
+
+  const list=
+    $("hierarchyList");
+
+  list.innerHTML="";
+
+  sceneObjects.forEach(o=>{
+
+    const row=
+      document.createElement("div");
+
+    row.className=
+      "scene-node"+
+      (
+        sceneSelected===o.id
+          ?" selected"
+          :""
+      );
+
+    row.textContent=o.name;
+
+    row.onclick=()=>{
+
+      sceneSelected=o.id;
+
+      renderHierarchy();
+      renderInspector();
+      sceneRender();
+
+    };
+
+    list.appendChild(row);
+
+  });
+
+}
+
+function renderInspector(){
+
+  const body=
+    $("inspectorBody");
+
+  const o=
+    sceneObjects.find(
+      x=>x.id===sceneSelected
     );
-    if(scenePointers.size===0){
-        sceneGesture=false;
-        sceneDragObject=null;
-    }
+
+  if(!o){
+
+    body.innerHTML=
+      '<div class="inspector-empty">'+
+      'Selecione um objeto.'+
+      '</div>';
+
+    return;
+
+  }
+
+  body.innerHTML="";
+
+  [
+    ["Nome","name"],
+    ["X","x"],
+    ["Y","y"],
+    ["Largura","width"],
+    ["Altura","height"]
+  ].forEach(([label,key])=>{
+
+    const f=
+      document.createElement("div");
+
+    f.className="field";
+
+    f.innerHTML=
+      "<label>"+
+      label+
+      "</label>"+
+      "<input>";
+
+    const input=
+      f.querySelector("input");
+
+    input.value=o[key];
+
+    input.onchange=()=>{
+
+      o[key]=
+        key==="name"
+          ? input.value
+          : Number(input.value)||0;
+
+      renderHierarchy();
+      sceneRender();
+
+    };
+
+    body.appendChild(f);
+
+  });
+
 }
-sceneCanvas.addEventListener(
-    "pointerup",
-    scenePointerUp
-);
-sceneCanvas.addEventListener(
-    "pointercancel",
-    scenePointerUp
-);
-/* SCENE BUTTONS */
-$("sceneSelectTool").onclick=()=>{
-    sceneToolMode="select";
-    $("sceneSelectTool")
-        .classList.add("active");
-    $("sceneMoveTool")
-        .classList.remove("active");
-};
-$("sceneMoveTool").onclick=()=>{
-    sceneToolMode="move";
-    $("sceneMoveTool")
-        .classList.add("active");
-    $("sceneSelectTool")
-        .classList.remove("active");
-};
-$("sceneGridButton").onclick=()=>{
-    sceneGrid.enabled=
-        !sceneGrid.enabled;
-    sceneRender();
-};
-$("sceneSnapButton").onclick=()=>{
-    sceneSnap=!sceneSnap;
-};
-$("sceneZoomInButton").onclick=()=>{
-    sceneCamera.zoom=
-        Math.min(
-            8,
-            sceneCamera.zoom*1.2
-        );
-    sceneRender();
-};
-$("sceneZoomOutButton").onclick=()=>{
-    sceneCamera.zoom=
-        Math.max(
-            .2,
-            sceneCamera.zoom/1.2
-        );
-    sceneRender();
-};
-$("sceneResetButton").onclick=()=>{
-    sceneCamera={
+
+function toggleSceneHierarchy(){
+
+  $("sceneHierarchy")
+    .classList.toggle(
+      "mobile-open"
+    );
+
+  $("sceneInspector")
+    .classList.remove(
+      "mobile-open"
+    );
+
+}
+
+function toggleSceneInspector(){
+
+  $("sceneInspector")
+    .classList.toggle(
+      "mobile-open"
+    );
+
+  $("sceneHierarchy")
+    .classList.remove(
+      "mobile-open"
+    );
+
+}
+
+function closeSceneInspector(){
+
+  $("sceneInspector")
+    .classList.remove(
+      "mobile-open"
+    );
+
+}
+
+function sceneUndo(){
+
+  if(!sceneHistory.length)return;
+
+  sceneFuture.push(
+    JSON.stringify(sceneObjects)
+  );
+
+  sceneObjects=
+    JSON.parse(
+      sceneHistory.pop()
+    );
+
+  sceneSelected=null;
+
+  renderHierarchy();
+  renderInspector();
+  sceneRender();
+
+}
+
+function sceneRedo(){
+
+  if(!sceneFuture.length)return;
+
+  sceneHistory.push(
+    JSON.stringify(sceneObjects)
+  );
+
+  sceneObjects=
+    JSON.parse(
+      sceneFuture.pop()
+    );
+
+  renderHierarchy();
+  renderInspector();
+  sceneRender();
+
+}
+
+function sceneSave(){
+
+  localStorage.setItem(
+    "myengine_scene",
+    JSON.stringify({
+      camera:sceneCamera,
+      grid:sceneGrid,
+      snap:sceneSnap,
+      objects:sceneObjects
+    })
+  );
+
+  alert("Cena salva.");
+
+}
+
+function sceneLoad(){
+
+  const data=
+    localStorage.getItem(
+      "myengine_scene"
+    );
+
+  if(!data){
+
+    alert("Nenhuma cena salva.");
+
+    return;
+
+  }
+
+  try{
+
+    const s=JSON.parse(data);
+
+    sceneCamera=
+      s.camera||
+      {
         x:0,
         y:0,
         zoom:1
-    };
-    sceneRender();
-};
-$("sceneUndoButton").onclick=()=>{
-    if(!sceneHistory.length)return;
-    sceneFuture.push(
-        JSON.stringify(
-            sceneObjects
-        )
-    );
-    sceneObjects=
-        JSON.parse(
-            sceneHistory.pop()
-        );
-    sceneSelected=[];
-    renderHierarchy();
-    renderInspector();
-    sceneRender();
-};
-$("sceneRedoButton").onclick=()=>{
-    if(!sceneFuture.length)return;
-    sceneHistory.push(
-        JSON.stringify(
-            sceneObjects
-        )
-    );
-    sceneObjects=
-        JSON.parse(
-            sceneFuture.pop()
-        );
-    sceneSelected=[];
-    renderHierarchy();
-    renderInspector();
-    sceneRender();
-};
-/* HIERARCHY */
-function renderHierarchy(){
-    const list=
-        $("hierarchyList");
-    list.innerHTML="";
-    if(!sceneObjects.length){
-        const empty=
-            document.createElement("div");
-        empty.style.color="#555";
-        empty.style.padding="20px 8px";
-        empty.style.fontSize="10px";
-        empty.textContent=
-            "Nenhum objeto na cena.";
-        list.appendChild(empty);
-        return;
-    }
-    sceneObjects.forEach(object=>{
-        const row=
-            document.createElement("div");
-        row.className=
-            "scene-node"+
-            (
-                sceneSelected.includes(
-                    object.id
-                )
-                ?
-                " selected"
-                :
-                ""
-            );
-        row.onclick=()=>{
-            selectSceneObject(object);
-        };
-        const icon=
-            document.createElement("span");
-        icon.className="node-icon";
-        icon.textContent=
-            sceneIcon(object.type);
-        const name=
-            document.createElement("span");
-        name.className="node-name";
-        name.textContent=
-            object.name;
-        const eye=
-            document.createElement("span");
-        eye.className="node-eye";
-        eye.textContent=
-            object.visible===false
-            ?
-            "○"
-            :
-            "●";
-        eye.onclick=event=>{
-            event.stopPropagation();
-            object.visible=
-                object.visible===false;
-            renderHierarchy();
-            sceneRender();
-        };
-        row.append(
-            icon,
-            name,
-            eye
-        );
-        list.appendChild(row);
-    });
-}
-function createField(
-    label,
-    value,
-    callback
-){
-    const wrapper=
-        document.createElement("div");
-    wrapper.className="field";
-    const labelElement=
-        document.createElement("label");
-    labelElement.textContent=
-        label;
-    const input=
-        document.createElement("input");
-    input.value=value;
-    input.addEventListener(
-        "change",
-        ()=>{
-            callback(
-                input.value
-            );
-        }
-    );
-    wrapper.append(
-        labelElement,
-        input
-    );
-    return wrapper;
-}
-function renderInspector(){
-    const body=
-        $("inspectorBody");
-    if(sceneSelected.length!==1){
-        body.innerHTML=
-            "<div class='inspector-empty'>"+
-            "Selecione um objeto."+
-            "</div>";
-        return;
-    }
-    const object=
-        sceneObjects.find(
-            x=>x.id===sceneSelected[0]
-        );
-    if(!object)return;
-    body.innerHTML="";
-    const section=
-        document.createElement("div");
-    section.className=
-        "inspector-section";
-    const title=
-        document.createElement("div");
-    title.className=
-        "inspector-section-title";
-    title.textContent=
-        "Objeto";
-    section.appendChild(title);
-    section.appendChild(
-        createField(
-            "Nome",
-            object.name,
-            value=>{
-                object.name=value;
-                renderHierarchy();
-            }
-        )
-    );
-    body.appendChild(section);
-    const transform=
-        document.createElement("div");
-    transform.className=
-        "inspector-section";
-    const transformTitle=
-        document.createElement("div");
-    transformTitle.className=
-        "inspector-section-title";
-    transformTitle.textContent=
-        "Transform";
-    transform.appendChild(
-        transformTitle
-    );
-    const grid=
-        document.createElement("div");
-    grid.className=
-        "transform-grid";
-    grid.appendChild(
-        createField(
-            "X",
-            object.x,
-            value=>{
-                object.x=
-                    parseFloat(value)||0;
-                sceneRender();
-            }
-        )
-    );
-    grid.appendChild(
-        createField(
-            "Y",
-            object.y,
-            value=>{
-                object.y=
-                    parseFloat(value)||0;
-                sceneRender();
-            }
-        )
-    );
-    grid.appendChild(
-        createField(
-            "Largura",
-            object.width,
-            value=>{
-                object.width=
-                    Math.max(
-                        1,
-                        parseFloat(value)||1
-                    );
-                sceneRender();
-            }
-        )
-    );
-    grid.appendChild(
-        createField(
-            "Altura",
-            object.height,
-            value=>{
-                object.height=
-                    Math.max(
-                        1,
-                        parseFloat(value)||1
-                    );
-                sceneRender();
-            }
-        )
-    );
-    transform.appendChild(grid);
-    transform.appendChild(
-        createField(
-            "Rotação",
-            object.rotation,
-            value=>{
-                object.rotation=
-                    parseFloat(value)||0;
-                sceneRender();
-            }
-        )
-    );
-    body.appendChild(transform);
-    const render=
-        document.createElement("div");
-    render.className=
-        "inspector-section";
-    const renderTitle=
-        document.createElement("div");
-    renderTitle.className=
-        "inspector-section-title";
-    renderTitle.textContent=
-        "Renderização";
-    render.appendChild(renderTitle);
-    render.appendChild(
-        createField(
-            "Layer",
-            object.layer,
-            value=>{
-                object.layer=
-                    parseInt(value)||0;
-                sceneRender();
-            }
-        )
-    );
-    render.appendChild(
-        createField(
-            "Opacidade",
-            object.opacity,
-            value=>{
-                object.opacity=
-                    Math.max(
-                        0,
-                        Math.min(
-                            1,
-                            parseFloat(value)||0
-                        )
-                    );
-                sceneRender();
-            }
-        )
-    );
-    render.appendChild(
-        createField(
-            "Cor",
-            object.color,
-            value=>{
-                object.color=value;
-                sceneRender();
-            }
-        )
-    );
-    if(object.type==="text"){
-        render.appendChild(
-            createField(
-                "Texto",
-                object.text,
-                value=>{
-                    object.text=value;
-                    sceneRender();
-                }
-            )
-        );
-    }
-    body.appendChild(render);
-    const actions=
-        document.createElement("div");
-    actions.className=
-        "inspector-buttons";
-    const duplicate=
-        document.createElement("button");
-    duplicate.textContent=
-        "DUPLICAR";
-    duplicate.onclick=
-        duplicateSelected;
-    const remove=
-        document.createElement("button");
-    remove.className="danger";
-    remove.textContent=
-        "EXCLUIR";
-    remove.onclick=
-        deleteSelected;
-    actions.append(
-        duplicate,
-        remove
-    );
-    body.appendChild(actions);
-}
-function duplicateSelected(){
-    if(sceneSelected.length!==1)
-        return;
-    const object=
-        sceneObjects.find(
-            x=>x.id===sceneSelected[0]
-        );
-    if(!object)return;
-    scenePushHistory();
-    const clone=
-        JSON.parse(
-            JSON.stringify(object)
-        );
-    clone.id=sceneId++;
-    clone.name=
-        object.name+
-        " cópia";
-    clone.x+=sceneGrid.size;
-    clone.y+=sceneGrid.size;
-    sceneObjects.push(clone);
-    sceneSelected=[
-        clone.id
-    ];
-    renderHierarchy();
-    renderInspector();
-    sceneRender();
-}
-function deleteSelected(){
-    if(!sceneSelected.length)
-        return;
-    scenePushHistory();
-    sceneObjects=
-        sceneObjects.filter(
-            object=>
-                !sceneSelected.includes(
-                    object.id
-                )
-        );
-    sceneSelected=[];
-    renderHierarchy();
-    renderInspector();
-    sceneRender();
-}
-/* SCENE ADD */
-$("sceneAddButton").onclick=()=>{
-    $("sceneAddMenu")
-        .classList.toggle("open");
-};
-$("sceneHierarchyAdd").onclick=()=>{
-    $("sceneAddMenu")
-        .classList.toggle("open");
-};
-document.querySelectorAll(
-    "#sceneAddMenu button"
-).forEach(button=>{
-    button.onclick=()=>{
-        addSceneObject(
-            button.dataset.type
-        );
-    };
-});
-$("sceneHierarchyButton").onclick=()=>{
-    $("sceneHierarchy")
-        .classList.toggle(
-            "mobile-open"
-        );
-    $("sceneInspector")
-        .classList.remove(
-            "mobile-open"
-        );
-};
-$("sceneInspectorButton").onclick=()=>{
-    $("sceneInspector")
-        .classList.toggle(
-            "mobile-open"
-        );
-    $("sceneHierarchy")
-        .classList.remove(
-            "mobile-open"
-        );
-};
-$("closeInspectorButton").onclick=()=>{
-    $("sceneInspector")
-        .classList.remove(
-            "mobile-open"
-        );
-};
-/* SCENE SAVE */
-function sceneData(){
-    return{
-        version:2,
-        camera:sceneCamera,
-        grid:sceneGrid,
-        snap:sceneSnap,
-        objects:sceneObjects
-    };
-}
-$("sceneSaveButton").onclick=()=>{
-    localStorage.setItem(
-        "myengine_scene",
-        JSON.stringify(
-            sceneData()
-        )
-    );
-    alert("Cena salva.");
-};
-$("sceneLoadButton").onclick=()=>{
-    const data=
-        safeJSON(
-            "myengine_scene",
-            null
-        );
-    if(!data){
-        alert(
-            "Nenhuma cena salva."
-        );
-        return;
-    }
-    sceneCamera=
-        data.camera||
-        {
-            x:0,
-            y:0,
-            zoom:1
-        };
+      };
+
     sceneGrid=
-        data.grid||
-        {
-            enabled:true,
-            size:32
-        };
+      s.grid||
+      {
+        enabled:true,
+        size:32
+      };
+
     sceneSnap=
-        data.snap!==undefined
-        ?
-        data.snap
-        :
-        true;
+      s.snap!==false;
+
     sceneObjects=
-        data.objects||[];
-    sceneSelected=[];
-    sceneId=
-        sceneObjects.reduce(
-            (max,object)=>
-                Math.max(
-                    max,
-                    object.id||0
-                ),
-            0
-        )+1;
+      s.objects||[];
+
+    sceneSelected=null;
+
     renderHierarchy();
     renderInspector();
     sceneRender();
-};
-$("sceneExportButton").onclick=()=>{
-    const blob=
-        new Blob(
-            [
-                JSON.stringify(
-                    sceneData(),
-                    null,
-                    2
-                )
-            ],
-            {
-                type:
-                    "application/json"
-            }
-        );
-    const url=
-        URL.createObjectURL(blob);
-    const link=
-        document.createElement("a");
-    link.href=url;
-    link.download=
-        "myengine_scene.json";
-    link.click();
-    URL.revokeObjectURL(url);
-};
-$("sceneImportButton").onclick=()=>{
-    const input=
-        document.createElement("input");
-    input.type="file";
-    input.accept=
-        ".json,application/json";
-    input.onchange=event=>{
-        const file=
-            event.target.files[0];
-        if(!file)return;
-        const reader=
-            new FileReader();
-        reader.onload=event=>{
-            try{
-                const data=
-                    JSON.parse(
-                        event.target.result
-                    );
-                sceneCamera=
-                    data.camera||
-                    {
-                        x:0,
-                        y:0,
-                        zoom:1
-                    };
-                sceneGrid=
-                    data.grid||
-                    {
-                        enabled:true,
-                        size:32
-                    };
-                sceneSnap=
-                    data.snap!==undefined
-                    ?
-                    data.snap
-                    :
-                    true;
-                sceneObjects=
-                    data.objects||[];
-                sceneSelected=[];
-                sceneId=
-                    sceneObjects.reduce(
-                        (max,object)=>
-                            Math.max(
-                                max,
-                                object.id||0
-                            ),
-                        0
-                    )+1;
-                renderHierarchy();
-                renderInspector();
-                sceneRender();
-            }catch{
-                alert(
-                    "Arquivo de cena inválido."
-                );
-            }
-        };
-        reader.readAsText(file);
-    };
-    input.click();
-};
-/* =========================================================
-   TILEMAP ENGINE
-========================================================= */
-const tileCanvas=$("tileCanvas");
-const tileCtx=tileCanvas.getContext("2d");
-const tilemapWrap=$("tilemapCanvasWrap");
-let tileSize=32;
-let tileZoom=1;
-let tileCamera={
-    x:0,
-    y:0
-};
-let tileGridVisible=true;
-let tileTool="paint";
-let selectedTile=1;
-let tileMap={};
-let tilePointers=new Map();
-let tileGesture=false;
-let tileStartDistance=0;
-let tileStartZoom=1;
-const tileColors=[
-    "#52a447",
-    "#7b4d2a",
-    "#4c8dcc",
-    "#d8c27a",
-    "#777777",
-    "#8b5a9d",
-    "#c85c5c",
-    "#4f9a45",
-    "#2f6b35",
-    "#c99442",
-    "#6b6b6b",
-    "#d9d9d9"
-];
-function tileResize(){
-    const rect=
-        tilemapWrap.getBoundingClientRect();
-    const dpr=
-        window.devicePixelRatio||1;
-    tileCanvas.width=
-        rect.width*dpr;
-    tileCanvas.height=
-        rect.height*dpr;
-    tileCanvas.style.width=
-        rect.width+"px";
-    tileCanvas.style.height=
-        rect.height+"px";
-    tileCtx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-    tileRender();
+
+  }catch{
+
+    alert("Cena inválida.");
+
+  }
+
 }
-function tileWorldToScreen(x,y){
-    return{
-        x:
-            tilemapWrap.clientWidth/2+
-            (
-                x-
-                tileCamera.x
-            )*
-            tileZoom,
-        y:
-            tilemapWrap.clientHeight/2+
-            (
-                y-
-                tileCamera.y
-            )*
-            tileZoom
-    };
-}
-function tileScreenToWorld(x,y){
-    return{
-        x:
-            tileCamera.x+
-            (
-                x-
-                tilemapWrap.clientWidth/2
-            )/
-            tileZoom,
-        y:
-            tileCamera.y+
-            (
-                y-
-                tilemapWrap.clientHeight/2
-            )/
-            tileZoom
-    };
-}
-function tileRender(){
-    const width=
-        tilemapWrap.clientWidth;
-    const height=
-        tilemapWrap.clientHeight;
-    tileCtx.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-    tileCtx.fillStyle=
-        "#111820";
-    tileCtx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-    const screenTile=
-        tileSize*
-        tileZoom;
-    /*
-       Tiles
-    */
-    Object.entries(tileMap)
-    .forEach(
-        ([key,tile])=>{
-            const parts=
-                key.split(",")
-                .map(Number);
-            const x=parts[0];
-            const y=parts[1];
-            const screen=
-                tileWorldToScreen(
-                    x*tileSize,
-                    y*tileSize
-                );
-            tileCtx.fillStyle=
-                tileColors[
-                    tile-1
-                ]||
-                "#777";
-            tileCtx.fillRect(
-                screen.x-
-                    screenTile/2,
-                screen.y-
-                    screenTile/2,
-                screenTile,
-                screenTile
-            );
-            tileCtx.strokeStyle=
-                "rgba(0,0,0,.25)";
-            tileCtx.strokeRect(
-                screen.x-
-                    screenTile/2,
-                screen.y-
-                    screenTile/2,
-                screenTile,
-                screenTile
-            );
-        }
-    );
-    /*
-       Grid
-    */
-    if(tileGridVisible){
-        if(screenTile>=5){
-            tileCtx.strokeStyle=
-                "rgba(255,255,255,.08)";
-            tileCtx.lineWidth=1;
-            const center=
-                tileWorldToScreen(
-                    0,
-                    0
-                );
-            tileCtx.beginPath();
-            for(
-                let x=center.x%screenTile;
-                x<width;
-                x+=screenTile
-            ){
-                tileCtx.moveTo(
-                    x,
-                    0
-                );
-                tileCtx.lineTo(
-                    x,
-                    height
-                );
-            }
-            for(
-                let y=center.y%screenTile;
-                y<height;
-                y+=screenTile
-            ){
-                tileCtx.moveTo(
-                    0,
-                    y
-                );
-                tileCtx.lineTo(
-                    width,
-                    y
-                );
-            }
-            tileCtx.stroke();
-        }
-    }
-    $("tileInfo").textContent=
-        "Tile: "+
-        selectedTile+
-        " | Zoom: "+
-        Math.round(
-            tileZoom*100
-        )+
-        "%";
-}
-function tileKey(x,y){
-    return x+","+y;
-}
-function tilePaintAt(event){
-    const rect=
-        tilemapWrap.getBoundingClientRect();
-    const world=
-        tileScreenToWorld(
-            event.clientX-
-                rect.left,
-            event.clientY-
-                rect.top
-        );
+
+
+/* =====================================================
+   SCENE TOUCH
+===================================================== */
+
+let scenePointer=null;
+
+sceneCanvas.addEventListener(
+  "pointerdown",
+  e=>{
+
+    const r=
+      sceneCanvas.getBoundingClientRect();
+
     const x=
-        Math.floor(
-            world.x/tileSize
-        );
+      sceneCamera.x+
+      (
+        e.clientX-
+        r.left-
+        r.width/2
+      )/
+      sceneCamera.zoom;
+
     const y=
-        Math.floor(
-            world.y/tileSize
-        );
-    const key=
-        tileKey(x,y);
-    if(tileTool==="erase"){
-        delete tileMap[key];
-    }else{
-        tileMap[key]=
-            selectedTile;
-    }
-    tileRender();
-}
-tileCanvas.addEventListener(
-    "pointerdown",
-    event=>{
-        event.preventDefault();
-        tileCanvas.setPointerCapture(
-            event.pointerId
-        );
-        tilePointers.set(
-            event.pointerId,
-            event
-        );
-        if(tilePointers.size>=2){
-            tileGesture=true;
-            const points=[
-                ...tilePointers.values()
-            ];
-            tileStartDistance=
-                Math.hypot(
-                    points[0].clientX-
-                    points[1].clientX,
-                    points[0].clientY-
-                    points[1].clientY
-                );
-            tileStartZoom=
-                tileZoom;
-            return;
-        }
-        if(tileTool==="paint" ||
-           tileTool==="erase"){
-            tilePaintAt(event);
-        }
-    },
-    {passive:false}
-);
-tileCanvas.addEventListener(
-    "pointermove",
-    event=>{
-        if(!tilePointers.has(
-            event.pointerId
-        )){
-            return;
-        }
-        tilePointers.set(
-            event.pointerId,
-            event
-        );
-        if(tilePointers.size>=2){
-            event.preventDefault();
-            const points=[
-                ...tilePointers.values()
-            ];
-            const distance=
-                Math.hypot(
-                    points[0].clientX-
-                    points[1].clientX,
-                    points[0].clientY-
-                    points[1].clientY
-                );
-            if(tileStartDistance){
-                tileZoom=
-                    Math.max(
-                        .25,
-                        Math.min(
-                            8,
-                            tileStartZoom*
-                            distance/
-                            tileStartDistance
-                        )
-                    );
-                tileRender();
-            }
-            return;
-        }
-        if(
-            tileTool==="paint" ||
-            tileTool==="erase"
-        ){
-            tilePaintAt(event);
-        }
-    },
-    {passive:false}
-);
-function tilePointerUp(event){
-    tilePointers.delete(
-        event.pointerId
-    );
-    if(tilePointers.size===0){
-        tileGesture=false;
-    }
-}
-tileCanvas.addEventListener(
-    "pointerup",
-    tilePointerUp
-);
-tileCanvas.addEventListener(
-    "pointercancel",
-    tilePointerUp
-);
-/* TILE PALETTE */
-function criarPaletaTiles(){
-    $("tileGrid").innerHTML="";
-    tileColors.forEach(
-        (color,index)=>{
-            const button=
-                document.createElement(
-                    "button"
-                );
-            button.className=
-                "tile-choice"+
-                (
-                    index+1===selectedTile
-                    ?
-                    " active"
-                    :
-                    ""
-                );
-            button.style.background=
-                color;
-            button.onclick=()=>{
-                selectedTile=
-                    index+1;
-                document.querySelectorAll(
-                    ".tile-choice"
-                ).forEach(
-                    x=>
-                        x.classList.remove(
-                            "active"
-                        )
-                );
-                button.classList.add(
-                    "active"
-                );
-                tileTool="paint";
-                $("tilePaintButton")
-                    .classList.add("active");
-                $("tileEraseButton")
-                    .classList.remove("active");
-                tileRender();
-            };
-            $("tileGrid")
-                .appendChild(button);
-        }
-    );
-}
-$("tilePaintButton").onclick=()=>{
-    tileTool="paint";
-    $("tilePaintButton")
-        .classList.add("active");
-    $("tileEraseButton")
-        .classList.remove("active");
-};
-$("tileEraseButton").onclick=()=>{
-    tileTool="erase";
-    $("tileEraseButton")
-        .classList.add("active");
-    $("tilePaintButton")
-        .classList.remove("active");
-};
-$("tileGridButton").onclick=()=>{
-    tileGridVisible=
-        !tileGridVisible;
-    tileRender();
-};
-$("tileZoomInButton").onclick=()=>{
-    tileZoom=
-        Math.min(
-            8,
-            tileZoom*1.25
-        );
-    tileRender();
-};
-$("tileZoomOutButton").onclick=()=>{
-    tileZoom=
-        Math.max(
-            .25,
-            tileZoom/1.25
-        );
-    tileRender();
-};
-$("tileResetButton").onclick=()=>{
-    tileCamera={
-        x:0,
-        y:0
-    };
-    tileZoom=1;
-    tileRender();
-};
-$("tileClearButton").onclick=()=>{
-    if(
-        confirm(
-            "Limpar todo o Tilemap?"
-        )
+      sceneCamera.y+
+      (
+        e.clientY-
+        r.top-
+        r.height/2
+      )/
+      sceneCamera.zoom;
+
+    for(
+      let i=sceneObjects.length-1;
+      i>=0;
+      i--
     ){
-        tileMap={};
-        tileRender();
+
+      const o=
+        sceneObjects[i];
+
+      if(
+        Math.abs(x-o.x)<=o.width/2 &&
+        Math.abs(y-o.y)<=o.height/2
+      ){
+
+        sceneSelected=o.id;
+
+        scenePointer={
+          id:o.id,
+          x,
+          y,
+          ox:o.x,
+          oy:o.y
+        };
+
+        renderHierarchy();
+        renderInspector();
+        sceneRender();
+
+        return;
+
+      }
+
     }
-};
-$("tileSaveButton").onclick=()=>{
-    localStorage.setItem(
-        "myengine_tilemap",
-        JSON.stringify({
-            tileMap:tileMap,
-            zoom:tileZoom,
-            camera:tileCamera
-        })
-    );
-    alert("Tilemap salvo.");
-};
-/*
-   Botão preencher:
-   preenche uma área simples de 10x10
-   ao redor do centro.
-*/
-$("tileFillButton").onclick=()=>{
-    for(let x=-5;x<5;x++){
-        for(let y=-5;y<5;y++){
-            tileMap[
-                tileKey(x,y)
-            ]=selectedTile;
-        }
-    }
-    tileRender();
-};
-criarPaletaTiles();
-/* =========================================================
-   INICIALIZAÇÃO
-========================================================= */
-function inicializar(){
-    atualizarLinhas();
-    carregarCodigos();
-    renderizarDicionario();
-    sceneResize();
-    tileResize();
-    aplicarArtCamera();
-}
-window.addEventListener(
-    "resize",
-    ()=>{
-        if(
-            $("scenePage")
-            .classList.contains("active")
-        ){
-            sceneResize();
-        }
-        if(
-            $("tilemapPage")
-            .classList.contains("active")
-        ){
-            tileResize();
-        }
-        if(
-            $("artPage")
-            .classList.contains("active")
-        ){
-            aplicarArtCamera();
-        }
-    }
+
+    sceneSelected=null;
+
+    renderHierarchy();
+    renderInspector();
+    sceneRender();
+
+  }
 );
-inicializar();
+
+sceneCanvas.addEventListener(
+  "pointermove",
+  e=>{
+
+    if(!scenePointer)return;
+
+    const r=
+      sceneCanvas.getBoundingClientRect();
+
+    const x=
+      sceneCamera.x+
+      (
+        e.clientX-
+        r.left-
+        r.width/2
+      )/
+      sceneCamera.zoom;
+
+    const y=
+      sceneCamera.y+
+      (
+        e.clientY-
+        r.top-
+        r.height/2
+      )/
+      sceneCamera.zoom;
+
+    const o=
+      sceneObjects.find(
+        x=>x.id===scenePointer.id
+      );
+
+    if(!o)return;
+
+    let nx=
+      scenePointer.ox+
+      x-
+      scenePointer.x;
+
+    let ny=
+      scenePointer.oy+
+      y-
+      scenePointer.y;
+
+    if(sceneSnap){
+
+      nx=
+        Math.round(
+          nx/sceneGrid.size
+        )*
+        sceneGrid.size;
+
+      ny=
+        Math.round(
+          ny/sceneGrid.size
+        )*
+        sceneGrid.size;
+
+    }
+
+    o.x=nx;
+    o.y=ny;
+
+    renderInspector();
+    sceneRender();
+
+  }
+);
+
+sceneCanvas.addEventListener(
+  "pointerup",
+  ()=>{
+    scenePointer=null;
+  }
+);
+
+
+/* =====================================================
+   TILEMAP
+===================================================== */
+
+const tmCanvas=$("tmCanvas");
+const tmCtx=
+  tmCanvas.getContext("2d");
+
+let tmZoom=1;
+let tmGrid=true;
+let tmModeNow="paint";
+let tmTile=0;
+let tmMap=new Map();
+
+const tmPalette=[
+  "🟩",
+  "🟫",
+  "🟦",
+  "🟨",
+  "🟪",
+  "⬛",
+  "⬜",
+  "🟥",
+  "🟧",
+  "🌿",
+  "🪨",
+  "💧"
+];
+
+function tmResize(){
+
+  const r=
+    tmCanvas.parentElement
+      .getBoundingClientRect();
+
+  const d=
+    devicePixelRatio||1;
+
+  tmCanvas.width=r.width*d;
+  tmCanvas.height=r.height*d;
+
+  tmCtx.setTransform(
+    d,0,0,d,0,0
+  );
+
+  tmRender();
+
+}
+
+function tmRender(){
+
+  const w=
+    tmCanvas.clientWidth;
+
+  const h=
+    tmCanvas.clientHeight;
+
+  tmCtx.clearRect(
+    0,0,w,h
+  );
+
+  tmCtx.fillStyle="#12161b";
+
+  tmCtx.fillRect(
+    0,0,w,h
+  );
+
+  const s=
+    32*tmZoom;
+
+  const ox=w/2;
+  const oy=h/2;
+
+  tmMap.forEach((tile,key)=>{
+
+    const [x,y]=
+      key.split(",")
+        .map(Number);
+
+    const colors=[
+      "#4f9a45",
+      "#795548",
+      "#2979ff",
+      "#e2bd42",
+      "#8050a5",
+      "#222",
+      "#ddd",
+      "#b64d4d",
+      "#c87535",
+      "#6ba34a",
+      "#777",
+      "#3988d4"
+    ];
+
+    tmCtx.fillStyle=
+      colors[tile];
+
+    tmCtx.fillRect(
+      ox+x*s,
+      oy+y*s,
+      s,
+      s
+    );
+
+  });
+
+  if(tmGrid){
+
+    tmCtx.strokeStyle=
+      "rgba(255,255,255,.08)";
+
+    tmCtx.beginPath();
+
+    for(
+      let x=ox%s;
+      x<w;
+      x+=s
+    ){
+
+      tmCtx.moveTo(x,0);
+      tmCtx.lineTo(x,h);
+
+    }
+
+    for(
+      let y=oy%s;
+      y<h;
+      y+=s
+    ){
+
+      tmCtx.moveTo(0,y);
+      tmCtx.lineTo(w,y);
+
+    }
+
+    tmCtx.stroke();
+
+  }
+
+  $("tmHud").textContent=
+    "Tile: "+
+    (tmTile+1)+
+    " | Zoom: "+
+    Math.round(tmZoom*100)+
+    "%";
+
+}
+
+function tmPaintAt(e){
+
+  const r=
+    tmCanvas.getBoundingClientRect();
+
+  const s=
+    32*tmZoom;
+
+  const x=
+    Math.floor(
+      (
+        e.clientX-
+        r.left-
+        r.width/2
+      )/s
+    );
+
+  const y=
+    Math.floor(
+      (
+        e.clientY-
+        r.top-
+        r.height/2
+      )/s
+    );
+
+  const key=
+    x+","+y;
+
+  if(tmModeNow==="erase")
+    tmMap.delete(key);
+  else
+    tmMap.set(key,tmTile);
+
+  tmRender();
+
+}
+
+tmCanvas.addEventListener(
+  "pointerdown",
+  e=>{
+    tmPaintAt(e);
+    tmCanvas.setPointerCapture?.(
+      e.pointerId
+    );
+  }
+);
+
+tmCanvas.addEventListener(
+  "pointermove",
+  e=>{
+    if(e.buttons)
+      tmPaintAt(e);
+  }
+);
+
+function tmMode(m){
+
+  tmModeNow=m;
+
+  document
+    .querySelectorAll(".tm-toolbar button")
+    .forEach(b=>b.classList.remove("active"));
+
+  if(m==="paint")
+    $("tmPaint")
+      .classList.add("active");
+
+}
+
+function tmToggleGrid(){
+
+  tmGrid=!tmGrid;
+
+  tmRender();
+
+}
+
+function tmZoomIn(){
+
+  tmZoom=
+    Math.min(
+      5,
+      tmZoom*1.2
+    );
+
+  tmRender();
+
+}
+
+function tmZoomOut(){
+
+  tmZoom=
+    Math.max(
+      .4,
+      tmZoom/1.2
+    );
+
+  tmRender();
+
+}
+
+function tmClear(){
+
+  if(confirm("Limpar tilemap?")){
+
+    tmMap.clear();
+
+    tmRender();
+
+  }
+
+}
+
+function tmSave(){
+
+  localStorage.setItem(
+    "myengine_tilemap",
+    JSON.stringify(
+      [...tmMap]
+    )
+  );
+
+  alert("Tilemap salvo.");
+
+}
+
+function initTiles(){
+
+  const grid=
+    $("tileGrid");
+
+  grid.innerHTML="";
+
+  tmPalette.forEach(
+    (tile,index)=>{
+
+      const b=
+        document.createElement("button");
+
+      b.className=
+        "tile-choice"+
+        (
+          index===0
+            ?" active"
+            :""
+        );
+
+      b.textContent=tile;
+
+      b.onclick=()=>{
+
+        tmTile=index;
+
+        document
+          .querySelectorAll(
+            ".tile-choice"
+          )
+          .forEach(
+            x=>x.classList.remove(
+              "active"
+            )
+          );
+
+        b.classList.add("active");
+
+        tmMode("paint");
+
+      };
+
+      grid.appendChild(b);
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   ASSETS
+===================================================== */
+
+const defaultFolders=[
+
+  {
+    id:"textures",
+    name:"Textures",
+    icon:"📁"
+  },
+
+  {
+    id:"sprites",
+    name:"Sprites",
+    icon:"📁"
+  },
+
+  {
+    id:"tiles",
+    name:"Tiles",
+    icon:"📁"
+  },
+
+  {
+    id:"audio",
+    name:"Audio",
+    icon:"📁"
+  },
+
+  {
+    id:"fonts",
+    name:"Fonts",
+    icon:"📁"
+  },
+
+  {
+    id:"scenes",
+    name:"Scenes",
+    icon:"📁"
+  }
+
+];
+
+let assetsFolders=[];
+let assetsFiles=[];
+let assetsPath=[];
+let assetContextId=null;
+
+function loadAssets(){
+
+  try{
+
+    assetsFolders=
+      JSON.parse(
+        localStorage.getItem(
+          "myengine_asset_folders"
+        )
+      ) || [...defaultFolders];
+
+    assetsFiles=
+      JSON.parse(
+        localStorage.getItem(
+          "myengine_assets"
+        )
+      ) || [];
+
+  }catch{
+
+    assetsFolders=
+      [...defaultFolders];
+
+    assetsFiles=[];
+
+  }
+
+}
+
+function saveAssets(){
+
+  localStorage.setItem(
+    "myengine_asset_folders",
+    JSON.stringify(
+      assetsFolders
+    )
+  );
+
+  localStorage.setItem(
+    "myengine_assets",
+    JSON.stringify(
+      assetsFiles
+    )
+  );
+
+}
+
+function currentFolder(){
+
+  return assetsPath.length
+    ? assetsPath[
+        assetsPath.length-1
+      ].id
+    : "root";
+
+}
+
+function renderAssets(){
+
+  const q=
+    (
+      $("assetsSearch")
+        .value||
+      ""
+    )
+    .toLowerCase();
+
+  const parent=
+    currentFolder();
+
+  $("assetsBreadcrumb")
+    .innerHTML=
+      '<button class="crumb" onclick="assetsGoRoot()">📦 Assets</button>'+
+      assetsPath
+        .map(
+          (p,i)=>
+            '<span>›</span>'+
+            '<button class="crumb" onclick="assetsGoIndex('+i+')">'+
+            p.name+
+            '</button>'
+        )
+        .join("");
+
+  const folders=
+    assetsFolders.filter(
+      f=>
+        (f.parent||"root")===parent &&
+        f.name.toLowerCase()
+          .includes(q)
+    );
+
+  const files=
+    assetsFiles.filter(
+      f=>
+        (f.parent||"root")===parent &&
+        f.name.toLowerCase()
+          .includes(q)
+    );
+
+  $("folderGrid").innerHTML="";
+
+  folders.forEach(f=>{
+
+    const d=
+      document.createElement("div");
+
+    d.className="folder-card";
+
+    d.onclick=()=>{
+      openAssetFolder(f);
+    };
+
+    d.innerHTML=`
+
+      <div class="folder-icon">
+        ${f.icon}
+      </div>
+
+      <div class="folder-name">
+        ${escapeHTML(f.name)}
+      </div>
+
+      <div class="folder-meta">
+        ${
+          assetsFiles.filter(
+            x=>
+              (x.parent||"root")===f.id
+          ).length
+        } itens
+      </div>
+
+      <button
+        class="folder-more"
+        onclick="event.stopPropagation();folderActions('${f.id}')">
+        •••
+      </button>
+
+    `;
+
+    $("folderGrid")
+      .appendChild(d);
+
+  });
+
+  $("assetGrid").innerHTML="";
+
+  files.forEach(f=>{
+
+    const d=
+      document.createElement("div");
+
+    d.className="asset-card";
+
+    let preview="📄";
+
+    if(
+      f.data &&
+      f.mime &&
+      f.mime.startsWith("image/")
+    ){
+
+      preview=
+        '<img src="'+
+        f.data+
+        '">';
+
+    }else if(f.type==="audio"){
+
+      preview="🎵";
+
+    }else if(f.type==="tile"){
+
+      preview="🧱";
+
+    }else if(f.type==="font"){
+
+      preview="🔤";
+
+    }else if(f.type==="texture"){
+
+      preview="🎨";
+
+    }else if(f.type==="sprite"){
+
+      preview="🖼️";
+
+    }
+
+    d.innerHTML=`
+
+      <div class="asset-preview">
+        ${preview}
+      </div>
+
+      <div class="asset-info">
+
+        <div class="asset-name">
+          ${escapeHTML(f.name)}
+        </div>
+
+        <div class="asset-type">
+          ${escapeHTML(
+            f.mime||
+            f.type||
+            "asset"
+          )}
+        </div>
+
+      </div>
+
+      <button
+        class="asset-menu"
+        onclick="event.stopPropagation();openAssetContext(event,'${f.id}')">
+        •••
+      </button>
+
+    `;
+
+    d.onclick=()=>{
+      openAssetFile(f);
+    };
+
+    $("assetGrid")
+      .appendChild(d);
+
+  });
+
+  const total=
+    folders.length+
+    files.length;
+
+  $("assetsCount").textContent=
+    total+
+    (
+      total===1
+        ?" item"
+        :" itens"
+    );
+
+  if(
+    !folders.length &&
+    !files.length
+  ){
+
+    $("assetGrid").innerHTML=
+      `
+      <div
+        class="assets-empty"
+        style="
+          grid-column:1/-1;
+          text-align:center;
+          padding:40px;
+          color:#666;
+        ">
+        📂<br><br>
+        Nada encontrado nesta pasta.
+      </div>
+      `;
+
+  }
+
+}
+
+function escapeHTML(text){
+
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+function openAssetFolder(folder){
+
+  assetsPath.push(folder);
+
+  renderAssets();
+
+}
+
+function assetsGoRoot(){
+
+  assetsPath=[];
+
+  renderAssets();
+
+}
+
+function assetsGoIndex(index){
+
+  assetsPath=
+    assetsPath.slice(
+      0,
+      index+1
+    );
+
+  renderAssets();
+
+}
+
+function abrirImportAssets(){
+
+  $("assetFileInput").click();
+
+}
+
+function importarArquivos(e){
+
+  const files=
+    [...e.target.files];
+
+  files.forEach(file=>{
+
+    const reader=
+      new FileReader();
+
+    reader.onload=
+      event=>{
+
+        let type="data";
+
+        if(
+          file.type.startsWith(
+            "image/"
+          )
+        ){
+
+          type="sprite";
+
+        }else if(
+          file.type.startsWith(
+            "audio/"
+          )
+        ){
+
+          type="audio";
+
+        }
+
+        assetsFiles.push({
+
+          id:
+            "a"+
+            Date.now()+
+            Math.random(),
+
+          name:file.name,
+
+          parent:
+            currentFolder(),
+
+          type:type,
+
+          mime:file.type,
+
+          size:file.size,
+
+          data:
+            file.type.startsWith(
+              "image/"
+            )
+              ?event.target.result
+              :null
+
+        });
+
+        saveAssets();
+
+        renderAssets();
+
+      };
+
+    if(
+      file.type.startsWith(
+        "image/"
+      )
+    ){
+
+      reader.readAsDataURL(file);
+
+    }else{
+
+      reader.readAsArrayBuffer(file);
+
+    }
+
+  });
+
+  e.target.value="";
+
+}
+
+function abrirNovoAsset(){
+
+  $("assetNameInput").value="";
+
+  $("assetsModal")
+    .classList.add("open");
+
+}
+
+function fecharAssetsModal(){
+
+  $("assetsModal")
+    .classList.remove("open");
+
+}
+
+function confirmarNovoAsset(){
+
+  const name=
+    $("assetNameInput")
+      .value
+      .trim() ||
+    "Novo Asset";
+
+  assetsFiles.push({
+
+    id:
+      "a"+
+      Date.now(),
+
+    name:name,
+
+    parent:
+      currentFolder(),
+
+    type:
+      $("assetTypeInput").value,
+
+    mime:
+      "application/myengine"
+
+  });
+
+  saveAssets();
+
+  fecharAssetsModal();
+
+  renderAssets();
+
+}
+
+function abrirNovaPasta(){
+
+  $("folderNameInput").value="";
+
+  $("folderModal")
+    .classList.add("open");
+
+}
+
+function fecharFolderModal(){
+
+  $("folderModal")
+    .classList.remove("open");
+
+}
+
+function confirmarNovaPasta(){
+
+  const name=
+    $("folderNameInput")
+      .value
+      .trim();
+
+  if(!name)return;
+
+  assetsFolders.push({
+
+    id:
+      "f"+
+      Date.now(),
+
+    name:name,
+
+    parent:
+      currentFolder(),
+
+    icon:"📁"
+
+  });
+
+  saveAssets();
+
+  fecharFolderModal();
+
+  renderAssets();
+
+}
+
+function openAssetContext(e,id){
+
+  assetContextId=id;
+
+  const menu=
+    $("assetContext");
+
+  menu.style.left=
+    Math.min(
+      e.clientX,
+      window.innerWidth-190
+    )+"px";
+
+  menu.style.top=
+    Math.min(
+      e.clientY,
+      window.innerHeight-200
+    )+"px";
+
+  menu.classList.add("open");
+
+}
+
+document.addEventListener(
+  "pointerdown",
+  e=>{
+
+    const menu=
+      $("assetContext");
+
+    if(
+      menu.classList.contains("open") &&
+      !menu.contains(e.target)
+    ){
+
+      menu.classList.remove("open");
+
+    }
+
+  }
+);
+
+function contextOpen(){
+
+  const f=
+    assetsFiles.find(
+      x=>x.id===assetContextId
+    );
+
+  $("assetContext")
+    .classList.remove("open");
+
+  if(f)
+    openAssetFile(f);
+
+}
+
+function openAssetFile(f){
+
+  if(
+    f.data &&
+    f.mime &&
+    f.mime.startsWith("image/")
+  ){
+
+    const w=
+      window.open();
+
+    if(w){
+
+      w.document.write(
+        `
+        <html>
+        <head>
+        <title>${escapeHTML(f.name)}</title>
+        </head>
+        <body style="
+          margin:0;
+          background:#111;
+          display:grid;
+          place-items:center;
+          height:100vh;
+        ">
+        <img
+          src="${f.data}"
+          style="
+            max-width:100%;
+            max-height:100%;
+            object-fit:contain;
+          ">
+        </body>
+        </html>
+        `
+      );
+
+    }
+
+    return;
+
+  }
+
+  alert(
+    f.name+
+    "\nTipo: "+
+    (f.mime||f.type)
+  );
+
+}
+
+function contextRename(){
+
+  const f=
+    assetsFiles.find(
+      x=>x.id===assetContextId
+    );
+
+  $("assetContext")
+    .classList.remove("open");
+
+  if(!f)return;
+
+  const name=
+    prompt(
+      "Novo nome",
+      f.name
+    );
+
+  if(name && name.trim()){
+
+    f.name=name.trim();
+
+    saveAssets();
+
+    renderAssets();
+
+  }
+
+}
+
+function contextDuplicate(){
+
+  const f=
+    assetsFiles.find(
+      x=>x.id===assetContextId
+    );
+
+  $("assetContext")
+    .classList.remove("open");
+
+  if(!f)return;
+
+  assetsFiles.push({
+
+    ...f,
+
+    id:
+      "a"+
+      Date.now(),
+
+    name:
+      f.name.replace(
+        /(\.[^.]+)?$/,
+        "_copia$1"
+      )
+
+  });
+
+  saveAssets();
+
+  renderAssets();
+
+}
+
+function contextDelete(){
+
+  const f=
+    assetsFiles.find(
+      x=>x.id===assetContextId
+    );
+
+  $("assetContext")
+    .classList.remove("open");
+
+  if(!f)return;
+
+  if(
+    confirm(
+      "Excluir "+
+      f.name+
+      "?"
+    )
+  ){
+
+    assetsFiles=
+      assetsFiles.filter(
+        x=>x.id!==f.id
+      );
+
+    saveAssets();
+
+    renderAssets();
+
+  }
+
+}
+
+function folderActions(id){
+
+  const f=
+    assetsFolders.find(
+      x=>x.id===id
+    );
+
+  if(!f)return;
+
+  const action=
+    prompt(
+      "Digite:\n"+
+      "abrir\n"+
+      "renomear\n"+
+      "excluir",
+      "abrir"
+    );
+
+  if(action==="abrir"){
+
+    openAssetFolder(f);
+
+  }else if(action==="renomear"){
+
+    const name=
+      prompt(
+        "Novo nome",
+        f.name
+      );
+
+    if(name && name.trim()){
+
+      f.name=name.trim();
+
+      saveAssets();
+
+      renderAssets();
+
+    }
+
+  }else if(action==="excluir"){
+
+    if(
+      confirm(
+        "Excluir a pasta "+
+        f.name+
+        "?"
+      )
+    ){
+
+      assetsFolders=
+        assetsFolders.filter(
+          x=>x.id!==id
+        );
+
+      assetsFiles=
+        assetsFiles.filter(
+          x=>x.parent!==id
+        );
+
+      saveAssets();
+
+      renderAssets();
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   DICTIONARY
+===================================================== */
+
+const comandosDicionario=[
+
+  ["Saída","manda o papo","std::cout"],
+
+  ["Saída","qual foi","std::cerr"],
+
+  ["Saída","endl","std::endl"],
+
+  ["Entrada","visao","std::cin"],
+
+  ["Entrada","abraça o papo","std::getline"],
+
+  ["Tipos","numero","int"],
+
+  ["Tipos","decimal","float"],
+
+  ["Tipos","decimal^","double"],
+
+  ["Tipos","letra","char"],
+
+  ["Tipos","txt","std::string"],
+
+  ["Tipos","tlgd","bool"],
+
+  ["Operadores","+=","+="],
+
+  ["Operadores","-=","-="],
+
+  ["Operadores","*=","*="],
+
+  ["Operadores","/=","/="],
+
+  ["Operadores","resto da divisao","%"]
+
+];
+
+function renderizarDicionario(filtro=""){
+
+  const lista=
+    $("dictionaryList");
+
+  lista.innerHTML="";
+
+  let categoria="";
+
+  comandosDicionario
+    .filter(x=>
+      (
+        x[1]+" "+x[2]
+      )
+      .toLowerCase()
+      .includes(
+        filtro.toLowerCase()
+      )
+    )
+    .forEach(x=>{
+
+      if(x[0]!==categoria){
+
+        categoria=x[0];
+
+        const title=
+          document.createElement(
+            "div"
+          );
+
+        title.className=
+          "dictionary-category";
+
+        title.textContent=
+          categoria;
+
+        lista.appendChild(title);
+
+      }
+
+      const item=
+        document.createElement(
+          "div"
+        );
+
+      item.className=
+        "dictionary-item";
+
+      item.innerHTML=`
+
+        <span class="dictionary-command">
+          ${escapeHTML(x[1])}
+        </span>
+
+        <span class="dictionary-arrow">
+          →
+        </span>
+
+        <span class="dictionary-name">
+          ${escapeHTML(x[2])}
+        </span>
+
+      `;
+
+      lista.appendChild(item);
+
+    });
+
+}
+
+function filtrarDicionario(){
+
+  renderizarDicionario(
+    $("dictionarySearch").value
+  );
+
+}
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+atualizarLinhas();
+
+carregarCodigos();
+
+renderizarDicionario();
+
+loadAssets();
+
+initTiles();
+
+sceneResize();
+
+tmResize();
+
+window.addEventListener(
+  "resize",
+  ()=>{
+
+    if(
+      $("artPage")
+        .classList
+        .contains("active")
+    ){
+
+      aplicarArtCamera();
+
+    }
+
+    if(
+      $("scenePage")
+        .classList
+        .contains("active")
+    ){
+
+      sceneResize();
+
+    }
+
+    if(
+      $("tilemapPage")
+        .classList
+        .contains("active")
+    ){
+
+      tmResize();
+
+    }
+
+  }
+);
+
 </script>
+
 </body>
+</html>
