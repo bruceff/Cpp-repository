@@ -2,8 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>My Engine</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>Snake Forge</title>
 
 <style>
 *{
@@ -15,1826 +17,571 @@ html,body{
   margin:0;
   width:100%;
   height:100%;
-  background:#0c0c0c;
-  color:#fff;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#0b0d10;
+  color:#f1f3f5;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   overflow:hidden;
 }
 
-body{
-  padding-top:env(safe-area-inset-top);
-}
-
 button{
+  font:inherit;
   border:0;
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-  font-family:inherit;
-  -webkit-appearance:none;
-  appearance:none;
-  touch-action:manipulation;
+  color:inherit;
 }
 
-button:disabled{
-  opacity:.5;
-}
-
-input,textarea,select{
-  font-family:inherit;
-  -webkit-appearance:none;
-  appearance:none;
-}
-
-.page{
-  display:none;
-  height:calc(100vh - 60px);
-  overflow:auto;
-  -webkit-overflow-scrolling:touch;
-}
-
-.page.active{
-  display:block;
+.app{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
 }
 
 /* HEADER */
 
 .header{
-  height:60px;
+  height:64px;
+  min-height:64px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #20242a;
+  background:#0d1014;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+
+.logo{
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  background:#171b20;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#111;
-  border-bottom:1px solid #292929;
-  font-size:20px;
-  font-weight:900;
-  position:relative;
-  z-index:500;
 }
 
-.menu-button{
-  position:absolute;
-  left:9px;
-  top:9px;
-  width:42px;
-  height:42px;
-  border-radius:10px;
-  background:#202020;
-  border:1px solid #333;
-  font-size:22px;
+.logo svg{
+  width:19px;
+  height:19px;
+  stroke:#8ee35d;
+  fill:none;
+  stroke-width:2;
 }
 
-.side-menu{
-  position:fixed;
-  left:-285px;
-  top:0;
-  width:280px;
-  height:100%;
-  background:#111;
-  border-right:1px solid #333;
-  z-index:1000;
-  transition:left .22s ease;
-  padding-top:65px;
-  box-shadow:10px 0 30px rgba(0,0,0,.55);
-}
-
-.side-menu.open{
-  left:0;
-}
-
-.menu-overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  z-index:999;
-}
-
-.menu-overlay.open{
-  display:block;
-}
-
-.menu-title{
-  padding:15px 20px;
-  font-size:11px;
-  color:#666;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.menu-item{
-  width:100%;
-  min-height:51px;
-  padding:0 20px;
+.menu{
+  width:38px;
+  height:38px;
+  border-radius:9px;
+  background:transparent;
   display:flex;
   align-items:center;
-  gap:13px;
-  background:transparent;
-  border-bottom:1px solid #222;
-  color:#aaa;
-  text-align:left;
+  justify-content:center;
+}
+
+.menu:active{
+  background:#1a1e23;
+}
+
+.menu svg{
+  width:21px;
+  height:21px;
+  stroke:#aeb4bb;
+}
+
+/* CONTENT */
+
+.content{
+  flex:1;
+  overflow-y:auto;
+  padding:28px 18px 100px;
+}
+
+.welcome{
+  margin-bottom:25px;
+}
+
+.welcome h1{
+  margin:0 0 7px;
+  font-size:27px;
+  line-height:1.1;
+  font-weight:700;
+}
+
+.welcome p{
+  margin:0;
+  color:#858c95;
   font-size:14px;
 }
 
-.menu-item.active{
-  background:#2878ff;
-  color:#fff;
-}
+/* NEW PROJECT */
 
-/* HOME */
-
-.home{
-  padding:20px;
-}
-
-.hero{
-  padding:24px;
-  border:1px solid #292929;
-  border-radius:16px;
-  background:linear-gradient(145deg,#181818,#101010);
-  margin-bottom:14px;
-}
-
-.hero h1{
-  margin:0 0 7px;
-  font-size:28px;
-}
-
-.hero p{
-  margin:0;
-  color:#777;
-  line-height:1.5;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-}
-
-.card{
-  min-height:115px;
-  padding:15px;
-  border:1px solid #292929;
-  border-radius:13px;
-  background:#171717;
-  cursor:pointer;
-  transition:transform .12s,background .12s;
-}
-
-.card:active{
-  transform:scale(.98);
-  background:#202020;
-}
-
-.card-icon{
-  font-size:25px;
-  margin-bottom:7px;
-}
-
-.card-title{
-  font-weight:900;
-}
-
-.card-description{
-  margin-top:5px;
-  color:#777;
-  font-size:11px;
-}
-
-/* GENERIC */
-
-.module-page{
-  padding:20px;
-}
-
-.module-header{
-  padding:20px;
-  background:#171717;
-  border:1px solid #292929;
-  border-radius:14px;
-  margin-bottom:15px;
-}
-
-.module-header h1{
-  margin:0 0 7px;
-}
-
-.module-header p{
-  margin:0;
-  color:#777;
-}
-
-.coming-soon{
-  padding:30px;
-  text-align:center;
-  background:#121212;
-  border:1px dashed #333;
-  border-radius:13px;
-  color:#777;
-}
-
-/* CODE */
-
-.editor-area{
-  padding:15px;
-}
-
-.label{
-  color:#888;
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:7px;
-}
-
-.editor-wrapper{
-  display:flex;
-  height:42vh;
-  min-height:280px;
-  overflow:hidden;
-  border:1px solid #333;
-  border-radius:10px;
-  background:#181818;
-}
-
-.line-numbers{
-  flex:0 0 43px;
-  width:43px;
-  padding:15px 8px 15px 0;
-  background:#151515;
-  color:#666;
-  text-align:right;
-  font:15px/1.5 monospace;
-  overflow:hidden;
-  user-select:none;
-}
-
-.editor{
+.new-project{
   width:100%;
-  height:100%;
-  resize:none;
-  outline:0;
-  border:0;
-  padding:15px;
-  background:#181818;
-  color:#f4f4f4;
-  font:15px/1.5 monospace;
-  white-space:pre;
-  overflow:auto;
-}
-
-.buttons{
-  display:flex;
-  gap:7px;
-  padding:0 15px 15px;
-}
-
-.buttons button{
-  flex:1;
-  min-height:45px;
-  border-radius:9px;
-}
-
-.run{background:#20c968}
-.input-button{background:#8e44ad}
-.save{background:#2878ff}
-.clear{background:#292929}
-
-.translation-area,
-.terminal-area,
-.saved-area{
-  padding:0 15px 18px;
-}
-
-.translation,
-.terminal{
-  min-height:130px;
-  padding:14px;
-  border-radius:9px;
-  border:1px solid #292929;
-  font:13px/1.5 monospace;
-  white-space:pre-wrap;
-  overflow:auto;
-}
-
-.translation{
-  background:#080808;
-  color:#8ab4ff;
-}
-
-.terminal{
-  background:#030303;
-  color:#00ff66;
-}
-
-.input-area{
-  display:none;
-  margin-top:8px;
-}
-
-.stdin-input{
-  width:100%;
-  min-height:90px;
-  padding:12px;
-  background:#0b0b0b;
-  color:#fff;
-  border:1px solid #333;
-  border-radius:8px;
-  outline:0;
-  font:14px monospace;
-  resize:vertical;
-}
-
-.status{
-  color:#777;
-  font-size:11px;
-  margin-top:6px;
-}
-
-.saved-title{
-  display:flex;
-  justify-content:space-between;
-  color:#888;
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:8px;
-}
-
-.saved-list{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
-
-.saved-item{
+  height:62px;
+  border-radius:12px;
+  background:#8ee35d;
+  color:#091006;
   display:flex;
   align-items:center;
-  gap:8px;
-  padding:10px;
-  background:#181818;
-  border:1px solid #292929;
-  border-radius:9px;
+  justify-content:center;
+  gap:10px;
+  font-size:15px;
+  font-weight:700;
+  box-shadow:0 8px 25px rgba(142,227,93,.08);
+  transition:.15s;
 }
 
-.saved-name{
+.new-project:active{
+  transform:scale(.98);
+  background:#7bd94d;
+}
+
+.new-project svg{
+  width:21px;
+  height:21px;
+  stroke:#091006;
+}
+
+/* SECTIONS */
+
+.section{
+  margin-top:34px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:13px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:12px;
+  letter-spacing:1.2px;
+  color:#747b84;
+  font-weight:700;
+}
+
+.section-title button{
+  background:none;
+  color:#8ee35d;
+  font-size:12px;
+  font-weight:600;
+}
+
+/* PROJECT CARD */
+
+.project{
+  width:100%;
+  min-height:88px;
+  padding:16px;
+  border:1px solid #22272e;
+  border-radius:13px;
+  background:#111419;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-align:left;
+  transition:.15s;
+}
+
+.project:active{
+  transform:scale(.985);
+  background:#15191e;
+}
+
+.project-icon{
+  width:49px;
+  height:49px;
+  flex-shrink:0;
+  border-radius:11px;
+  background:#191e24;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.project-icon svg{
+  width:24px;
+  height:24px;
+  stroke:#8ee35d;
+}
+
+.project-info{
+  min-width:0;
   flex:1;
+}
+
+.project-name{
+  font-size:15px;
+  font-weight:650;
+  margin-bottom:6px;
+  white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  white-space:nowrap;
 }
 
-.saved-actions{
-  display:flex;
-  gap:5px;
+.project-meta{
+  font-size:12px;
+  color:#737a83;
 }
 
-.saved-actions button{
-  min-height:32px;
-  padding:6px 9px;
-  border-radius:7px;
-  font-size:10px;
+.project-arrow{
+  width:18px;
+  height:18px;
+  stroke:#626971;
+  flex-shrink:0;
 }
 
-.open-btn{background:#333}
-.delete-btn{background:#8f2525}
+/* EMPTY */
 
-/* ART */
-
-.art-page{
-  padding:10px;
-}
-
-.art-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:8px;
-}
-
-.art-title{
-  font-size:18px;
-  font-weight:900;
-}
-
-.art-size{
-  color:#777;
-  font-size:11px;
-}
-
-.art-toolbar{
-  display:flex;
-  gap:6px;
-  overflow-x:auto;
-  padding:7px;
-  background:#151515;
-  border:1px solid #292929;
-  border-radius:11px;
-}
-
-.tool{
-  flex:0 0 46px;
-  height:43px;
-  background:#202020;
-  border:1px solid #333;
-  border-radius:8px;
-}
-
-.tool.active{
-  background:#2878ff;
-}
-
-.canvas-area{
-  position:relative;
-  width:100%;
-  height:58vh;
-  min-height:370px;
-  margin-top:8px;
-  overflow:hidden;
-  background:#fff;
-  border:1px solid #292929;
+.empty{
+  padding:30px 15px;
+  border:1px dashed #272c33;
   border-radius:13px;
-  touch-action:none;
-}
-
-#artCanvas{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  image-rendering:pixelated;
-  touch-action:none;
-  background:#fff;
-}
-
-.canvas-info{
-  position:absolute;
-  left:8px;
-  bottom:8px;
-  padding:6px 8px;
-  background:rgba(0,0,0,.7);
-  border-radius:6px;
-  font:10px monospace;
-}
-
-.art-controls{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
-  margin-top:8px;
-}
-
-.control-box{
-  padding:10px;
-  background:#151515;
-  border:1px solid #292929;
-  border-radius:9px;
-}
-
-.control-label{
-  display:block;
-  color:#888;
-  font-size:10px;
-  font-weight:800;
-  margin-bottom:7px;
-}
-
-input[type=color]{
-  width:100%;
-  height:38px;
-}
-
-input[type=range]{
-  width:100%;
-}
-
-.art-actions{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  margin-top:8px;
-}
-
-.art-action{
-  background:#202020;
-  border:1px solid #333;
-  border-radius:8px;
-  min-height:41px;
-  font-size:10px;
-}
-
-.art-action.primary{
-  background:#2878ff;
-}
-
-/* SCENE */
-
-.scene-page{
-  position:relative;
-  height:calc(100vh - 60px);
-  background:#0a0d10;
-  overflow:hidden;
-}
-
-.scene-world{
-  position:absolute;
-  inset:0;
-}
-
-#sceneCanvas{
-  display:block;
-  width:100%;
-  height:100%;
-  touch-action:none;
-}
-
-.scene-toolbar{
-  position:absolute;
-  top:8px;
-  left:8px;
-  right:8px;
-  height:48px;
-  display:flex;
-  gap:5px;
-  align-items:center;
-  padding:5px;
-  overflow-x:auto;
-  background:rgba(18,18,20,.95);
-  border:1px solid #303030;
-  border-radius:11px;
-  z-index:50;
-}
-
-.scene-toolbar button{
-  flex:0 0 auto;
-  height:36px;
-  padding:0 10px;
-  border-radius:7px;
-  background:#232323;
-  border:1px solid #363636;
-}
-
-.scene-toolbar button.active{
-  background:#2878ff;
-}
-
-.scene-hierarchy,
-.scene-inspector{
-  position:absolute;
-  top:65px;
-  bottom:8px;
-  width:220px;
-  background:rgba(17,17,17,.96);
-  border:1px solid #333;
-  border-radius:11px;
-  z-index:60;
-  overflow:auto;
-}
-
-.scene-hierarchy{
-  left:8px;
-}
-
-.scene-inspector{
-  right:8px;
-  width:235px;
-}
-
-.panel-title{
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 10px;
-  border-bottom:1px solid #292929;
-  color:#aaa;
-  font-size:11px;
-  font-weight:900;
-}
-
-.panel-title button{
-  background:#2878ff;
-  width:30px;
-  height:28px;
-  border-radius:6px;
-}
-
-.hierarchy-list{
-  padding:5px;
-}
-
-.scene-node{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  height:35px;
-  padding:0 7px;
-  border-radius:6px;
-  color:#aaa;
-  font-size:11px;
-  cursor:pointer;
-}
-
-.scene-node.selected{
-  background:#2878ff;
-  color:#fff;
-}
-
-.node-name{
-  flex:1;
-}
-
-.inspector-body{
-  padding:10px;
-}
-
-.inspector-empty{
-  padding:30px 10px;
   text-align:center;
-  color:#666;
-  font-size:11px;
+  color:#666e77;
+  font-size:13px;
 }
 
-.field{
-  margin-bottom:8px;
-}
+/* BOTTOM NAV */
 
-.field label{
-  display:block;
-  color:#777;
-  font-size:9px;
-  margin-bottom:4px;
-}
-
-.field input{
-  width:100%;
-  height:34px;
-  padding:7px;
-  background:#0d0d0d;
-  border:1px solid #333;
-  border-radius:6px;
-  color:#fff;
-}
-
-.scene-add{
-  position:absolute;
-  right:250px;
-  bottom:15px;
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  background:#2878ff;
-  font-size:25px;
-  z-index:80;
-}
-
-.scene-add-menu{
-  position:absolute;
-  right:250px;
-  bottom:78px;
-  width:180px;
-  display:none;
-  padding:6px;
-  background:#171717;
-  border:1px solid #333;
-  border-radius:10px;
-  z-index:90;
-}
-
-.scene-add-menu.open{
-  display:block;
-}
-
-.scene-add-menu button{
-  width:100%;
-  height:38px;
-  background:transparent;
-  text-align:left;
-  border-bottom:1px solid #252525;
-}
-
-.scene-hud{
-  position:absolute;
-  left:10px;
-  bottom:10px;
-  padding:7px 9px;
-  background:rgba(0,0,0,.7);
-  border-radius:7px;
-  font:10px monospace;
-  color:#aaa;
-  z-index:40;
-}
-
-/* TILEMAP */
-
-.tilemap-page{
-  position:relative;
-  height:calc(100vh - 60px);
-  background:#0b0d10;
-  overflow:hidden;
-}
-
-.tm-toolbar{
-  position:absolute;
-  top:8px;
-  left:8px;
-  right:8px;
-  height:48px;
-  display:flex;
-  gap:5px;
-  align-items:center;
-  overflow-x:auto;
-  padding:5px;
-  background:rgba(18,18,20,.95);
-  border:1px solid #303030;
-  border-radius:11px;
-  z-index:30;
-}
-
-.tm-toolbar button{
-  height:36px;
-  min-width:40px;
-  padding:0 9px;
-  border-radius:7px;
-  background:#232323;
-  border:1px solid #363636;
-}
-
-.tm-toolbar button.active{
-  background:#2878ff;
-}
-
-.tm-canvas-wrap{
-  position:absolute;
-  top:64px;
+.bottom-nav{
+  position:fixed;
   left:0;
-  right:190px;
+  right:0;
   bottom:0;
-  background:#12161b;
-  touch-action:none;
-}
-
-#tmCanvas{
-  display:block;
-  width:100%;
-  height:100%;
-  touch-action:none;
-}
-
-.tm-palette{
-  position:absolute;
-  right:8px;
-  top:64px;
-  bottom:8px;
-  width:175px;
-  padding:10px;
-  background:#111;
-  border:1px solid #333;
-  border-radius:11px;
-  overflow:auto;
-}
-
-.tm-title{
-  color:#888;
-  font-size:10px;
-  font-weight:900;
-  margin-bottom:8px;
-}
-
-.tile-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:5px;
-}
-
-.tile-choice{
-  aspect-ratio:1;
-  border-radius:7px;
-  border:1px solid #333;
-  background:#222;
-  font-size:20px;
-}
-
-.tile-choice.active{
-  outline:2px solid #2878ff;
-}
-
-.tm-hud{
-  position:absolute;
-  bottom:10px;
-  left:10px;
-  padding:7px 9px;
-  background:#000b;
-  border-radius:7px;
-  font:10px monospace;
+  height:76px;
+  padding:7px 14px env(safe-area-inset-bottom);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  background:rgba(13,16,20,.96);
+  border-top:1px solid #20242a;
+  backdrop-filter:blur(15px);
   z-index:20;
 }
 
-/* ASSETS */
-
-.assets-page{
-  padding:16px;
-  background:#090909;
-}
-
-.assets-head{
+.nav-item{
+  width:31%;
+  height:58px;
+  background:none;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  justify-content:space-between;
-  margin-bottom:14px;
-}
-
-.assets-title{
-  font-size:27px;
-  font-weight:900;
-}
-
-.assets-count{
-  color:#777;
-  font-size:12px;
-}
-
-.assets-search{
-  height:48px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:0 15px;
-  background:#1c1c1e;
-  border-radius:14px;
-  margin-bottom:12px;
-}
-
-.assets-search span{
-  color:#999;
-  font-size:25px;
-}
-
-.assets-search input{
-  flex:1;
-  height:100%;
-  border:0;
-  outline:0;
-  background:transparent;
-  color:#fff;
-  font-size:17px;
-}
-
-.assets-actions{
-  display:flex;
-  gap:7px;
-  overflow-x:auto;
-  padding-bottom:5px;
-}
-
-.assets-action{
-  flex:0 0 auto;
-  min-height:38px;
-  padding:0 13px;
-  border-radius:9px;
-  background:#202020;
-  border:1px solid #333;
-  font-size:11px;
-}
-
-.assets-action.primary{
-  background:#2878ff;
-  border-color:#2878ff;
-}
-
-.assets-breadcrumb{
-  display:flex;
-  align-items:center;
+  justify-content:center;
   gap:5px;
-  overflow-x:auto;
-  margin:14px 0;
-  color:#777;
-  font-size:12px;
-}
-
-.crumb{
-  background:transparent;
-  color:#4c9aff;
-  padding:3px;
-  white-space:nowrap;
-}
-
-.assets-section-title{
-  color:#888;
-  font-size:12px;
-  font-weight:900;
-  margin:14px 0 8px;
-}
-
-.folder-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-}
-
-.folder-card{
-  position:relative;
-  min-height:118px;
-  padding:14px;
-  background:#171717;
-  border:1px solid #292929;
-  border-radius:14px;
-  cursor:pointer;
-}
-
-.folder-icon{
-  font-size:45px;
-  margin-bottom:8px;
-}
-
-.folder-name{
-  font-size:14px;
-  font-weight:800;
-}
-
-.folder-meta{
-  margin-top:4px;
-  color:#666;
+  color:#646b73;
   font-size:10px;
 }
 
-.folder-more,
-.asset-menu{
-  position:absolute;
-  right:8px;
-  top:8px;
-  width:30px;
-  height:30px;
-  border-radius:7px;
-  background:#252525;
-  color:#aaa;
+.nav-item svg{
+  width:21px;
+  height:21px;
+  stroke:currentColor;
 }
 
-.asset-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
+.nav-item.active{
+  color:#8ee35d;
 }
 
-.asset-card{
-  position:relative;
-  overflow:hidden;
-  background:#171717;
-  border:1px solid #292929;
-  border-radius:14px;
-  cursor:pointer;
-}
-
-.asset-preview{
-  height:120px;
-  display:grid;
-  place-items:center;
-  background:#101010;
-  font-size:48px;
-}
-
-.asset-preview img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  image-rendering:auto;
-}
-
-.asset-info{
-  padding:10px;
-}
-
-.asset-name{
-  font-size:12px;
-  font-weight:800;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-
-.asset-type{
-  margin-top:4px;
-  color:#666;
-  font-size:9px;
-}
-
-.asset-menu{
-  z-index:5;
-}
-
-.assets-drop{
-  margin-top:14px;
-  padding:20px;
-  text-align:center;
-  border:1px dashed #444;
-  border-radius:12px;
-  color:#777;
-  font-size:11px;
-}
-
-.assets-modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:3000;
-  background:#000b;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.assets-modal.open{
-  display:flex;
-}
-
-.assets-modal-box{
-  width:100%;
-  max-width:400px;
-  padding:20px;
-  background:#181818;
-  border:1px solid #333;
-  border-radius:14px;
-}
-
-.assets-modal-box h3{
-  margin-top:0;
-}
-
-.assets-modal-box input,
-.assets-modal-box select{
-  width:100%;
-  height:44px;
-  margin-bottom:10px;
-  padding:10px;
-  border:1px solid #333;
-  border-radius:8px;
-  background:#0d0d0d;
-  color:#fff;
-  outline:0;
-}
-
-.modal-row{
-  display:flex;
-  gap:7px;
-}
-
-.modal-row button{
-  flex:1;
-  min-height:42px;
-  border-radius:8px;
-  background:#333;
-}
-
-.modal-row .confirm{
-  background:#2878ff;
-}
-
-.asset-context{
-  display:none;
-  position:fixed;
-  width:180px;
-  padding:5px;
-  background:#191919;
-  border:1px solid #444;
+.nav-item:active{
+  background:#171b20;
   border-radius:10px;
-  z-index:4000;
-  box-shadow:0 10px 30px #000;
-}
-
-.asset-context.open{
-  display:block;
-}
-
-.asset-context button{
-  width:100%;
-  height:38px;
-  background:transparent;
-  text-align:left;
-  padding:0 10px;
-  border-bottom:1px solid #292929;
-}
-
-.asset-context .danger{
-  color:#ff6666;
-}
-
-/* DICTIONARY */
-
-.dictionary-page{
-  padding:15px;
-}
-
-.dictionary-header{
-  padding:20px;
-  background:#171717;
-  border:1px solid #292929;
-  border-radius:14px;
-  margin-bottom:12px;
-}
-
-.dictionary-header h1{
-  margin:0 0 7px;
-}
-
-.dictionary-header p{
-  margin:0;
-  color:#777;
-}
-
-.dictionary-search{
-  width:100%;
-  padding:13px;
-  background:#111;
-  border:1px solid #333;
-  border-radius:9px;
-  color:#fff;
-  outline:0;
-  margin-bottom:10px;
-}
-
-.dictionary-category{
-  margin:14px 0 7px;
-  color:#2878ff;
-  font-size:11px;
-  font-weight:900;
-}
-
-.dictionary-item{
-  display:flex;
-  gap:9px;
-  padding:11px;
-  background:#181818;
-  border:1px solid #292929;
-  border-radius:8px;
-  margin-bottom:5px;
-}
-
-.dictionary-command{
-  color:#20c968;
-  font-family:monospace;
-  font-weight:900;
-}
-
-.dictionary-arrow{
-  color:#555;
-}
-
-.dictionary-name{
-  color:#ddd;
 }
 
 /* MODAL */
 
 .modal{
-  display:none;
   position:fixed;
   inset:0;
-  z-index:3000;
-  background:#000b;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+  background:rgba(0,0,0,.68);
+  display:none;
+  align-items:flex-end;
+  z-index:50;
 }
 
-.modal.open{
+.modal.show{
   display:flex;
 }
 
-.modal-box{
+.sheet{
   width:100%;
-  max-width:400px;
-  padding:20px;
-  background:#181818;
-  border:1px solid #333;
-  border-radius:13px;
+  padding:22px 18px calc(22px + env(safe-area-inset-bottom));
+  background:#111419;
+  border-top:1px solid #272c33;
+  border-radius:20px 20px 0 0;
+  animation:up .2s ease;
 }
 
-.modal-box input{
+@keyframes up{
+  from{
+    transform:translateY(100%);
+  }
+  to{
+    transform:translateY(0);
+  }
+}
+
+.sheet h2{
+  margin:0 0 6px;
+  font-size:20px;
+}
+
+.sheet p{
+  margin:0 0 20px;
+  color:#777f88;
+  font-size:13px;
+}
+
+.input{
   width:100%;
-  padding:12px;
-  margin:10px 0 15px;
-  background:#0d0d0d;
-  border:1px solid #333;
+  height:52px;
+  padding:0 14px;
+  border:1px solid #292e35;
+  border-radius:10px;
+  outline:none;
+  background:#0b0e12;
   color:#fff;
-  border-radius:7px;
+  font-size:15px;
 }
 
-.modal-buttons{
+.input:focus{
+  border-color:#8ee35d;
+}
+
+.sheet-actions{
   display:flex;
-  gap:7px;
+  gap:10px;
+  margin-top:14px;
 }
 
-.modal-buttons button{
+.cancel,
+.create{
   flex:1;
-  min-height:42px;
-  border-radius:7px;
+  height:50px;
+  border-radius:10px;
+  font-weight:650;
 }
 
 .cancel{
-  background:#333;
+  background:#1b1f24;
+  color:#aeb4bb;
 }
 
-.confirm{
-  background:#2878ff;
+.create{
+  background:#8ee35d;
+  color:#091006;
 }
 
-/* MOBILE */
-
-.mobile-btn{
-  display:none;
-}
-
-@media(max-width:700px){
-
-  .scene-hierarchy,
-  .scene-inspector{
-    display:none;
-    left:8px;
-    right:8px;
-    top:auto;
-    bottom:8px;
-    width:auto;
-    height:42vh;
-  }
-
-  .scene-hierarchy.mobile-open,
-  .scene-inspector.mobile-open{
-    display:block;
-  }
-
-  .scene-add{
-    right:14px;
-    bottom:14px;
-  }
-
-  .scene-add-menu{
-    right:14px;
-    bottom:76px;
-  }
-
-  .mobile-btn{
-    display:block!important;
-  }
-
-  .tm-canvas-wrap{
-    right:0;
-    bottom:145px;
-  }
-
-  .tm-palette{
-    top:auto;
-    left:8px;
-    right:8px;
-    bottom:8px;
-    width:auto;
-    height:125px;
-  }
-
-  .tile-grid{
-    grid-template-columns:repeat(8,1fr);
-  }
-
-  .folder-grid,
-  .asset-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
+.hidden{
+  display:none!important;
 }
 </style>
 </head>
 
 <body>
 
-<div class="menu-overlay" id="menuOverlay"></div>
-
-<div class="side-menu" id="sideMenu">
-
-  <div class="menu-title">MY ENGINE</div>
-
-  <button class="menu-item active" data-page="home" onclick="abrirPagina('home')">
-    🏠 Início
-  </button>
-
-  <button class="menu-item" data-page="codePage" onclick="abrirPagina('codePage')">
-    📝 Código
-  </button>
-
-  <button class="menu-item" data-page="artPage" onclick="abrirPagina('artPage')">
-    🎨 Arte
-  </button>
-
-  <button class="menu-item" data-page="scenePage" onclick="abrirPagina('scenePage')">
-    🗺️ Cena
-  </button>
-
-  <button class="menu-item" data-page="tilemapPage" onclick="abrirPagina('tilemapPage')">
-    🧱 Tilemap
-  </button>
-
-  <button class="menu-item" data-page="assetsPage" onclick="abrirPagina('assetsPage')">
-    📦 Assets
-  </button>
-
-  <button class="menu-item" data-page="audioPage" onclick="abrirPagina('audioPage')">
-    🎵 Áudio
-  </button>
-
-  <button class="menu-item" data-page="projectPage" onclick="abrirPagina('projectPage')">
-    ⚙️ Projeto
-  </button>
-
-  <button class="menu-item" data-page="dictionaryPage" onclick="abrirPagina('dictionaryPage')">
-    📖 Dicionário
-  </button>
-
-</div>
-
-<header class="header">
-  <button class="menu-button" id="menuButton">☰</button>
-  MY ENGINE
-</header>
-
-<!-- HOME -->
-
-<section id="home" class="page active home">
-
-  <div class="hero">
-    <h1>Minha Engine</h1>
-    <p>
-      Ambiente de desenvolvimento mobile
-      para criação de jogos 2D.
-    </p>
-  </div>
-
-  <div class="cards">
-
-    <div class="card" onclick="abrirPagina('codePage')">
-      <div class="card-icon">📝</div>
-      <div class="card-title">Código</div>
-      <div class="card-description">Escreva e execute C++.</div>
-    </div>
-
-    <div class="card" onclick="abrirPagina('artPage')">
-      <div class="card-icon">🎨</div>
-      <div class="card-title">Arte</div>
-      <div class="card-description">Crie sprites diretamente no celular.</div>
-    </div>
-
-    <div class="card" onclick="abrirPagina('scenePage')">
-      <div class="card-icon">🗺️</div>
-      <div class="card-title">Cena</div>
-      <div class="card-description">Construa mundos RPG.</div>
-    </div>
-
-    <div class="card" onclick="abrirPagina('tilemapPage')">
-      <div class="card-icon">🧱</div>
-      <div class="card-title">Tilemap</div>
-      <div class="card-description">Construa mapas baseados em tiles.</div>
-    </div>
-
-    <div class="card" onclick="abrirPagina('assetsPage')">
-      <div class="card-icon">📦</div>
-      <div class="card-title">Assets</div>
-      <div class="card-description">Gerencie os recursos do projeto.</div>
-    </div>
-
-    <div class="card" onclick="abrirPagina('dictionaryPage')">
-      <div class="card-icon">📖</div>
-      <div class="card-title">Dicionário</div>
-      <div class="card-description">Personalize comandos.</div>
-    </div>
-
-  </div>
-
-</section>
-
-<!-- CODE -->
-
-<section id="codePage" class="page">
-
-  <div class="editor-area">
-
-    <div class="label">CÓDIGO MY ENGINE / C++</div>
-
-    <div class="editor-wrapper">
-
-      <div class="line-numbers" id="lineNumbers"></div>
-
-      <textarea
-        id="code"
-        class="editor"
-        spellcheck="false"
-        autocapitalize="off"
-        autocomplete="off"
-        autocorrect="off">#include <iostream>
-
-int main() {
-    std::cout << "Olá, mundo!";
-    return 0;
-}</textarea>
-
-    </div>
-
-  </div>
-
-  <div class="buttons">
-
-    <button class="run" id="runButton">
-      ▶ EXECUTAR
-    </button>
-
-    <button class="input-button" id="inputButton">
-      ⌨ ENTRADA
-    </button>
-
-    <button class="save" id="saveButton">
-      💾 SALVAR
-    </button>
-
-    <button class="clear" id="clearCodeButton">
-      LIMPAR
-    </button>
-
-  </div>
-
-  <div class="translation-area">
-
-    <div class="label">CÓDIGO TRADUZIDO</div>
-
-    <div class="translation" id="translatedCode">
-      &gt; O código traduzido aparecerá aqui antes da execução.
-    </div>
-
-  </div>
-
-  <div class="terminal-area">
-
-    <div class="label">TERMINAL</div>
-
-    <div class="terminal" id="terminal">
-      &gt; Aguardando execução...
-    </div>
-
-    <div class="input-area" id="inputArea">
-
-      <textarea
-        class="stdin-input"
-        id="stdinInput"
-        placeholder="Digite a entrada do programa..."></textarea>
-
-    </div>
-
-    <div class="status" id="status"></div>
-
-  </div>
-
-  <div class="saved-area">
-
-    <div class="saved-title">
-      <span>MEUS CÓDIGOS</span>
-      <span id="savedCount">0</span>
-    </div>
-
-    <div class="saved-list" id="savedList"></div>
-
-  </div>
-
-</section>
-
-<!-- ART -->
-
-<section id="artPage" class="page art-page">
-
-  <div class="art-top">
-    <div class="art-title">🎨 Editor de Arte</div>
-    <div class="art-size" id="artSize">32 × 32</div>
-  </div>
-
-  <div class="art-toolbar">
-
-    <button class="tool active" id="pencilTool" onclick="selecionarFerramenta('pencil')">✏️</button>
-
-    <button class="tool" id="eraserTool" onclick="selecionarFerramenta('eraser')">🧽</button>
-
-    <button class="tool" onclick="limparCanvas()">🗑️</button>
-
-    <button class="tool" onclick="desfazer()">↩️</button>
-
-    <button class="tool" onclick="refazer()">↪️</button>
-
-    <button class="tool" onclick="alternarGrade()">🔲</button>
-
-    <button class="tool" onclick="zoomArtIn()">+</button>
-
-    <button class="tool" onclick="zoomArtOut()">−</button>
-
-    <button class="tool" onclick="resetArtZoom()">1:1</button>
-
-  </div>
-
-  <div class="canvas-area" id="canvasArea">
-
-    <canvas id="artCanvas" width="32" height="32"></canvas>
-
-    <div class="canvas-info" id="canvasInfo">
-      Zoom: 100%
-    </div>
-
-  </div>
-
-  <div class="art-controls">
-
-    <div class="control-box">
-      <span class="control-label">COR</span>
-      <input type="color" id="colorPicker" value="#000000">
-    </div>
-
-    <div class="control-box">
-      <span class="control-label">TAMANHO</span>
-      <input type="range" id="brushSize" min="1" max="8" value="1">
-    </div>
-
-  </div>
-
-  <div class="art-actions">
-
-    <button class="art-action primary" onclick="novoCanvas()">🆕 NOVO</button>
-
-    <button class="art-action" onclick="salvarArte()">💾 SALVAR</button>
-
-    <button class="art-action" onclick="carregarArte()">📂 ABRIR</button>
-
-    <button class="art-action" onclick="resetArtZoom()">🔍 ZOOM</button>
-
-  </div>
-
-</section>
-
-<!-- SCENE -->
-
-<section id="scenePage" class="page scene-page">
-
-  <div class="scene-world">
-    <canvas id="sceneCanvas"></canvas>
-  </div>
-
-  <div class="scene-toolbar">
-
-    <button id="sceneSelectTool" class="active" onclick="sceneTool('select')">
-      ↖ Selecionar
-    </button>
-
-    <button onclick="sceneToggleGrid()">▦ Grid</button>
-
-    <button onclick="sceneToggleSnap()">🧲 Snap</button>
-
-    <button onclick="sceneZoomOut()">−</button>
-
-    <button onclick="sceneZoomIn()">+</button>
-
-    <button onclick="sceneResetCamera()">⌂</button>
-
-    <button onclick="sceneUndo()">↩</button>
-
-    <button onclick="sceneRedo()">↪</button>
-
-    <button onclick="sceneSave()">💾</button>
-
-    <button onclick="sceneLoad()">📂</button>
-
-    <button class="mobile-btn" onclick="toggleSceneHierarchy()">☰</button>
-
-    <button class="mobile-btn" onclick="toggleSceneInspector()">⚙</button>
-
-  </div>
-
-  <div class="scene-hierarchy" id="sceneHierarchy">
-
-    <div class="panel-title">
-      HIERARQUIA
-      <button onclick="openSceneAdd()">+</button>
-    </div>
-
-    <div class="hierarchy-list" id="hierarchyList"></div>
-
-  </div>
-
-  <div class="scene-inspector" id="sceneInspector">
-
-    <div class="panel-title">
-      INSPETOR
-      <button onclick="closeSceneInspector()">×</button>
-    </div>
-
-    <div class="inspector-body" id="inspectorBody">
-      <div class="inspector-empty">
-        Selecione um objeto.
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <div class="brand">
+
+      <div class="logo">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
+          <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
+          <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
       </div>
+
+      Snake Forge
+
     </div>
 
-  </div>
-
-  <button class="scene-add" onclick="openSceneAdd()">+</button>
-
-  <div class="scene-add-menu" id="sceneAddMenu">
-
-    <button onclick="addSceneObject('player')">🧍 Player</button>
-    <button onclick="addSceneObject('tile')">🟩 Tile</button>
-    <button onclick="addSceneObject('decoration')">🌲 Decoração</button>
-    <button onclick="addSceneObject('enemy')">👾 Inimigo</button>
-    <button onclick="addSceneObject('item')">💰 Item</button>
-    <button onclick="addSceneObject('text')">📝 Texto</button>
-
-  </div>
-
-  <div class="scene-hud" id="sceneHud">
-    X: 0 | Y: 0 | Zoom: 100%
-  </div>
-
-</section>
-
-<!-- TILEMAP -->
-
-<section id="tilemapPage" class="page tilemap-page">
-
-  <div class="tm-toolbar">
-
-    <button id="tmPaint" class="active" onclick="tmMode('paint')">
-      ✏️ Pintar
+    <button class="menu" onclick="openMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="5" r="1"/>
+        <circle cx="12" cy="12" r="1"/>
+        <circle cx="12" cy="19" r="1"/>
+      </svg>
     </button>
 
-    <button id="tmErase" onclick="tmMode('erase')">
-      🧽 Apagar
+  </header>
+
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <div class="welcome">
+      <h1>Welcome back</h1>
+      <p>Build your next game.</p>
+    </div>
+
+
+    <button class="new-project" onclick="openNewProject()">
+
+      <svg viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round">
+        <path d="M12 5v14"/>
+        <path d="M5 12h14"/>
+      </svg>
+
+      NEW PROJECT
+
     </button>
 
-    <button onclick="tmToggleGrid()">▦ Grid</button>
 
-    <button onclick="tmZoomOut()">−</button>
+    <!-- RECENT -->
+    <section class="section">
 
-    <button onclick="tmZoomIn()">+</button>
+      <div class="section-title">
+        <h2>RECENT PROJECTS</h2>
 
-    <button onclick="tmClear()">🗑️</button>
+        <button onclick="showProjects()">
+          View all
+        </button>
+      </div>
 
-    <button onclick="tmSave()">💾</button>
 
-    <button onclick="tmLoad()">📂</button>
+      <div id="projectsList">
 
-  </div>
+        <button class="project" onclick="openProject('My First Game')">
 
-  <div class="tm-canvas-wrap">
-    <canvas id="tmCanvas"></canvas>
-  </div>
+          <div class="project-icon">
 
-  <aside class="tm-palette">
+            <svg viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 4h10"/>
+              <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
+              <path d="M9 14h6"/>
+              <path d="M12 11v6"/>
+            </svg>
 
-    <div class="tm-title">TILES</div>
+          </div>
 
-    <div class="tile-grid" id="tileGrid"></div>
+          <div class="project-info">
 
-  </aside>
+            <div class="project-name">
+              My First Game
+            </div>
 
-  <div class="tm-hud" id="tmHud">
-    Tile: 1 | Zoom: 100%
-  </div>
+            <div class="project-meta">
+              Last opened: Today
+            </div>
 
-</section>
+          </div>
 
-<!-- ASSETS -->
+          <svg class="project-arrow"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
 
-<section id="assetsPage" class="page assets-page">
+        </button>
 
-  <div class="assets-head">
+      </div>
 
-    <div class="assets-title">📦 Assets</div>
+    </section>
 
-    <div class="assets-count" id="assetsCount">0 itens</div>
+  </main>
 
-  </div>
 
-  <div class="assets-search">
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
 
-    <span>⌕</span>
+    <button class="nav-item active" onclick="navigate('home')">
 
-    <input id="assetsSearch" placeholder="Buscar">
+      <svg viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 10 9-7 9 7"/>
+        <path d="M5 9v11h14V9"/>
+        <path d="M9 20v-6h6v6"/>
+      </svg>
 
-  </div>
+      Home
 
-  <div class="assets-actions">
-
-    <button class="assets-action primary" onclick="abrirImportAssets()">
-      ＋ Importar
     </button>
 
-    <button class="assets-action" onclick="abrirNovaPasta()">
-      📁 Nova pasta
+
+    <button class="nav-item" onclick="navigate('projects')">
+
+      <svg viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5h6l2 2h8v12H4z"/>
+      </svg>
+
+      Projects
+
     </button>
 
-    <button class="assets-action" onclick="abrirNovoAsset()">
-      ✚ Novo asset
+
+    <button class="nav-item" onclick="navigate('settings')">
+
+      <svg viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.4v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6v-2.4h.9a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L8 8.6l1.7-1.7.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h2.4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1z"/>
+      </svg>
+
+      Settings
+
     </button>
 
-    <button class="assets-action" onclick="renderAssets()">
-      ↻ Atualizar
-    </button>
+  </nav>
 
-  </div>
+</div>
 
-  <div class="assets-breadcrumb" id="assetsBreadcrumb"></div>
 
-  <div class="assets-section-title">Pastas</div>
+<!-- NEW PROJECT MODAL -->
 
-  <div class="folder-grid" id="folderGrid"></div>
+<div class="modal" id="newProjectModal"
+     onclick="outsideClose(event)">
 
-  <div class="assets-section-title">Arquivos</div>
+  <div class="sheet">
 
-  <div class="asset-grid" id="assetGrid"></div>
+    <h2>New Project</h2>
 
-  <div class="assets-drop" onclick="abrirImportAssets()">
-    📥<br><br>
-    Toque aqui para importar
-    imagens, áudio ou outros arquivos.
-  </div>
+    <p>Create a new game project.</p>
 
-  <input id="assetFileInput" type="file" multiple hidden>
+    <input
+      id="projectName"
+      class="input"
+      type="text"
+      placeholder="Project name"
+      maxlength="40"
+      autocomplete="off"
+    >
 
-</section>
+    <div class="sheet-actions">
 
-<!-- AUDIO -->
-
-<section id="audioPage" class="page module-page">
-
-  <div class="module-header">
-    <h1>🎵 Áudio</h1>
-    <p>Gerenciamento de músicas e efeitos sonoros.</p>
-  </div>
-
-  <div class="coming-soon">
-    🎵<br><br>
-    <strong>Audio Manager</strong>
-    <br><br>
-    Os arquivos de áudio importados
-    pelos Assets poderão ser utilizados aqui.
-  </div>
-
-</section>
-
-<!-- PROJECT -->
-
-<section id="projectPage" class="page module-page">
-
-  <div class="module-header">
-    <h1>⚙️ Projeto</h1>
-    <p>Configurações da My Engine.</p>
-  </div>
-
-  <div class="coming-soon">
-    ⚙️<br><br>
-    <strong>Project Manager</strong>
-    <br><br>
-    Configurações do projeto.
-  </div>
-
-</section>
-
-<!-- DICTIONARY -->
-
-<section id="dictionaryPage" class="page dictionary-page">
-
-  <div class="dictionary-header">
-
-    <h1>📖 Dicionário</h1>
-
-    <p>
-      Personalize os comandos da My Engine.
-    </p>
-
-  </div>
-
-  <input
-    class="dictionary-search"
-    id="dictionarySearch"
-    placeholder="Pesquisar comando...">
-
-  <div id="dictionaryList"></div>
-
-</section>
-
-<!-- SAVE CODE MODAL -->
-
-<div class="modal" id="saveModal">
-
-  <div class="modal-box">
-
-    <h2>Salvar código</h2>
-
-    <input id="codeName" placeholder="Nome do código">
-
-    <div class="modal-buttons">
-
-      <button class="cancel" onclick="fecharSalvar()">
-        CANCELAR
+      <button class="cancel" onclick="closeNewProject()">
+        Cancel
       </button>
 
-      <button class="confirm" onclick="salvarCodigo()">
-        SALVAR
+      <button class="create" onclick="createProject()">
+        Create
       </button>
 
     </div>
@@ -1843,3652 +590,314 @@ int main() {
 
 </div>
 
-<!-- ASSET MODAL -->
-
-<div class="assets-modal" id="assetsModal">
-
-  <div class="assets-modal-box">
-
-    <h3>Novo asset</h3>
-
-    <input id="assetNameInput" placeholder="Nome do asset">
-
-    <select id="assetTypeInput">
-
-      <option value="sprite">🖼️ Sprite</option>
-      <option value="texture">🎨 Texture</option>
-      <option value="tile">🧱 Tile</option>
-      <option value="audio">🎵 Áudio</option>
-      <option value="font">🔤 Fonte</option>
-      <option value="data">📄 Dados</option>
-
-    </select>
-
-    <div class="modal-row">
-
-      <button onclick="fecharAssetsModal()">CANCELAR</button>
-
-      <button class="confirm" onclick="confirmarNovoAsset()">CRIAR</button>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- FOLDER MODAL -->
-
-<div class="assets-modal" id="folderModal">
-
-  <div class="assets-modal-box">
-
-    <h3>Nova pasta</h3>
-
-    <input id="folderNameInput" placeholder="Nome da pasta">
-
-    <div class="modal-row">
-
-      <button onclick="fecharFolderModal()">CANCELAR</button>
-
-      <button class="confirm" onclick="confirmarNovaPasta()">CRIAR</button>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- ASSET CONTEXT -->
-
-<div class="asset-context" id="assetContext">
-
-  <button onclick="contextOpen()">Abrir</button>
-  <button onclick="contextRename()">Renomear</button>
-  <button onclick="contextDuplicate()">Duplicar</button>
-  <button class="danger" onclick="contextDelete()">Excluir</button>
-
-</div>
 
 <script>
-"use strict";
 
-/* =====================================================
-   HELPERS
-===================================================== */
+/* =========================
+   PROJECT STORAGE
+========================= */
 
-const $ = id => document.getElementById(id);
+const STORAGE_KEY = "snakeForgeProjects";
 
-function safeJSON(key,fallback){
+function getProjects(){
+
   try{
-    const value=localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  }catch{
-    return fallback;
-  }
-}
-
-function saveJSON(key,value){
-  try{
-    localStorage.setItem(key,JSON.stringify(value));
-    return true;
+    return JSON.parse(
+      localStorage.getItem(STORAGE_KEY)
+    ) || [];
   }catch(e){
-    console.error("Erro localStorage:",e);
-    return false;
-  }
-}
-
-function escapeHTML(text){
-  return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function base64Encode(text){
-  const bytes=new TextEncoder().encode(text);
-  let binary="";
-  const chunk=0x8000;
-
-  for(let i=0;i<bytes.length;i+=chunk){
-    binary+=String.fromCharCode(
-      ...bytes.subarray(i,i+chunk)
-    );
+    return [];
   }
 
-  return btoa(binary);
 }
 
-function base64Decode(text){
-  try{
-    const binary=atob(text);
-    const bytes=Uint8Array.from(
-      binary,
-      c=>c.charCodeAt(0)
-    );
+function saveProjects(projects){
 
-    return new TextDecoder().decode(bytes);
-  }catch{
-    try{
-      return atob(text);
-    }catch{
-      return text;
-    }
-  }
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(projects)
+  );
+
 }
 
 
-/* =====================================================
-   MENU
-===================================================== */
+/* =========================
+   NEW PROJECT
+========================= */
 
-function abrirMenu(){
-  $("sideMenu").classList.add("open");
-  $("menuOverlay").classList.add("open");
+function openNewProject(){
+
+  const modal =
+    document.getElementById("newProjectModal");
+
+  modal.classList.add("show");
+
+  setTimeout(()=>{
+    document.getElementById("projectName").focus();
+  },100);
+
 }
 
-function fecharMenu(){
-  $("sideMenu").classList.remove("open");
-  $("menuOverlay").classList.remove("open");
-}
 
-$("menuButton").addEventListener("click",abrirMenu);
-$("menuOverlay").addEventListener("click",fecharMenu);
-
-function abrirPagina(id){
+function closeNewProject(){
 
   document
-    .querySelectorAll(".page")
-    .forEach(p=>p.classList.remove("active"));
+    .getElementById("newProjectModal")
+    .classList.remove("show");
 
-  const page=$(id);
+  document.getElementById("projectName").value = "";
 
-  if(!page)return;
-
-  page.classList.add("active");
-
-  document
-    .querySelectorAll(".menu-item")
-    .forEach(b=>{
-      b.classList.toggle(
-        "active",
-        b.dataset.page===id
-      );
-    });
-
-  fecharMenu();
-
-  requestAnimationFrame(()=>{
-
-    if(id==="artPage"){
-      aplicarArtCamera();
-    }
-
-    if(id==="scenePage"){
-      sceneResize();
-    }
-
-    if(id==="tilemapPage"){
-      tmResize();
-    }
-
-    if(id==="assetsPage"){
-      renderAssets();
-    }
-
-  });
 }
 
 
-/* =====================================================
-   CODE
-===================================================== */
+function outsideClose(event){
 
-const editor=$("code");
-
-function atualizarLinhas(){
-
-  const linhas=
-    Math.max(
-      1,
-      editor.value.split("\n").length
-    );
-
-  $("lineNumbers").innerHTML=
-    Array.from(
-      {length:linhas},
-      (_,i)=>i+1
-    ).join("<br>");
-}
-
-editor.addEventListener(
-  "input",
-  atualizarLinhas
-);
-
-editor.addEventListener(
-  "scroll",
-  ()=>{
-    $("lineNumbers").scrollTop=
-      editor.scrollTop;
+  if(event.target.id === "newProjectModal"){
+    closeNewProject();
   }
-);
-
-editor.addEventListener(
-  "keydown",
-  e=>{
-
-    if(e.key==="Tab"){
-
-      e.preventDefault();
-
-      const start=editor.selectionStart;
-      const end=editor.selectionEnd;
-
-      editor.value=
-        editor.value.slice(0,start)+
-        "    "+
-        editor.value.slice(end);
-
-      editor.selectionStart=
-        editor.selectionEnd=
-        start+4;
-
-      atualizarLinhas();
-
-    }
-
-  }
-);
-
-$("inputButton").addEventListener(
-  "click",
-  alternarEntrada
-);
-
-function alternarEntrada(){
-
-  const area=$("inputArea");
-
-  area.style.display=
-    area.style.display==="block"
-      ?"none"
-      :"block";
-}
-
-const tradutorPadrao={
-
-  "manda o papo":"std::cout <<",
-  "qual foi":"std::cerr <<",
-  "endl":"std::endl",
-  "nova linha":"\\n",
-  "visao":"std::cin",
-  "abraça o papo":"std::getline",
-  "numero":"int",
-  "decimal":"float",
-  "decimal^":"double",
-  "letra":"char",
-  "txt":"std::string",
-  "tlgd":"bool",
-  "resto da divisao":"%"
-
-};
-
-function obterDicionario(){
-
-  const salvo=
-    safeJSON(
-      "myengine_dicionario",
-      null
-    );
-
-  return salvo &&
-    typeof salvo==="object"
-      ?salvo
-      :{...tradutorPadrao};
-}
-
-function regexEscape(t){
-
-  return t.replace(
-    /[.*+?^${}()|[\]\\]/g,
-    "\\$&"
-  );
 
 }
 
-function traduzirCodigo(codigo){
 
-  let resultado=codigo;
+function createProject(){
 
-  Object
-    .entries(obterDicionario())
-    .filter(([a])=>a.trim())
-    .sort(
-      (a,b)=>
-        b[0].length-a[0].length
-    )
-    .forEach(([a,b])=>{
+  const input =
+    document.getElementById("projectName");
 
-      resultado=
-        resultado.replace(
-          new RegExp(
-            regexEscape(a),
-            "gi"
-          ),
-          b
-        );
+  const name =
+    input.value.trim();
 
-    });
-
-  return resultado;
-}
-
-async function executar(){
-
-  const codigo=editor.value;
-
-  if(!codigo.trim()){
-
-    $("terminal").textContent=
-      "> Digite algum código.";
-
+  if(!name){
+    input.focus();
     return;
-
   }
 
-  const traduzido=
-    traduzirCodigo(codigo);
+  const projects = getProjects();
 
-  $("translatedCode").textContent=
-    traduzido;
+  const project = {
 
-  $("terminal").textContent=
-    "> Enviando código para Judge0...";
+    id: Date.now(),
 
-  $("status").textContent="";
+    name:name,
 
-  $("runButton").disabled=true;
+    createdAt:new Date().toISOString(),
 
-  try{
-
-    const source=
-      base64Encode(traduzido);
-
-    const input=
-      $("stdinInput").value;
-
-    const stdin=
-      input
-        ?base64Encode(input)
-        :"";
-
-    const resposta=
-      await fetch(
-        "https://ce.judge0.com/submissions?base64_encoded=true&wait=true",
-        {
-          method:"POST",
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-          body:JSON.stringify({
-            language_id:54,
-            source_code:source,
-            stdin:stdin
-          })
-        }
-      );
-
-    if(!resposta.ok){
-      throw new Error(
-        "Servidor retornou HTTP "+
-        resposta.status
-      );
-    }
-
-    const resultado=
-      await resposta.json();
-
-    let saida="";
-
-    if(resultado.stdout){
-      saida+=
-        base64Decode(
-          resultado.stdout
-        );
-    }
-
-    if(resultado.stderr){
-      saida+=
-        (saida?"\n":"")+
-        base64Decode(
-          resultado.stderr
-        );
-    }
-
-    if(resultado.compile_output){
-      saida+=
-        (saida?"\n":"")+
-        base64Decode(
-          resultado.compile_output
-        );
-    }
-
-    $("terminal").textContent=
-      saida ||
-      "> "+
-      (
-        resultado.status?.description ||
-        "Executado."
-      );
-
-    if(resultado.time){
-      $("status").textContent=
-        "Tempo: "+
-        resultado.time+
-        "s";
-    }
-
-  }catch(e){
-
-    console.error(e);
-
-    $("terminal").textContent=
-      "> ERRO\n"+
-      e.message;
-
-    $("status").textContent=
-      "Falha na execução.";
-
-  }finally{
-
-    $("runButton").disabled=false;
-
-  }
-
-}
-
-$("runButton").addEventListener(
-  "click",
-  executar
-);
-
-$("clearCodeButton").addEventListener(
-  "click",
-  limparCodigo
-);
-
-$("saveButton").addEventListener(
-  "click",
-  abrirSalvar
-);
-
-function limparCodigo(){
-
-  editor.value="";
-
-  $("stdinInput").value="";
-
-  $("translatedCode").textContent=
-    "> O código traduzido aparecerá aqui antes da execução.";
-
-  $("terminal").textContent=
-    "> Terminal limpo.";
-
-  $("status").textContent="";
-
-  atualizarLinhas();
-
-}
-
-function abrirSalvar(){
-
-  $("saveModal").classList.add("open");
-
-  setTimeout(
-    ()=>$("codeName").focus(),
-    50
-  );
-}
-
-function fecharSalvar(){
-
-  $("saveModal").classList.remove("open");
-
-}
-
-function salvarCodigo(){
-
-  const nome=
-    $("codeName").value.trim() ||
-    "Código sem nome";
-
-  const lista=
-    safeJSON(
-      "cpp_codigos",
-      []
-    );
-
-  lista.push({
-    id:Date.now(),
-    nome:nome,
-    codigo:editor.value
-  });
-
-  saveJSON(
-    "cpp_codigos",
-    lista
-  );
-
-  $("codeName").value="";
-
-  fecharSalvar();
-
-  carregarCodigos();
-
-}
-
-function carregarCodigos(){
-
-  const lista=
-    safeJSON(
-      "cpp_codigos",
-      []
-    );
-
-  $("savedList").innerHTML="";
-
-  $("savedCount").textContent=
-    lista.length;
-
-  lista.forEach(item=>{
-
-    const div=
-      document.createElement("div");
-
-    div.className="saved-item";
-
-    const name=
-      document.createElement("div");
-
-    name.className="saved-name";
-    name.textContent=item.nome;
-
-    const actions=
-      document.createElement("div");
-
-    actions.className="saved-actions";
-
-    const open=
-      document.createElement("button");
-
-    open.className="open-btn";
-    open.textContent="ABRIR";
-
-    open.addEventListener(
-      "click",
-      ()=>{
-        editor.value=item.codigo;
-        atualizarLinhas();
-        abrirPagina("codePage");
-      }
-    );
-
-    const del=
-      document.createElement("button");
-
-    del.className="delete-btn";
-    del.textContent="X";
-
-    del.addEventListener(
-      "click",
-      ()=>{
-        const nova=
-          lista.filter(
-            x=>x.id!==item.id
-          );
-
-        saveJSON(
-          "cpp_codigos",
-          nova
-        );
-
-        carregarCodigos();
-      }
-    );
-
-    actions.append(open,del);
-    div.append(name,actions);
-    $("savedList").appendChild(div);
-
-  });
-
-}
-
-
-/* =====================================================
-   ART
-===================================================== */
-
-const artCanvas=$("artCanvas");
-const artCtx=artCanvas.getContext("2d");
-const artArea=$("canvasArea");
-
-let artTool="pencil";
-let artZoom=1;
-let artDrawing=false;
-let artHistory=[];
-let artFuture=[];
-let artGrid=false;
-
-artCtx.imageSmoothingEnabled=false;
-
-function salvarEstadoArte(){
-
-  try{
-
-    artHistory.push(
-      artCtx.getImageData(
-        0,
-        0,
-        artCanvas.width,
-        artCanvas.height
-      )
-    );
-
-    if(artHistory.length>30)
-      artHistory.shift();
-
-    artFuture=[];
-
-  }catch(e){
-    console.error(e);
-  }
-
-}
-
-function selecionarFerramenta(t){
-
-  artTool=t;
-
-  $("pencilTool")
-    .classList.toggle(
-      "active",
-      t==="pencil"
-    );
-
-  $("eraserTool")
-    .classList.toggle(
-      "active",
-      t==="eraser"
-    );
-
-}
-
-function aplicarArtCamera(){
-
-  if(!artArea.clientWidth ||
-     !artArea.clientHeight)return;
-
-  const size=
-    Math.max(
-      256,
-      Math.min(
-        512,
-        Math.min(
-          artArea.clientWidth,
-          artArea.clientHeight
-        )
-      )
-    );
-
-  artCanvas.style.width=
-    size*artZoom+"px";
-
-  artCanvas.style.height=
-    size*artZoom+"px";
-
-  $("canvasInfo").textContent=
-    "Zoom: "+
-    Math.round(artZoom*100)+
-    "%";
-
-  if(artGrid)
-    atualizarGradeArte();
-
-}
-
-function zoomArtIn(){
-
-  artZoom=
-    Math.min(
-      8,
-      artZoom*1.25
-    );
-
-  aplicarArtCamera();
-
-}
-
-function zoomArtOut(){
-
-  artZoom=
-    Math.max(
-      .25,
-      artZoom/1.25
-    );
-
-  aplicarArtCamera();
-
-}
-
-function resetArtZoom(){
-
-  artZoom=1;
-  aplicarArtCamera();
-
-}
-
-function artPixel(e){
-
-  const r=
-    artCanvas.getBoundingClientRect();
-
-  return{
-    x:Math.floor(
-      (e.clientX-r.left)/
-      r.width*
-      artCanvas.width
-    ),
-
-    y:Math.floor(
-      (e.clientY-r.top)/
-      r.height*
-      artCanvas.height
-    )
-  };
-
-}
-
-function artPaint(e){
-
-  const p=artPixel(e);
-
-  if(
-    p.x<0||
-    p.y<0||
-    p.x>=artCanvas.width||
-    p.y>=artCanvas.height
-  )return;
-
-  const size=
-    Number(
-      $("brushSize").value
-    );
-
-  artCtx.globalCompositeOperation=
-    artTool==="eraser"
-      ?"destination-out"
-      :"source-over";
-
-  if(artTool==="pencil"){
-    artCtx.fillStyle=
-      $("colorPicker").value;
-  }
-
-  artCtx.fillRect(
-    p.x-Math.floor(size/2),
-    p.y-Math.floor(size/2),
-    size,
-    size
-  );
-
-  artCtx.globalCompositeOperation=
-    "source-over";
-
-}
-
-artCanvas.addEventListener(
-  "pointerdown",
-  e=>{
-
-    e.preventDefault();
-
-    salvarEstadoArte();
-
-    artDrawing=true;
-
-    artPaint(e);
-
-    try{
-      artCanvas.setPointerCapture(
-        e.pointerId
-      );
-    }catch{}
-
-  },
-  {passive:false}
-);
-
-artCanvas.addEventListener(
-  "pointermove",
-  e=>{
-
-    if(!artDrawing)return;
-
-    e.preventDefault();
-
-    artPaint(e);
-
-  },
-  {passive:false}
-);
-
-["pointerup","pointercancel","pointerleave"]
-.forEach(type=>{
-
-  artCanvas.addEventListener(
-    type,
-    ()=>{
-      artDrawing=false;
-    }
-  );
-
-});
-
-function limparCanvas(){
-
-  salvarEstadoArte();
-
-  artCtx.clearRect(
-    0,
-    0,
-    artCanvas.width,
-    artCanvas.height
-  );
-
-}
-
-function desfazer(){
-
-  if(!artHistory.length)return;
-
-  artFuture.push(
-    artCtx.getImageData(
-      0,
-      0,
-      artCanvas.width,
-      artCanvas.height
-    )
-  );
-
-  artCtx.putImageData(
-    artHistory.pop(),
-    0,
-    0
-  );
-
-}
-
-function refazer(){
-
-  if(!artFuture.length)return;
-
-  artHistory.push(
-    artCtx.getImageData(
-      0,
-      0,
-      artCanvas.width,
-      artCanvas.height
-    )
-  );
-
-  artCtx.putImageData(
-    artFuture.pop(),
-    0,
-    0
-  );
-
-}
-
-function atualizarGradeArte(){
-
-  const tamanhoX=
-    100/artCanvas.width;
-
-  const tamanhoY=
-    100/artCanvas.height;
-
-  artCanvas.style.backgroundImage=
-    "linear-gradient(#999 1px,transparent 1px),"+
-    "linear-gradient(90deg,#999 1px,transparent 1px)";
-
-  artCanvas.style.backgroundSize=
-    tamanhoX+"% "+
-    tamanhoY+"%";
-
-}
-
-function alternarGrade(){
-
-  artGrid=!artGrid;
-
-  if(artGrid){
-    atualizarGradeArte();
-  }else{
-    artCanvas.style.backgroundImage="none";
-  }
-
-}
-
-function novoCanvas(){
-
-  const resposta=
-    prompt(
-      "Tamanho: 16, 32, 64 ou 128",
-      String(artCanvas.width)
-    );
-
-  const n=
-    parseInt(resposta,10);
-
-  if(
-    ![16,32,64,128].includes(n)
-  )return;
-
-  artCanvas.width=n;
-  artCanvas.height=n;
-
-  artCtx.imageSmoothingEnabled=false;
-
-  artCtx.clearRect(
-    0,
-    0,
-    n,
-    n
-  );
-
-  $("artSize").textContent=
-    n+" × "+n;
-
-  artHistory=[];
-  artFuture=[];
-
-  aplicarArtCamera();
-
-}
-
-function salvarArte(){
-
-  try{
-
-    saveJSON(
-      "myengine_arte",
-      {
-        width:artCanvas.width,
-        height:artCanvas.height,
-        data:artCanvas.toDataURL()
-      }
-    );
-
-    alert("Arte salva.");
-
-  }catch(e){
-
-    alert(
-      "Não foi possível salvar a arte."
-    );
-
-  }
-
-}
-
-function carregarArte(){
-
-  const data=
-    safeJSON(
-      "myengine_arte",
-      null
-    );
-
-  if(!data){
-
-    alert("Nenhuma arte salva.");
-
-    return;
-
-  }
-
-  const img=new Image();
-
-  img.onload=()=>{
-
-    artCanvas.width=
-      data.width||
-      artCanvas.width;
-
-    artCanvas.height=
-      data.height||
-      artCanvas.height;
-
-    artCtx.clearRect(
-      0,
-      0,
-      artCanvas.width,
-      artCanvas.height
-    );
-
-    artCtx.drawImage(
-      img,
-      0,
-      0,
-      artCanvas.width,
-      artCanvas.height
-    );
-
-    $("artSize").textContent=
-      artCanvas.width+
-      " × "+
-      artCanvas.height;
-
-    artHistory=[];
-    artFuture=[];
-
-    aplicarArtCamera();
+    lastOpened:new Date().toISOString()
 
   };
 
-  img.src=data.data;
+  projects.unshift(project);
+
+  saveProjects(projects);
+
+  closeNewProject();
+
+  renderProjects();
+
+  /*
+    Próxima etapa:
+    abrir o Project Editor do Snake Forge.
+  */
+
+  openProject(name);
 
 }
 
 
-/* =====================================================
-   SCENE
-===================================================== */
+/* =========================
+   PROJECT LIST
+========================= */
 
-const sceneCanvas=$("sceneCanvas");
-const sceneCtx=sceneCanvas.getContext("2d");
+function renderProjects(){
 
-let sceneCamera={
-  x:0,
-  y:0,
-  zoom:1
-};
+  const container =
+    document.getElementById("projectsList");
 
-let sceneGrid={
-  enabled:true,
-  size:32
-};
+  const projects =
+    getProjects();
 
-let sceneSnap=true;
-let sceneObjects=[];
-let sceneSelected=null;
-let sceneHistory=[];
-let sceneFuture=[];
-let sceneId=1;
-let sceneCurrentTool="select";
-let scenePointer=null;
+  if(projects.length === 0){
 
-function sceneResize(){
-
-  const parent=
-    sceneCanvas.parentElement;
-
-  if(!parent)return;
-
-  const r=
-    parent.getBoundingClientRect();
-
-  if(r.width<=0||r.height<=0)return;
-
-  const dpr=
-    window.devicePixelRatio||1;
-
-  sceneCanvas.width=
-    Math.max(1,Math.round(r.width*dpr));
-
-  sceneCanvas.height=
-    Math.max(1,Math.round(r.height*dpr));
-
-  sceneCanvas.style.width=
-    r.width+"px";
-
-  sceneCanvas.style.height=
-    r.height+"px";
-
-  sceneCtx.setTransform(
-    dpr,
-    0,
-    0,
-    dpr,
-    0,
-    0
-  );
-
-  sceneRender();
-
-}
-
-function sceneWorldToScreen(x,y){
-
-  const w=
-    sceneCanvas.clientWidth;
-
-  const h=
-    sceneCanvas.clientHeight;
-
-  return{
-    x:w/2+
-      (x-sceneCamera.x)*
-      sceneCamera.zoom,
-
-    y:h/2+
-      (y-sceneCamera.y)*
-      sceneCamera.zoom
-  };
-
-}
-
-function sceneRender(){
-
-  const w=
-    sceneCanvas.clientWidth;
-
-  const h=
-    sceneCanvas.clientHeight;
-
-  if(!w||!h)return;
-
-  sceneCtx.clearRect(
-    0,
-    0,
-    w,
-    h
-  );
-
-  sceneCtx.fillStyle="#0d1218";
-
-  sceneCtx.fillRect(
-    0,
-    0,
-    w,
-    h
-  );
-
-  if(sceneGrid.enabled){
-
-    const size=
-      sceneGrid.size*
-      sceneCamera.zoom;
-
-    if(size>=3){
-
-      sceneCtx.strokeStyle=
-        "rgba(255,255,255,.06)";
-
-      sceneCtx.lineWidth=1;
-
-      const offsetX=
-        w/2-
-        (
-          sceneCamera.x*
-          sceneCamera.zoom
-        )%
-        size;
-
-      const offsetY=
-        h/2-
-        (
-          sceneCamera.y*
-          sceneCamera.zoom
-        )%
-        size;
-
-      sceneCtx.beginPath();
-
-      for(
-        let x=offsetX;
-        x<w;
-        x+=size
-      ){
-        sceneCtx.moveTo(x,0);
-        sceneCtx.lineTo(x,h);
-      }
-
-      for(
-        let x=offsetX-size;
-        x>=0;
-        x-=size
-      ){
-        sceneCtx.moveTo(x,0);
-        sceneCtx.lineTo(x,h);
-      }
-
-      for(
-        let y=offsetY;
-        y<h;
-        y+=size
-      ){
-        sceneCtx.moveTo(0,y);
-        sceneCtx.lineTo(w,y);
-      }
-
-      for(
-        let y=offsetY-size;
-        y>=0;
-        y-=size
-      ){
-        sceneCtx.moveTo(0,y);
-        sceneCtx.lineTo(w,y);
-      }
-
-      sceneCtx.stroke();
-
-    }
-
-  }
-
-  sceneObjects.forEach(o=>{
-
-    const p=
-      sceneWorldToScreen(
-        o.x,
-        o.y
-      );
-
-    const width=
-      o.width*
-      sceneCamera.zoom;
-
-    const height=
-      o.height*
-      sceneCamera.zoom;
-
-    sceneCtx.fillStyle=
-      o.color;
-
-    sceneCtx.fillRect(
-      p.x-width/2,
-      p.y-height/2,
-      width,
-      height
-    );
-
-    if(sceneSelected===o.id){
-
-      sceneCtx.strokeStyle=
-        "#58a6ff";
-
-      sceneCtx.lineWidth=3;
-
-      sceneCtx.strokeRect(
-        p.x-width/2-3,
-        p.y-height/2-3,
-        width+6,
-        height+6
-      );
-
-    }
-
-  });
-
-  $("sceneHud").textContent=
-    "X: "+
-    Math.round(sceneCamera.x)+
-    " | Y: "+
-    Math.round(sceneCamera.y)+
-    " | Zoom: "+
-    Math.round(sceneCamera.zoom*100)+
-    "%";
-
-}
-
-function sceneTool(tool){
-
-  sceneCurrentTool=
-    tool||"select";
-
-  $("sceneSelectTool")
-    .classList.toggle(
-      "active",
-      sceneCurrentTool==="select"
-    );
-
-}
-
-function sceneZoomIn(){
-
-  sceneCamera.zoom=
-    Math.min(
-      8,
-      sceneCamera.zoom*1.2
-    );
-
-  sceneRender();
-
-}
-
-function sceneZoomOut(){
-
-  sceneCamera.zoom=
-    Math.max(
-      .2,
-      sceneCamera.zoom/1.2
-    );
-
-  sceneRender();
-
-}
-
-function sceneResetCamera(){
-
-  sceneCamera={
-    x:0,
-    y:0,
-    zoom:1
-  };
-
-  sceneRender();
-
-}
-
-function sceneToggleGrid(){
-
-  sceneGrid.enabled=
-    !sceneGrid.enabled;
-
-  sceneRender();
-
-}
-
-function sceneToggleSnap(){
-
-  sceneSnap=!sceneSnap;
-
-}
-
-function openSceneAdd(){
-
-  $("sceneAddMenu")
-    .classList.toggle("open");
-
-}
-
-function addSceneObject(type){
-
-  const info={
-
-    player:{
-      name:"Player",
-      color:"#2e8bff",
-      width:32,
-      height:48
-    },
-
-    tile:{
-      name:"Tile",
-      color:"#52a447",
-      width:32,
-      height:32
-    },
-
-    decoration:{
-      name:"Decoração",
-      color:"#4f9a45",
-      width:48,
-      height:64
-    },
-
-    enemy:{
-      name:"Inimigo",
-      color:"#d64c4c",
-      width:32,
-      height:32
-    },
-
-    item:{
-      name:"Item",
-      color:"#e2bd42",
-      width:24,
-      height:24
-    },
-
-    text:{
-      name:"Texto",
-      color:"#fff",
-      width:80,
-      height:24
-    }
-
-  }[type];
-
-  if(!info)return;
-
-  sceneHistory.push(
-    JSON.stringify(sceneObjects)
-  );
-
-  sceneFuture=[];
-
-  const obj={
-
-    id:sceneId++,
-
-    name:
-      info.name+
-      " "+
-      sceneId,
-
-    x:sceneCamera.x,
-    y:sceneCamera.y,
-
-    width:info.width,
-    height:info.height,
-
-    color:info.color
-
-  };
-
-  sceneObjects.push(obj);
-
-  sceneSelected=obj.id;
-
-  $("sceneAddMenu")
-    .classList.remove("open");
-
-  renderHierarchy();
-  renderInspector();
-  sceneRender();
-
-}
-
-function renderHierarchy(){
-
-  const list=
-    $("hierarchyList");
-
-  list.innerHTML="";
-
-  sceneObjects.forEach(o=>{
-
-    const row=
-      document.createElement("div");
-
-    row.className=
-      "scene-node"+
-      (
-        sceneSelected===o.id
-          ?" selected"
-          :""
-      );
-
-    const icon=
-      document.createElement("span");
-
-    icon.textContent="◆";
-
-    const name=
-      document.createElement("span");
-
-    name.className="node-name";
-    name.textContent=o.name;
-
-    row.append(
-      icon,
-      name
-    );
-
-    row.addEventListener(
-      "click",
-      ()=>{
-        sceneSelected=o.id;
-        renderHierarchy();
-        renderInspector();
-        sceneRender();
-      }
-    );
-
-    list.appendChild(row);
-
-  });
-
-}
-
-function renderInspector(){
-
-  const body=
-    $("inspectorBody");
-
-  const o=
-    sceneObjects.find(
-      x=>x.id===sceneSelected
-    );
-
-  if(!o){
-
-    body.innerHTML=
-      '<div class="inspector-empty">'+
-      'Selecione um objeto.'+
-      '</div>';
-
-    return;
-
-  }
-
-  body.innerHTML="";
-
-  [
-    ["Nome","name"],
-    ["X","x"],
-    ["Y","y"],
-    ["Largura","width"],
-    ["Altura","height"]
-  ].forEach(([label,key])=>{
-
-    const f=
-      document.createElement("div");
-
-    f.className="field";
-
-    const l=
-      document.createElement("label");
-
-    l.textContent=label;
-
-    const input=
-      document.createElement("input");
-
-    input.value=o[key];
-
-    input.addEventListener(
-      "change",
-      ()=>{
-
-        if(key==="name"){
-          o[key]=input.value;
-        }else{
-          const value=
-            Number(input.value);
-
-          o[key]=
-            Number.isFinite(value)
-              ?value
-              :0;
-        }
-
-        renderHierarchy();
-        sceneRender();
-
-      }
-    );
-
-    f.append(l,input);
-    body.appendChild(f);
-
-  });
-
-}
-
-function toggleSceneHierarchy(){
-
-  $("sceneHierarchy")
-    .classList.toggle(
-      "mobile-open"
-    );
-
-  $("sceneInspector")
-    .classList.remove(
-      "mobile-open"
-    );
-
-}
-
-function toggleSceneInspector(){
-
-  $("sceneInspector")
-    .classList.toggle(
-      "mobile-open"
-    );
-
-  $("sceneHierarchy")
-    .classList.remove(
-      "mobile-open"
-    );
-
-}
-
-function closeSceneInspector(){
-
-  $("sceneInspector")
-    .classList.remove(
-      "mobile-open"
-    );
-
-}
-
-function sceneUndo(){
-
-  if(!sceneHistory.length)return;
-
-  sceneFuture.push(
-    JSON.stringify(sceneObjects)
-  );
-
-  sceneObjects=
-    JSON.parse(
-      sceneHistory.pop()
-    );
-
-  sceneSelected=null;
-
-  renderHierarchy();
-  renderInspector();
-  sceneRender();
-
-}
-
-function sceneRedo(){
-
-  if(!sceneFuture.length)return;
-
-  sceneHistory.push(
-    JSON.stringify(sceneObjects)
-  );
-
-  sceneObjects=
-    JSON.parse(
-      sceneFuture.pop()
-    );
-
-  sceneSelected=null;
-
-  renderHierarchy();
-  renderInspector();
-  sceneRender();
-
-}
-
-function sceneSave(){
-
-  saveJSON(
-    "myengine_scene",
-    {
-      camera:sceneCamera,
-      grid:sceneGrid,
-      snap:sceneSnap,
-      objects:sceneObjects
-    }
-  );
-
-  alert("Cena salva.");
-
-}
-
-function sceneLoad(){
-
-  const s=
-    safeJSON(
-      "myengine_scene",
-      null
-    );
-
-  if(!s){
-
-    alert("Nenhuma cena salva.");
-
-    return;
-
-  }
-
-  sceneCamera=
-    s.camera||
-    {
-      x:0,
-      y:0,
-      zoom:1
-    };
-
-  sceneGrid=
-    s.grid||
-    {
-      enabled:true,
-      size:32
-    };
-
-  sceneSnap=
-    s.snap!==false;
-
-  sceneObjects=
-    Array.isArray(s.objects)
-      ?s.objects
-      :[];
-
-  sceneSelected=null;
-
-  sceneId=
-    sceneObjects.reduce(
-      (max,o)=>
-        Math.max(
-          max,
-          Number(o.id)||0
-        ),
-      0
-    )+1;
-
-  sceneHistory=[];
-  sceneFuture=[];
-
-  renderHierarchy();
-  renderInspector();
-  sceneRender();
-
-}
-
-
-/* SCENE POINTER */
-
-sceneCanvas.addEventListener(
-  "pointerdown",
-  e=>{
-
-    if(sceneCurrentTool!=="select")
-      return;
-
-    e.preventDefault();
-
-    const r=
-      sceneCanvas.getBoundingClientRect();
-
-    const x=
-      sceneCamera.x+
-      (
-        e.clientX-
-        r.left-
-        r.width/2
-      )/
-      sceneCamera.zoom;
-
-    const y=
-      sceneCamera.y+
-      (
-        e.clientY-
-        r.top-
-        r.height/2
-      )/
-      sceneCamera.zoom;
-
-    for(
-      let i=sceneObjects.length-1;
-      i>=0;
-      i--
-    ){
-
-      const o=
-        sceneObjects[i];
-
-      if(
-        Math.abs(x-o.x)<=o.width/2 &&
-        Math.abs(y-o.y)<=o.height/2
-      ){
-
-        sceneSelected=o.id;
-
-        scenePointer={
-          id:o.id,
-          x,
-          y,
-          ox:o.x,
-          oy:o.y,
-          moved:false
-        };
-
-        renderHierarchy();
-        renderInspector();
-        sceneRender();
-
-        try{
-          sceneCanvas.setPointerCapture(
-            e.pointerId
-          );
-        }catch{}
-
-        return;
-
-      }
-
-    }
-
-    sceneSelected=null;
-
-    renderHierarchy();
-    renderInspector();
-    sceneRender();
-
-  },
-  {passive:false}
-);
-
-sceneCanvas.addEventListener(
-  "pointermove",
-  e=>{
-
-    if(!scenePointer)return;
-
-    e.preventDefault();
-
-    const r=
-      sceneCanvas.getBoundingClientRect();
-
-    const x=
-      sceneCamera.x+
-      (
-        e.clientX-
-        r.left-
-        r.width/2
-      )/
-      sceneCamera.zoom;
-
-    const y=
-      sceneCamera.y+
-      (
-        e.clientY-
-        r.top-
-        r.height/2
-      )/
-      sceneCamera.zoom;
-
-    const o=
-      sceneObjects.find(
-        x=>x.id===scenePointer.id
-      );
-
-    if(!o)return;
-
-    let nx=
-      scenePointer.ox+
-      x-
-      scenePointer.x;
-
-    let ny=
-      scenePointer.oy+
-      y-
-      scenePointer.y;
-
-    if(sceneSnap){
-
-      nx=
-        Math.round(
-          nx/sceneGrid.size
-        )*
-        sceneGrid.size;
-
-      ny=
-        Math.round(
-          ny/sceneGrid.size
-        )*
-        sceneGrid.size;
-
-    }
-
-    if(
-      nx!==o.x||
-      ny!==o.y
-    ){
-      scenePointer.moved=true;
-    }
-
-    o.x=nx;
-    o.y=ny;
-
-    renderInspector();
-    sceneRender();
-
-  },
-  {passive:false}
-);
-
-function finalizarScenePointer(){
-
-  if(
-    scenePointer &&
-    scenePointer.moved
-  ){
-
-    const current=
-      JSON.stringify(sceneObjects);
-
-    const before=
-      JSON.stringify(
-        sceneObjects.map(o=>{
-          if(o.id===scenePointer.id){
-            return{
-              ...o,
-              x:scenePointer.ox,
-              y:scenePointer.oy
-            };
-          }
-          return o;
-        })
-      );
-
-    if(current!==before){
-      sceneHistory.push(before);
-
-      if(sceneHistory.length>30)
-        sceneHistory.shift();
-
-      sceneFuture=[];
-    }
-
-  }
-
-  scenePointer=null;
-
-}
-
-sceneCanvas.addEventListener(
-  "pointerup",
-  finalizarScenePointer
-);
-
-sceneCanvas.addEventListener(
-  "pointercancel",
-  finalizarScenePointer
-);
-
-
-/* =====================================================
-   TILEMAP
-===================================================== */
-
-const tmCanvas=$("tmCanvas");
-const tmCtx=tmCanvas.getContext("2d");
-
-let tmZoom=1;
-let tmGrid=true;
-let tmModeNow="paint";
-let tmTile=0;
-let tmMap=new Map();
-let tmDrawing=false;
-
-const tmPalette=[
-  "🟩",
-  "🟫",
-  "🟦",
-  "🟨",
-  "🟪",
-  "⬛",
-  "⬜",
-  "🟥",
-  "🟧",
-  "🌿",
-  "🪨",
-  "💧"
-];
-
-const tmColors=[
-  "#4f9a45",
-  "#795548",
-  "#2979ff",
-  "#e2bd42",
-  "#8050a5",
-  "#222",
-  "#ddd",
-  "#b64d4d",
-  "#c87535",
-  "#6ba34a",
-  "#777",
-  "#3988d4"
-];
-
-function tmResize(){
-
-  const parent=
-    tmCanvas.parentElement;
-
-  if(!parent)return;
-
-  const r=
-    parent.getBoundingClientRect();
-
-  if(r.width<=0||r.height<=0)return;
-
-  const d=
-    window.devicePixelRatio||1;
-
-  tmCanvas.width=
-    Math.max(1,Math.round(r.width*d));
-
-  tmCanvas.height=
-    Math.max(1,Math.round(r.height*d));
-
-  tmCanvas.style.width=
-    r.width+"px";
-
-  tmCanvas.style.height=
-    r.height+"px";
-
-  tmCtx.setTransform(
-    d,0,0,d,0,0
-  );
-
-  tmRender();
-
-}
-
-function tmRender(){
-
-  const w=
-    tmCanvas.clientWidth;
-
-  const h=
-    tmCanvas.clientHeight;
-
-  if(!w||!h)return;
-
-  tmCtx.clearRect(
-    0,
-    0,
-    w,
-    h
-  );
-
-  tmCtx.fillStyle="#12161b";
-
-  tmCtx.fillRect(
-    0,
-    0,
-    w,
-    h
-  );
-
-  const s=
-    32*tmZoom;
-
-  const ox=w/2;
-  const oy=h/2;
-
-  tmMap.forEach(
-    (tile,key)=>{
-
-      const parts=
-        key.split(",")
-          .map(Number);
-
-      const x=parts[0];
-      const y=parts[1];
-
-      tmCtx.fillStyle=
-        tmColors[tile]||
-        "#777";
-
-      tmCtx.fillRect(
-        ox+x*s,
-        oy+y*s,
-        s,
-        s
-      );
-
-    }
-  );
-
-  if(tmGrid && s>=3){
-
-    tmCtx.strokeStyle=
-      "rgba(255,255,255,.08)";
-
-    tmCtx.lineWidth=1;
-
-    tmCtx.beginPath();
-
-    const offsetX=
-      ox-
-      (
-        (
-          Math.floor(
-            ox/s
-          )*s
-        )
-      );
-
-    const offsetY=
-      oy-
-      (
-        (
-          Math.floor(
-            oy/s
-          )*s
-        )
-      );
-
-    for(
-      let x=offsetX;
-      x<w;
-      x+=s
-    ){
-
-      tmCtx.moveTo(x,0);
-      tmCtx.lineTo(x,h);
-
-    }
-
-    for(
-      let x=offsetX-s;
-      x>=0;
-      x-=s
-    ){
-
-      tmCtx.moveTo(x,0);
-      tmCtx.lineTo(x,h);
-
-    }
-
-    for(
-      let y=offsetY;
-      y<h;
-      y+=s
-    ){
-
-      tmCtx.moveTo(0,y);
-      tmCtx.lineTo(w,y);
-
-    }
-
-    for(
-      let y=offsetY-s;
-      y>=0;
-      y-=s
-    ){
-
-      tmCtx.moveTo(0,y);
-      tmCtx.lineTo(w,y);
-
-    }
-
-    tmCtx.stroke();
-
-  }
-
-  $("tmHud").textContent=
-    "Tile: "+
-    (tmTile+1)+
-    " | Zoom: "+
-    Math.round(tmZoom*100)+
-    "%";
-
-}
-
-function tmPosition(e){
-
-  const r=
-    tmCanvas.getBoundingClientRect();
-
-  const s=
-    32*tmZoom;
-
-  const x=
-    Math.floor(
-      (
-        e.clientX-
-        r.left-
-        r.width/2
-      )/s
-    );
-
-  const y=
-    Math.floor(
-      (
-        e.clientY-
-        r.top-
-        r.height/2
-      )/s
-    );
-
-  return{x,y};
-
-}
-
-function tmPaintAt(e){
-
-  const p=
-    tmPosition(e);
-
-  const key=
-    p.x+","+p.y;
-
-  if(tmModeNow==="erase"){
-    tmMap.delete(key);
-  }else{
-    tmMap.set(
-      key,
-      tmTile
-    );
-  }
-
-  tmRender();
-
-}
-
-tmCanvas.addEventListener(
-  "pointerdown",
-  e=>{
-
-    e.preventDefault();
-
-    tmDrawing=true;
-
-    tmPaintAt(e);
-
-    try{
-      tmCanvas.setPointerCapture(
-        e.pointerId
-      );
-    }catch{}
-
-  },
-  {passive:false}
-);
-
-tmCanvas.addEventListener(
-  "pointermove",
-  e=>{
-
-    if(!tmDrawing)return;
-
-    e.preventDefault();
-
-    tmPaintAt(e);
-
-  },
-  {passive:false}
-);
-
-tmCanvas.addEventListener(
-  "pointerup",
-  ()=>{
-    tmDrawing=false;
-  }
-);
-
-tmCanvas.addEventListener(
-  "pointercancel",
-  ()=>{
-    tmDrawing=false;
-  }
-);
-
-function tmMode(m){
-
-  tmModeNow=m;
-
-  $("tmPaint")
-    .classList.toggle(
-      "active",
-      m==="paint"
-    );
-
-  $("tmErase")
-    .classList.toggle(
-      "active",
-      m==="erase"
-    );
-
-}
-
-function tmToggleGrid(){
-
-  tmGrid=!tmGrid;
-
-  tmRender();
-
-}
-
-function tmZoomIn(){
-
-  tmZoom=
-    Math.min(
-      5,
-      tmZoom*1.2
-    );
-
-  tmRender();
-
-}
-
-function tmZoomOut(){
-
-  tmZoom=
-    Math.max(
-      .4,
-      tmZoom/1.2
-    );
-
-  tmRender();
-
-}
-
-function tmClear(){
-
-  if(
-    confirm(
-      "Limpar tilemap?"
-    )
-  ){
-
-    tmMap.clear();
-
-    tmRender();
-
-  }
-
-}
-
-function tmSave(){
-
-  saveJSON(
-    "myengine_tilemap",
-    [...tmMap]
-  );
-
-  alert("Tilemap salvo.");
-
-}
-
-function tmLoad(){
-
-  const data=
-    safeJSON(
-      "myengine_tilemap",
-      null
-    );
-
-  if(!Array.isArray(data)){
-
-    alert("Nenhum tilemap salvo.");
-
-    return;
-
-  }
-
-  tmMap=
-    new Map(
-      data
-    );
-
-  tmRender();
-
-}
-
-function initTiles(){
-
-  const grid=
-    $("tileGrid");
-
-  grid.innerHTML="";
-
-  tmPalette.forEach(
-    (tile,index)=>{
-
-      const b=
-        document.createElement("button");
-
-      b.className=
-        "tile-choice"+
-        (
-          index===0
-            ?" active"
-            :""
-        );
-
-      b.textContent=tile;
-
-      b.addEventListener(
-        "click",
-        ()=>{
-
-          tmTile=index;
-
-          document
-            .querySelectorAll(
-              ".tile-choice"
-            )
-            .forEach(
-              x=>
-                x.classList.remove(
-                  "active"
-                )
-            );
-
-          b.classList.add("active");
-
-          tmMode("paint");
-
-          tmRender();
-
-        }
-      );
-
-      grid.appendChild(b);
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   ASSETS
-===================================================== */
-
-const defaultFolders=[
-
-  {
-    id:"textures",
-    name:"Textures",
-    icon:"📁",
-    parent:"root"
-  },
-
-  {
-    id:"sprites",
-    name:"Sprites",
-    icon:"📁",
-    parent:"root"
-  },
-
-  {
-    id:"tiles",
-    name:"Tiles",
-    icon:"📁",
-    parent:"root"
-  },
-
-  {
-    id:"audio",
-    name:"Audio",
-    icon:"📁",
-    parent:"root"
-  },
-
-  {
-    id:"fonts",
-    name:"Fonts",
-    icon:"📁",
-    parent:"root"
-  },
-
-  {
-    id:"scenes",
-    name:"Scenes",
-    icon:"📁",
-    parent:"root"
-  }
-
-];
-
-let assetsFolders=[];
-let assetsFiles=[];
-let assetsPath=[];
-let assetContextId=null;
-
-function loadAssets(){
-
-  assetsFolders=
-    safeJSON(
-      "myengine_asset_folders",
-      null
-    );
-
-  if(
-    !Array.isArray(assetsFolders)||
-    !assetsFolders.length
-  ){
-
-    assetsFolders=
-      defaultFolders.map(
-        x=>({...x})
-      );
-
-  }
-
-  assetsFiles=
-    safeJSON(
-      "myengine_assets",
-      []
-    );
-
-  if(!Array.isArray(assetsFiles))
-    assetsFiles=[];
-
-}
-
-function saveAssets(){
-
-  saveJSON(
-    "myengine_asset_folders",
-    assetsFolders
-  );
-
-  saveJSON(
-    "myengine_assets",
-    assetsFiles
-  );
-
-}
-
-function currentFolder(){
-
-  return assetsPath.length
-    ?assetsPath[
-      assetsPath.length-1
-    ].id
-    :"root";
-
-}
-
-function renderAssets(){
-
-  const search=
-    $("assetsSearch").value||
-    "";
-
-  const q=
-    search.toLowerCase();
-
-  const parent=
-    currentFolder();
-
-  $("assetsBreadcrumb").innerHTML="";
-
-  const root=
-    document.createElement("button");
-
-  root.className="crumb";
-  root.textContent="📦 Assets";
-
-  root.addEventListener(
-    "click",
-    assetsGoRoot
-  );
-
-  $("assetsBreadcrumb").appendChild(root);
-
-  assetsPath.forEach(
-    (p,i)=>{
-
-      const sep=
-        document.createElement("span");
-
-      sep.textContent="›";
-
-      const crumb=
-        document.createElement("button");
-
-      crumb.className="crumb";
-      crumb.textContent=p.name;
-
-      crumb.addEventListener(
-        "click",
-        ()=>assetsGoIndex(i)
-      );
-
-      $("assetsBreadcrumb")
-        .append(
-          sep,
-          crumb
-        );
-
-    }
-  );
-
-  const folders=
-    assetsFolders.filter(
-      f=>
-        (f.parent||"root")===parent &&
-        f.name.toLowerCase()
-          .includes(q)
-    );
-
-  const files=
-    assetsFiles.filter(
-      f=>
-        (f.parent||"root")===parent &&
-        f.name.toLowerCase()
-          .includes(q)
-    );
-
-  $("folderGrid").innerHTML="";
-
-  folders.forEach(f=>{
-
-    const d=
-      document.createElement("div");
-
-    d.className="folder-card";
-
-    d.addEventListener(
-      "click",
-      ()=>openAssetFolder(f)
-    );
-
-    const icon=
-      document.createElement("div");
-
-    icon.className="folder-icon";
-    icon.textContent=f.icon||"📁";
-
-    const name=
-      document.createElement("div");
-
-    name.className="folder-name";
-    name.textContent=f.name;
-
-    const meta=
-      document.createElement("div");
-
-    meta.className="folder-meta";
-
-    const count=
-      assetsFiles.filter(
-        x=>
-          (x.parent||"root")===f.id
-      ).length;
-
-    meta.textContent=
-      count+
-      (count===1?" item":" itens");
-
-    const more=
-      document.createElement("button");
-
-    more.className="folder-more";
-    more.textContent="•••";
-
-    more.addEventListener(
-      "click",
-      e=>{
-        e.stopPropagation();
-        folderActions(f.id);
-      }
-    );
-
-    d.append(
-      icon,
-      name,
-      meta,
-      more
-    );
-
-    $("folderGrid")
-      .appendChild(d);
-
-  });
-
-  $("assetGrid").innerHTML="";
-
-  files.forEach(f=>{
-
-    const d=
-      document.createElement("div");
-
-    d.className="asset-card";
-
-    let preview="📄";
-
-    if(
-      f.data &&
-      f.mime &&
-      f.mime.startsWith("image/")
-    ){
-
-      const img=
-        document.createElement("img");
-
-      img.src=f.data;
-      img.alt=f.name;
-
-      preview=img;
-
-    }else if(f.type==="audio"){
-      preview="🎵";
-    }else if(f.type==="tile"){
-      preview="🧱";
-    }else if(f.type==="font"){
-      preview="🔤";
-    }else if(f.type==="texture"){
-      preview="🎨";
-    }else if(f.type==="sprite"){
-      preview="🖼️";
-    }
-
-    const previewBox=
-      document.createElement("div");
-
-    previewBox.className=
-      "asset-preview";
-
-    if(
-      preview instanceof HTMLElement
-    ){
-      previewBox.appendChild(preview);
-    }else{
-      previewBox.textContent=preview;
-    }
-
-    const info=
-      document.createElement("div");
-
-    info.className="asset-info";
-
-    const name=
-      document.createElement("div");
-
-    name.className="asset-name";
-    name.textContent=f.name;
-
-    const type=
-      document.createElement("div");
-
-    type.className="asset-type";
-    type.textContent=
-      f.mime||
-      f.type||
-      "asset";
-
-    info.append(name,type);
-
-    const menu=
-      document.createElement("button");
-
-    menu.className="asset-menu";
-    menu.textContent="•••";
-
-    menu.addEventListener(
-      "click",
-      e=>{
-        e.stopPropagation();
-        openAssetContext(
-          e,
-          f.id
-        );
-      }
-    );
-
-    d.append(
-      previewBox,
-      info,
-      menu
-    );
-
-    d.addEventListener(
-      "click",
-      ()=>openAssetFile(f)
-    );
-
-    $("assetGrid")
-      .appendChild(d);
-
-  });
-
-  const total=
-    folders.length+
-    files.length;
-
-  $("assetsCount").textContent=
-    total+
-    (
-      total===1
-        ?" item"
-        :" itens"
-    );
-
-  if(
-    !folders.length &&
-    !files.length
-  ){
-
-    $("assetGrid").innerHTML=
-      `
-      <div style="
-        grid-column:1/-1;
-        text-align:center;
-        padding:40px;
-        color:#666;">
-        📂<br><br>
-        Nada encontrado nesta pasta.
+    container.innerHTML = `
+      <div class="empty">
+        No projects yet.
       </div>
-      `;
-
-  }
-
-}
-
-$("assetsSearch").addEventListener(
-  "input",
-  renderAssets
-);
-
-function openAssetFolder(folder){
-
-  assetsPath.push(folder);
-
-  renderAssets();
-
-}
-
-function assetsGoRoot(){
-
-  assetsPath=[];
-
-  renderAssets();
-
-}
-
-function assetsGoIndex(index){
-
-  assetsPath=
-    assetsPath.slice(
-      0,
-      index+1
-    );
-
-  renderAssets();
-
-}
-
-function abrirImportAssets(){
-
-  $("assetFileInput").click();
-
-}
-
-$("assetFileInput").addEventListener(
-  "change",
-  importarArquivos
-);
-
-function importarArquivos(e){
-
-  const files=
-    [...(e.target.files||[])];
-
-  if(!files.length)return;
-
-  let remaining=files.length;
-
-  files.forEach(file=>{
-
-    const reader=
-      new FileReader();
-
-    reader.onload=
-      event=>{
-
-        let type="data";
-
-        if(
-          file.type.startsWith("image/")
-        ){
-          type="sprite";
-        }else if(
-          file.type.startsWith("audio/")
-        ){
-          type="audio";
-        }
-
-        assetsFiles.push({
-
-          id:
-            "a"+
-            Date.now()+
-            Math.random(),
-
-          name:file.name,
-
-          parent:
-            currentFolder(),
-
-          type:type,
-
-          mime:file.type,
-
-          size:file.size,
-
-          data:
-            file.type.startsWith("image/")
-              ?event.target.result
-              :null
-
-        });
-
-        remaining--;
-
-        if(remaining<=0){
-
-          saveAssets();
-          renderAssets();
-
-        }
-
-      };
-
-    if(
-      file.type.startsWith("image/")
-    ){
-
-      reader.readAsDataURL(file);
-
-    }else{
-
-      reader.onload=
-        event=>{
-
-          assetsFiles.push({
-
-            id:
-              "a"+
-              Date.now()+
-              Math.random(),
-
-            name:file.name,
-
-            parent:
-              currentFolder(),
-
-            type:typeForFile(file),
-
-            mime:file.type,
-
-            size:file.size,
-
-            data:null
-
-          });
-
-          remaining--;
-
-          if(remaining<=0){
-
-            saveAssets();
-            renderAssets();
-
-          }
-
-        };
-
-      reader.readAsArrayBuffer(file);
-
-    }
-
-  });
-
-  e.target.value="";
-
-}
-
-function typeForFile(file){
-
-  if(
-    file.type.startsWith("audio/")
-  )return"audio";
-
-  if(
-    file.type.startsWith("image/")
-  )return"sprite";
-
-  return"data";
-
-}
-
-function abrirNovoAsset(){
-
-  $("assetNameInput").value="";
-
-  $("assetsModal")
-    .classList.add("open");
-
-  setTimeout(
-    ()=>$("assetNameInput").focus(),
-    50
-  );
-
-}
-
-function fecharAssetsModal(){
-
-  $("assetsModal")
-    .classList.remove("open");
-
-}
-
-function confirmarNovoAsset(){
-
-  const name=
-    $("assetNameInput")
-      .value
-      .trim()||
-    "Novo Asset";
-
-  assetsFiles.push({
-
-    id:
-      "a"+
-      Date.now(),
-
-    name:name,
-
-    parent:
-      currentFolder(),
-
-    type:
-      $("assetTypeInput").value,
-
-    mime:
-      "application/myengine"
-
-  });
-
-  saveAssets();
-
-  fecharAssetsModal();
-
-  renderAssets();
-
-}
-
-function abrirNovaPasta(){
-
-  $("folderNameInput").value="";
-
-  $("folderModal")
-    .classList.add("open");
-
-  setTimeout(
-    ()=>$("folderNameInput").focus(),
-    50
-  );
-
-}
-
-function fecharFolderModal(){
-
-  $("folderModal")
-    .classList.remove("open");
-
-}
-
-function confirmarNovaPasta(){
-
-  const name=
-    $("folderNameInput")
-      .value
-      .trim();
-
-  if(!name)return;
-
-  assetsFolders.push({
-
-    id:
-      "f"+
-      Date.now()+
-      Math.random(),
-
-    name:name,
-
-    parent:
-      currentFolder(),
-
-    icon:"📁"
-
-  });
-
-  saveAssets();
-
-  fecharFolderModal();
-
-  renderAssets();
-
-}
-
-function openAssetContext(e,id){
-
-  assetContextId=id;
-
-  const menu=
-    $("assetContext");
-
-  menu.style.left=
-    Math.min(
-      e.clientX,
-      window.innerWidth-190
-    )+"px";
-
-  menu.style.top=
-    Math.min(
-      e.clientY,
-      window.innerHeight-200
-    )+"px";
-
-  menu.classList.add("open");
-
-}
-
-document.addEventListener(
-  "pointerdown",
-  e=>{
-
-    const menu=
-      $("assetContext");
-
-    if(
-      menu.classList.contains("open") &&
-      !menu.contains(e.target)
-    ){
-
-      menu.classList.remove("open");
-
-    }
-
-  }
-);
-
-function contextOpen(){
-
-  const f=
-    assetsFiles.find(
-      x=>x.id===assetContextId
-    );
-
-  $("assetContext")
-    .classList.remove("open");
-
-  if(f)
-    openAssetFile(f);
-
-}
-
-function openAssetFile(f){
-
-  if(
-    f.data &&
-    f.mime &&
-    f.mime.startsWith("image/")
-  ){
-
-    const w=
-      window.open(
-        "",
-        "_blank"
-      );
-
-    if(w){
-
-      w.document.write(
-        `
-        <!doctype html>
-        <html>
-        <head>
-        <meta name="viewport"
-          content="width=device-width,initial-scale=1">
-        <title>${escapeHTML(f.name)}</title>
-        </head>
-        <body style="
-          margin:0;
-          background:#111;
-          display:grid;
-          place-items:center;
-          height:100vh;
-        ">
-        <img
-          src="${f.data}"
-          style="
-            max-width:100%;
-            max-height:100%;
-            object-fit:contain;
-          ">
-        </body>
-        </html>
-        `
-      );
-
-      w.document.close();
-
-    }
+    `;
 
     return;
 
   }
 
-  alert(
-    f.name+
-    "\nTipo: "+
-    (f.mime||f.type)
+  const recent =
+    projects.slice(0,5);
+
+  container.innerHTML =
+    recent.map(project => `
+
+      <button
+        class="project"
+        onclick="openProject('${escapeHtml(project.name)}')">
+
+        <div class="project-icon">
+
+          <svg viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="1.8"
+               stroke-linecap="round"
+               stroke-linejoin="round">
+
+            <path d="M7 4h10"/>
+            <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
+            <path d="M9 14h6"/>
+            <path d="M12 11v6"/>
+
+          </svg>
+
+        </div>
+
+        <div class="project-info">
+
+          <div class="project-name">
+            ${escapeHtml(project.name)}
+          </div>
+
+          <div class="project-meta">
+            Project
+          </div>
+
+        </div>
+
+        <svg class="project-arrow"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+
+          <path d="m9 18 6-6-6-6"/>
+
+        </svg>
+
+      </button>
+
+    `).join("");
+
+}
+
+
+function escapeHtml(text){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+
+}
+
+
+/* =========================
+   OPEN PROJECT
+========================= */
+
+function openProject(name){
+
+  /*
+    Aqui será conectado o Editor.
+    Por enquanto identificamos o projeto
+    selecionado.
+
+    Não usamos alert(), mantendo a
+    interface limpa para mobile.
+  */
+
+  console.log(
+    "Opening Snake Forge project:",
+    name
   );
 
 }
 
-function contextRename(){
 
-  const f=
-    assetsFiles.find(
-      x=>x.id===assetContextId
+/* =========================
+   NAVIGATION
+========================= */
+
+function navigate(section){
+
+  document
+    .querySelectorAll(".nav-item")
+    .forEach(item =>
+      item.classList.remove("active")
     );
 
-  $("assetContext")
-    .classList.remove("open");
+  const items =
+    document.querySelectorAll(".nav-item");
 
-  if(!f)return;
+  if(section === "home"){
 
-  const name=
-    prompt(
-      "Novo nome",
-      f.name
-    );
+    items[0].classList.add("active");
 
-  if(name&&name.trim()){
+  }
 
-    f.name=name.trim();
+  if(section === "projects"){
 
-    saveAssets();
-    renderAssets();
+    items[1].classList.add("active");
+
+    showProjects();
+
+  }
+
+  if(section === "settings"){
+
+    items[2].classList.add("active");
+
+    console.log("Settings");
 
   }
 
 }
 
-function contextDuplicate(){
 
-  const f=
-    assetsFiles.find(
-      x=>x.id===assetContextId
-    );
+function showProjects(){
 
-  $("assetContext")
-    .classList.remove("open");
+  console.log("Project Manager");
 
-  if(!f)return;
+}
 
-  assetsFiles.push({
 
-    ...f,
+function openMenu(){
 
-    id:
-      "a"+
-      Date.now()+
-      Math.random(),
+  console.log("Snake Forge menu");
 
-    name:
-      f.name.replace(
-        /(\.[^.]+)?$/,
-        "_copia$1"
-      )
+}
+
+
+/* =========================
+   ENTER = CREATE
+========================= */
+
+document
+  .getElementById("projectName")
+  .addEventListener("keydown",function(e){
+
+    if(e.key === "Enter"){
+      createProject();
+    }
+
+    if(e.key === "Escape"){
+      closeNewProject();
+    }
 
   });
 
-  saveAssets();
-  renderAssets();
 
-}
-
-function contextDelete(){
-
-  const f=
-    assetsFiles.find(
-      x=>x.id===assetContextId
-    );
-
-  $("assetContext")
-    .classList.remove("open");
-
-  if(!f)return;
-
-  if(
-    confirm(
-      "Excluir "+
-      f.name+
-      "?"
-    )
-  ){
-
-    assetsFiles=
-      assetsFiles.filter(
-        x=>x.id!==f.id
-      );
-
-    saveAssets();
-    renderAssets();
-
-  }
-
-}
-
-function folderActions(id){
-
-  const f=
-    assetsFolders.find(
-      x=>x.id===id
-    );
-
-  if(!f)return;
-
-  const action=
-    prompt(
-      "Digite:\n"+
-      "abrir\n"+
-      "renomear\n"+
-      "excluir",
-      "abrir"
-    );
-
-  if(action==="abrir"){
-
-    openAssetFolder(f);
-
-  }else if(action==="renomear"){
-
-    const name=
-      prompt(
-        "Novo nome",
-        f.name
-      );
-
-    if(name&&name.trim()){
-
-      f.name=name.trim();
-
-      saveAssets();
-      renderAssets();
-
-    }
-
-  }else if(action==="excluir"){
-
-    if(
-      confirm(
-        "Excluir a pasta "+
-        f.name+
-        "?"
-      )
-    ){
-
-      assetsFolders=
-        assetsFolders.filter(
-          x=>x.id!==id
-        );
-
-      assetsFiles=
-        assetsFiles.filter(
-          x=>x.parent!==id
-        );
-
-      saveAssets();
-      renderAssets();
-
-    }
-
-  }
-
-}
-
-
-/* =====================================================
-   DICTIONARY
-===================================================== */
-
-const comandosDicionario=[
-
-  ["Saída","manda o papo","std::cout"],
-  ["Saída","qual foi","std::cerr"],
-  ["Saída","endl","std::endl"],
-
-  ["Entrada","visao","std::cin"],
-  ["Entrada","abraça o papo","std::getline"],
-
-  ["Tipos","numero","int"],
-  ["Tipos","decimal","float"],
-  ["Tipos","decimal^","double"],
-  ["Tipos","letra","char"],
-  ["Tipos","txt","std::string"],
-  ["Tipos","tlgd","bool"],
-
-  ["Operadores","+=","+="],
-  ["Operadores","-=","-="],
-  ["Operadores","*=","*="],
-  ["Operadores","/=","/="],
-  ["Operadores","resto da divisao","%"]
-
-];
-
-function atualizarDicionarioPadrao(){
-
-  const atual=
-    obterDicionario();
-
-  let mudou=false;
-
-  Object
-    .entries(tradutorPadrao)
-    .forEach(
-      ([key,value])=>{
-        if(!(key in atual)){
-          atual[key]=value;
-          mudou=true;
-        }
-      }
-    );
-
-  if(mudou)
-    saveJSON(
-      "myengine_dicionario",
-      atual
-    );
-
-}
-
-function renderizarDicionario(filtro=""){
-
-  const lista=
-    $("dictionaryList");
-
-  lista.innerHTML="";
-
-  const dicionario=
-    obterDicionario();
-
-  let categoria="";
-
-  comandosDicionario
-    .filter(x=>
-      (
-        x[1]+" "+
-        (
-          dicionario[x[1]]||
-          x[2]
-        )
-      )
-      .toLowerCase()
-      .includes(
-        filtro.toLowerCase()
-      )
-    )
-    .forEach(x=>{
-
-      if(x[0]!==categoria){
-
-        categoria=x[0];
-
-        const title=
-          document.createElement(
-            "div"
-          );
-
-        title.className=
-          "dictionary-category";
-
-        title.textContent=
-          categoria;
-
-        lista.appendChild(title);
-
-      }
-
-      const item=
-        document.createElement(
-          "div"
-        );
-
-      item.className=
-        "dictionary-item";
-
-      const command=
-        document.createElement("span");
-
-      command.className=
-        "dictionary-command";
-
-      command.textContent=x[1];
-
-      const arrow=
-        document.createElement("span");
-
-      arrow.className=
-        "dictionary-arrow";
-
-      arrow.textContent="→";
-
-      const name=
-        document.createElement("span");
-
-      name.className=
-        "dictionary-name";
-
-      name.textContent=
-        dicionario[x[1]]||
-        x[2];
-
-      item.append(
-        command,
-        arrow,
-        name
-      );
-
-      lista.appendChild(item);
-
-    });
-
-}
-
-function filtrarDicionario(){
-
-  renderizarDicionario(
-    $("dictionarySearch").value
-  );
-
-}
-
-$("dictionarySearch").addEventListener(
-  "input",
-  filtrarDicionario
-);
-
-
-/* =====================================================
+/* =========================
    INIT
-===================================================== */
+========================= */
 
-function iniciarEngine(){
-
-  atualizarDicionarioPadrao();
-
-  atualizarLinhas();
-
-  carregarCodigos();
-
-  renderizarDicionario();
-
-  loadAssets();
-
-  initTiles();
-
-  renderAssets();
-
-  renderHierarchy();
-
-  renderInspector();
-
-  requestAnimationFrame(()=>{
-
-    sceneResize();
-    tmResize();
-    aplicarArtCamera();
-
-  });
-
-}
-
-window.addEventListener(
-  "resize",
-  ()=>{
-
-    requestAnimationFrame(()=>{
-
-      if(
-        $("artPage")
-          .classList
-          .contains("active")
-      ){
-        aplicarArtCamera();
-      }
-
-      if(
-        $("scenePage")
-          .classList
-          .contains("active")
-      ){
-        sceneResize();
-      }
-
-      if(
-        $("tilemapPage")
-          .classList
-          .contains("active")
-      ){
-        tmResize();
-      }
-
-    });
-
-  }
-);
-
-document.addEventListener(
-  "keydown",
-  e=>{
-
-    if(
-      e.key==="Escape"
-    ){
-
-      fecharMenu();
-      fecharSalvar();
-      fecharAssetsModal();
-      fecharFolderModal();
-
-      $("assetContext")
-        .classList.remove("open");
-
-      $("sceneAddMenu")
-        .classList.remove("open");
-
-    }
-
-  }
-);
-
-iniciarEngine();
+renderProjects();
 
 </script>
 
