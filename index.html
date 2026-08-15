@@ -1056,6 +1056,39 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 .tm-brush-preview{position:absolute;pointer-events:none;border:1px solid #7ec8ff;background:rgba(83,168,232,.12);display:none;z-index:3}.tm-gesture-hint{position:absolute;left:12px;bottom:12px;padding:7px 9px;border:1px solid #27323d;background:rgba(9,13,17,.82);border-radius:6px;color:#657583;font-size:9px;pointer-events:none;opacity:.8}.tm-mode-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 10px 10px}.tm-mode-tabs button{background:#10171f;border:1px solid #27323d;color:#7f8c98;border-radius:5px;padding:7px 3px;font-size:9px}.tm-mode-tabs button.active{color:#dceeff;border-color:#3d82b7;background:#152a3b}.tm-range{width:100%}
 @media(max-width:900px){.tm-studio{grid-template-columns:220px minmax(0,1fr);grid-template-rows:48px minmax(0,1fr) 108px}.tm-right{position:absolute;right:0;top:48px;bottom:108px;width:290px;transform:translateX(102%);transition:transform .2s;border-left:1px solid #202832;box-shadow:-12px 0 30px rgba(0,0,0,.35)}.tm-studio.right-open .tm-right{transform:translateX(0)}.tm-left{position:absolute;left:0;top:48px;bottom:108px;width:250px;transform:translateX(-102%);transition:transform .2s;box-shadow:12px 0 30px rgba(0,0,0,.35)}.tm-studio.palette-open .tm-left{transform:translateX(0)}.tm-mobile-bar{display:flex;position:absolute;bottom:0;left:0;right:0;height:58px;background:#0c1117;border-top:1px solid #202832;z-index:8;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom)}.tm-mobile-bar button{height:44px;min-width:58px;border:1px solid #29333e;background:#111820;color:#94a1ad;border-radius:7px;font-size:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.tm-mobile-bar button .ui-icon{width:17px;height:17px}.tm-mobile-bar button.active{color:#dff2ff;border-color:#4c9cce;background:#183149}.tm-viewport{grid-column:1/-1;grid-row:2}.tm-bottom{grid-row:3}.tm-gesture-hint{display:none}}
 @media(max-width:600px){.tm-studio{height:calc(100dvh - 56px);min-height:0;border-radius:0;border-left:0;border-right:0;grid-template-rows:46px minmax(0,1fr) 58px}.tm-toolbar{height:46px;padding:5px 7px}.tm-toolbar .tool-btn{height:34px;padding:0 8px;font-size:11px}.tm-toolbar .tool-btn .ui-icon{width:15px;height:15px}.tm-toolbar .desktop-only{display:none}.tm-bottom{display:none}.tm-right,.tm-left{top:46px;bottom:58px}.tm-viewport{grid-row:2}.tm-mobile-bar{height:58px}.tm-toolbar .tm-zoom-readout{display:block}.tm-mode-tabs{grid-template-columns:repeat(2,1fr)}}
+
+/* =========================================================
+   SNAKE ENGINE — SCENE COMPOSER / MOBILE-FIRST
+========================================================= */
+.scn-shell{height:calc(100vh - 72px);min-height:600px;display:flex;flex-direction:column;background:#080b0f;border:1px solid #202832;border-radius:10px;overflow:hidden;color:#dce4eb}
+.scn-topbar{height:48px;min-height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;background:#0d1217;border-bottom:1px solid #202832}
+.scn-doc{display:flex;align-items:center;gap:8px;min-width:0}.scn-doc-mark{width:30px;height:30px;display:grid;place-items:center;border:1px solid #2b3640;background:#121820;border-radius:6px;color:#aeb8c3}.scn-doc strong{display:block;font-size:12px;font-weight:700;letter-spacing:.02em}.scn-doc span:last-child{display:block;color:#667482;font-size:9px;margin-top:2px}.scn-top-actions{display:flex;align-items:center;gap:5px}.scn-icon-btn,.scn-save{height:32px;border:1px solid #2a3540;background:#121920;color:#aeb8c3;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:5px}.scn-icon-btn{width:32px}.scn-save{padding:0 10px;color:#a8e995;border-color:#31543a;background:#132019;font-size:10px;font-weight:700}.scn-divider{width:1px;height:22px;background:#26313b;margin:0 2px}
+.scn-main{position:relative;display:grid;grid-template-columns:220px minmax(0,1fr) 250px;grid-template-rows:minmax(0,1fr);flex:1;min-height:0}.scn-dock{background:#0c1117;overflow:auto}.scn-hierarchy{border-right:1px solid #202832}.scn-inspector2{border-left:1px solid #202832}.scn-dock-head{height:36px;padding:0 9px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1e2730;color:#687785;font-size:9px;font-weight:800;letter-spacing:.12em}.scn-small-btn{width:27px;height:27px;border:1px solid #29343e;background:#121920;color:#8e9ba7;border-radius:5px;display:grid;place-items:center}.scn-small-btn .ui-icon{width:14px;height:14px}.scn-scene-root{height:36px;display:flex;align-items:center;gap:6px;padding:0 9px;border-bottom:1px solid #1d2630;color:#d6dee5;background:#10171e}.scn-scene-root .ui-icon{width:14px;color:#82909c}.scn-scene-root input{border:0!important;background:transparent!important;padding:0!important;font-size:10px!important;color:#d6dee5!important}.scn-tree{padding:6px}.scn-node{width:100%;min-height:32px;padding:0 7px;border:1px solid transparent;background:transparent;color:#8f9ca8;border-radius:5px;display:flex;align-items:center;gap:6px;text-align:left;font-size:10px}.scn-node:hover{background:#141c23;color:#dce5ec}.scn-node.active{background:#162b3c;border-color:#2c5974;color:#e5f2fb}.scn-node .scn-node-icon{width:14px;height:14px;color:#71808d}.scn-node.active .scn-node-icon{color:#8fc8ee}.scn-node-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.scn-node-type{font:8px monospace;color:#586672}.scn-hierarchy-actions{border-top:1px solid #1d2630;padding:7px;display:grid;grid-template-columns:1fr 1fr;gap:5px}.scn-hierarchy-actions button{height:30px;border:1px solid #27323c;background:#111820;color:#8795a2;border-radius:5px;font-size:9px;display:flex;align-items:center;justify-content:center;gap:4px}.scn-hierarchy-actions button:hover{color:#e0e7ed;border-color:#3b4a56}.scn-hierarchy-actions .ui-icon{width:13px;height:13px}
+.scn-viewport{position:relative;min-width:0;min-height:0;overflow:hidden;background:#070a0d;touch-action:none}.scn-viewport canvas{width:100%;height:100%;display:block;touch-action:none}.scn-toolbar{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:3px;padding:4px;background:rgba(10,14,18,.94);border:1px solid #2a3540;border-radius:7px;z-index:6;box-shadow:0 10px 28px rgba(0,0,0,.25)}.scn-toolbar button{height:31px;min-width:31px;padding:0 8px;border:1px solid transparent;background:transparent;color:#7f8d99;border-radius:5px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:9px}.scn-toolbar button:hover{background:#161e26;color:#dfe7ed}.scn-toolbar button.active{background:#182d3d;border-color:#2d5c79;color:#d9efff}.scn-toolbar .ui-icon{width:14px;height:14px}.scn-tool-sep{width:1px;height:22px;background:#27313b;margin:0 2px}.scn-viewport-status{position:absolute;left:9px;bottom:8px;display:flex;gap:5px;z-index:4}.scn-viewport-status span{padding:5px 7px;background:rgba(8,12,16,.88);border:1px solid #26323c;border-radius:5px;color:#64727e;font:9px monospace}.scn-add-fab{position:absolute;right:10px;bottom:10px;z-index:7}.scn-add-fab>button{width:40px;height:40px;border:1px solid #3d6d8d;background:#152a3a;color:#bfe4fb;border-radius:7px;display:grid;place-items:center;box-shadow:0 10px 22px rgba(0,0,0,.3)}.scn-add-menu{position:absolute;right:0;bottom:48px;width:150px;padding:5px;background:#0e151c;border:1px solid #2c3843;border-radius:7px;box-shadow:0 16px 35px rgba(0,0,0,.4);display:none}.scn-add-menu.open{display:grid}.scn-add-menu button{height:32px;text-align:left;padding:0 9px;background:transparent;border:0;color:#9aa7b2;border-radius:4px;font-size:10px}.scn-add-menu button:hover{background:#18222b;color:#fff}
+.scn-inspector-content{padding:8px}.scn-empty{padding:20px 8px;text-align:center;color:#566470;font-size:10px}.scn-inspector-section{border-bottom:1px solid #1d2630;padding:9px 0}.scn-inspector-section:last-child{border-bottom:0}.scn-inspector-title{font-size:9px;font-weight:800;letter-spacing:.1em;color:#657481;margin-bottom:8px}.scn-field{margin-bottom:7px}.scn-field label{display:block;font-size:9px;color:#687784;margin-bottom:4px}.scn-field input,.scn-field select{width:100%;height:30px;box-sizing:border-box;background:#0a1015!important;border:1px solid #28343e!important;border-radius:5px!important;padding:0 7px!important;font-size:10px!important;color:#dbe4eb!important}.scn-transform-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.scn-field-wide{grid-column:1/-1}.scn-check{display:flex;align-items:center;justify-content:space-between;height:30px;color:#84919d;font-size:9px}.scn-check input{width:auto!important;height:auto!important}.scn-inspector-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.scn-inspector-actions button{height:30px;border:1px solid #29343e;background:#121920;color:#8997a3;border-radius:5px;font-size:9px}.scn-inspector-actions .danger{color:#df8b8b;border-color:#523136;background:#211417}
+.scn-assets{height:112px;min-height:112px;background:#0b1015;border-top:1px solid #202832;padding:7px 9px}.scn-assets-head{height:25px;display:flex;align-items:center;justify-content:space-between;color:#687784;font-size:9px;font-weight:800;letter-spacing:.1em}.scn-assets-head>div{display:flex;gap:3px}.scn-assets-head button{border:0;background:transparent;color:#667582;padding:4px 6px;border-radius:4px;font-size:9px}.scn-assets-head button.active{background:#17232d;color:#b9d9ee}.scn-asset-tray{height:76px;display:flex;gap:7px;overflow:auto;align-items:center}.scn-asset{width:76px;min-width:76px;height:68px;background:#10171e;border:1px solid #252f39;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#7e8c98;font-size:8px}.scn-asset:hover{border-color:#3c4f5e;color:#d5dfe6}.scn-asset .scn-thumb{width:36px;height:36px;display:grid;place-items:center;background:#0a0f14;border:1px solid #202a33;border-radius:4px;overflow:hidden}.scn-asset img{max-width:100%;max-height:100%;image-rendering:pixelated}.scn-asset span{max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scn-mobile-bar{display:none}
+@media(max-width:900px){
+  .scn-shell{height:calc(100vh - 64px);min-height:520px;border-radius:0;border-left:0;border-right:0}
+  .scn-main{display:block;position:relative}
+  .scn-hierarchy,.scn-inspector2{position:absolute;top:0;bottom:0;width:min(280px,84vw);z-index:20;box-shadow:0 16px 35px rgba(0,0,0,.4);transition:transform .2s ease}
+  .scn-hierarchy{left:0;transform:translateX(-105%)}.scn-hierarchy.open{transform:translateX(0)}
+  .scn-inspector2{right:0;transform:translateX(105%)}.scn-inspector2.open{transform:translateX(0)}
+  .scn-viewport{height:100%}
+  .scn-assets{display:none}
+  .scn-toolbar{left:8px;right:8px;transform:none;justify-content:flex-start;overflow:auto;max-width:calc(100% - 16px)}
+  .scn-toolbar button span{display:none}.scn-toolbar button{min-width:36px}
+  .scn-mobile-bar{height:60px;display:flex;position:absolute;left:0;right:0;bottom:0;z-index:15;background:rgba(11,16,21,.97);border-top:1px solid #202832;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom)}
+  .scn-mobile-bar button{height:45px;min-width:55px;border:1px solid transparent;background:transparent;color:#687783;border-radius:6px;font-size:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+  .scn-mobile-bar button.active{color:#c9e8fb;background:#172632;border-color:#2c4e63}.scn-mobile-bar .ui-icon{width:17px;height:17px}
+  .scn-viewport-status{bottom:68px}
+  .scn-add-fab{bottom:68px}
+}
+@media(max-width:560px){
+  .scn-topbar{height:44px;min-height:44px}.scn-doc strong{font-size:11px}.scn-doc span:last-child{font-size:8px}.scn-save span{display:none}.scn-save{width:32px;padding:0}.scn-icon-btn{width:30px}
+  .scn-toolbar{top:7px}.scn-toolbar button{height:30px}.scn-tool-sep{display:none}
+  .scn-viewport-status{left:6px}.scn-add-fab{right:7px}
+}
 </style>
 </head>
 
@@ -2572,20 +2605,169 @@ function artPlay2(){art2.playing=!art2.playing;const b=document.getElementById('
 function artAddPalette2(){const v=prompt('HEX da cor','#ffcc00');if(!v||!/^(#)?[0-9a-f]{6}$/i.test(v))return;v=v.startsWith('#')?v:'#'+v;const p=JSON.parse(localStorage.getItem('myengine_art_palette')||'[]');if(!p.includes(v))p.push(v);localStorage.setItem('myengine_art_palette',JSON.stringify(p));artRenderPalette2()}
 function artRenderPalette2(){const el=document.getElementById('artPalette2');if(!el)return;const defaults=['#111111','#ffffff','#ff3b30','#ffcc00','#34c759','#00c7be','#0a84ff','#5e5ce6','#bf5af2','#ff2d55','#8e8e93','#a2845e'];const p=[...defaults,...JSON.parse(localStorage.getItem('myengine_art_palette')||'[]')];el.innerHTML=p.map(c=>`<button class="art-swatch" style="background:${c}" title="${c}" onclick="artSetColor2('${c}')"></button>`).join('')}
 document.addEventListener('keydown',e=>{if(!document.getElementById('tool-art')?.classList.contains('active'))return;if(e.target.matches('input,textarea'))return;const k=e.key.toLowerCase();const map={pencil:'p',eraser:'e',fill:'f',line:'l',rect:'r',circle:'c',picker:'i',select:'s',move:'m'};const tool=Object.keys(map).find(x=>map[x]===k);if(tool){art2.tool=tool;artSyncUI2()}if(k==='z'&&(e.ctrlKey||e.metaKey)){e.preventDefault();e.shiftKey?artRedo2():artUndo2()}if(k==='y'&&(e.ctrlKey||e.metaKey)){e.preventDefault();artRedo2()}if(k==='g'){art2.grid=!art2.grid;artRender2()}});
-/* SCENE */
-let sceneCtx2,sceneObjs2=[],sceneSel2=null,sceneTool2='select',sceneGrid2=true,sceneSnap2=true,sceneCam2={x:0,y:0,z:1},sceneDrag2=null;
-function sceneInit2(){const c=document.getElementById('sceneCanvas2');sceneCtx2=c.getContext('2d');c.addEventListener('pointerdown',sceneDown2);c.addEventListener('pointermove',sceneMove2);['pointerup','pointercancel'].forEach(t=>c.addEventListener(t,()=>sceneDrag2=null));sceneLoad2();sceneResize2()}
-function sceneResize2(){const c=document.getElementById('sceneCanvas2'),r=c.parentElement.getBoundingClientRect(),d=devicePixelRatio||1;c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';sceneCtx2.setTransform(d,0,0,d,0,0);sceneRender2()}
-function sceneWorld2(p){const c=document.getElementById('sceneCanvas2');return{x:(p.x-c.clientWidth/2)/sceneCam2.z+sceneCam2.x,y:(p.y-c.clientHeight/2)/sceneCam2.z+sceneCam2.y}}
-function sceneScreen2(o){const c=document.getElementById('sceneCanvas2');return{x:c.clientWidth/2+(o.x-sceneCam2.x)*sceneCam2.z,y:c.clientHeight/2+(o.y-sceneCam2.y)*sceneCam2.z}}
-function sceneRender2(){if(!sceneCtx2)return;const c=document.getElementById('sceneCanvas2'),w=c.clientWidth,h=c.clientHeight;sceneCtx2.clearRect(0,0,w,h);sceneCtx2.fillStyle='#10161d';sceneCtx2.fillRect(0,0,w,h);if(sceneGrid2){sceneCtx2.strokeStyle='#1d2730';sceneCtx2.lineWidth=1;const g=32*sceneCam2.z;for(let x=w/2-(sceneCam2.x%32)*sceneCam2.z;x<w;x+=g){sceneCtx2.beginPath();sceneCtx2.moveTo(x,0);sceneCtx2.lineTo(x,h);sceneCtx2.stroke()}for(let y=h/2-(sceneCam2.y%32)*sceneCam2.z;y<h;y+=g){sceneCtx2.beginPath();sceneCtx2.moveTo(0,y);sceneCtx2.lineTo(w,y);sceneCtx2.stroke()}}sceneObjs2.forEach(o=>{const p=sceneScreen2(o);sceneCtx2.fillStyle=o.color||'#2878ff';sceneCtx2.fillRect(p.x-16*sceneCam2.z,p.y-16*sceneCam2.z,32*sceneCam2.z,32*sceneCam2.z);if(o.id===sceneSel2){sceneCtx2.strokeStyle='#fff';sceneCtx2.strokeRect(p.x-20*sceneCam2.z,p.y-20*sceneCam2.z,40*sceneCam2.z,40*sceneCam2.z)}sceneCtx2.fillStyle='#fff';sceneCtx2.font='10px monospace';sceneCtx2.fillText(o.name,p.x+20,p.y-20)});renderSceneNodes2();renderSceneInspector2()}
-function renderSceneNodes2(){document.getElementById('sceneNodes2').innerHTML=sceneObjs2.map(o=>`<button class="scene-node ${o.id===sceneSel2?'selected':''}" onclick="sceneSel2=${o.id};sceneRender2()">${o.type} · ${o.name}</button>`).join('')||'<div class="tool-muted">Cena vazia</div>'}
-function renderSceneInspector2(){const o=sceneObjs2.find(x=>x.id===sceneSel2);document.getElementById('sceneInspector2').innerHTML=o?`<div class="field"><label>Nome</label><input class="tool-input" value="${o.name}" onchange="o=sceneObjs2.find(x=>x.id===sceneSel2);o.name=this.value;sceneRender2()"></div><div class="field"><label>X</label><input class="tool-input" type="number" value="${o.x}" onchange="sceneObjs2.find(x=>x.id===sceneSel2).x=+this.value;sceneRender2()"></div><div class="field"><label>Y</label><input class="tool-input" type="number" value="${o.y}" onchange="sceneObjs2.find(x=>x.id===sceneSel2).y=+this.value;sceneRender2()"></div><div class="field"><label>Tipo</label><div>${o.type}</div></div>`:'Selecione um objeto.'}
-function sceneAdd2(type){const id=Date.now();sceneObjs2.push({id,name:type+' '+sceneObjs2.length,x:0,y:0,type,color:type==='Sprite'?'#20c968':'#2878ff'});sceneSel2=id;sceneRender2()}
-function sceneDown2(e){const r=e.currentTarget.getBoundingClientRect(),p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top});let hit=sceneObjs2.slice().reverse().find(o=>Math.abs(o.x-p.x)<24&&Math.abs(o.y-p.y)<24);if(hit){sceneSel2=hit.id;sceneDrag2={id:hit.id,ox:hit.x,oy:hit.y,px:p.x,py:p.y};sceneRender2()}else if(sceneTool2==='select')sceneSel2=null}
-function sceneMove2(e){if(!sceneDrag2||sceneTool2!=='select')return;const r=e.currentTarget.getBoundingClientRect(),p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top}),o=sceneObjs2.find(x=>x.id===sceneDrag2.id);if(!o)return;let x=sceneDrag2.ox+p.x-sceneDrag2.px,y=sceneDrag2.oy+p.y-sceneDrag2.py;if(sceneSnap2){x=Math.round(x/32)*32;y=Math.round(y/32)*32}o.x=x;o.y=y;sceneRender2()}
-function sceneUpdateTool2(){document.querySelectorAll('.scene-toolbar2 button').forEach((b,i)=>b.classList.toggle('active',sceneTool2==='select'&&i===0));}
-function saveScene2(){localStorage.setItem('myengine_scene',JSON.stringify(sceneObjs2))}function loadScene2(){sceneObjs2=JSON.parse(localStorage.getItem('myengine_scene')||'null')||[{id:1,name:'Player',x:-64,y:0,type:'Sprite',color:'#20c968'},{id:2,name:'Camera',x:64,y:0,type:'Camera',color:'#2878ff'}]}
+/* SCENE COMPOSER — PROFESSIONAL MOBILE-FIRST */
+let sceneCtx2=null,sceneObjs2=[],sceneSel2=null,sceneTool2='select',sceneGrid2=true,sceneSnap2=true,sceneCam2={x:0,y:0,z:1},sceneDrag2=null,scenePointers2=new Map(),scenePinch2=null,sceneHistory2=[],sceneFuture2=[],sceneAssetTab2Value='sprites';
+
+function sceneInit2(){
+  const c=document.getElementById('sceneCanvas2'); if(!c)return;
+  sceneCtx2=c.getContext('2d'); sceneCtx2.imageSmoothingEnabled=false;
+  if(!c.dataset.bound){
+    c.dataset.bound='1';
+    c.addEventListener('pointerdown',sceneDown2);
+    c.addEventListener('pointermove',sceneMove2);
+    c.addEventListener('pointerup',sceneUp2);
+    c.addEventListener('pointercancel',sceneUp2);
+    c.addEventListener('wheel',e=>{e.preventDefault();sceneZoomAt2(e.deltaY<0?1.12:.89,e.clientX,e.clientY)},{passive:false});
+  }
+  sceneLoad2();
+  sceneResize2();
+  sceneRender2();
+  sceneRenderAssets2();
+}
+
+function sceneResize2(){
+  const c=document.getElementById('sceneCanvas2'); if(!c||!sceneCtx2)return;
+  const r=c.parentElement.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);
+  c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);c.style.width=r.width+'px';c.style.height=r.height+'px';
+  sceneCtx2.setTransform(d,0,0,d,0,0);sceneRender2();
+}
+
+function sceneWorld2(p){
+  const c=document.getElementById('sceneCanvas2');
+  return {x:(p.x-c.clientWidth/2)/sceneCam2.z+sceneCam2.x,y:(p.y-c.clientHeight/2)/sceneCam2.z+sceneCam2.y};
+}
+function sceneScreen2(o){
+  const c=document.getElementById('sceneCanvas2');
+  return {x:c.clientWidth/2+(o.x-sceneCam2.x)*sceneCam2.z,y:c.clientHeight/2+(o.y-sceneCam2.y)*sceneCam2.z};
+}
+function sceneNodeColor2(type){
+  return ({Sprite:'#6ebd5b',Tilemap:'#4c9aff',Camera:'#b58a4c',Light:'#d7b65e',Node2D:'#7e8994'})[type]||'#7e8994';
+}
+function sceneIconPath2(type){
+  return ({Sprite:'<rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m5 17 4-4 3 3 3-4 4 5"/>',
+    Tilemap:'<path d="m12 3 8 4-8 4-8-4 8-4Z"/><path d="m4 12 8 4 8-4M4 17l8 4 8-4"/>',
+    Camera:'<path d="M4 8h4l2-2h4l2 2h4v10H4V8Z"/><circle cx="12" cy="13" r="3"/>',
+    Light:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+    Node2D:'<circle cx="12" cy="12" r="7"/><path d="M12 5v14M5 12h14"/>'})[type]||'<circle cx="12" cy="12" r="7"/>';
+}
+function sceneRender2(){
+  if(!sceneCtx2)return;
+  const c=document.getElementById('sceneCanvas2'),w=c.clientWidth,h=c.clientHeight;
+  sceneCtx2.clearRect(0,0,w,h);sceneCtx2.fillStyle='#080c10';sceneCtx2.fillRect(0,0,w,h);
+  const z=sceneCam2.z,grid=32*z;
+  if(sceneGrid2&&grid>5){
+    sceneCtx2.strokeStyle='#17212a';sceneCtx2.lineWidth=1;
+    const ox=((w/2)-(sceneCam2.x*z))%grid,oy=((h/2)-(sceneCam2.y*z))%grid;
+    for(let x=ox;x<w;x+=grid){sceneCtx2.beginPath();sceneCtx2.moveTo(x,0);sceneCtx2.lineTo(x,h);sceneCtx2.stroke()}
+    for(let y=oy;y<h;y+=grid){sceneCtx2.beginPath();sceneCtx2.moveTo(0,y);sceneCtx2.lineTo(w,y);sceneCtx2.stroke()}
+  }
+  const origin=sceneScreen2({x:0,y:0});
+  sceneCtx2.strokeStyle='#2f4654';sceneCtx2.lineWidth=1;
+  sceneCtx2.beginPath();sceneCtx2.moveTo(origin.x,0);sceneCtx2.lineTo(origin.x,h);sceneCtx2.stroke();
+  sceneCtx2.beginPath();sceneCtx2.moveTo(0,origin.y);sceneCtx2.lineTo(w,origin.y);sceneCtx2.stroke();
+
+  sceneObjs2.forEach(o=>{
+    const p=sceneScreen2(o),size=32*z*Math.max(.25,o.scale||1),rot=(o.rotation||0)*Math.PI/180;
+    sceneCtx2.save();sceneCtx2.translate(p.x,p.y);sceneCtx2.rotate(rot);
+    sceneCtx2.globalAlpha=o.visible===false?.25:1;sceneCtx2.fillStyle=sceneNodeColor2(o.type);
+    if(o.type==='Camera'){sceneCtx2.strokeStyle=sceneNodeColor2(o.type);sceneCtx2.lineWidth=2;sceneCtx2.strokeRect(-size*.7,-size*.45,size*1.4,size*.9);sceneCtx2.beginPath();sceneCtx2.moveTo(size*.7,-size*.18);sceneCtx2.lineTo(size,size*.18);sceneCtx2.lineTo(size*.7,size*.35);sceneCtx2.stroke()}
+    else if(o.type==='Light'){sceneCtx2.beginPath();sceneCtx2.arc(0,0,size*.42,0,Math.PI*2);sceneCtx2.fill();sceneCtx2.strokeStyle='#f2d77c';sceneCtx2.lineWidth=1;for(let i=0;i<8;i++){const a=i*Math.PI/4;sceneCtx2.beginPath();sceneCtx2.moveTo(Math.cos(a)*size*.55,Math.sin(a)*size*.55);sceneCtx2.lineTo(Math.cos(a)*size*.85,Math.sin(a)*size*.85);sceneCtx2.stroke()}}
+    else if(o.type==='Tilemap'){sceneCtx2.strokeStyle=sceneNodeColor2(o.type);sceneCtx2.lineWidth=1.5;sceneCtx2.strokeRect(-size/2,-size/2,size,size);sceneCtx2.beginPath();sceneCtx2.moveTo(0,-size/2);sceneCtx2.lineTo(0,size/2);sceneCtx2.moveTo(-size/2,0);sceneCtx2.lineTo(size/2,0);sceneCtx2.stroke()}
+    else {sceneCtx2.fillRect(-size/2,-size/2,size,size);sceneCtx2.strokeStyle='#dce8ef';sceneCtx2.globalAlpha=(o.visible===false?.2:.75);sceneCtx2.strokeRect(-size/2,-size/2,size,size)}
+    sceneCtx2.restore();
+    sceneCtx2.globalAlpha=1;sceneCtx2.fillStyle='#8c9aa6';sceneCtx2.font='9px ui-monospace,monospace';sceneCtx2.fillText(o.name,p.x+22*z,p.y-20*z);
+    if(o.id===sceneSel2){sceneCtx2.strokeStyle='#b9e5ff';sceneCtx2.lineWidth=1.5;sceneCtx2.setLineDash([4,3]);sceneCtx2.strokeRect(p.x-20*z,p.y-20*z,40*z,40*z);sceneCtx2.setLineDash([])}
+  });
+  const zoomEl=document.getElementById('sceneZoom2');if(zoomEl)zoomEl.textContent=Math.round(z*100)+'%';
+  renderSceneNodes2();renderSceneInspector2();
+}
+function sceneSnapshot2(){sceneHistory2.push(JSON.stringify(sceneObjs2));if(sceneHistory2.length>60)sceneHistory2.shift();sceneFuture2=[]}
+function sceneUndo2(){if(!sceneHistory2.length)return;sceneFuture2.push(JSON.stringify(sceneObjs2));sceneObjs2=JSON.parse(sceneHistory2.pop());sceneSel2=null;sceneRender2()}
+function sceneRedo2(){if(!sceneFuture2.length)return;sceneHistory2.push(JSON.stringify(sceneObjs2));sceneObjs2=JSON.parse(sceneFuture2.pop());sceneRender2()}
+function sceneSetTool2(tool){sceneTool2=tool;document.querySelectorAll('[data-scn-tool]').forEach(b=>b.classList.toggle('active',b.dataset.scnTool===tool));document.querySelectorAll('[data-scn-mobile]').forEach(b=>b.classList.toggle('active',b.dataset.scnMobile===tool));if(tool==='pan')showToast('Pan mode');}
+function sceneToggleGrid2(){sceneGrid2=!sceneGrid2;document.getElementById('sceneGridBtn2')?.classList.toggle('active',sceneGrid2);sceneRender2()}
+function sceneToggleSnap2(){sceneSnap2=!sceneSnap2;document.getElementById('sceneSnapBtn2')?.classList.toggle('active',sceneSnap2);sceneRender2()}
+function sceneSnapValue2(v){return sceneSnap2?Math.round(v/16)*16:v}
+function sceneAdd2(type){
+  sceneSnapshot2();const id=Date.now()+Math.floor(Math.random()*999);
+  sceneObjs2.push({id,name:type+' '+(sceneObjs2.length+1),x:sceneCam2.x,y:sceneCam2.y,type,rotation:0,scale:1,visible:true,locked:false});
+  sceneSel2=id;sceneRender2();document.getElementById('sceneAddMenu2')?.classList.remove('open');showToast(type+' added');
+}
+function sceneSelect2(id){sceneSel2=id;sceneRender2()}
+function sceneDelete2(){if(sceneSel2==null)return;sceneSnapshot2();sceneObjs2=sceneObjs2.filter(o=>o.id!==sceneSel2);sceneSel2=null;sceneRender2();showToast('Node removed')}
+function sceneDuplicate2(){const o=sceneObjs2.find(x=>x.id===sceneSel2);if(!o)return;sceneSnapshot2();const n={...o,id:Date.now()+Math.random(),name:o.name+' Copy',x:o.x+32,y:o.y+32};sceneObjs2.push(n);sceneSel2=n.id;sceneRender2()}
+function sceneFrameSelected2(){const o=sceneObjs2.find(x=>x.id===sceneSel2);if(!o){sceneCam2={x:0,y:0,z:1};}else{sceneCam2.x=o.x;sceneCam2.y=o.y;}sceneRender2()}
+function sceneZoomAt2(f,cx,cy){
+  const c=document.getElementById('sceneCanvas2'),r=c.getBoundingClientRect(),before=sceneWorld2({x:cx-r.left,y:cy-r.top});
+  sceneCam2.z=Math.max(.2,Math.min(6,sceneCam2.z*f));
+  const after=sceneWorld2({x:cx-r.left,y:cy-r.top});sceneCam2.x+=before.x-after.x;sceneCam2.y+=before.y-after.y;sceneRender2();
+}
+function sceneToggleAddMenu2(){document.getElementById('sceneAddMenu2')?.classList.toggle('open')}
+function sceneToggleHierarchy2(){document.getElementById('sceneHierarchy2')?.classList.toggle('open')}
+function sceneToggleInspector2(){document.getElementById('sceneInspectorDock2')?.classList.toggle('open')}
+function sceneRenameDoc2(v){const n=(v||'Main Scene').trim()||'Main Scene';const m=document.getElementById('sceneDocMeta2');if(m)m.textContent=n+' · 2D'}
+function sceneDown2(e){
+  const c=e.currentTarget,r=c.getBoundingClientRect();c.setPointerCapture?.(e.pointerId);scenePointers2.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(scenePointers2.size===2){scenePinch2=scenePinchState2();sceneDrag2=null;return}
+  if(sceneTool2==='pan'){sceneDrag2={pan:true,px:e.clientX,py:e.clientY,ox:sceneCam2.x,oy:sceneCam2.y};return}
+  const p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top});const hit=sceneObjs2.slice().reverse().find(o=>Math.hypot(o.x-p.x,o.y-p.y)<28/sceneCam2.z);
+  if(hit){sceneSel2=hit.id;sceneSnapshot2();sceneDrag2={id:hit.id,px:p.x,py:p.y,ox:hit.x,oy:hit.y,or:hit.rotation||0,os:hit.scale||1};sceneRender2()}
+  else if(sceneTool2==='select'){sceneSel2=null;sceneRender2()}
+}
+function scenePinchState2(){const a=[...scenePointers2.values()];const dx=a[0].x-a[1].x,dy=a[0].y-a[1].y;return{dist:Math.max(1,Math.hypot(dx,dy)),zoom:sceneCam2.z,mid:{x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2},cam:{...sceneCam2}}}
+function sceneMove2(e){
+  if(scenePointers2.has(e.pointerId))scenePointers2.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(scenePointers2.size>=2&&scenePinch2){
+    const a=[...scenePointers2.values()],dist=Math.max(1,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y));sceneCam2.z=Math.max(.2,Math.min(6,scenePinch2.zoom*dist/scenePinch2.dist));sceneRender2();return;
+  }
+  if(!sceneDrag2)return;
+  if(sceneDrag2.pan){sceneCam2.x=sceneDrag2.ox-(e.clientX-sceneDrag2.px)/sceneCam2.z;sceneCam2.y=sceneDrag2.oy-(e.clientY-sceneDrag2.py)/sceneCam2.z;sceneRender2();return}
+  const r=e.currentTarget.getBoundingClientRect(),p=sceneWorld2({x:e.clientX-r.left,y:e.clientY-r.top}),o=sceneObjs2.find(x=>x.id===sceneDrag2.id);if(!o||o.locked)return;
+  if(sceneTool2==='move'||sceneTool2==='select'){o.x=sceneSnapValue2(sceneDrag2.ox+p.x-sceneDrag2.px);o.y=sceneSnapValue2(sceneDrag2.oy+p.y-sceneDrag2.py)}
+  else if(sceneTool2==='rotate'){o.rotation=sceneDrag2.or+(p.x-sceneDrag2.px)*1.5}
+  else if(sceneTool2==='scale'){o.scale=Math.max(.25,Math.min(8,sceneDrag2.os+(p.x-sceneDrag2.px)/80))}
+  const co=document.getElementById('sceneCoord2');if(co)co.textContent=Math.round(p.x)+', '+Math.round(p.y);sceneRender2();
+}
+function sceneUp2(e){scenePointers2.delete(e.pointerId);if(scenePointers2.size<2)scenePinch2=null;sceneDrag2=null}
+function renderSceneNodes2(){
+  const el=document.getElementById('sceneNodes2');if(!el)return;
+  el.innerHTML=sceneObjs2.map(o=>`<button class="scn-node ${o.id===sceneSel2?'active':''}" onclick="sceneSelect2(${o.id})"><svg class="ui-icon scn-node-icon" viewBox="0 0 24 24">${sceneIconPath2(o.type)}</svg><span class="scn-node-name">${escapeHTML(o.name)}</span><span class="scn-node-type">${o.type}</span></button>`).join('')||'<div class="scn-empty">No nodes in scene.</div>';
+}
+function renderSceneInspector2(){
+  const el=document.getElementById('sceneInspector2');if(!el)return;const o=sceneObjs2.find(x=>x.id===sceneSel2);
+  if(!o){el.innerHTML='<div class="scn-empty">Select a node to edit its properties.</div>';return}
+  el.innerHTML=`<div class="scn-inspector-section"><div class="scn-inspector-title">NODE</div><div class="scn-field"><label>Name</label><input value="${escapeHTML(o.name)}" onchange="sceneEditField2('name',this.value)"></div><div class="scn-field"><label>Type</label><select disabled><option>${o.type}</option></select></div></div>
+  <div class="scn-inspector-section"><div class="scn-inspector-title">TRANSFORM</div><div class="scn-transform-grid">
+  <div class="scn-field"><label>X</label><input type="number" value="${Math.round(o.x)}" onchange="sceneEditField2('x',this.value)"></div>
+  <div class="scn-field"><label>Y</label><input type="number" value="${Math.round(o.y)}" onchange="sceneEditField2('y',this.value)"></div>
+  <div class="scn-field"><label>Rotation</label><input type="number" value="${Math.round(o.rotation||0)}" onchange="sceneEditField2('rotation',this.value)"></div>
+  <div class="scn-field"><label>Scale</label><input type="number" step=".05" value="${o.scale||1}" onchange="sceneEditField2('scale',this.value)"></div></div></div>
+  <div class="scn-inspector-section"><div class="scn-inspector-title">STATE</div><div class="scn-check"><span>Visible</span><input type="checkbox" ${o.visible!==false?'checked':''} onchange="sceneEditField2('visible',this.checked)"></div><div class="scn-check"><span>Locked</span><input type="checkbox" ${o.locked?'checked':''} onchange="sceneEditField2('locked',this.checked)"></div></div>
+  <div class="scn-inspector-section"><div class="scn-inspector-actions"><button onclick="sceneDuplicate2()">Duplicate</button><button class="danger" onclick="sceneDelete2()">Delete</button></div></div>`;
+}
+function sceneEditField2(key,value){const o=sceneObjs2.find(x=>x.id===sceneSel2);if(!o)return;sceneSnapshot2();o[key]=['x','y','rotation','scale'].includes(key)?Number(value)||0:value;sceneRender2()}
+function sceneAssetTab2(tab){sceneAssetTab2Value=tab;document.querySelectorAll('[data-scn-asset-tab]').forEach(b=>b.classList.toggle('active',b.dataset.scnAssetTab===tab));sceneRenderAssets2()}
+function sceneRenderAssets2(){
+  const el=document.getElementById('sceneAssetTray2');if(!el)return;
+  const imgs=(typeof assets2!=='undefined'?assets2:[]).filter(a=>a.type?.startsWith('image/'));
+  const tiles=(typeof assets2!=='undefined'?assets2:[]).filter(a=>/tilemap/i.test(a.name)||a.source==='tilemap');
+  let arr=sceneAssetTab2Value==='sprites'?imgs:sceneAssetTab2Value==='tilemaps'?tiles:[...imgs,...tiles];
+  el.innerHTML=arr.map(a=>`<button class="scn-asset" onclick="sceneAddAssetNode2('${String(a.id).replace(/'/g,'')}','${escapeHTML(a.name)}','${a.type?.startsWith('image/')?'Sprite':'Tilemap'}')"><span class="scn-thumb">${a.type?.startsWith('image/')?`<img src="${a.data}">`:'TM'}</span><span>${escapeHTML(a.name)}</span></button>`).join('')||'<div class="scn-empty" style="padding:8px">No compatible assets yet.</div>';
+}
+function sceneAddAssetNode2(id,name,type){sceneSnapshot2();const n={id:Date.now()+Math.random(),name:name.replace(/\.[^.]+$/,''),x:sceneCam2.x,y:sceneCam2.y,type:type==='Tilemap'?'Tilemap':'Sprite',rotation:0,scale:1,visible:true,locked:false,assetId:id};sceneObjs2.push(n);sceneSel2=n.id;sceneRender2();showToast('Asset added to scene')}
+function sceneSaveResource2(){saveScene2()}
+function saveScene2(){
+  const name=(document.getElementById('sceneName2')?.value||'Main Scene').trim()||'Main Scene';sceneRenameDoc2(name);
+  const payload={version:2,type:'scene',name,mode:'2D',grid:sceneGrid2,snap:sceneSnap2,nodes:sceneObjs2};
+  localStorage.setItem('myengine_scene_resource',JSON.stringify(payload));
+  try{if(typeof assets2!=='undefined'){assets2=assets2.filter(a=>a.source!=='scene-composer');assets2.push({id:'scene-composer',name:name+'.scene',type:'application/json',data:JSON.stringify(payload),folder:'root',source:'scene-composer'});saveAssets2();renderAssets2?.()}}catch(e){}
+  showToast('Scene saved');
+}
+function loadScene2(){
+  try{const d=JSON.parse(localStorage.getItem('myengine_scene_resource')||'null');if(d?.nodes){sceneObjs2=d.nodes;sceneGrid2=d.grid!==false;sceneSnap2=d.snap!==false;const n=document.getElementById('sceneName2');if(n)n.value=d.name||'Main Scene';sceneRenameDoc2(d.name||'Main Scene');return}}catch(e){}
+  sceneObjs2=[{id:1,name:'Background',x:0,y:0,type:'Node2D',rotation:0,scale:10,visible:true,locked:true},{id:2,name:'Player',x:-64,y:0,type:'Sprite',rotation:0,scale:1,visible:true,locked:false},{id:3,name:'Camera',x:0,y:0,type:'Camera',rotation:0,scale:1,visible:true,locked:true}];
+}
+function sceneRenderAssetAfterInit(){sceneRenderAssets2()}
 /* TILEMAP STUDIO — immersive touch-first editor */
 let tm={w:40,h:25,size:32,zoom:1,grid:true,tool:'paint',mode:'edit',tile:0,tiles:[],layers:[],layer:0,history:[],future:[],drawing:false,start:null,last:null,pan:{x:0,y:0},panning:false,panStart:null,brush:1,pointers:new Map(),pinch:null,selection:null,clipboard:null,binded:false};
 const tmColors=['#405a3c','#6f513b','#3f6f9f','#b08a3e','#6a4f7d','#273038','#a9b0b5','#8d4c4c','#b96e38','#668c54','#65707a','#356f8c'];
@@ -2698,10 +2880,85 @@ function engineInitAll(){if(!window.__myengineInit){window.__myengineInit=true;a
     </main>
 
     <main id="tool-scene" class="engine-page">
-      <div class="tool-card"><div class="tool-title"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5v-13Z"/><path d="M8 4v13M16 7v13"/></svg> Scene Editor</div><div class="tool-muted">Grid, snap, objetos, seleção, movimentação e inspector.</div></div>
-      <div class="scene-editor" id="sceneEditor2"><canvas id="sceneCanvas2"></canvas><div class="scene-toolbar2"><button class="active" id="sceneSelect2" onclick="sceneTool2='select';sceneUpdateTool2()">↖</button><button onclick="sceneTool2='pan';sceneUpdateTool2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 11V5a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-4a1.5 1.5 0 0 1 3 0v7c0 5-3 8-7 8-3 0-5-2-6-5l-2-4a1.5 1.5 0 0 1 3-1Z"/></svg></button><button onclick="sceneAdd2('Sprite')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><button onclick="sceneGrid2=!sceneGrid2;sceneRender2()">#</button><button onclick="sceneSnap2=!sceneSnap2">S</button></div><aside class="scene-panel"><h4>HIERARCHY</h4><div id="sceneNodes2"></div></aside><aside class="scene-panel right"><h4>INSPECTOR</h4><div id="sceneInspector2" class="tool-muted">Selecione um objeto.</div></aside><button class="scene-fab" onclick="sceneAdd2('Node')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
-    </main>
+      <div class="scn-shell" id="sceneStudio2">
+        <header class="scn-topbar">
+          <div class="scn-doc">
+            <span class="scn-doc-mark"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="m5 16 4-5 3 3 3-4 4 6"/></svg></span>
+            <div><strong>Scene Composer</strong><span id="sceneDocMeta2">Main Scene · 2D</span></div>
+          </div>
+          <div class="scn-top-actions">
+            <button class="scn-icon-btn" onclick="sceneUndo2()" title="Undo"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a7 7 0 0 1 7 7"/></svg></button>
+            <button class="scn-icon-btn" onclick="sceneRedo2()" title="Redo"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m15 7 5 5-5 5"/><path d="M19 12h-8a7 7 0 0 0-7 7"/></svg></button>
+            <span class="scn-divider"></span>
+            <button class="scn-save" onclick="saveScene2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 3h14l3 3v15H4V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg><span>Save</span></button>
+          </div>
+        </header>
 
+        <div class="scn-main">
+          <aside class="scn-dock scn-hierarchy" id="sceneHierarchy2">
+            <div class="scn-dock-head"><span>HIERARCHY</span><button class="scn-small-btn" onclick="sceneAdd2('Node2D')" title="Add node"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></div>
+            <div class="scn-scene-root"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><input id="sceneName2" value="Main Scene" onchange="sceneRenameDoc2(this.value)"></div>
+            <div class="scn-tree" id="sceneNodes2"></div>
+            <div class="scn-hierarchy-actions">
+              <button onclick="sceneAdd2('Sprite')"><svg class="ui-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m5 17 4-4 3 3 3-4 4 5"/></svg>Sprite</button>
+              <button onclick="sceneAdd2('Tilemap')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m12 3 8 4-8 4-8-4 8-4Z"/><path d="m4 12 8 4 8-4M4 17l8 4 8-4"/></svg>Tilemap</button>
+              <button onclick="sceneAdd2('Camera')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 8h4l2-2h4l2 2h4v10H4V8Z"/><circle cx="12" cy="13" r="3"/></svg>Camera</button>
+              <button onclick="sceneAdd2('Light')"><svg class="ui-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Light</button>
+            </div>
+          </aside>
+
+          <section class="scn-viewport" id="sceneViewport2">
+            <canvas id="sceneCanvas2"></canvas>
+
+            <div class="scn-toolbar">
+              <button data-scn-tool="select" class="active" onclick="sceneSetTool2('select')" title="Select"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 3v17l5-4 3 6 3-2-3-6h7L5 3Z"/></svg><span>Select</span></button>
+              <button data-scn-tool="move" onclick="sceneSetTool2('move')" title="Move"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M8 7l4-4 4 4M8 17l4 4 4-4M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg><span>Move</span></button>
+              <button data-scn-tool="rotate" onclick="sceneSetTool2('rotate')" title="Rotate"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2-4.9"/><path d="M5 5v5h5"/></svg><span>Rotate</span></button>
+              <button data-scn-tool="scale" onclick="sceneSetTool2('scale')" title="Scale"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 9V5h4M15 5h4v4M19 15v4h-4M9 19H5v-4"/></svg><span>Scale</span></button>
+              <button data-scn-tool="pan" onclick="sceneSetTool2('pan')" title="Pan"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 11V6a2 2 0 0 1 4 0v5m0 0V4a2 2 0 0 1 4 0v7m0 0V6a2 2 0 0 1 4 0v8m-8-3V8a2 2 0 0 0-4 0v7c0 4 3 6 7 6h1c5 0 8-3 8-8"/></svg><span>Pan</span></button>
+              <span class="scn-tool-sep"></span>
+              <button onclick="sceneFrameSelected2()" title="Frame selected"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 9V5h4M19 9V5h-4M5 15v4h4M19 15v4h-4"/></svg></button>
+              <button onclick="sceneToggleGrid2()" id="sceneGridBtn2" class="active" title="Grid"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 12h16M12 4v16"/></svg></button>
+              <button onclick="sceneToggleSnap2()" id="sceneSnapBtn2" class="active" title="Snap"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M7 3v4M17 3v4M4 9h16M5 5h14v16H5z"/><path d="M9 14h6M12 11v6"/></svg></button>
+            </div>
+
+            <div class="scn-viewport-status">
+              <span id="sceneCoord2">0, 0</span>
+              <span id="sceneZoom2">100%</span>
+            </div>
+
+            <div class="scn-add-fab">
+              <button onclick="sceneAdd2('Sprite')" title="Add node"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+              <div class="scn-add-menu" id="sceneAddMenu2">
+                <button onclick="sceneAdd2('Sprite')">Sprite</button>
+                <button onclick="sceneAdd2('Tilemap')">Tilemap</button>
+                <button onclick="sceneAdd2('Camera')">Camera</button>
+                <button onclick="sceneAdd2('Light')">Light</button>
+                <button onclick="sceneAdd2('Node2D')">Node2D</button>
+              </div>
+            </div>
+          </section>
+
+          <aside class="scn-dock scn-inspector2" id="sceneInspectorDock2">
+            <div class="scn-dock-head"><span>INSPECTOR</span><button class="scn-small-btn" onclick="sceneToggleInspector2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg></button></div>
+            <div id="sceneInspector2" class="scn-inspector-content"></div>
+          </aside>
+        </div>
+
+        <footer class="scn-assets">
+          <div class="scn-assets-head"><span>SCENE ASSETS</span><div><button onclick="sceneAssetTab2('sprites')" class="active" data-scn-asset-tab="sprites">Sprites</button><button onclick="sceneAssetTab2('tilemaps')" data-scn-asset-tab="tilemaps">Tilemaps</button><button onclick="sceneAssetTab2('all')" data-scn-asset-tab="all">All</button></div></div>
+          <div id="sceneAssetTray2" class="scn-asset-tray"></div>
+        </footer>
+
+        <nav class="scn-mobile-bar">
+          <button data-scn-mobile="select" onclick="sceneSetTool2('select')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 3v17l5-4 3 6 3-2-3-6h7L5 3Z"/></svg><span>Select</span></button>
+          <button data-scn-mobile="move" onclick="sceneSetTool2('move')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M8 7l4-4 4 4M8 17l4 4 4-4"/></svg><span>Move</span></button>
+          <button data-scn-mobile="add" onclick="sceneToggleAddMenu2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button>
+          <button data-scn-mobile="layers" onclick="sceneToggleHierarchy2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Nodes</span></button>
+          <button data-scn-mobile="inspector" onclick="sceneToggleInspector2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M9 9h6M9 13h4"/></svg><span>Inspect</span></button>
+        </nav>
+      </div>
+    </main>
     <main id="tool-tilemap" class="engine-page">
 <div class="tm-studio" id="tmStudio">
 <header class="tm-toolbar">
