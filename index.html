@@ -244,18 +244,44 @@ svg{
 .project-card{
   width:100%;
   min-height:88px;
-  padding:15px;
+  padding:9px;
   background:#11151a;
   border:1px solid #242a31;
   border-radius:13px;
   display:flex;
   align-items:center;
-  gap:13px;
+  gap:9px;
   text-align:left;
   margin-bottom:9px;
 }
 
 .project-card:active{background:#171b20}
+.project-open{
+  flex:1;
+  min-width:0;
+  min-height:68px;
+  padding:6px;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  background:transparent;
+  text-align:left;
+  border-radius:9px;
+}
+.project-open:active{background:#171b20}
+.project-delete{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  background:#261619;
+  color:#ff7272;
+  border:1px solid #4b252a;
+}
+.project-delete:active{background:#8f2525;color:#fff}
+.project-delete svg{width:18px}
 
 .project-icon{
   width:48px;
@@ -2027,25 +2053,81 @@ function renderProjects(){
     return;
   }
 
-  list.innerHTML=projects.map(p=>`
-    <button class="project-card" onclick="openProject(${JSON.stringify(p.name)})">
-      <div class="project-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M7 4h10"/>
-          <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
-          <path d="M9 14h6"/>
-          <path d="M12 11v6"/>
-        </svg>
+  list.innerHTML=projects.map((p,index)=>{
+    const id=p.id ?? index;
+    const safeId=String(id).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    return `
+      <div class="project-card">
+        <button class="project-open" onclick="openProjectById('${safeId}')" aria-label="Abrir projeto ${escapeHTML(p.name)}">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M7 4h10"/>
+              <path d="M7 4v4l-2 3v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6l-2-3V4"/>
+              <path d="M9 14h6"/>
+              <path d="M12 11v6"/>
+            </svg>
+          </div>
+          <div class="project-info">
+            <div class="project-name">${escapeHTML(p.name)}</div>
+            <div class="project-meta">Último acesso: ${p.lastOpened ? new Date(p.lastOpened).toLocaleDateString() : "Hoje"}</div>
+          </div>
+          <svg class="arrow" viewBox="0 0 24 24">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </button>
+        <button class="project-delete" onclick="event.stopPropagation(); deleteProjectById('${safeId}')" aria-label="Excluir ${escapeHTML(p.name)}" title="Excluir projeto">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 7h16"/>
+            <path d="M9 7V4h6v3"/>
+            <path d="M7 7l1 13h8l1-13"/>
+            <path d="M10 11v5M14 11v5"/>
+          </svg>
+        </button>
       </div>
-      <div class="project-info">
-        <div class="project-name">${escapeHTML(p.name)}</div>
-        <div class="project-meta">Last opened: ${p.lastOpened ? new Date(p.lastOpened).toLocaleDateString() : "Today"}</div>
-      </div>
-      <svg class="arrow" viewBox="0 0 24 24">
-        <path d="m9 18 6-6-6-6"/>
-      </svg>
-    </button>
-  `).join("");
+    `;
+  }).join("");
+}
+
+function openProjectById(id){
+  const projects=getProjects();
+  const project=projects.find(p=>String(p.id ?? "")===String(id));
+  if(!project){
+    showToast("Projeto não encontrado");
+    renderProjects();
+    return;
+  }
+  openProject(project);
+}
+
+function deleteProjectById(id){
+  const projects=getProjects();
+  const index=projects.findIndex(p=>String(p.id ?? "")===String(id));
+
+  if(index===-1){
+    showToast("Projeto não encontrado");
+    renderProjects();
+    return;
+  }
+
+  const project=projects[index];
+  const confirmed=window.confirm(`Excluir o projeto "${project.name}"?\n\nOs arquivos salvos desse projeto também serão apagados. Essa ação não pode ser desfeita.`);
+  if(!confirmed)return;
+
+  projects.splice(index,1);
+  saveProjects(projects);
+
+  // Remove os arquivos específicos desse projeto.
+  localStorage.removeItem(FILES_KEY+"_"+project.name);
+
+  if(currentProject===project.name){
+    currentProject=null;
+    currentFile="main.cpp";
+    showProjectsScreen();
+  }else{
+    renderProjects();
+  }
+
+  showToast("Projeto excluído");
 }
 
 
@@ -2113,14 +2195,27 @@ function createProject(){
    OPEN PROJECT
 ===================================================== */
 
-function openProject(name){
-
-  currentProject=name;
+function openProject(projectOrName){
 
   const projects=getProjects();
-  const project=projects.find(p=>p.name===name);
-  if(project){
-    project.lastOpened=new Date().toISOString();
+  const project=typeof projectOrName === "object"
+    ? projectOrName
+    : projects.find(p=>p.name===projectOrName);
+
+  if(!project){
+    showToast("Projeto não encontrado");
+    showProjectsScreen();
+    return;
+  }
+
+  currentProject=project.name;
+
+  const storedProject=projects.find(p=>
+    (project.id != null && p.id===project.id) || p.name===project.name
+  );
+
+  if(storedProject){
+    storedProject.lastOpened=new Date().toISOString();
     saveProjects(projects);
   }
 
@@ -2674,8 +2769,9 @@ function backToDashboard(){
     .getElementById("editor")
     .classList.remove("active");
 
+  // Ao sair do editor, volta para a lista de projetos.
   document
-    .getElementById("dashboard")
+    .getElementById("projects")
     .classList.add("active");
 
   document
