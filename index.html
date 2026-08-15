@@ -3385,5 +3385,622 @@ runtimeStop=function(){SnakeInput.resetPhysical();return __snakeInputRuntimeStop
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — 5/9 COLLISION / PHYSICS SYSTEM
+===================================================== */
+.se-physics-panel{
+  position:absolute;left:8px;bottom:8px;width:min(270px,76vw);max-height:48vh;
+  overflow:auto;padding:9px;background:#080d12ee;border:1px solid #29343d;
+  border-radius:7px;color:#8796a2;font:8px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;
+  display:none;z-index:13;box-shadow:0 12px 35px #0008;backdrop-filter:blur(8px)
+}
+.se-physics-panel.show{display:block}
+.se-physics-title{display:flex;align-items:center;justify-content:space-between;color:#cbd5dd;font-weight:800;letter-spacing:.08em;margin-bottom:7px}
+.se-physics-grid{display:grid;grid-template-columns:1fr auto;gap:3px 10px}
+.se-physics-key{color:#62717d}.se-physics-value{color:#aab5be;text-align:right}
+.se-physics-value.good{color:#a9e99a}.se-physics-value.warn{color:#e4bd74}
+.se-physics-line{height:1px;background:#1f2932;margin:7px 0}
+.se-physics-event{padding:4px 0;border-bottom:1px solid #182129;color:#7d8b96}
+.se-physics-event strong{color:#b8c5cf;font-weight:700}
+.runtime-btn.physics-on{color:#a9e99a;border-color:#34543a;background:#142019}
+@media(max-width:700px){.se-physics-panel{left:8px;bottom:132px;width:min(280px,82vw)}}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — 5/9: COLLISION / PHYSICS SYSTEM
+   Fixed-step 2D physics, AABB + circles, triggers,
+   collision layers/masks, queries, raycasts and debug.
+===================================================== */
+(function(){
+"use strict";
+
+const RT = window.SnakeEngine = window.SnakeEngine || {};
+RT.runtime = RT.runtime || {};
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const EPS=1e-8;
+
+class SnakePhysicsBody extends SnakeComponent{
+  constructor(options={}){
+    super();
+    this.bodyType=options.bodyType||options.type||"dynamic"; // static | dynamic | kinematic
+    this.velocity={x:Number(options.vx||0),y:Number(options.vy||0)};
+    this.force={x:0,y:0};
+    this.mass=Math.max(.0001,Number(options.mass||1));
+    this.invMass=this.bodyType==="dynamic"?1/this.mass:0;
+    this.gravityScale=options.gravityScale==null?1:Number(options.gravityScale);
+    this.linearDamping=clamp(Number(options.linearDamping==null?.04:options.linearDamping),0,1);
+    this.friction=clamp(Number(options.friction==null?.2:options.friction),0,1);
+    this.restitution=clamp(Number(options.restitution||0),0,1);
+    this.freezeX=!!options.freezeX;
+    this.freezeY=!!options.freezeY;
+    this.enabled=options.enabled!==false;
+    this.sleeping=false;
+  }
+  addForce(x,y){this.force.x+=Number(x)||0;this.force.y+=Number(y)||0}
+  addImpulse(x,y){
+    if(this.bodyType!=="dynamic")return;
+    this.velocity.x+=(Number(x)||0)*this.invMass;
+    this.velocity.y+=(Number(y)||0)*this.invMass;
+  }
+  setVelocity(x,y){this.velocity.x=Number(x)||0;this.velocity.y=Number(y)||0}
+}
+
+class SnakeBoxCollider extends SnakeCollider{
+  constructor(width=32,height=32,options={}){
+    super(width,height);
+    this.shape="box";
+    this.offsetX=Number(options.offsetX||0);
+    this.offsetY=Number(options.offsetY||0);
+    this.isTrigger=!!options.isTrigger;
+    this.layer=Number(options.layer==null?1:options.layer)>>>0;
+    this.mask=Number(options.mask==null?0xFFFFFFFF:options.mask)>>>0;
+    this.enabled=options.enabled!==false;
+    this.tag=options.tag||"";
+  }
+  get bounds(){
+    const t=this.node?.worldTransform||new SnakeTransform();
+    const w=Math.abs(this.width*t.scaleX),h=Math.abs(this.height*t.scaleY);
+    return {x:t.x+this.offsetX-w/2,y:t.y+this.offsetY-h/2,w,h};
+  }
+}
+
+class SnakeCircleCollider extends SnakeComponent{
+  constructor(radius=16,options={}){
+    super();
+    this.shape="circle";
+    this.radius=Math.max(0,Number(radius)||0);
+    this.offsetX=Number(options.offsetX||0);
+    this.offsetY=Number(options.offsetY||0);
+    this.isTrigger=!!options.isTrigger;
+    this.layer=Number(options.layer==null?1:options.layer)>>>0;
+    this.mask=Number(options.mask==null?0xFFFFFFFF:options.mask)>>>0;
+    this.enabled=options.enabled!==false;
+    this.tag=options.tag||"";
+  }
+  get worldCircle(){
+    const t=this.node?.worldTransform||new SnakeTransform();
+    return {
+      x:t.x+this.offsetX,
+      y:t.y+this.offsetY,
+      r:this.radius*Math.max(Math.abs(t.scaleX||1),Math.abs(t.scaleY||1))
+    };
+  }
+  get bounds(){
+    const c=this.worldCircle;
+    return {x:c.x-c.r,y:c.y-c.r,w:c.r*2,h:c.r*2};
+  }
+}
+
+class SnakePhysicsWorld{
+  constructor(options={}){
+    this.gravity={x:Number(options.gravityX||0),y:Number(options.gravityY==null?980:options.gravityY)};
+    this.bodies=[];
+    this.contacts=new Map();
+    this.frameContacts=new Map();
+    this.debug=false;
+    this.stats={bodies:0,colliders:0,tests:0,contacts:0,triggers:0};
+    this.iterations=2;
+  }
+
+  clear(){
+    this.bodies=[];
+    this.contacts.clear();
+    this.frameContacts.clear();
+    this.resetStats();
+  }
+
+  resetStats(){
+    this.stats={bodies:this.bodies.length,colliders:0,tests:0,contacts:0,triggers:0};
+  }
+
+  add(node,body,collider){
+    if(!node||!body||!collider)return null;
+    const entry={node,body,collider};
+    this.bodies.push(entry);
+    return entry;
+  }
+
+  removeNode(node){
+    this.bodies=this.bodies.filter(e=>e.node!==node);
+  }
+
+  rebuildFromGraph(graph){
+    this.clear();
+    if(!graph)return;
+
+    graph.traverse(node=>{
+      if(node===graph.root||!node.active)return;
+      const meta=node.meta?.physics||node.meta?.body||{};
+      let body=node.getComponent?.(SnakePhysicsBody);
+      let collider=node.components?.find(c=>c instanceof SnakeBoxCollider||c instanceof SnakeCircleCollider||c instanceof SnakeCollider);
+
+      const player=/player/i.test(node.name||"");
+      const collisionEligible=!["Camera","Light","Scene"].includes(node.type);
+
+      if(!body&&collisionEligible){
+        body=node.addComponent(new SnakePhysicsBody({
+          bodyType:meta.bodyType||meta.type||(player?"kinematic":"static"),
+          mass:meta.mass||1,
+          gravityScale:meta.gravityScale==null?(player?0:1):meta.gravityScale,
+          friction:meta.friction==null?.2:meta.friction,
+          restitution:meta.restitution||0,
+          linearDamping:meta.linearDamping==null?.04:meta.linearDamping
+        }));
+      }
+
+      if(!collider&&collisionEligible){
+        const size=Number(meta.size||node.meta?.size||32);
+        const w=Number(meta.width||node.meta?.width||size);
+        const h=Number(meta.height||node.meta?.height||size);
+        if(meta.shape==="circle"){
+          collider=node.addComponent(new SnakeCircleCollider(Number(meta.radius||Math.min(w,h)/2),meta));
+        }else{
+          collider=node.addComponent(new SnakeBoxCollider(w,h,meta));
+        }
+      }else if(collider instanceof SnakeCollider && !(collider instanceof SnakeBoxCollider)){
+        // Upgrade the old step-2 collider in-place to physics metadata.
+        collider.shape="box";
+        collider.offsetX=Number(collider.offsetX||0);
+        collider.offsetY=Number(collider.offsetY||0);
+        collider.layer=Number(collider.layer==null?1:collider.layer)>>>0;
+        collider.mask=Number(collider.mask==null?0xFFFFFFFF:collider.mask)>>>0;
+        collider.enabled=collider.enabled!==false;
+      }
+
+      if(body&&collider)this.add(node,body,collider);
+    });
+
+    this.stats.bodies=this.bodies.length;
+    this.stats.colliders=this.bodies.length;
+  }
+
+  canCollide(a,b){
+    if(!a.collider.enabled||!b.collider.enabled)return false;
+    if(a.node===b.node)return false;
+    if((a.collider.mask & b.collider.layer)===0)return false;
+    if((b.collider.mask & a.collider.layer)===0)return false;
+    if(a.body.bodyType==="static"&&b.body.bodyType==="static")return false;
+    return true;
+  }
+
+  step(dt){
+    dt=Math.min(1/20,Math.max(0,Number(dt)||0));
+    this.resetStats();
+    this.frameContacts.clear();
+
+    // Integrate.
+    for(const e of this.bodies){
+      const {node,body}=e;
+      if(!body.enabled||node.locked||!node.active)continue;
+      if(body.bodyType==="dynamic"){
+        body.velocity.x+=(this.gravity.x*body.gravityScale+body.force.x*body.invMass)*dt;
+        body.velocity.y+=(this.gravity.y*body.gravityScale+body.force.y*body.invMass)*dt;
+        const damp=Math.pow(Math.max(0,1-body.linearDamping),dt*60);
+        body.velocity.x*=damp; body.velocity.y*=damp;
+        if(!body.freezeX)node.transform.x+=body.velocity.x*dt;
+        if(!body.freezeY)node.transform.y+=body.velocity.y*dt;
+        body.force.x=0;body.force.y=0;
+      }else if(body.bodyType==="kinematic"){
+        if(!body.freezeX)node.transform.x+=body.velocity.x*dt;
+        if(!body.freezeY)node.transform.y+=body.velocity.y*dt;
+      }
+    }
+
+    // Narrow phase. A couple of passes gives a much more stable mobile result.
+    for(let pass=0;pass<this.iterations;pass++){
+      for(let i=0;i<this.bodies.length;i++){
+        for(let j=i+1;j<this.bodies.length;j++){
+          const a=this.bodies[i],b=this.bodies[j];
+          if(!this.canCollide(a,b))continue;
+          this.stats.tests++;
+          const manifold=this.test(a.collider,b.collider);
+          if(!manifold)continue;
+
+          const key=this.pairKey(a,b);
+          const contact={a,b,normal:manifold.normal,depth:manifold.depth,point:manifold.point,trigger:a.collider.isTrigger||b.collider.isTrigger};
+          this.frameContacts.set(key,contact);
+
+          if(contact.trigger){
+            this.stats.triggers++;
+          }else{
+            this.stats.contacts++;
+            this.resolve(contact);
+          }
+        }
+      }
+    }
+
+    this.dispatchContactEvents();
+  }
+
+  pairKey(a,b){
+    const x=String(a.node.id),y=String(b.node.id);
+    return x<y?x+"|"+y:y+"|"+x;
+  }
+
+  test(ca,cb){
+    const sa=ca.shape||"box",sb=cb.shape||"box";
+    if(sa==="circle"&&sb==="circle")return this.circleCircle(ca,cb);
+    if(sa==="circle"&&sb==="box"){
+      const m=this.circleBox(ca,cb);
+      if(m)return m;
+    }
+    if(sa==="box"&&sb==="circle"){
+      const m=this.circleBox(cb,ca);
+      if(m)return {normal:{x:-m.normal.x,y:-m.normal.y},depth:m.depth,point:m.point};
+    }
+    return this.boxBox(ca,cb);
+  }
+
+  boxBox(a,b){
+    const A=a.bounds,B=b.bounds;
+    const ax=A.x+A.w/2,ay=A.y+A.h/2,bx=B.x+B.w/2,by=B.y+B.h/2;
+    const dx=bx-ax,px=(A.w+B.w)/2-Math.abs(dx);
+    if(px<=0)return null;
+    const dy=by-ay,py=(A.h+B.h)/2-Math.abs(dy);
+    if(py<=0)return null;
+    if(px<py){
+      const nx=dx<0?-1:1;
+      return {normal:{x:nx,y:0},depth:px,point:{x:ax+nx*A.w/2,y:(ay+by)/2}};
+    }
+    const ny=dy<0?-1:1;
+    return {normal:{x:0,y:ny},depth:py,point:{x:(ax+bx)/2,y:ay+ny*A.h/2}};
+  }
+
+  circleCircle(a,b){
+    const A=a.worldCircle,B=b.worldCircle;
+    const dx=B.x-A.x,dy=B.y-A.y,dist=Math.hypot(dx,dy),sum=A.r+B.r;
+    if(dist>=sum)return null;
+    const nx=dist>EPS?dx/dist:1,ny=dist>EPS?dy/dist:0;
+    return {normal:{x:nx,y:ny},depth:sum-dist,point:{x:A.x+nx*A.r,y:A.y+ny*A.r}};
+  }
+
+  circleBox(circle,box){
+    const C=circle.worldCircle,B=box.bounds;
+    const qx=clamp(C.x,B.x,B.x+B.w),qy=clamp(C.y,B.y,B.y+B.h);
+    let dx=qx-C.x,dy=qy-C.y,dist=Math.hypot(dx,dy);
+    if(dist>=C.r)return null;
+
+    if(dist<EPS){
+      // Circle center is inside the box: choose the nearest side.
+      const left=Math.abs(C.x-B.x),right=Math.abs(B.x+B.w-C.x),top=Math.abs(C.y-B.y),bottom=Math.abs(B.y+B.h-C.y);
+      const min=Math.min(left,right,top,bottom);
+      if(min===left){dx=-1;dy=0;dist=0}
+      else if(min===right){dx=1;dy=0;dist=0}
+      else if(min===top){dx=0;dy=-1;dist=0}
+      else {dx=0;dy=1;dist=0}
+      return {normal:{x:dx,y:dy},depth:C.r+min,point:{x:C.x+dx*C.r,y:C.y+dy*C.r}};
+    }
+
+    return {normal:{x:dx/dist,y:dy/dist},depth:C.r-dist,point:{x:qx,y:qy}};
+  }
+
+  resolve(contact){
+    const {a,b,normal:n,depth}=contact;
+    const A=a.body,B=b.body;
+    const invA=A.bodyType==="dynamic"?A.invMass:(A.bodyType==="kinematic"?1:0);
+    const invB=B.bodyType==="dynamic"?B.invMass:(B.bodyType==="kinematic"?1:0);
+    const total=invA+invB;
+    if(total<=0)return;
+
+    const percent=.92,slop=.001;
+    const correction=Math.max(depth-slop,0)*percent/total;
+
+    if(A.bodyType!=="static"){
+      a.node.transform.x-=n.x*correction*invA;
+      a.node.transform.y-=n.y*correction*invA;
+    }
+    if(B.bodyType!=="static"){
+      b.node.transform.x+=n.x*correction*invB;
+      b.node.transform.y+=n.y*correction*invB;
+    }
+
+    const rvx=B.velocity.x-A.velocity.x,rvy=B.velocity.y-A.velocity.y;
+    const velAlongNormal=rvx*n.x+rvy*n.y;
+    if(velAlongNormal>0)return;
+
+    const restitution=Math.min(A.restitution,B.restitution);
+    let impulse=-(1+restitution)*velAlongNormal;
+    impulse/=total||1;
+    const ix=impulse*n.x,iy=impulse*n.y;
+
+    if(A.bodyType!=="static"){A.velocity.x-=ix*invA;A.velocity.y-=iy*invA}
+    if(B.bodyType!=="static"){B.velocity.x+=ix*invB;B.velocity.y+=iy*invB}
+
+    // Coulomb friction.
+    const rvx2=B.velocity.x-A.velocity.x,rvy2=B.velocity.y-A.velocity.y;
+    const dot=rvx2*n.x+rvy2*n.y;
+    let tx=rvx2-dot*n.x,ty=rvy2-dot*n.y;
+    const tl=Math.hypot(tx,ty);
+    if(tl>EPS){tx/=tl;ty/=tl}else{tx=0;ty=0}
+    let jt=-(rvx2*tx+rvy2*ty)/(total||1);
+    const mu=Math.sqrt(A.friction*B.friction);
+    jt=clamp(jt,-Math.abs(impulse)*mu,Math.abs(impulse)*mu);
+    const fx=jt*tx,fy=jt*ty;
+    if(A.bodyType!=="static"){A.velocity.x-=fx*invA;A.velocity.y-=fy*invA}
+    if(B.bodyType!=="static"){B.velocity.x+=fx*invB;B.velocity.y+=fy*invB}
+
+    // Prevent a kinematic controller from continuously accumulating velocity
+    // into a wall on the blocked axis.
+    if(A.bodyType==="kinematic"){
+      if(Math.abs(n.x)>.5)A.velocity.x=0;
+      if(Math.abs(n.y)>.5)A.velocity.y=0;
+    }
+    if(B.bodyType==="kinematic"){
+      if(Math.abs(n.x)>.5)B.velocity.x=0;
+      if(Math.abs(n.y)>.5)B.velocity.y=0;
+    }
+  }
+
+  dispatchContactEvents(){
+    for(const [key,c] of this.frameContacts){
+      const phase=this.contacts.has(key)?"stay":"enter";
+      this.emit(phase,c);
+    }
+    for(const [key,c] of this.contacts){
+      if(!this.frameContacts.has(key))this.emit("exit",c);
+    }
+    this.contacts=new Map(this.frameContacts);
+  }
+
+  emit(phase,c){
+    const type=c.trigger?"trigger":"collision";
+    const detail={
+      phase,type,
+      a:c.a.node,b:c.b.node,
+      normal:{...c.normal},depth:c.depth,point:c.point?{...c.point}:null
+    };
+    document.dispatchEvent(new CustomEvent("snake:"+type+phase,{detail}));
+    const hookName=type==="trigger"?"onTrigger"+cap(phase):"onCollision"+cap(phase);
+    [c.a,c.b].forEach((self,index)=>{
+      const other=index?c.a:c.b;
+      self.node.components?.forEach(comp=>{
+        if(typeof comp[hookName]==="function"){
+          try{comp[hookName](other.node,detail,self.node)}catch(err){console.error(err)}
+        }
+      });
+    });
+  }
+
+  queryPoint(x,y,mask=0xFFFFFFFF){
+    const hits=[];
+    for(const e of this.bodies){
+      if((e.collider.layer&mask)===0)continue;
+      const c=e.collider;
+      if((c.shape||"box")==="circle"){
+        const C=c.worldCircle;if(Math.hypot(x-C.x,y-C.y)<=C.r)hits.push(e.node);
+      }else{
+        const b=c.bounds;if(x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h)hits.push(e.node);
+      }
+    }
+    return hits;
+  }
+
+  queryAABB(rect,mask=0xFFFFFFFF){
+    const hits=[];
+    for(const e of this.bodies){
+      if((e.collider.layer&mask)===0)continue;
+      const b=e.collider.bounds;
+      if(rect.x<b.x+b.w&&rect.x+rect.w>b.x&&rect.y<b.y+b.h&&rect.y+rect.h>b.y)hits.push(e.node);
+    }
+    return hits;
+  }
+
+  raycast(x1,y1,x2,y2,mask=0xFFFFFFFF){
+    let best=null;
+    const dx=x2-x1,dy=y2-y1;
+    for(const e of this.bodies){
+      if((e.collider.layer&mask)===0)continue;
+      const b=e.collider.bounds;
+      let tmin=0,tmax=1;
+      for(const [p,d,min,max] of [[x1,dx,b.x,b.x+b.w],[y1,dy,b.y,b.y+b.h]]){
+        if(Math.abs(d)<EPS){if(p<min||p>max){tmin=2;break}}
+        else{
+          let t1=(min-p)/d,t2=(max-p)/d;if(t1>t2)[t1,t2]=[t2,t1];
+          tmin=Math.max(tmin,t1);tmax=Math.min(tmax,t2);if(tmin>tmax)break;
+        }
+      }
+      if(tmin>=0&&tmin<=1&&tmin<=tmax&&(!best||tmin<best.distance)){
+        best={node:e.node,point:{x:x1+dx*tmin,y:y1+dy*tmin},distance:tmin};
+      }
+    }
+    return best;
+  }
+}
+
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+
+const Physics=new SnakePhysicsWorld();
+RT.runtime.PhysicsBody=SnakePhysicsBody;
+RT.runtime.BoxCollider=SnakeBoxCollider;
+RT.runtime.CircleCollider=SnakeCircleCollider;
+RT.runtime.PhysicsWorld=SnakePhysicsWorld;
+RT.runtime.Physics=Physics;
+RT.Physics=Physics;
+
+// Friendly public API for game scripts.
+window.Physics={
+  gravity:Physics.gravity,
+  setGravity:(x,y)=>{Physics.gravity.x=Number(x)||0;Physics.gravity.y=Number(y)||0},
+  raycast:(x1,y1,x2,y2,mask)=>Physics.raycast(x1,y1,x2,y2,mask),
+  point:(x,y,mask)=>Physics.queryPoint(x,y,mask),
+  overlap:(x,y,w,h,mask)=>Physics.queryAABB({x,y,w,h},mask),
+  stats:()=>({...Physics.stats})
+};
+
+snakeRuntime.physics=Physics;
+
+const previousBuildScene=runtimeBuildScene;
+runtimeBuildScene=function(){
+  previousBuildScene();
+  Physics.rebuildFromGraph(snakeRuntime.graph);
+
+  // Ensure the player is a controllable kinematic body.
+  const p=snakeRuntime.playerNode;
+  if(p){
+    let body=p.getComponent(SnakePhysicsBody);
+    if(!body){body=p.addComponent(new SnakePhysicsBody({bodyType:"kinematic",gravityScale:0,friction:.15}))}
+    body.bodyType="kinematic";body.invMass=0;body.gravityScale=0;
+
+    let col=p.components.find(c=>c instanceof SnakeBoxCollider||c instanceof SnakeCircleCollider||c instanceof SnakeCollider);
+    if(!col)col=p.addComponent(new SnakeBoxCollider(snakeRuntime.player?.size||22,snakeRuntime.player?.size||22,{layer:1,mask:0xFFFFFFFF}));
+    Physics.rebuildFromGraph(snakeRuntime.graph);
+  }
+  updatePhysicsPanel();
+};
+
+// Replace the 4/9 movement stage with a physics-driven fixed step.
+runtimeUpdate=function(dt){
+  SnakeInput.update();
+  const p=snakeRuntime.playerNode;
+  if(!p){SnakeInput.endStep();return}
+
+  const move=SnakeInput.vector();
+  let body=p.getComponent(SnakePhysicsBody);
+  if(!body){
+    body=p.addComponent(new SnakePhysicsBody({bodyType:"kinematic",gravityScale:0}));
+    Physics.rebuildFromGraph(snakeRuntime.graph);
+  }
+
+  const speed=180;
+  body.velocity.x=move.x*speed;
+  body.velocity.y=move.y*speed;
+
+  if(SnakeInput.pressed("primary")){
+    document.dispatchEvent(new CustomEvent("snake:input",{detail:{action:"primary",state:"pressed"}}));
+  }
+  if(SnakeInput.pressed("secondary")){
+    document.dispatchEvent(new CustomEvent("snake:input",{detail:{action:"secondary",state:"pressed"}}));
+  }
+
+  Physics.step(dt);
+  snakeRuntime.graph.update(dt);
+
+  snakeRuntime.player.x=p.transform.x;
+  snakeRuntime.player.y=p.transform.y;
+  snakeRuntime.player.vx=body.velocity.x;
+  snakeRuntime.player.vy=body.velocity.y;
+
+  snakeRuntime.scene=[];
+  snakeRuntime.graph.traverse(n=>{if(n!==snakeRuntime.graph.root)snakeRuntime.scene.push(n)});
+
+  updatePhysicsPanel();
+  SnakeInput.endStep();
+};
+
+// Physics debug overlay rendered after the existing runtime renderer.
+const previousRuntimeRenderPhysics=runtimeRender;
+runtimeRender=function(){
+  previousRuntimeRenderPhysics();
+  if(!Physics.debug||!snakeRuntime.ctx||!snakeRuntime.canvas)return;
+  const ctx=snakeRuntime.ctx,c=snakeRuntime.canvas,cx=c.clientWidth/2,cy=c.clientHeight/2;
+  ctx.save();
+  ctx.lineWidth=1;
+  for(const e of Physics.bodies){
+    const col=e.collider;
+    ctx.strokeStyle=col.isTrigger?"#d9a6ff":e.body.bodyType==="static"?"#e4bd74":e.body.bodyType==="kinematic"?"#7ec8ff":"#91e864";
+    ctx.fillStyle=col.isTrigger?"#b45cff18":"#6acfff10";
+    if((col.shape||"box")==="circle"){
+      const C=col.worldCircle;ctx.beginPath();ctx.arc(cx+C.x,cy+C.y,C.r,0,Math.PI*2);ctx.fill();ctx.stroke();
+    }else{
+      const b=col.bounds;ctx.fillRect(cx+b.x,cy+b.y,b.w,b.h);ctx.strokeRect(Math.round(cx+b.x)+.5,Math.round(cy+b.y)+.5,b.w,b.h);
+    }
+  }
+  for(const c of Physics.contacts.values()){
+    if(!c.point)continue;
+    ctx.fillStyle=c.trigger?"#d9a6ff":"#ff7d7d";
+    ctx.beginPath();ctx.arc(cx+c.point.x,cy+c.point.y,3,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#ff7d7d";ctx.beginPath();ctx.moveTo(cx+c.point.x,cy+c.point.y);ctx.lineTo(cx+c.point.x+c.normal.x*18,cy+c.point.y+c.normal.y*18);ctx.stroke();
+  }
+  ctx.restore();
+};
+
+function togglePhysicsDebug(){
+  Physics.debug=!Physics.debug;
+  document.getElementById("physicsDebugBtn")?.classList.toggle("physics-on",Physics.debug);
+  document.getElementById("physicsPanel")?.classList.toggle("show",Physics.debug);
+  updatePhysicsPanel();
+}
+
+function updatePhysicsPanel(){
+  const panel=document.getElementById("physicsPanel");
+  if(!panel)return;
+  const s=Physics.stats;
+  const player=snakeRuntime.playerNode;
+  const body=player?.getComponent?.(SnakePhysicsBody);
+  panel.innerHTML=`
+    <div class="se-physics-title"><span>PHYSICS 2D</span><span>${Physics.debug?"DEBUG":"READY"}</span></div>
+    <div class="se-physics-grid">
+      <span class="se-physics-key">Bodies</span><span class="se-physics-value">${s.bodies}</span>
+      <span class="se-physics-key">Colliders</span><span class="se-physics-value">${s.colliders}</span>
+      <span class="se-physics-key">Tests/frame</span><span class="se-physics-value">${s.tests}</span>
+      <span class="se-physics-key">Contacts</span><span class="se-physics-value ${s.contacts?"warn":""}">${s.contacts}</span>
+      <span class="se-physics-key">Triggers</span><span class="se-physics-value">${s.triggers}</span>
+      <span class="se-physics-key">Gravity</span><span class="se-physics-value">${Physics.gravity.x.toFixed(0)}, ${Physics.gravity.y.toFixed(0)}</span>
+      <span class="se-physics-key">Player body</span><span class="se-physics-value good">${body?.bodyType||"none"}</span>
+      <span class="se-physics-key">Velocity</span><span class="se-physics-value">${body?body.velocity.x.toFixed(1)+", "+body.velocity.y.toFixed(1):"—"}</span>
+    </div>`;
+}
+
+// Runtime debug UI.
+(function installPhysicsUI(){
+  const stage=document.querySelector("#preview .runtime-stage");
+  if(stage&&!document.getElementById("physicsPanel")){
+    const panel=document.createElement("div");
+    panel.id="physicsPanel";
+    panel.className="se-physics-panel";
+    stage.appendChild(panel);
+  }
+  const header=document.querySelector("#preview .preview-header");
+  if(header&&!document.getElementById("physicsDebugBtn")){
+    const btn=document.createElement("button");
+    btn.id="physicsDebugBtn";
+    btn.className="runtime-btn";
+    btn.title="Physics debug";
+    btn.setAttribute("aria-label","Physics debug");
+    btn.innerHTML='<svg class="ui-icon" viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M9 9h6v6H9z"/><path d="M12 5v4M12 15v4M5 12h4M15 12h4"/></svg>';
+    btn.onclick=togglePhysicsDebug;
+    const meta=header.querySelector(".preview-meta");
+    header.insertBefore(btn,meta||null);
+  }
+})();
+
+// A compact collision event log in the Output panel.
+let physicsEventThrottle=0;
+document.addEventListener("snake:collisionenter",e=>{
+  const now=performance.now(); if(now-physicsEventThrottle<60)return; physicsEventThrottle=now;
+  if(typeof addOutput==="function")addOutput("Collision: "+e.detail.a.name+" ↔ "+e.detail.b.name,"success");
+});
+document.addEventListener("snake:triggerenter",e=>{
+  if(typeof addOutput==="function")addOutput("Trigger: "+e.detail.a.name+" ↔ "+e.detail.b.name);
+});
+
+})();
+</script>
+
 </body>
 </html>
