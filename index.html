@@ -853,90 +853,17 @@ svg{
 .tool svg{width:19px}
 
 /* =====================================================
-   PREVIEW
+   SNAKE RUNTIME — GAME LOOP / PLAY MODE
 ===================================================== */
-
-.preview{
-  position:absolute;
-  inset:0;
-  z-index:250;
-  display:none;
-  flex-direction:column;
-  background:#07090b;
-}
-
+.preview{position:absolute;inset:0;z-index:250;display:none;flex-direction:column;background:#06080b;color:#dfe7ed}
 .preview.show{display:flex}
-
-.preview-header{
-  height:58px;
-  min-height:58px;
-  display:flex;
-  align-items:center;
-  padding:0 10px;
-  border-bottom:1px solid #252b32;
-  background:#0d1014;
-}
-
-.preview-title{
-  flex:1;
-  text-align:center;
-  font-size:13px;
-  font-weight:650;
-}
-
-.game{
-  flex:1;
-  display:grid;
-  place-items:center;
-  padding:20px;
-}
-
-.game-screen{
-  width:min(92vw,600px);
-  aspect-ratio:16/10;
-  border:1px solid #343b43;
-  border-radius:10px;
-  background:#0d1115;
-  position:relative;
-  overflow:hidden;
-}
-
-.grid{
-  position:absolute;
-  inset:0;
-  background-image:
-    linear-gradient(#171c21 1px,transparent 1px),
-    linear-gradient(90deg,#171c21 1px,transparent 1px);
-  background-size:24px 24px;
-}
-
-.snake{
-  position:absolute;
-  width:18px;
-  height:18px;
-  background:#91e864;
-  border-radius:4px;
-  left:45%;
-  top:45%;
-  box-shadow:22px 0 #6fbd4c,44px 0 #4e8b36;
-}
-
-.game-info{
-  position:absolute;
-  top:12px;
-  left:12px;
-  font-size:11px;
-  color:#91e864;
-}
-
-.preview-footer{
-  height:65px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#68717a;
-  font-size:11px;
-}
+.preview-header{height:54px;min-height:54px;display:flex;align-items:center;gap:7px;padding:0 9px;border-bottom:1px solid #252c33;background:#0c1014}
+.preview-title{flex:1;text-align:center;font-size:11px;font-weight:750;letter-spacing:.08em}.preview-meta{font:8px ui-monospace,monospace;color:#61707c;min-width:70px;text-align:right}.runtime-btn{width:34px;height:34px;border:1px solid #29343d;background:#121920;color:#8796a2;border-radius:6px;display:grid;place-items:center}.runtime-btn:hover{color:#e6edf2;background:#172029}.runtime-btn.primary{color:#a9e99a;border-color:#34543a;background:#142019}.runtime-btn.danger{color:#e58a8a}.runtime-btn .ui-icon{width:15px;height:15px}
+.game{flex:1;min-height:0;display:grid;place-items:center;padding:12px;position:relative}
+.runtime-stage{width:min(94vw,900px);height:min(78vh,620px);position:relative;border:1px solid #29343e;border-radius:8px;background:#070b0e;overflow:hidden;box-shadow:0 20px 60px #0008}
+#runtimeCanvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-action:none}
+.runtime-hud{position:absolute;top:8px;left:8px;display:flex;gap:5px;pointer-events:none}.runtime-chip{height:24px;padding:0 7px;display:flex;align-items:center;border:1px solid #29343d;background:#080d12df;border-radius:5px;color:#7d8c98;font:8px ui-monospace,monospace}.runtime-chip.active{color:#a9e99a;border-color:#34543a}.runtime-debug{position:absolute;right:8px;top:8px;text-align:right;color:#64737e;font:8px ui-monospace,monospace;line-height:14px;pointer-events:none}.runtime-overlay{position:absolute;inset:0;display:none;place-items:center;background:#05080bd9;backdrop-filter:blur(2px)}.runtime-overlay.show{display:grid}.runtime-overlay-card{text-align:center;padding:18px 22px;border:1px solid #2b3741;background:#0d1319;border-radius:8px;box-shadow:0 20px 50px #0008}.runtime-overlay-card strong{display:block;font-size:12px;margin-bottom:5px}.runtime-overlay-card span{font-size:9px;color:#697884}.runtime-touch{position:absolute;left:12px;right:12px;bottom:12px;display:none;justify-content:space-between;pointer-events:none}.runtime-dpad{display:grid;grid-template-columns:34px 34px 34px;grid-template-rows:34px 34px 34px;gap:3px;pointer-events:auto}.runtime-dpad button,.runtime-action{border:1px solid #35414b;background:#0d1319cc;color:#9eabb5;border-radius:6px;touch-action:none}.runtime-dpad .up{grid-column:2}.runtime-dpad .left{grid-column:1;grid-row:2}.runtime-dpad .down{grid-column:2;grid-row:3}.runtime-dpad .right{grid-column:3;grid-row:2}.runtime-action-wrap{display:flex;gap:6px;align-items:end}.runtime-action{width:42px;height:42px}
+.preview-footer{height:42px;min-height:42px;display:flex;align-items:center;gap:12px;padding:0 10px;border-top:1px solid #202831;background:#0c1014;color:#596874;font:8px ui-monospace,monospace}.preview-footer .spacer{flex:1}.runtime-state{color:#7fbe72}@media(max-width:700px){.runtime-stage{width:100%;height:calc(100vh - 160px);border-radius:6px}.runtime-touch{display:flex}.preview-meta{display:none}.runtime-btn{width:32px;height:32px}.runtime-debug{font-size:7px}.preview-footer{height:38px;min-height:38px}}
 
 /* =====================================================
    TOAST
@@ -1645,47 +1572,29 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 ===================================================== -->
 
 <section id="preview" class="preview">
-
   <header class="preview-header">
-
-    <button class="icon-btn" onclick="closePreview()">
-      <svg viewBox="0 0 24 24" stroke-width="2">
-        <path d="m15 18-6-6 6-6"/>
-      </svg>
-    </button>
-
-    <div class="preview-title">
-      GAME PREVIEW
-    </div>
-
-    <button class="icon-btn" onclick="runProject()">
-      <svg viewBox="0 0 24 24" stroke-width="1.8">
-        <path d="m9 5 10 7-10 7z"/>
-      </svg>
-    </button>
-
+    <button class="runtime-btn" onclick="closePreview()" title="Close runtime"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+    <div class="preview-title">SNAKE RUNTIME</div>
+    <span id="runtimeProjectMeta" class="preview-meta">READY</span>
+    <button id="runtimePlayBtn" class="runtime-btn primary" onclick="runtimeTogglePause()" title="Pause / Resume"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+    <button class="runtime-btn" onclick="runtimeStep()" title="Step"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M6 5v14M10 5l9 7-9 7z"/></svg></button>
+    <button class="runtime-btn" onclick="runtimeRestart()" title="Restart"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 1 4"/><path d="M20 5v6h-6"/></svg></button>
   </header>
-
   <div class="game">
-
-    <div class="game-screen">
-
-      <div class="grid"></div>
-
-      <div class="game-info">
-        SCORE 0000
+    <div class="runtime-stage">
+      <canvas id="runtimeCanvas"></canvas>
+      <div class="runtime-hud"><span id="runtimeStateChip" class="runtime-chip active">RUNNING</span><span id="runtimeFrameChip" class="runtime-chip">FRAME 0</span></div>
+      <div id="runtimeDebug" class="runtime-debug">FPS 0<br>DT 0.000<br>TIME 0.0s</div>
+      <div id="runtimeOverlay" class="runtime-overlay"><div class="runtime-overlay-card"><strong>PAUSED</strong><span>Press play to resume the game loop.</span></div></div>
+      <div class="runtime-touch">
+        <div class="runtime-dpad">
+          <button class="up" data-runtime-key="ArrowUp">↑</button><button class="left" data-runtime-key="ArrowLeft">←</button><button class="down" data-runtime-key="ArrowDown">↓</button><button class="right" data-runtime-key="ArrowRight">→</button>
+        </div>
+        <div class="runtime-action-wrap"><button class="runtime-action" data-runtime-key="Space">A</button><button class="runtime-action" data-runtime-key="Enter">B</button></div>
       </div>
-
-      <div class="snake"></div>
-
     </div>
-
   </div>
-
-  <div class="preview-footer">
-    Preview Runtime
-  </div>
-
+  <div class="preview-footer"><span>RUNTIME</span><span class="spacer"></span><span class="runtime-state" id="runtimeFooterState">Game loop active</span><span>60 FPS target</span></div>
 </section>
 
 </section>
@@ -2310,80 +2219,79 @@ function clearOutput(){
 
 
 /* =====================================================
-   RUN
+   SNAKE RUNTIME — STEP 1: GAME LOOP
 ===================================================== */
-
+const snakeRuntime={
+  running:false,paused:false,raf:0,last:0,accumulator:0,step:1/60,
+  elapsed:0,frames:0,fps:0,fpsFrames:0,fpsElapsed:0,dt:0,
+  canvas:null,ctx:null,keys:new Set(),touchKeys:new Set(),player:{x:0,y:0,vx:0,vy:0,size:22},scene:[]
+};
+function runtimeInit(){
+  const c=document.getElementById('runtimeCanvas'); if(!c)return;
+  snakeRuntime.canvas=c; snakeRuntime.ctx=c.getContext('2d'); snakeRuntime.ctx.imageSmoothingEnabled=false;
+  if(c.dataset.bound)return;
+  c.dataset.bound='1';
+  window.addEventListener('keydown',runtimeKeyDown);
+  window.addEventListener('keyup',runtimeKeyUp);
+  window.addEventListener('resize',runtimeResize);
+  c.addEventListener('pointerdown',e=>{c.setPointerCapture?.(e.pointerId)});
+  document.querySelectorAll('[data-runtime-key]').forEach(btn=>{
+    const k=btn.dataset.runtimeKey;
+    const down=e=>{e.preventDefault();snakeRuntime.touchKeys.add(k);btn.classList.add('active')};
+    const up=e=>{e.preventDefault();snakeRuntime.touchKeys.delete(k);btn.classList.remove('active')};
+    btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('pointerleave',up);
+  });
+}
+function runtimeKeyDown(e){if(document.getElementById('preview')?.classList.contains('show')){snakeRuntime.keys.add(e.code);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();}}
+function runtimeKeyUp(e){snakeRuntime.keys.delete(e.code)}
+function runtimePressed(code){return snakeRuntime.keys.has(code)||snakeRuntime.touchKeys.has(code)}
+function runtimeResize(){
+  const c=snakeRuntime.canvas;if(!c)return;const r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=Math.max(1,Math.floor(r.width*d));c.height=Math.max(1,Math.floor(r.height*d));snakeRuntime.ctx.setTransform(d,0,0,d,0,0);runtimeRender();
+}
+function runtimeBuildScene(){
+  snakeRuntime.scene=[];
+  if(Array.isArray(sceneObjs2)&&sceneObjs2.length){
+    snakeRuntime.scene=sceneObjs2.map(o=>({id:o.id,name:o.name,type:o.type,x:o.x||0,y:o.y||0,rotation:o.rotation||0,scale:o.scale||1,visible:o.visible!==false}));
+  }
+  const p=snakeRuntime.scene.find(o=>/player/i.test(o.name||''));
+  if(p){snakeRuntime.player.x=p.x;snakeRuntime.player.y=p.y}else{snakeRuntime.player.x=0;snakeRuntime.player.y=0}
+}
+function runtimeStart(){
+  runtimeInit();runtimeBuildScene();snakeRuntime.running=true;snakeRuntime.paused=false;snakeRuntime.elapsed=0;snakeRuntime.frames=0;snakeRuntime.fps=0;snakeRuntime.fpsFrames=0;snakeRuntime.fpsElapsed=0;snakeRuntime.accumulator=0;snakeRuntime.last=performance.now();
+  document.getElementById('runtimeOverlay')?.classList.remove('show');
+  document.getElementById('runtimeStateChip').textContent='RUNNING';document.getElementById('runtimeStateChip').classList.add('active');document.getElementById('runtimeFooterState').textContent='Game loop active';
+  runtimeResize();cancelAnimationFrame(snakeRuntime.raf);snakeRuntime.raf=requestAnimationFrame(runtimeFrame);
+}
+function runtimeStop(){snakeRuntime.running=false;cancelAnimationFrame(snakeRuntime.raf);snakeRuntime.raf=0}
+function runtimeFrame(now){
+  if(!snakeRuntime.running)return;
+  let frameDelta=(now-snakeRuntime.last)/1000;snakeRuntime.last=now;frameDelta=Math.min(.25,Math.max(0,frameDelta));
+  if(!snakeRuntime.paused){snakeRuntime.accumulator+=frameDelta;while(snakeRuntime.accumulator>=snakeRuntime.step){runtimeUpdate(snakeRuntime.step);snakeRuntime.accumulator-=snakeRuntime.step;snakeRuntime.frames++;snakeRuntime.elapsed+=snakeRuntime.step;}}
+  snakeRuntime.dt=frameDelta;snakeRuntime.fpsFrames++;snakeRuntime.fpsElapsed+=frameDelta;if(snakeRuntime.fpsElapsed>=.5){snakeRuntime.fps=Math.round(snakeRuntime.fpsFrames/snakeRuntime.fpsElapsed);snakeRuntime.fpsFrames=0;snakeRuntime.fpsElapsed=0}
+  runtimeRender();snakeRuntime.raf=requestAnimationFrame(runtimeFrame);
+}
+function runtimeUpdate(dt){
+  const p=snakeRuntime.player,speed=180;let x=0,y=0;
+  if(runtimePressed('ArrowLeft')||runtimePressed('KeyA'))x-=1;if(runtimePressed('ArrowRight')||runtimePressed('KeyD'))x+=1;if(runtimePressed('ArrowUp')||runtimePressed('KeyW'))y-=1;if(runtimePressed('ArrowDown')||runtimePressed('KeyS'))y+=1;
+  if(x||y){const len=Math.hypot(x,y)||1;p.vx=x/len*speed;p.vy=y/len*speed}else{p.vx*=Math.pow(.0001,dt);p.vy*=Math.pow(.0001,dt)}
+  p.x+=p.vx*dt;p.y+=p.vy*dt;
+}
+function runtimeRender(){
+  const c=snakeRuntime.canvas,ctx=snakeRuntime.ctx;if(!c||!ctx)return;const w=c.clientWidth,h=c.clientHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle='#070b0e';ctx.fillRect(0,0,w,h);
+  const grid=32;ctx.strokeStyle='#121a20';ctx.lineWidth=1;for(let x=0;x<w;x+=grid){ctx.beginPath();ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,h);ctx.stroke()}for(let y=0;y<h;y+=grid){ctx.beginPath();ctx.moveTo(0,y+.5);ctx.lineTo(w,y+.5);ctx.stroke()}
+  const cx=w/2,cy=h/2;ctx.strokeStyle='#263742';ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  snakeRuntime.scene.forEach(o=>{if(!o.visible)return;const x=cx+o.x,y=cy+o.y,size=32*Math.max(.25,o.scale||1);ctx.save();ctx.translate(x,y);ctx.rotate((o.rotation||0)*Math.PI/180);ctx.globalAlpha=.65;ctx.strokeStyle=o.type==='Tilemap'?'#4c9aff':'#667681';ctx.fillStyle=o.type==='Light'?'#d7b65e':'#24303a';if(o.type==='Camera')ctx.strokeRect(-size*.7,-size*.45,size*1.4,size*.9);else ctx.fillRect(-size/2,-size/2,size,size);ctx.restore();ctx.globalAlpha=1});
+  const px=cx+snakeRuntime.player.x,py=cy+snakeRuntime.player.y;ctx.fillStyle='#91e864';ctx.fillRect(Math.round(px-snakeRuntime.player.size/2),Math.round(py-snakeRuntime.player.size/2),snakeRuntime.player.size,snakeRuntime.player.size);
+  const state=snakeRuntime.paused?'PAUSED':'RUNNING';const frame=document.getElementById('runtimeFrameChip');const debug=document.getElementById('runtimeDebug');if(frame)frame.textContent='FRAME '+snakeRuntime.frames;if(debug)debug.innerHTML='FPS '+snakeRuntime.fps+'<br>DT '+snakeRuntime.dt.toFixed(3)+'<br>TIME '+snakeRuntime.elapsed.toFixed(1)+'s';const meta=document.getElementById('runtimeProjectMeta');if(meta)meta.textContent=String(currentProject||'PROJECT').toUpperCase();
+}
+function runtimeTogglePause(){if(!snakeRuntime.running){runtimeStart();return}snakeRuntime.paused=!snakeRuntime.paused;document.getElementById('runtimeOverlay')?.classList.toggle('show',snakeRuntime.paused);document.getElementById('runtimeStateChip').textContent=snakeRuntime.paused?'PAUSED':'RUNNING';document.getElementById('runtimeStateChip').classList.toggle('active',!snakeRuntime.paused);document.getElementById('runtimeFooterState').textContent=snakeRuntime.paused?'Game loop paused':'Game loop active'}
+function runtimeStep(){if(!snakeRuntime.running){runtimeStart();snakeRuntime.paused=true}runtimeUpdate(snakeRuntime.step);snakeRuntime.frames++;snakeRuntime.elapsed+=snakeRuntime.step;runtimeRender()}
+function runtimeRestart(){runtimeStart()}
 function runProject(){
-
-  saveCurrentFile();
-
-  clearOutput();
-
-  addOutput(
-    "Snake Engine Runtime",
-    "success"
-  );
-
-  addOutput(
-    "Project: "+currentProject
-  );
-
-  addOutput(
-    "Preparing scene..."
-  );
-
-  setTimeout(()=>{
-
-    addOutput(
-      "Scene loaded successfully.",
-      "success"
-    );
-
-    addOutput(
-      "Compiling "+currentFile+"..."
-    );
-
-  },250);
-
-  setTimeout(()=>{
-
-    addOutput(
-      "Build completed successfully.",
-      "success"
-    );
-
-    addOutput(
-      "Runtime started.",
-      "success"
-    );
-
-    openPreview();
-
-  },700);
-
+  saveCurrentFile();clearOutput();addOutput('Snake Runtime','success');addOutput('Project: '+(currentProject||'Untitled'));addOutput('Initializing game loop...');openPreview();runtimeStart();addOutput('Game loop started at 60 Hz.','success');
 }
-
-
-/* =====================================================
-   PREVIEW
-===================================================== */
-
-function openPreview(){
-
-  document
-    .getElementById("preview")
-    .classList.add("show");
-
-}
-
-function closePreview(){
-
-  document
-    .getElementById("preview")
-    .classList.remove("show");
-
-}
-
+function openPreview(){document.getElementById('preview').classList.add('show');runtimeStart()}
+function closePreview(){runtimeStop();document.getElementById('preview').classList.remove('show');}
 
 /* =====================================================
    PANEL
