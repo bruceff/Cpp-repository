@@ -92,6 +92,75 @@ svg{
   padding:28px 18px 100px;
 }
 
+.home-hint{
+  margin:0;
+  color:#687079;
+  font-size:13px;
+}
+
+.home-tools-section{margin-top:30px}
+.home-tools-section .section-head{align-items:flex-start}
+.home-tools-section .section-head > div{width:100%}
+.home-tools-section .section-head span{display:block;margin-bottom:5px}
+.home-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.home-tool-card{min-height:142px;padding:15px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:5px;text-align:left;background:#11151a;border:1px solid #242a31;border-radius:13px;cursor:pointer;transition:transform .12s,background .12s,border-color .12s}
+.home-tool-card:active{transform:scale(.98);background:#171c21;border-color:#91e864}
+.home-tool-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;background:#171c21;font-size:22px;margin-bottom:3px}
+.home-tool-title{font-size:15px;font-weight:800}
+.home-tool-desc{color:#737c85;font-size:10px;line-height:1.35}
+.home-tool-wide{grid-column:1 / -1;min-height:118px}
+
+.projects-content{
+  flex:1;
+  overflow:auto;
+  padding:28px 18px 100px;
+}
+
+.projects-heading{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.projects-heading h1{
+  margin:0 0 5px;
+  font-size:27px;
+}
+
+.projects-heading p{
+  margin:0;
+  color:#818992;
+  font-size:13px;
+}
+
+.projects-refresh{
+  background:#171c21;
+  color:#91e864;
+  border:1px solid #293039;
+  border-radius:9px;
+  padding:9px 12px;
+  font-size:12px;
+}
+
+.projects-empty{
+  padding:42px 20px;
+  text-align:center;
+  background:#11151a;
+  border:1px dashed #2a3037;
+  border-radius:14px;
+  color:#727a83;
+}
+
+.projects-empty strong{
+  display:block;
+  color:#edf0f2;
+  font-size:16px;
+  margin-bottom:6px;
+}
+
+
 .welcome h1{
   margin:0 0 7px;
   font-size:27px;
@@ -1008,10 +1077,10 @@ svg{
 /* integrated tilemap */
 .tile-editor{position:relative;height:62vh;min-height:380px;background:#12161b;border:1px solid #242a31;border-radius:11px;overflow:hidden}.tile-editor canvas{width:100%;height:100%;display:block;touch-action:none}.tile-palette{position:absolute;right:8px;top:52px;bottom:8px;width:155px;overflow:auto;background:#0e1217ee;border:1px solid #303841;border-radius:9px;padding:8px}.tile-grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.tile-grid2 button{aspect-ratio:1;border-radius:6px;background:#222;border:1px solid #343b44;font-size:18px}.tile-grid2 button.active{outline:2px solid #2878ff}.tile-tools{position:absolute;top:8px;left:8px;right:175px;display:flex;gap:5px;overflow:auto;z-index:3}.tile-tools button{height:38px;flex:0 0 auto;padding:0 10px;border-radius:7px;background:#20262d}.tile-tools button.active{background:#2878ff}
 /* assets */
-.asset-toolbar{display:flex;gap:7px;overflow:auto;margin:8px 0}.asset-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.asset-item{position:relative;min-height:110px;background:#11151a;border:1px solid #242a31;border-radius:10px;overflow:hidden}.asset-preview2{height:75px;display:grid;place-items:center;background:#0b0e11;font-size:35px}.asset-preview2 img{width:100%;height:100%;object-fit:contain}.asset-meta{padding:6px;font-size:10px}.asset-del{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:6px;background:#8f2525}.folder-row{display:flex;gap:7px;overflow:auto;margin-bottom:8px}.folder-chip{padding:7px 10px;border-radius:7px;background:#171c21;color:#aeb6bf;font-size:10px}.folder-chip.active{background:#2878ff;color:#fff}
+.asset-toolbar{display:flex;gap:7px;overflow:auto;margin:8px 0}.asset-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.asset-item{position:relative;min-height:110px;background:#11151a;border:1px solid #242a31;border-radius:10px;overflow:hidden}.asset-preview2{height:75px;display:grid;place-items:center;background:#0b0e11;font-size:35px}.asset-preview2 img{width:100%;height:100%;object-fit:contain}.asset-meta{padding:6px;font-size:10px}.asset-actions2{display:flex;gap:5px;padding:0 6px 6px}.asset-actions2 .tool-btn{min-height:28px;padding:0 7px;font-size:9px}.asset-del{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:6px;background:#8f2525}.folder-row{display:flex;gap:7px;overflow:auto;margin-bottom:8px}.folder-chip{padding:7px 10px;border-radius:7px;background:#171c21;color:#aeb6bf;font-size:10px}.folder-chip.active{background:#2878ff;color:#fff}
 /* dictionary/project/audio */
 .dict-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;background:#11151a;border:1px solid #242a31;border-radius:8px;margin-bottom:6px}.dict-command{font:700 11px monospace;color:#20c968}.dict-name{font-size:10px;color:#8c949d;text-align:right}.settings-grid{display:grid;gap:8px}.settings-grid label{font-size:10px;color:#8c949d}.settings-grid input,.settings-grid select{margin-top:4px}.audio-list{display:grid;gap:7px}.audio-item{display:flex;align-items:center;gap:8px;padding:9px;background:#11151a;border:1px solid #242a31;border-radius:8px}.audio-item span{flex:1;font-size:11px}
-@media(max-width:700px){.scene-panel{width:150px}.scene-panel.right{width:165px}.scene-fab{right:12px}.tile-palette{left:8px;right:8px;top:auto;height:110px}.tile-tools{right:8px}.tile-editor canvas{padding-bottom:115px}.asset-grid2{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.home-tools-grid{grid-template-columns:1fr 1fr}.home-tool-wide{grid-column:1 / -1}.scene-panel{width:150px}.scene-panel.right{width:165px}.scene-fab{right:12px}.tile-palette{left:8px;right:8px;top:auto;height:110px}.tile-tools{right:8px}.tile-editor canvas{padding-bottom:115px}.asset-grid2{grid-template-columns:repeat(2,1fr)}}
 
 </style>
 </head>
@@ -1054,7 +1123,7 @@ svg{
 
   <div class="welcome">
     <h1>Welcome back</h1>
-    <p>Build your next game.</p>
+    <p>Crie seus recursos antes de montar o projeto.</p>
   </div>
 
   <button class="new-project" onclick="openNewProject()">
@@ -1065,15 +1134,45 @@ svg{
     NEW PROJECT
   </button>
 
-  <section class="section">
-
+  <section class="section home-tools-section">
     <div class="section-head">
-      <span>RECENT PROJECTS</span>
-      <button onclick="renderProjects()">Refresh</button>
+      <div>
+        <span>ENGINE TOOLS</span>
+        <p class="home-hint">Crie props, arte e recursos para importar depois nos seus projetos.</p>
+      </div>
     </div>
 
-    <div id="projectsList"></div>
+    <div class="home-tools-grid">
+      <button class="home-tool-card" onclick="openEngineTools('art','dashboard')">
+        <span class="home-tool-icon">🎨</span>
+        <span class="home-tool-title">Arte</span>
+        <span class="home-tool-desc">Pixel art, sprites e animações.</span>
+      </button>
 
+      <button class="home-tool-card" onclick="openEngineTools('tilemap','dashboard')">
+        <span class="home-tool-icon">🧱</span>
+        <span class="home-tool-title">Tilemap</span>
+        <span class="home-tool-desc">Monte mapas e conjuntos de tiles.</span>
+      </button>
+
+      <button class="home-tool-card" onclick="openEngineTools('audio','dashboard')">
+        <span class="home-tool-icon">🎵</span>
+        <span class="home-tool-title">Sound</span>
+        <span class="home-tool-desc">Crie e organize recursos de áudio.</span>
+      </button>
+
+      <button class="home-tool-card" onclick="openEngineTools('assets','dashboard')">
+        <span class="home-tool-icon">📦</span>
+        <span class="home-tool-title">Assets</span>
+        <span class="home-tool-desc">Biblioteca global de recursos.</span>
+      </button>
+
+      <button class="home-tool-card home-tool-wide" onclick="openEngineTools('scene','dashboard')">
+        <span class="home-tool-icon">🗺️</span>
+        <span class="home-tool-title">Cenário</span>
+        <span class="home-tool-desc">Crie props, organize objetos e prepare cenários para importar nos projetos.</span>
+      </button>
+    </div>
   </section>
 
 </main>
@@ -1089,7 +1188,7 @@ svg{
     Home
   </button>
 
-  <button class="nav" onclick="showToast('Projects')">
+  <button class="nav" onclick="showProjectsScreen()">
     <svg viewBox="0 0 24 24" stroke-width="1.8">
       <path d="M4 5h6l2 2h8v12H4z"/>
     </svg>
@@ -1104,6 +1203,69 @@ svg{
     Settings
   </button>
 
+</nav>
+
+</section>
+
+
+<!-- =====================================================
+     PROJECTS
+===================================================== -->
+
+<section id="projects" class="screen">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" stroke-width="2">
+        <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
+        <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
+        <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    Projects
+  </div>
+  <button class="menu" onclick="showDashboardScreen()">
+    <svg viewBox="0 0 24 24" width="21">
+      <path d="m15 18-6-6 6-6"/>
+    </svg>
+  </button>
+</header>
+
+<main class="projects-content">
+  <div class="projects-heading">
+    <div>
+      <h1>Your projects</h1>
+      <p id="projectsCount">0 projects</p>
+    </div>
+    <button class="projects-refresh" onclick="renderProjects()">Refresh</button>
+  </div>
+
+  <div id="projectsList"></div>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav" onclick="showDashboardScreen()">
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="m3 10 9-7 9 7"/>
+      <path d="M5 9v11h14V9"/>
+      <path d="M9 20v-6h6v6"/>
+    </svg>
+    Home
+  </button>
+  <button class="nav active">
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="M4 5h6l2 2h8v12H4z"/>
+    </svg>
+    Projects
+  </button>
+  <button class="nav" onclick="showToast('Settings')">
+    <svg viewBox="0 0 24 24" stroke-width="1.8">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19 15a2 2 0 0 0 .4 2l.1.1-1.6 1.6-.1-.1a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8v.1h-2.3V20a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4l-.1.1-1.6-1.6.1-.1a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1H6v-2.3h.3a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2l-.1-.1 1.6-1.6.1.1a2 2 0 0 0 2 .4 2 2 0 0 0 1.1-1.8V7h2.3v.3a2 2 0 0 0 1.1 1.8 2 2 0 0 0 2-.4l.1-.1 1.6 1.6-.1.1a2 2 0 0 0-.4 2 2 0 0 0 1.8 1.1h.1v2.3h-.1A2 2 0 0 0 19 15z"/>
+    </svg>
+    Settings
+  </button>
 </nav>
 
 </section>
@@ -1695,6 +1857,25 @@ public:
 
 
 /* =====================================================
+   DASHBOARD / PROJECTS NAVIGATION
+===================================================== */
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(screen=>screen.classList.remove('active'));
+  const target=document.getElementById(id);
+  if(target)target.classList.add('active');
+}
+
+function showDashboardScreen(){
+  showScreen('dashboard');
+}
+
+function showProjectsScreen(){
+  showScreen('projects');
+  renderProjects();
+}
+
+/* =====================================================
    PROJECTS
 ===================================================== */
 
@@ -1722,39 +1903,27 @@ function saveProjects(projects){
 function renderProjects(){
 
   const list=document.getElementById("projectsList");
+  if(!list)return;
+
   const projects=getProjects();
+  const count=document.getElementById("projectsCount");
+
+  if(count){
+    count.textContent=projects.length===1 ? "1 project" : projects.length+" projects";
+  }
 
   if(!projects.length){
-
     list.innerHTML=`
-      <div class="project-card">
-        <div class="project-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 5v14"/>
-            <path d="M5 12h14"/>
-          </svg>
-        </div>
-
-        <div class="project-info">
-          <div class="project-name">
-            No projects yet
-          </div>
-
-          <div class="project-meta">
-            Create your first game
-          </div>
-        </div>
+      <div class="projects-empty">
+        <strong>No projects yet</strong>
+        Create your first game with NEW PROJECT. Your projects live only in this tab.
       </div>
     `;
-
     return;
   }
 
-  list.innerHTML=projects.slice(0,5).map(p=>`
-
-    <button class="project-card"
-      onclick="openProject(${JSON.stringify(p.name)})">
-
+  list.innerHTML=projects.map(p=>`
+    <button class="project-card" onclick="openProject(${JSON.stringify(p.name)})">
       <div class="project-icon">
         <svg viewBox="0 0 24 24">
           <path d="M7 4h10"/>
@@ -1763,28 +1932,17 @@ function renderProjects(){
           <path d="M12 11v6"/>
         </svg>
       </div>
-
       <div class="project-info">
-
-        <div class="project-name">
-          ${escapeHTML(p.name)}
-        </div>
-
-        <div class="project-meta">
-          Last opened: Today
-        </div>
-
+        <div class="project-name">${escapeHTML(p.name)}</div>
+        <div class="project-meta">Last opened: ${p.lastOpened ? new Date(p.lastOpened).toLocaleDateString() : "Today"}</div>
       </div>
-
       <svg class="arrow" viewBox="0 0 24 24">
         <path d="m9 18 6-6-6-6"/>
       </svg>
-
     </button>
-
   `).join("");
-
 }
+
 
 
 /* =====================================================
@@ -1832,7 +1990,8 @@ function createProject(){
   const project={
     id:Date.now(),
     name,
-    createdAt:new Date().toISOString()
+    createdAt:new Date().toISOString(),
+    lastOpened:new Date().toISOString()
   };
 
   projects.unshift(project);
@@ -1852,6 +2011,13 @@ function createProject(){
 function openProject(name){
 
   currentProject=name;
+
+  const projects=getProjects();
+  const project=projects.find(p=>p.name===name);
+  if(project){
+    project.lastOpened=new Date().toISOString();
+    saveProjects(projects);
+  }
 
   document
     .getElementById("dashboard")
@@ -2529,8 +2695,20 @@ updateLines();
 /* =====================================================
    MY ENGINE INTEGRATED LOGIC
 ===================================================== */
-function openEngineTools(){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById('engineTools').classList.add('active');enginePage('code');engineInitAll()}
-function closeEngineTools(){document.getElementById('engineTools').classList.remove('active');document.getElementById('editor').classList.add('active')}
+let engineToolsReturnScreen='editor';
+function openEngineTools(page='code',returnScreen='editor'){
+  engineToolsReturnScreen=returnScreen||'editor';
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('engineTools').classList.add('active');
+  enginePage(page);
+  engineInitAll();
+}
+function closeEngineTools(){
+  document.getElementById('engineTools').classList.remove('active');
+  const target=document.getElementById(engineToolsReturnScreen)||document.getElementById('editor');
+  target.classList.add('active');
+  if(engineToolsReturnScreen==='projects')renderProjects();
+}
 function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap')tileResize2();if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();saveTile2();saveAssets2();saveProject2();showToast('My Engine salvo')}
 const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
@@ -2574,7 +2752,8 @@ function tilePaint2(e){const c=document.getElementById('tileCanvas2'),r=c.getBou
 function tileRender2(){if(!tileCtx2)return;const c=document.getElementById('tileCanvas2'),w=c.clientWidth,h=c.clientHeight;tileCtx2.clearRect(0,0,w,h);tileCtx2.fillStyle='#12161b';tileCtx2.fillRect(0,0,w,h);const size=32*tileZoom2;Object.entries(tileMap2).forEach(([k,v])=>{const [x,y]=k.split(',').map(Number),colors=['#4f9a45','#795548','#2979ff','#e2bd42','#8050a5','#222','#ddd','#b64d4d','#c87535','#6ba34a','#777','#3988d4'];tileCtx2.fillStyle=colors[v]||'#222';tileCtx2.fillRect(x*size,y*size,size,size)});if(tileGrid2){tileCtx2.strokeStyle='#2a323a';for(let x=0;x<w;x+=size){tileCtx2.beginPath();tileCtx2.moveTo(x,0);tileCtx2.lineTo(x,h);tileCtx2.stroke()}for(let y=0;y<h;y+=size){tileCtx2.beginPath();tileCtx2.moveTo(0,y);tileCtx2.lineTo(w,y);tileCtx2.stroke()}}}
 function tileToolUI2(){document.querySelectorAll('#tilePalette2 button').forEach((b,i)=>b.classList.toggle('active',i===tileId2));document.querySelectorAll('.tile-tools button').forEach((b,i)=>b.classList.toggle('active',(tileMode2==='paint'&&i===0)||(tileMode2==='erase'&&i===1)))}function saveTile2(){localStorage.setItem('myengine_tilemap',JSON.stringify(tileMap2))}function loadTile2(){tileMap2=JSON.parse(localStorage.getItem('myengine_tilemap')||'{}')}
 /* ASSETS */
-let assets2=[],assetFolder2='root';function importAssets2(e){[...e.target.files].forEach(f=>{const reader=new FileReader();reader.onload=()=>{assets2.push({id:Date.now()+Math.random(),name:f.name,type:f.type||'file',data:reader.result,folder:assetFolder2});saveAssets2();renderAssets2();};if(f.type.startsWith('image/')||f.type.startsWith('audio/'))reader.readAsDataURL(f);else reader.readAsText(f)});e.target.value=''}function renderAssets2(){const q=(document.getElementById('assetSearch2')?.value||'').toLowerCase();const a=assets2.filter(x=>(x.folder||'root')===assetFolder2&&x.name.toLowerCase().includes(q));document.getElementById('assetCount2').textContent=assets2.length+' itens';document.getElementById('assetGrid2').innerHTML=a.map(x=>`<div class="asset-item"><div class="asset-preview2">${x.type.startsWith('image/')?`<img src="${x.data}">`:x.type.startsWith('audio/')?'🎵':'📄'}</div><div class="asset-meta">${x.name}</div><button class="asset-del" onclick="deleteAsset2(${x.id})">×</button></div>`).join('')||'<div class="tool-muted">Nenhum asset nesta pasta.</div>';document.getElementById('folderRow2').innerHTML='<button class="folder-chip active">📦 root</button>'}
+let assets2=[],assetFolder2='root';function importAssets2(e){[...e.target.files].forEach(f=>{const reader=new FileReader();reader.onload=()=>{assets2.push({id:Date.now()+Math.random(),name:f.name,type:f.type||'file',data:reader.result,folder:assetFolder2});saveAssets2();renderAssets2();};if(f.type.startsWith('image/')||f.type.startsWith('audio/'))reader.readAsDataURL(f);else reader.readAsText(f)});e.target.value=''}function renderAssets2(){const q=(document.getElementById('assetSearch2').value||'').toLowerCase();const arr=assets2.filter(x=>x.name.toLowerCase().includes(q));document.getElementById('assetCount2').textContent=arr.length+' itens';document.getElementById('assetGrid2').innerHTML=arr.map(x=>`<div class="asset-item"><div class="asset-preview2">${x.type.startsWith('image/')?`<img src="${x.data}">`:(x.type.startsWith('audio/')?'🎵':'📄')}</div><div class="asset-meta">${x.name}</div><div class="asset-actions2"><button class="tool-btn" onclick="importAssetToCurrentProject2(${x.id})">${currentProject?'Importar no projeto':'Importar'}</button><button class="asset-del" onclick="deleteAsset2(${x.id})">×</button></div></div>`).join('')||'<div class="tool-muted">Nenhum asset nesta pasta.</div>';document.getElementById('folderRow2').innerHTML='<button class="folder-chip active">📦 Biblioteca global</button>'}
+function importAssetToCurrentProject2(id){if(!currentProject){showToast('Abra um projeto para importar');return}const asset=assets2.find(x=>x.id===id);if(!asset)return;const key='myengine_project_assets_'+currentProject;let list=JSON.parse(localStorage.getItem(key)||'[]');if(!list.some(x=>x.id===id))list.push(asset);localStorage.setItem(key,JSON.stringify(list));showToast(asset.name+' importado para '+currentProject)}
 function deleteAsset2(id){assets2=assets2.filter(x=>x.id!==id);saveAssets2();renderAssets2()}function saveAssets2(){localStorage.setItem('myengine_assets2',JSON.stringify(assets2))}function loadAssets2(){assets2=JSON.parse(localStorage.getItem('myengine_assets2')||'[]')}
 function newFolder2(){const n=prompt('Nome da pasta');if(n)showToast('Pasta '+n+' criada nesta sessão.')}function newTextAsset2(){const n=prompt('Nome do asset','novo.txt');if(n)assets2.push({id:Date.now(),name:n,type:'text/plain',data:'',folder:'root'}),saveAssets2(),renderAssets2()}
 function renderAudio2(){const a=assets2.filter(x=>x.type.startsWith('audio/'));document.getElementById('audioList2').innerHTML=a.map(x=>`<div class="audio-item"><span>🎵 ${x.name}</span><audio controls src="${x.data}" style="max-width:150px"></audio></div>`).join('')||'<div class="tool-card tool-muted">Nenhum áudio importado.</div>'}
