@@ -2459,7 +2459,16 @@ updateLines();
    MY ENGINE INTEGRATED LOGIC
 ===================================================== */
 function openEngineTools(){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById('engineTools').classList.add('active');enginePage('code');engineInitAll()}
-function closeEngineTools(){document.getElementById('engineTools').classList.remove('active');document.getElementById('editor').classList.add('active')}
+function closeEngineTools(){
+  const tools=document.getElementById('engineTools');
+  if(tools) tools.classList.remove('active');
+  // Resource editors are opened from Home, so their back action must
+  // return to Home instead of opening the game-project editor.
+  hideScreens();
+  const dashboard=document.getElementById('dashboard');
+  if(dashboard) dashboard.classList.add('active');
+  renderProjects();
+}
 function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));document.getElementById('tool-'+name).classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap')tileResize2();if(name==='assets')renderAssets2();if(name==='audio')renderAudio2();if(name==='dictionary')renderDict2()}
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();saveTile2();saveAssets2();saveProject2();showToast('Snake Engine salvo')}
 const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
