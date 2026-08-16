@@ -8949,5 +8949,705 @@ Promise.resolve(window.SnakeDB?.ready).then(()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — DICTIONARY v2
+===================================================== */
+.snake-dict2{
+  margin-top:12px;
+}
+.snake-dict2-toolbar{
+  display:flex;
+  gap:7px;
+  overflow:auto;
+  padding-bottom:8px;
+  scrollbar-width:none;
+}
+.snake-dict2-toolbar::-webkit-scrollbar{display:none}
+.snake-dict2-tab{
+  min-height:35px;
+  padding:0 11px;
+  border:1px solid #29323b;
+  border-radius:8px;
+  background:#11171d;
+  color:#85919b;
+  white-space:nowrap;
+  font-size:10px;
+  font-weight:700;
+}
+.snake-dict2-tab.active{
+  color:#dff4d4;
+  border-color:#3d5b3d;
+  background:#172119;
+}
+.snake-dict2-list{
+  display:grid;
+  gap:7px;
+  margin-top:10px;
+}
+.snake-dict2-item{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.snake-dict2-item-head{
+  min-height:43px;
+  padding:8px 10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.snake-dict2-info{
+  flex:1;
+  min-width:0;
+}
+.snake-dict2-name{
+  color:#dfe4e8;
+  font-size:11px;
+  font-weight:750;
+}
+.snake-dict2-expansion{
+  margin-top:3px;
+  color:#65737e;
+  font:9px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.snake-dict2-badge{
+  flex:0 0 auto;
+  padding:3px 6px;
+  border:1px solid #303a43;
+  border-radius:999px;
+  color:#73808a;
+  font-size:7px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.snake-dict2-body{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:7px;
+  padding:8px 10px 10px;
+  border-top:1px solid #1e262e;
+  background:#0c1115;
+}
+.snake-dict2-alias{
+  height:36px;
+  min-width:0;
+  padding:0 9px;
+  border:1px solid #2c353e;
+  border-radius:7px;
+  outline:none;
+  background:#080c10;
+  color:#dce2e6;
+  font-size:11px;
+}
+.snake-dict2-alias:focus{border-color:#91e864}
+.snake-dict2-actions{
+  display:flex;
+  gap:5px;
+}
+.snake-dict2-action{
+  min-width:36px;
+  height:36px;
+  padding:0 8px;
+  display:grid;
+  place-items:center;
+  border:1px solid #2c353e;
+  border-radius:7px;
+  background:#151b21;
+  color:#8e9aa3;
+  font-size:9px;
+  font-weight:700;
+}
+.snake-dict2-action.primary{
+  color:#0a1007;
+  border-color:#91e864;
+  background:#91e864;
+}
+.snake-dict2-action.danger{
+  color:#ef8c92;
+  border-color:#5e3034;
+  background:#261619;
+}
+.snake-dict2-empty{
+  padding:20px;
+  color:#66727c;
+  text-align:center;
+  font-size:11px;
+}
+.snake-dict2-warning{
+  margin-top:8px;
+  padding:8px 10px;
+  border:1px solid #594928;
+  border-radius:7px;
+  background:#211b10;
+  color:#c7aa68;
+  font-size:10px;
+  line-height:1.45;
+}
+.snake-dict2-custom{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid #27313a;
+  border-radius:10px;
+  background:#0f1419;
+}
+.snake-dict2-custom-row{
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:7px;
+}
+@media(max-width:700px){
+  .snake-dict2-custom-row{grid-template-columns:1fr}
+  .snake-dict2-body{grid-template-columns:1fr}
+  .snake-dict2-actions{justify-content:flex-end}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — DICTIONARY v2
+   Catalog + aliases + context-aware preprocessor
+===================================================== */
+(function(){
+"use strict";
+
+const V2_KEY = "snake_dictionary_v2";
+const RESERVED = new Set([
+  "alignas","alignof","and","and_eq","asm","auto","bitand","bitor","bool","break",
+  "case","catch","char","char8_t","char16_t","char32_t","class","compl","concept",
+  "const","consteval","constexpr","constinit","const_cast","continue","co_await",
+  "co_return","co_yield","decltype","default","delete","do","double","dynamic_cast",
+  "else","enum","explicit","export","extern","false","float","for","friend","goto",
+  "if","inline","int","long","mutable","namespace","new","noexcept","not","not_eq",
+  "nullptr","operator","or","or_eq","private","protected","public","register",
+  "reinterpret_cast","requires","return","short","signed","sizeof","static",
+  "static_assert","static_cast","struct","switch","template","this","thread_local",
+  "throw","true","try","typedef","typeid","typename","union","unsigned","using",
+  "virtual","void","volatile","wchar_t","while","xor","xor_eq"
+]);
+
+const HEADER_NAMES = [
+  "iostream","vector","string","array","deque","list","map","unordered_map","set",
+  "unordered_set","queue","stack","algorithm","cmath","cstdlib","cstdint","cstring",
+  "memory","utility","tuple","optional","variant","functional","chrono","random",
+  "filesystem","fstream","sstream","iomanip","limits","numeric","iterator",
+  "type_traits","exception","stdexcept","regex","thread","mutex","atomic",
+  "condition_variable","future","bitset"
+];
+
+const CATALOG = [
+  ...HEADER_NAMES.map(name=>({
+    id:"header:"+name,
+    category:"headers",
+    group:"C++ Headers",
+    name,
+    expansion:"#include <"+name+">",
+    mode:"line",
+    description:"Cabeçalho <"+name+">"
+  })),
+
+  {id:"cpp:cout",category:"cpp",group:"C++ Standard",name:"std::cout",expansion:"std::cout",mode:"token"},
+  {id:"cpp:cin",category:"cpp",group:"C++ Standard",name:"std::cin",expansion:"std::cin",mode:"token"},
+  {id:"cpp:endl",category:"cpp",group:"C++ Standard",name:"std::endl",expansion:"std::endl",mode:"token"},
+  {id:"cpp:string",category:"cpp",group:"C++ Standard",name:"std::string",expansion:"std::string",mode:"token"},
+  {id:"cpp:vector",category:"cpp",group:"C++ Standard",name:"std::vector",expansion:"std::vector",mode:"token"},
+  {id:"cpp:map",category:"cpp",group:"C++ Standard",name:"std::map",expansion:"std::map",mode:"token"},
+
+  {id:"snake:scene-find",category:"snake",group:"Snake API",name:"scene.find",expansion:"scene.find",mode:"token"},
+  {id:"snake:scene-create",category:"snake",group:"Snake API",name:"scene.create",expansion:"scene.create",mode:"token"},
+  {id:"snake:input-vector",category:"snake",group:"Snake API",name:"input.vector",expansion:"input.vector",mode:"token"},
+  {id:"snake:input-pressed",category:"snake",group:"Snake API",name:"input.pressed",expansion:"input.pressed",mode:"token"},
+  {id:"snake:physics-force",category:"snake",group:"Snake API",name:"physics.force",expansion:"physics.force",mode:"token"},
+  {id:"snake:physics-impulse",category:"snake",group:"Snake API",name:"physics.impulse",expansion:"physics.impulse",mode:"token"},
+  {id:"snake:animation-play",category:"snake",group:"Snake API",name:"animation.play",expansion:"animation.play",mode:"token"},
+  {id:"snake:audio-sfx",category:"snake",group:"Snake API",name:"audio.sfx",expansion:"audio.sfx",mode:"token"},
+  {id:"snake:audio-music",category:"snake",group:"Snake API",name:"audio.music",expansion:"audio.music",mode:"token"},
+  {id:"snake:log",category:"snake",group:"Snake API",name:"log",expansion:"log",mode:"token"}
+];
+
+let activeCategory = "headers";
+
+function safeClone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+
+function defaultState(){
+  return {
+    version:2,
+    aliases:{},
+    custom:[],
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(V2_KEY);
+    if(raw){
+      const s=JSON.parse(raw);
+      if(s&&s.version===2)return s;
+    }
+  }catch(_){}
+
+  const s=defaultState();
+
+  /* Migrate legacy aliases into matching catalog/custom entries. */
+  try{
+    const legacy=typeof getDictionary==="function" ? getDictionary() : [];
+    for(const pair of legacy){
+      const original=pair?.[0];
+      const alias=pair?.[1];
+      if(!original||!alias)continue;
+
+      const known=CATALOG.find(x=>x.name===original||x.expansion===original);
+      if(known)s.aliases[known.id]=alias;
+      else{
+        s.custom.push({
+          id:"custom:"+Date.now()+":"+Math.random().toString(36).slice(2,7),
+          name:original,
+          expansion:original,
+          alias,
+          mode:"token",
+          category:"custom",
+          group:"Personalizado"
+        });
+      }
+    }
+  }catch(_){}
+
+  saveState(s);
+  return s;
+}
+
+function saveState(state){
+  state.updatedAt=new Date().toISOString();
+  localStorage.setItem(V2_KEY,JSON.stringify(state));
+
+  /* Mirror the catalog aliases into the old dictionary so existing Script API
+     code keeps working without knowing about v2. */
+  try{
+    const legacy=[];
+    for(const item of CATALOG){
+      const alias=state.aliases[item.id]||"";
+      if(alias)legacy.push([item.expansion,alias]);
+    }
+    for(const item of state.custom||[]){
+      if(item.alias)legacy.push([item.expansion,item.alias]);
+    }
+
+    if(typeof saveDictionary==="function"){
+      /* Avoid recursively calling the v2 override below. */
+      localStorage.setItem(
+        typeof DICT_SETTINGS_KEY!=="undefined"?DICT_SETTINGS_KEY:"myengine_dictionary_aliases",
+        JSON.stringify(legacy)
+      );
+    }
+  }catch(_){}
+
+  if(window.SnakeDB){
+    SnakeDB.put("dictionary",{
+      id:"global-v2",
+      entries:safeClone(state),
+      updatedAt:state.updatedAt
+    }).catch(console.error);
+  }
+}
+
+function allItems(){
+  const state=loadState();
+  const built=CATALOG.map(x=>({...x,alias:state.aliases[x.id]||""}));
+  const custom=(state.custom||[]).map(x=>({...x,category:"custom"}));
+  return [...built,...custom];
+}
+
+function aliasConflict(alias,itemId=null){
+  const a=String(alias||"").trim();
+  if(!a)return null;
+  if(RESERVED.has(a))return "Esse apelido é uma palavra reservada do C++.";
+
+  const items=allItems();
+  const hit=items.find(x=>x.id!==itemId && String(x.alias||"").trim()===a);
+  if(hit)return `O apelido "${a}" já está sendo usado por ${hit.name}.`;
+
+  return null;
+}
+
+function setAlias(id,alias){
+  const state=loadState();
+  const item=CATALOG.find(x=>x.id===id);
+  const custom=state.custom.find(x=>x.id===id);
+  const target=item||custom;
+  if(!target)return;
+
+  alias=String(alias||"").trim();
+
+  const conflict=aliasConflict(alias,id);
+  if(conflict){
+    showToast?.(conflict);
+    renderDictionaryV2();
+    return;
+  }
+
+  if(item){
+    if(alias)state.aliases[id]=alias;
+    else delete state.aliases[id];
+  }else if(custom){
+    custom.alias=alias;
+  }
+
+  saveState(state);
+  renderDictionaryV2();
+  showToast?.(alias?"Apelido salvo":"Apelido removido");
+}
+
+function removeCustom(id){
+  const state=loadState();
+  state.custom=state.custom.filter(x=>x.id!==id);
+  saveState(state);
+  renderDictionaryV2();
+}
+
+function addCustom(){
+  const original=document.getElementById("dictV2CustomOriginal")?.value.trim();
+  const alias=document.getElementById("dictV2CustomAlias")?.value.trim();
+  if(!original||!alias){
+    showToast?.("Preencha expansão e apelido");
+    return;
+  }
+
+  const conflict=aliasConflict(alias);
+  if(conflict){
+    showToast?.(conflict);
+    return;
+  }
+
+  const state=loadState();
+  state.custom.push({
+    id:"custom:"+Date.now()+":"+Math.random().toString(36).slice(2,8),
+    name:original,
+    expansion:original,
+    alias,
+    mode:"token",
+    category:"custom",
+    group:"Personalizado"
+  });
+  saveState(state);
+
+  document.getElementById("dictV2CustomOriginal").value="";
+  document.getElementById("dictV2CustomAlias").value="";
+  renderDictionaryV2();
+  showToast?.("Comando personalizado criado");
+}
+
+function insertAtCursor(text){
+  const code=document.getElementById("code");
+  if(!code){
+    showToast?.("Abra um projeto para inserir no código");
+    return;
+  }
+
+  const value=String(text||"");
+  const start=code.selectionStart??code.value.length;
+  const end=code.selectionEnd??start;
+  const prefix=code.value.slice(0,start);
+  const suffix=code.value.slice(end);
+  const needsNL=prefix.length && !prefix.endsWith("\n");
+  const insertion=(needsNL?"\n":"")+value+"\n";
+
+  code.value=prefix+insertion+suffix;
+  const pos=prefix.length+insertion.length;
+  code.selectionStart=code.selectionEnd=pos;
+
+  updateEditor?.();
+  updateLines?.();
+  showToast?.("Inserido no código");
+}
+
+function preProcess(source){
+  let text=String(source??"");
+  const items=allItems().filter(x=>String(x.alias||"").trim());
+
+  /* Line macros first. Headers are intentionally expanded only when the alias
+     occupies the whole logical line. This avoids replacing variable names. */
+  const lineItems=items.filter(x=>x.mode==="line");
+  text=text.split("\n").map(line=>{
+    const trimmed=line.trim();
+    const hit=lineItems.find(x=>x.alias===trimmed);
+    if(!hit)return line;
+    const indent=line.slice(0,line.indexOf(trimmed));
+    return indent+hit.expansion;
+  }).join("\n");
+
+  /* Token aliases are replaced outside obvious quoted string literals.
+     This is still lightweight, but avoids the most dangerous naive replace. */
+  const tokenItems=items.filter(x=>x.mode!=="line");
+  if(tokenItems.length){
+    const parts=text.split(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g);
+    for(let i=0;i<parts.length;i+=2){
+      let chunk=parts[i];
+      for(const item of tokenItems){
+        const alias=item.alias.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+        chunk=chunk.replace(new RegExp("(^|[^A-Za-z0-9_])("+alias+")(?![A-Za-z0-9_])","g"),
+          (_,before)=>before+item.expansion
+        );
+      }
+      parts[i]=chunk;
+    }
+    text=parts.join("");
+  }
+
+  return text;
+}
+
+function renderDictionaryV2(){
+  const root=document.getElementById("settingsDictList");
+  if(!root)return;
+
+  const q=(document.getElementById("settingsDictSearch")?.value||"").trim().toLowerCase();
+  const items=allItems().filter(x=>{
+    const cat=activeCategory==="all" || x.category===activeCategory;
+    const search=!q || (
+      x.name+" "+x.expansion+" "+(x.alias||"")+" "+(x.description||"")
+    ).toLowerCase().includes(q);
+    return cat&&search;
+  });
+
+  root.innerHTML=`
+    <div class="snake-dict2">
+      <div class="snake-dict2-toolbar">
+        ${[
+          ["headers","Headers C++"],
+          ["cpp","C++ Standard"],
+          ["snake","Snake API"],
+          ["custom","Meus apelidos"],
+          ["all","Todos"]
+        ].map(([id,label])=>`
+          <button type="button" class="snake-dict2-tab ${activeCategory===id?"active":""}" data-dict-v2-category="${id}">
+            ${label}
+          </button>
+        `).join("")}
+      </div>
+
+      ${activeCategory==="custom"?`
+        <div class="snake-dict2-custom">
+          <div class="snake-dict2-custom-row">
+            <input id="dictV2CustomOriginal" class="input" placeholder="Expansão (ex: std::cout)">
+            <input id="dictV2CustomAlias" class="input" placeholder="Apelido (ex: print)">
+            <button type="button" class="create" data-dict-v2-add-custom>Adicionar</button>
+          </div>
+        </div>
+      `:""}
+
+      <div class="snake-dict2-list">
+        ${items.length?items.map(item=>`
+          <div class="snake-dict2-item" data-dict-v2-id="${safeDictEsc(item.id)}">
+            <div class="snake-dict2-item-head">
+              <div class="snake-dict2-info">
+                <div class="snake-dict2-name">${safeDictEsc(item.name)}</div>
+                <div class="snake-dict2-expansion">${safeDictEsc(item.expansion)}</div>
+              </div>
+              <span class="snake-dict2-badge">${item.mode==="line"?"linha":"token"}</span>
+            </div>
+            <div class="snake-dict2-body">
+              <input class="snake-dict2-alias"
+                data-dict-v2-alias="${safeDictEsc(item.id)}"
+                value="${safeDictEsc(item.alias||"")}"
+                placeholder="Definir apelido...">
+              <div class="snake-dict2-actions">
+                <button type="button" class="snake-dict2-action primary" data-dict-v2-save="${safeDictEsc(item.id)}">SALVAR</button>
+                <button type="button" class="snake-dict2-action" data-dict-v2-insert="${safeDictEsc(item.id)}">INSERIR</button>
+                ${item.category==="custom"?`
+                  <button type="button" class="snake-dict2-action danger" data-dict-v2-remove="${safeDictEsc(item.id)}">DEL</button>
+                `:""}
+              </div>
+            </div>
+          </div>
+        `).join(""):`<div class="snake-dict2-empty">Nenhum item encontrado.</div>`}
+      </div>
+
+      <div class="snake-dict2-warning">
+        Headers usam expansão por linha. Exemplo: se <b>io</b> for apelido de
+        <code>#include &lt;iostream&gt;</code>, escrever apenas <b>io</b> em uma linha
+        gera o cabeçalho completo no pré-processamento.
+      </div>
+    </div>
+  `;
+}
+
+function safeDictEsc(v){
+  if(typeof escapeHTML==="function")return escapeHTML(String(v??""));
+  const d=document.createElement("div");d.textContent=String(v??"");return d.innerHTML;
+}
+
+/* Upgrade Settings copy and remove the old "original + alias" form. */
+function installDictionaryV2UI(){
+  const screen=document.getElementById("settingsScreen");
+  if(!screen)return;
+
+  const section=document.getElementById("settingsDictList")?.closest(".section");
+  if(section){
+    const card=section.querySelector(".tool-card");
+    if(card){
+      card.innerHTML=`
+        <p class="tool-muted">
+          Catálogo nativo da Snake Engine. Defina apelidos para headers C++,
+          comandos padrão e APIs da engine. Use <b>Inserir</b> para enviar um
+          comando diretamente ao editor de código.
+        </p>
+      `;
+    }
+
+    const search=document.getElementById("settingsDictSearch");
+    if(search){
+      search.placeholder="Pesquisar header, comando ou apelido...";
+      search.removeAttribute("oninput");
+      search.addEventListener("input",renderDictionaryV2);
+    }
+  }
+
+  renderDictionaryV2();
+}
+
+/* Event delegation survives every rerender. */
+document.getElementById("settingsScreen")?.addEventListener("click",e=>{
+  const cat=e.target.closest("[data-dict-v2-category]");
+  if(cat){
+    activeCategory=cat.dataset.dictV2Category;
+    renderDictionaryV2();
+    return;
+  }
+
+  if(e.target.closest("[data-dict-v2-add-custom]")){
+    addCustom();
+    return;
+  }
+
+  const save=e.target.closest("[data-dict-v2-save]");
+  if(save){
+    const id=save.dataset.dictV2Save;
+    const input=document.querySelector(`[data-dict-v2-alias="${CSS.escape(id)}"]`);
+    setAlias(id,input?.value||"");
+    return;
+  }
+
+  const insert=e.target.closest("[data-dict-v2-insert]");
+  if(insert){
+    const id=insert.dataset.dictV2Insert;
+    const item=allItems().find(x=>x.id===id);
+    if(item)insertAtCursor(item.alias||item.expansion);
+    return;
+  }
+
+  const remove=e.target.closest("[data-dict-v2-remove]");
+  if(remove){
+    removeCustom(remove.dataset.dictV2Remove);
+  }
+});
+
+/* Enter saves the alias from mobile keyboard. */
+document.getElementById("settingsScreen")?.addEventListener("keydown",e=>{
+  const input=e.target.closest?.("[data-dict-v2-alias]");
+  if(!input||e.key!=="Enter")return;
+  e.preventDefault();
+  setAlias(input.dataset.dictV2Alias,input.value);
+});
+
+/* Override legacy Settings functions with v2 behavior. */
+window.renderSettingsDictionary=renderDictionaryV2;
+window.resetDictionary=function(){
+  localStorage.removeItem(V2_KEY);
+  const state=defaultState();
+  saveState(state);
+  renderDictionaryV2();
+  showToast?.("Dicionário restaurado");
+};
+
+/* Compatibility for Script API. Return expansion/alias pairs. */
+window.getDictionary=function(){
+  return allItems()
+    .filter(x=>x.alias)
+    .map(x=>[x.expansion,x.alias]);
+};
+
+/* Let existing calls persist legacy arrays without breaking v2 state. */
+window.saveDictionary=function(entries){
+  if(!Array.isArray(entries))return;
+  const state=loadState();
+
+  for(const [expansion,alias] of entries){
+    const item=CATALOG.find(x=>x.expansion===expansion||x.name===expansion);
+    if(item){
+      if(alias)state.aliases[item.id]=alias;
+      else delete state.aliases[item.id];
+    }
+  }
+  saveState(state);
+};
+
+/* Main preprocessing API. */
+window.SnakePreprocessor={
+  catalog:CATALOG,
+  process:preProcess,
+  state:loadState,
+  setAlias,
+  insert:insertAtCursor
+};
+
+/* Engine translator: expand Dictionary v2 first, then existing Snake syntax. */
+const oldEngineTranslate=window.engineTranslate;
+window.engineTranslate=function(){
+  const editor=document.getElementById("engineCode");
+  if(!editor){
+    return oldEngineTranslate?.();
+  }
+
+  let s=preProcess(editor.value);
+  let out=s
+    .replace(/mostrar\s*\((.*?)\)/g,'std::cout << $1;')
+    .replace(/variavel\s+(\w+)\s*=\s*(.*)/g,'auto $1 = $2;')
+    .replace(/se\s*\((.*?)\)/g,'if($1)');
+
+  const terminal=document.getElementById("engineTerminal");
+  if(terminal)terminal.textContent=out;
+  return out;
+};
+
+/* Script runtime uses the same preprocessor.
+   Header aliases are harmless in .js because they only expand when used as a
+   full line; users can simply avoid C++ headers in Snake Script files. */
+if(window.Scripts){
+  const oldTranslateAliases=Scripts.translateAliases?.bind(Scripts);
+  Scripts.translateAliases=function(source){
+    const processed=preProcess(source);
+    /* Don't run the legacy replacement again; v2 already covered aliases. */
+    return processed;
+  };
+}
+
+/* Persist/load through SnakeDB v1. */
+Promise.resolve(window.SnakeDB?.ready).then(async()=>{
+  try{
+    const dbState=await SnakeDB?.get?.("dictionary","global-v2");
+    if(dbState?.entries?.version===2 && !localStorage.getItem(V2_KEY)){
+      localStorage.setItem(V2_KEY,JSON.stringify(dbState.entries));
+    }
+  }catch(_){}
+  installDictionaryV2UI();
+}).catch(()=>{
+  installDictionaryV2UI();
+});
+
+/* Settings can be opened before SnakeDB resolves. */
+setTimeout(installDictionaryV2UI,0);
+
+})();
+</script>
+
 </body>
 </html>
