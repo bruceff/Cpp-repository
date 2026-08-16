@@ -20833,5 +20833,816 @@ if(document.readyState==="loading"){
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — CAMERA 2D / WORLD STREAMING v1
+===================================================== */
+.camera-manager-v1{
+  position:absolute;
+  inset:0;
+  z-index:236;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.camera-manager-v1.show{display:flex}
+
+.cam-v1-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.cam-v1-head-title{flex:1;min-width:0}
+.cam-v1-head-title strong{display:block;font-size:13px}
+.cam-v1-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.cam-v1-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.cam-v1-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.cam-v1-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.cam-v1-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.cam-v1-panel-body{padding:9px}
+
+.cam-v1-row{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.cam-v1-row label{color:#89959e;font-size:9px}
+.cam-v1-row input,
+.cam-v1-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.cam-v1-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.cam-v1-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.cam-v1-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.cam-v1-summary{
+  padding:10px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0c1115;
+  color:#7b8790;
+  font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+
+.cam-v1-debug{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:12;
+  display:none;
+  padding:6px 8px;
+  border:1px solid #34404a;
+  border-radius:6px;
+  background:rgba(8,11,14,.82);
+  color:#7e8b95;
+  font:8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  pointer-events:none;
+}
+.cam-v1-debug.show{display:block}
+
+@media(max-width:700px){
+  .cam-v1-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — CAMERA 2D / WORLD STREAMING v1
+   Follow target · bounds · zoom · smoothing
+   visible-tile culling for large TileMaps
+===================================================== */
+(function(){
+"use strict";
+
+const CAM_PREFIX="snake_camera_v1:";
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function key(name){return CAM_PREFIX+name}
+
+function defaultConfig(){
+  return {
+    version:1,
+    camera:{
+      x:0,
+      y:0,
+      zoom:1,
+      minZoom:.5,
+      maxZoom:3,
+      followTarget:"Player",
+      follow:true,
+      smoothing:.12,
+      deadzoneX:0,
+      deadzoneY:0,
+      clampToWorld:true,
+      enabled:true
+    },
+    streaming:{
+      enabled:true,
+      paddingTiles:2
+    },
+    debug:false,
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const cfg=JSON.parse(raw);
+      if(cfg?.version===1)return cfg;
+    }
+  }catch(_){}
+  const cfg=defaultConfig();
+  if(name)localStorage.setItem(key(name),JSON.stringify(cfg));
+  return cfg;
+}
+
+async function loadConfig(name=project()){
+  if(!name)return defaultConfig();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("preferences","camera:"+projectId);
+      if(row?.value?.version===1){
+        localStorage.setItem(key(name),JSON.stringify(row.value));
+        return clone(row.value);
+      }
+    }catch(e){console.warn("Camera config load",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveConfig(cfg,name=project()){
+  if(!name)return;
+  cfg.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(cfg));
+
+  if(window.SnakeDB){
+    try{
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("preferences",{
+        key:"camera:"+projectId,
+        value:clone(cfg),
+        updatedAt:cfg.updatedAt
+      });
+    }catch(e){console.warn("Camera config save",e)}
+  }
+}
+
+/* -----------------------------------------------------
+   Runtime Camera
+----------------------------------------------------- */
+const Camera2D={
+  config:defaultConfig(),
+  x:0,
+  y:0,
+  zoom:1,
+  target:null,
+  viewport:{width:0,height:0},
+  worldBounds:null,
+
+  async load(){
+    this.config=await loadConfig();
+    const c=this.config.camera;
+    this.x=Number(c.x||0);
+    this.y=Number(c.y||0);
+    this.zoom=Number(c.zoom||1);
+    return this.config;
+  },
+
+  findTarget(){
+    const graph=window.snakeRuntime?.graph;
+    if(!graph)return null;
+
+    const desired=this.config.camera.followTarget||"Player";
+    let found=null;
+
+    graph.traverse?.(node=>{
+      if(found||node===graph.root)return;
+      if(node.name===desired || node.meta?.sceneKind===desired || node.meta?.tag===desired){
+        found=node;
+      }
+    });
+
+    if(!found && window.snakeRuntime?.playerNode)found=snakeRuntime.playerNode;
+    this.target=found;
+    return found;
+  },
+
+  updateViewport(){
+    const host=document.querySelector("#preview .game-screen")||
+               document.querySelector("#preview .runtime-stage");
+    if(!host)return;
+    const r=host.getBoundingClientRect();
+    this.viewport.width=r.width;
+    this.viewport.height=r.height;
+  },
+
+  async updateBounds(){
+    try{
+      const runtime=window.SnakeTileMapRuntime;
+      const world=runtime?.world;
+      if(world){
+        this.worldBounds={
+          x:0,
+          y:0,
+          width:world.width*world.tileSize,
+          height:world.height*world.tileSize
+        };
+      }
+    }catch(_){}
+  },
+
+  clamp(){
+    if(!this.config.camera.clampToWorld||!this.worldBounds)return;
+
+    const halfW=this.viewport.width/(2*this.zoom);
+    const halfH=this.viewport.height/(2*this.zoom);
+    const minX=halfW;
+    const maxX=Math.max(halfW,this.worldBounds.width-halfW);
+    const minY=halfH;
+    const maxY=Math.max(halfH,this.worldBounds.height-halfH);
+
+    this.x=Math.max(minX,Math.min(maxX,this.x));
+    this.y=Math.max(minY,Math.min(maxY,this.y));
+  },
+
+  update(dt){
+    const c=this.config.camera;
+    if(!c.enabled)return;
+
+    this.updateViewport();
+
+    if(c.follow){
+      const target=this.target||this.findTarget();
+      if(target){
+        const tx=Number(target.transform?.x||0);
+        const ty=Number(target.transform?.y||0);
+
+        const dx=tx-this.x;
+        const dy=ty-this.y;
+        const deadX=Number(c.deadzoneX||0);
+        const deadY=Number(c.deadzoneY||0);
+
+        let desiredX=this.x;
+        let desiredY=this.y;
+
+        if(Math.abs(dx)>deadX)desiredX=tx-Math.sign(dx)*deadX;
+        if(Math.abs(dy)>deadY)desiredY=ty-Math.sign(dy)*deadY;
+
+        const smoothing=Math.max(0,Math.min(1,Number(c.smoothing||0)));
+        const alpha=smoothing<=0?1:1-Math.pow(1-smoothing,Math.max(1,dt*60));
+
+        this.x+=(desiredX-this.x)*alpha;
+        this.y+=(desiredY-this.y)*alpha;
+      }
+    }
+
+    this.zoom=Math.max(Number(c.minZoom||.5),Math.min(Number(c.maxZoom||3),this.zoom));
+    this.clamp();
+  },
+
+  setTarget(nodeOrName){
+    if(typeof nodeOrName==="string"){
+      this.config.camera.followTarget=nodeOrName;
+      this.target=null;
+      return;
+    }
+    this.target=nodeOrName||null;
+  },
+
+  setPosition(x,y){
+    this.x=Number(x)||0;
+    this.y=Number(y)||0;
+    this.clamp();
+  },
+
+  setZoom(z){
+    const c=this.config.camera;
+    this.zoom=Math.max(Number(c.minZoom||.5),Math.min(Number(c.maxZoom||3),Number(z)||1));
+  },
+
+  worldToScreen(x,y){
+    return {
+      x:(x-this.x)*this.zoom+this.viewport.width/2,
+      y:(y-this.y)*this.zoom+this.viewport.height/2
+    };
+  },
+
+  screenToWorld(x,y){
+    return {
+      x:(x-this.viewport.width/2)/this.zoom+this.x,
+      y:(y-this.viewport.height/2)/this.zoom+this.y
+    };
+  },
+
+  visibleRect(padding=0){
+    const halfW=this.viewport.width/(2*this.zoom)+padding;
+    const halfH=this.viewport.height/(2*this.zoom)+padding;
+    return {
+      minX:this.x-halfW,
+      maxX:this.x+halfW,
+      minY:this.y-halfH,
+      maxY:this.y+halfH
+    };
+  }
+};
+
+window.Camera2D=Camera2D;
+SnakeEngine.runtime.Camera2D=Camera2D;
+
+/* -----------------------------------------------------
+   TileMap streaming renderer override
+----------------------------------------------------- */
+async function renderRuntimeTilemapCulled(scene){
+  const host=document.querySelector("#preview .game-screen")||
+             document.querySelector("#preview .runtime-stage");
+  if(!host)return;
+
+  let canvas=document.getElementById("tilemapRuntimeLayer");
+  if(!canvas){
+    canvas=document.createElement("canvas");
+    canvas.id="tilemapRuntimeLayer";
+    canvas.className="tilemap-runtime-layer";
+    host.insertBefore(canvas,host.firstChild);
+  }
+
+  const tm=window.TileMapWorld;
+  if(!tm)return;
+
+  const world=await tm.world(scene);
+  if(!world)return;
+
+  Camera2D.updateViewport();
+  Camera2D.worldBounds={
+    x:0,y:0,
+    width:world.width*world.tileSize,
+    height:world.height*world.tileSize
+  };
+
+  if(Camera2D.x===0&&Camera2D.y===0){
+    Camera2D.x=Camera2D.worldBounds.width/2;
+    Camera2D.y=Camera2D.worldBounds.height/2;
+  }
+
+  const r=host.getBoundingClientRect();
+  const d=Math.min(2,devicePixelRatio||1);
+
+  canvas.width=Math.max(1,Math.round(r.width*d));
+  canvas.height=Math.max(1,Math.round(r.height*d));
+
+  const ctx=canvas.getContext("2d");
+  ctx.setTransform(d,0,0,d,0,0);
+  ctx.imageSmoothingEnabled=false;
+  ctx.clearRect(0,0,r.width,r.height);
+
+  const size=world.tileSize;
+  const stream=Camera2D.config.streaming||{};
+  const paddingTiles=Math.max(0,Number(stream.paddingTiles||0));
+  const vr=Camera2D.visibleRect(size*paddingTiles);
+
+  const minTileX=Math.max(0,Math.floor(vr.minX/size));
+  const maxTileX=Math.min(world.width-1,Math.ceil(vr.maxX/size));
+  const minTileY=Math.max(0,Math.floor(vr.minY/size));
+  const maxTileY=Math.min(world.height-1,Math.ceil(vr.maxY/size));
+
+  let drawn=0;
+
+  for(const layer of world.layers){
+    if(!layer.visible||layer.collision)continue;
+
+    for(const [k,assetId] of Object.entries(layer.tiles||{})){
+      const [x,y]=k.split(",").map(Number);
+
+      if(stream.enabled!==false){
+        if(x<minTileX||x>maxTileX||y<minTileY||y>maxTileY)continue;
+      }
+
+      const asset=(typeof assets2!=="undefined"?assets2:[]).find(a=>a.id===assetId);
+      if(!asset?.data)continue;
+
+      if(!asset.__camImg){
+        const img=new Image();
+        img.src=asset.data;
+        asset.__camImg=img;
+      }
+
+      const img=asset.__camImg;
+      if(!img.complete)continue;
+
+      const s=Camera2D.worldToScreen(x*size,y*size);
+
+      ctx.drawImage(
+        img,
+        s.x,
+        s.y,
+        size*Camera2D.zoom,
+        size*Camera2D.zoom
+      );
+      drawn++;
+    }
+  }
+
+  window.SnakeTileMapRuntime={
+    scene,
+    world:clone(world),
+    camera:Camera2D,
+    visibleTiles:{
+      minX:minTileX,maxX:maxTileX,minY:minTileY,maxY:maxTileY,
+      drawn
+    },
+    isBlocked(x,y){
+      const collision=world.layers.find(l=>l.collision);
+      return !!collision?.tiles?.[x+","+y];
+    },
+    screenToTile(px,py){
+      const w=Camera2D.screenToWorld(px,py);
+      return {
+        x:Math.floor(w.x/size),
+        y:Math.floor(w.y/size)
+      };
+    }
+  };
+}
+
+let cameraRuntimeScene="Main";
+
+window.addEventListener("snake:sceneloaded",async e=>{
+  cameraRuntimeScene=e.detail?.scene?.name||cameraRuntimeScene;
+  Camera2D.target=null;
+  await Camera2D.updateBounds();
+});
+
+/* redraw each runtime frame with camera transform */
+const oldRuntimeRenderCam=window.runtimeRender;
+if(typeof oldRuntimeRenderCam==="function"){
+  window.runtimeRender=function(){
+    const r=oldRuntimeRenderCam.apply(this,arguments);
+
+    Promise.resolve().then(()=>{
+      if(document.getElementById("preview")?.classList.contains("show")){
+        return renderRuntimeTilemapCulled(cameraRuntimeScene);
+      }
+    }).catch(console.error);
+
+    updateDebug();
+
+    return r;
+  };
+}
+
+const oldRuntimeUpdateCam=window.runtimeUpdate;
+if(typeof oldRuntimeUpdateCam==="function"){
+  window.runtimeUpdate=function(dt){
+    try{Camera2D.update(Number(dt)||0)}catch(e){console.error("Camera2D",e)}
+    return oldRuntimeUpdateCam.apply(this,arguments);
+  };
+}
+
+const oldOpenPreviewCam=window.openPreview;
+if(typeof oldOpenPreviewCam==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreviewCam.apply(this,arguments);
+    Promise.resolve().then(async()=>{
+      await Camera2D.load();
+      Camera2D.findTarget();
+      await Camera2D.updateBounds();
+    });
+    return r;
+  };
+}
+
+/* -----------------------------------------------------
+   Camera debug
+----------------------------------------------------- */
+function updateDebug(){
+  const host=document.querySelector("#preview .game-screen");
+  if(!host)return;
+
+  let badge=document.getElementById("cameraV1Debug");
+  if(!badge){
+    badge=document.createElement("div");
+    badge.id="cameraV1Debug";
+    badge.className="cam-v1-debug";
+    host.appendChild(badge);
+  }
+
+  badge.classList.toggle("show",!!Camera2D.config.debug);
+
+  if(Camera2D.config.debug){
+    const v=window.SnakeTileMapRuntime?.visibleTiles;
+    badge.textContent=
+      `CAMERA · X ${Camera2D.x.toFixed(0)} · Y ${Camera2D.y.toFixed(0)} · Z ${Camera2D.zoom.toFixed(2)}${v?` · TILES ${v.drawn}`:""}`;
+  }
+}
+
+/* -----------------------------------------------------
+   Script API
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    return Object.freeze({
+      ...api,
+      camera:{
+        follow(target){Camera2D.setTarget(target)},
+        position(x,y){Camera2D.setPosition(x,y)},
+        zoom(value){Camera2D.setZoom(value)},
+        worldToScreen(x,y){return Camera2D.worldToScreen(x,y)},
+        screenToWorld(x,y){return Camera2D.screenToWorld(x,y)},
+        visibleRect(){return Camera2D.visibleRect()}
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   Manager UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("cameraManagerV1"))return;
+
+  const ui=document.createElement("section");
+  ui.id="cameraManagerV1";
+  ui.className="camera-manager-v1";
+  ui.innerHTML=`
+    <header class="cam-v1-head">
+      <button class="icon-btn" type="button" data-cam-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="cam-v1-head-title">
+        <strong>CAMERA 2D</strong>
+        <small>Follow, zoom, bounds and world streaming</small>
+      </div>
+      <button class="icon-btn" type="button" data-cam-debug>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="cam-v1-body">
+      <div class="cam-v1-actions">
+        <button type="button" class="primary" data-cam-save>SAVE CAMERA</button>
+        <button type="button" data-cam-reset>RESET</button>
+      </div>
+
+      <div class="cam-v1-grid">
+        <section class="cam-v1-panel">
+          <h3>CAMERA</h3>
+          <div class="cam-v1-panel-body">
+            <div class="cam-v1-row"><label>Follow Enabled</label><input id="camV1Follow" type="checkbox"></div>
+            <div class="cam-v1-row"><label>Follow Target</label><input id="camV1Target" value="Player"></div>
+            <div class="cam-v1-row"><label>Smoothing</label><input id="camV1Smoothing" type="number" min="0" max="1" step="0.01"></div>
+            <div class="cam-v1-row"><label>Deadzone X</label><input id="camV1DeadX" type="number"></div>
+            <div class="cam-v1-row"><label>Deadzone Y</label><input id="camV1DeadY" type="number"></div>
+            <div class="cam-v1-row"><label>Clamp To World</label><input id="camV1Clamp" type="checkbox"></div>
+          </div>
+        </section>
+
+        <section class="cam-v1-panel">
+          <h3>ZOOM</h3>
+          <div class="cam-v1-panel-body">
+            <div class="cam-v1-row"><label>Zoom</label><input id="camV1Zoom" type="number" min=".1" max="8" step=".05"></div>
+            <div class="cam-v1-row"><label>Min Zoom</label><input id="camV1MinZoom" type="number" min=".1" max="8" step=".05"></div>
+            <div class="cam-v1-row"><label>Max Zoom</label><input id="camV1MaxZoom" type="number" min=".1" max="8" step=".05"></div>
+          </div>
+        </section>
+
+        <section class="cam-v1-panel">
+          <h3>WORLD STREAMING</h3>
+          <div class="cam-v1-panel-body">
+            <div class="cam-v1-row"><label>Enabled</label><input id="camV1Streaming" type="checkbox"></div>
+            <div class="cam-v1-row"><label>Padding Tiles</label><input id="camV1Padding" type="number" min="0" max="16"></div>
+          </div>
+        </section>
+
+        <section class="cam-v1-panel">
+          <h3>SUMMARY</h3>
+          <div class="cam-v1-panel-body">
+            <div id="camV1Summary" class="cam-v1-summary"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-cam-close]"))return closeManager();
+
+    if(e.target.closest("[data-cam-debug]")){
+      Camera2D.config.debug=!Camera2D.config.debug;
+      await saveConfig(Camera2D.config);
+      updateDebug();
+      showToast?.(Camera2D.config.debug?"Camera Debug ON":"Camera Debug OFF");
+      return;
+    }
+
+    if(e.target.closest("[data-cam-save]")){
+      const cfg=await loadConfig();
+      const c=cfg.camera;
+
+      c.follow=!!document.getElementById("camV1Follow")?.checked;
+      c.followTarget=document.getElementById("camV1Target")?.value||"Player";
+      c.smoothing=Math.max(0,Math.min(1,Number(document.getElementById("camV1Smoothing")?.value||0)));
+      c.deadzoneX=Math.max(0,Number(document.getElementById("camV1DeadX")?.value||0));
+      c.deadzoneY=Math.max(0,Number(document.getElementById("camV1DeadY")?.value||0));
+      c.clampToWorld=!!document.getElementById("camV1Clamp")?.checked;
+      c.zoom=Number(document.getElementById("camV1Zoom")?.value||1);
+      c.minZoom=Number(document.getElementById("camV1MinZoom")?.value||.5);
+      c.maxZoom=Number(document.getElementById("camV1MaxZoom")?.value||3);
+
+      cfg.streaming.enabled=!!document.getElementById("camV1Streaming")?.checked;
+      cfg.streaming.paddingTiles=Math.max(0,Number(document.getElementById("camV1Padding")?.value||2));
+
+      await saveConfig(cfg);
+      Camera2D.config=cfg;
+      Camera2D.zoom=c.zoom;
+      Camera2D.target=null;
+
+      showToast?.("Camera salva");
+      refreshManager();
+      return;
+    }
+
+    if(e.target.closest("[data-cam-reset]")){
+      const cfg=defaultConfig();
+      await saveConfig(cfg);
+      Camera2D.config=cfg;
+      Camera2D.x=0;Camera2D.y=0;Camera2D.zoom=1;Camera2D.target=null;
+      showToast?.("Camera resetada");
+      refreshManager();
+    }
+  });
+
+  /* Put Camera inside the existing clean three-dot menu. */
+  const menu=document.getElementById("editorMoreMenu");
+  if(menu && !document.getElementById("editorMoreCamera")){
+    const btn=document.createElement("button");
+    btn.id="editorMoreCamera";
+    btn.type="button";
+    btn.className="editor-more-item";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<rect x="4" y="6" width="16" height="12" rx="2"/>'+
+        '<circle cx="12" cy="12" r="3"/>'+
+      '</svg>'+
+      '<span>Camera 2D</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+}
+
+async function refreshManager(){
+  ensureUI();
+  const cfg=await loadConfig();
+  Camera2D.config=cfg;
+
+  const set=(id,v)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.type==="checkbox")el.checked=!!v;
+    else el.value=v??"";
+  };
+
+  const c=cfg.camera;
+  set("camV1Follow",c.follow);
+  set("camV1Target",c.followTarget);
+  set("camV1Smoothing",c.smoothing);
+  set("camV1DeadX",c.deadzoneX);
+  set("camV1DeadY",c.deadzoneY);
+  set("camV1Clamp",c.clampToWorld);
+  set("camV1Zoom",c.zoom);
+  set("camV1MinZoom",c.minZoom);
+  set("camV1MaxZoom",c.maxZoom);
+  set("camV1Streaming",cfg.streaming?.enabled);
+  set("camV1Padding",cfg.streaming?.paddingTiles);
+
+  const summary=document.getElementById("camV1Summary");
+  if(summary){
+    summary.textContent=
+`Follow: ${c.follow?"ON":"OFF"}
+Target: ${c.followTarget||"—"}
+Zoom: ${c.zoom}
+Smoothing: ${c.smoothing}
+Clamp: ${c.clampToWorld?"ON":"OFF"}
+Streaming: ${cfg.streaming?.enabled?"ON":"OFF"}
+Padding: ${cfg.streaming?.paddingTiles} tile(s)`;
+  }
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("cameraManagerV1")?.classList.add("show");
+  await refreshManager();
+}
+function closeManager(){
+  document.getElementById("cameraManagerV1")?.classList.remove("show");
+}
+
+window.CameraManagerV1={
+  version:"1.0.0",
+  load:loadConfig,
+  save:saveConfig,
+  open:openManager,
+  runtime:Camera2D
+};
+
+const oldOpenProjectCam=window.openProject;
+if(typeof oldOpenProjectCam==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProjectCam.apply(this,arguments);
+    ensureUI();
+    await Camera2D.load();
+    return r;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",ensureUI,{once:true});
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
 </body>
 </html>
