@@ -11093,5 +11093,287 @@ ensureUI();
 })();
 </script>
 
+
+<style>
+.sm-transition-layer{position:absolute;inset:0;z-index:30;pointer-events:none;background:#050708;opacity:0;transition:opacity .18s ease}
+.sm-transition-layer.show{opacity:1}
+.sm-transition-info{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#91e864;font:9px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;opacity:0;transition:opacity .12s ease}
+.sm-transition-layer.show .sm-transition-info{opacity:.8}
+</style>
+
+<script>
+(function(){
+"use strict";
+
+if(!window.SceneManager){
+  console.warn("[SceneManager v2] SceneManager v1 not found.");
+  return;
+}
+
+const SM=window.SceneManager;
+const RuntimeScenes={
+  loading:false,
+  current:null,
+  transitionMs:180,
+  persistentNodes:new Set(),
+
+  markPersistent(node){
+    if(!node)return;
+    node.meta=node.meta||{};
+    node.meta.persistent=true;
+    this.persistentNodes.add(node.id);
+  },
+
+  isPersistent(node){
+    return !!node?.meta?.persistent || this.persistentNodes.has(node?.id);
+  },
+
+  ensureTransitionUI(){
+    const stage=document.querySelector("#preview .runtime-stage") ||
+                document.querySelector("#preview .game-screen") ||
+                document.getElementById("preview");
+    if(!stage || document.getElementById("smTransitionLayer"))return;
+
+    const layer=document.createElement("div");
+    layer.id="smTransitionLayer";
+    layer.className="sm-transition-layer";
+    layer.innerHTML='<div id="smTransitionInfo" class="sm-transition-info">LOADING SCENE</div>';
+    stage.appendChild(layer);
+  },
+
+  async fadeIn(label){
+    this.ensureTransitionUI();
+    const info=document.getElementById("smTransitionInfo");
+    const layer=document.getElementById("smTransitionLayer");
+    if(info)info.textContent=label||"LOADING SCENE";
+    if(layer)layer.classList.add("show");
+    await new Promise(r=>setTimeout(r,this.transitionMs));
+  },
+
+  async fadeOut(){
+    const layer=document.getElementById("smTransitionLayer");
+    if(layer)layer.classList.remove("show");
+    await new Promise(r=>setTimeout(r,this.transitionMs));
+  },
+
+  destroyRuntimeSceneNodes(){
+    const graph=window.snakeRuntime?.graph;
+    if(!graph)return;
+
+    const toRemove=[];
+    graph.traverse?.(node=>{
+      if(node===graph.root)return;
+      if(this.isPersistent(node))return;
+      toRemove.push(node);
+    });
+
+    toRemove.forEach(node=>{
+      try{window.Scripts?.detach?.(node)}catch(_){}
+      try{node.destroy?.()}catch(_){}
+      try{graph.remove?.(node)}catch(_){}
+    });
+  },
+
+  createRuntimeNode(data,index){
+    const graph=window.snakeRuntime?.graph;
+    if(!graph)return null;
+
+    const node=new SnakeNode(data.name||("Node "+(index+1)),"Sprite");
+    node.id=data.id||("scene_runtime_"+Date.now()+"_"+index);
+    node.transform.x=Number(data.x||0);
+    node.transform.y=Number(data.y||0);
+    node.meta=node.meta||{};
+    node.meta.sceneManaged=true;
+    node.meta.sceneKind=data.kind||"Node";
+    node.meta.size=data.kind==="Food"?16:22;
+    node.meta.debugColor=data.kind==="Food"?"#e86464":"#91e864";
+    graph.add(node);
+    return node;
+  },
+
+  async rebuildRuntimeScene(scene){
+    this.destroyRuntimeSceneNodes();
+
+    const created=[];
+    (Array.isArray(scene?.nodes)?scene.nodes:[]).forEach((data,index)=>{
+      const n=this.createRuntimeNode(data,index);
+      if(n)created.push(n);
+    });
+
+    try{window.snakeRuntime?.physics?.rebuildFromGraph?.(window.snakeRuntime.graph)}catch(_){}
+    try{window.SnakeEngine?.runtime?.Physics?.rebuildFromGraph?.(window.snakeRuntime?.graph)}catch(_){}
+    try{window.Scripts?.bindProjectScripts?.()}catch(_){}
+
+    try{
+      window.snakeRuntime.scene=[];
+      window.snakeRuntime.graph?.traverse?.(n=>{
+        if(n!==window.snakeRuntime.graph.root)window.snakeRuntime.scene.push(n);
+      });
+    }catch(_){}
+
+    return created;
+  },
+
+  async load(nameOrId,options={}){
+    if(this.loading)return false;
+    this.loading=true;
+
+    try{
+      const scenes=await SM.list();
+      const target=scenes.find(s=>s.id===nameOrId||s.name===nameOrId);
+
+      if(!target){
+        addOutput?.("Scene not found: "+nameOrId,"error");
+        return false;
+      }
+
+      const useFade=options.fade!==false;
+      if(useFade)await this.fadeIn("LOADING · "+target.name.toUpperCase());
+
+      window.dispatchEvent(new CustomEvent("snake:scenewillchange",{detail:{from:this.current,to:target}}));
+
+      await SM.load(target.id);
+      await this.rebuildRuntimeScene(target);
+      this.current=target;
+
+      const badge=document.getElementById("smRuntimeSceneBadge");
+      if(badge)badge.textContent="SCENE · "+target.name.toUpperCase();
+
+      window.dispatchEvent(new CustomEvent("snake:sceneloaded",{detail:{scene:target}}));
+      addOutput?.("Scene loaded: "+target.name,"success");
+
+      if(useFade)await this.fadeOut();
+      return true;
+    }catch(err){
+      console.error("Runtime scene load:",err);
+      addOutput?.("Scene load failed: "+(err?.message||err),"error");
+      try{await this.fadeOut()}catch(_){}
+      return false;
+    }finally{
+      this.loading=false;
+    }
+  },
+
+  async loadStartup(){
+    const scene=await SM.startup();
+    if(!scene)return false;
+    return this.load(scene.id,{fade:false});
+  }
+};
+
+window.RuntimeScenes=RuntimeScenes;
+window.SnakeEngine=window.SnakeEngine||{};
+SnakeEngine.runtime=SnakeEngine.runtime||{};
+SnakeEngine.runtime.SceneManager=RuntimeScenes;
+
+SM.runtimeLoad=(nameOrId,options)=>RuntimeScenes.load(nameOrId,options);
+SM.loadStartup=()=>RuntimeScenes.loadStartup();
+SM.persist=node=>RuntimeScenes.markPersistent(node);
+
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    const sceneAPI={
+      ...api.scene,
+      async load(name,options){return RuntimeScenes.load(name,options)},
+      async reload(options){
+        const current=RuntimeScenes.current || await SM.current();
+        return current?RuntimeScenes.load(current.id,options):false;
+      },
+      async startup(options){
+        const target=await SM.startup();
+        return target?RuntimeScenes.load(target.id,options):false;
+      },
+      async name(){
+        const current=RuntimeScenes.current || await SM.current();
+        return current?.name||null;
+      },
+      persist(target=node){
+        RuntimeScenes.markPersistent(target);
+        return target;
+      }
+    };
+
+    return Object.freeze({...api,scene:sceneAPI});
+  };
+}
+
+const oldRuntimeBuildSceneV2=window.runtimeBuildScene;
+if(typeof oldRuntimeBuildSceneV2==="function"){
+  window.runtimeBuildScene=function(){
+    const result=oldRuntimeBuildSceneV2.apply(this,arguments);
+
+    Promise.resolve().then(async()=>{
+      const start=await SM.startup();
+      if(start){
+        RuntimeScenes.current=start;
+        await RuntimeScenes.rebuildRuntimeScene(start);
+        const badge=document.getElementById("smRuntimeSceneBadge");
+        if(badge)badge.textContent="SCENE · "+start.name.toUpperCase();
+      }
+    }).catch(console.error);
+
+    return result;
+  };
+}
+
+const oldOpenPreviewSM2=window.openPreview;
+if(typeof oldOpenPreviewSM2==="function"){
+  window.openPreview=function(){
+    RuntimeScenes.ensureTransitionUI();
+    return oldOpenPreviewSM2.apply(this,arguments);
+  };
+}
+
+const oldClosePreviewSM2=window.closePreview;
+if(typeof oldClosePreviewSM2==="function"){
+  window.closePreview=function(){
+    RuntimeScenes.current=null;
+    RuntimeScenes.loading=false;
+    RuntimeScenes.persistentNodes.clear();
+    document.getElementById("smTransitionLayer")?.classList.remove("show");
+    return oldClosePreviewSM2.apply(this,arguments);
+  };
+}
+
+async function ensureSnakeDemoScenes(){
+  const project=(typeof currentProject!=="undefined"?currentProject:null);
+  if(project!=="Snake Demo")return;
+
+  const scenes=await SM.list();
+  const names=new Set(scenes.map(s=>s.name));
+
+  if(!names.has("Menu"))await SM.create("Menu");
+  if(!names.has("Game"))await SM.create("Game");
+  if(!names.has("GameOver"))await SM.create("GameOver");
+
+  const refreshed=await SM.list();
+  const menu=refreshed.find(s=>s.name==="Menu");
+  if(menu){
+    try{await SM.setStartup(menu.id)}catch(_){}
+  }
+}
+
+const oldOpenProjectSM2=window.openProject;
+if(typeof oldOpenProjectSM2==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectSM2.apply(this,arguments);
+    try{await ensureSnakeDemoScenes()}catch(e){console.warn(e)}
+    return result;
+  };
+}
+
+window.addEventListener("snake:sceneloaded",e=>{
+  try{addOutput?.("Scene lifecycle ready: "+e.detail.scene.name)}catch(_){}
+});
+
+RuntimeScenes.ensureTransitionUI();
+
+})();
+</script>
+
 </body>
 </html>
