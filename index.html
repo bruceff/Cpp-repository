@@ -6041,5 +6041,255 @@ window.addEventListener("unhandledrejection",e=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — MOBILE PROJECT EDITOR STRUCTURAL FIX
+   Fixes collapsed code workspace and dock hit-testing.
+===================================================== */
+
+/* The editor body must stay a flex sizing context on mobile.
+   The previous max-width:900 rule changed it to display:block,
+   causing .code-wrapper (flex:1) to collapse to ~0px. */
+@media(max-width:900px){
+  #editor .editor-main{
+    display:flex !important;
+    flex:1 1 auto !important;
+    flex-direction:row !important;
+    min-height:0 !important;
+    height:auto !important;
+    overflow:hidden !important;
+    position:relative !important;
+    z-index:1 !important;
+  }
+
+  #editor #codeArea,
+  #editor #sceneArea{
+    width:100% !important;
+    height:100% !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    flex:1 1 100% !important;
+    position:relative !important;
+    overflow:hidden !important;
+  }
+
+  #editor #codeArea{
+    display:flex;
+    flex-direction:column;
+  }
+
+  #editor #codeArea .tabs{
+    flex:0 0 42px !important;
+    min-height:42px !important;
+  }
+
+  #editor #codeArea .code-wrapper{
+    display:block !important;
+    position:relative !important;
+    flex:1 1 auto !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    overflow:hidden !important;
+    pointer-events:auto !important;
+  }
+
+  #editor #codeArea #code{
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    pointer-events:auto !important;
+    touch-action:auto !important;
+    user-select:text !important;
+    -webkit-user-select:text !important;
+    z-index:3 !important;
+  }
+
+  #editor #codeArea #lineNumbers{
+    position:absolute !important;
+    top:0 !important;
+    bottom:0 !important;
+    left:0 !important;
+    z-index:4 !important;
+    pointer-events:none !important;
+  }
+
+  /* Side panels remain overlays, never layout blockers. */
+  #editor .explorer,
+  #editor .inspector{
+    position:absolute !important;
+    top:0 !important;
+    bottom:0 !important;
+    height:auto !important;
+  }
+
+  #editor .explorer{
+    left:0 !important;
+    right:auto !important;
+  }
+
+  #editor .inspector{
+    right:0 !important;
+    left:auto !important;
+  }
+
+  /* Make the lower controls a guaranteed interaction layer.
+     This also prevents an oversized editor child from intercepting taps. */
+  #editor #bottomPanel{
+    position:relative !important;
+    z-index:40 !important;
+    flex:0 0 auto !important;
+    pointer-events:auto !important;
+  }
+
+  #editor .tool-dock{
+    position:relative !important;
+    z-index:60 !important;
+    flex:0 0 auto !important;
+    pointer-events:auto !important;
+    isolation:isolate;
+  }
+
+  #editor .tool-dock .tool{
+    position:relative !important;
+    z-index:2 !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+  }
+}
+
+/* iPhone text editing */
+@media(max-width:700px){
+  #editor #codeArea #code{
+    font-size:16px !important;
+    line-height:24px !important;
+    caret-color:#91e864 !important;
+    -webkit-touch-callout:default !important;
+  }
+
+  #editor #codeArea #lineNumbers{
+    font-size:11px !important;
+    line-height:24px !important;
+  }
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — MOBILE EDITOR INTERACTION FIX
+===================================================== */
+(function(){
+  "use strict";
+
+  const code = document.getElementById("code");
+  const codeArea = document.getElementById("codeArea");
+  const dock = document.querySelector("#editor .tool-dock");
+
+  if(code){
+    code.readOnly = false;
+    code.disabled = false;
+    code.removeAttribute("readonly");
+    code.removeAttribute("disabled");
+
+    /* Keep textarea focus native. Do not cancel touch/pointer default,
+       because iOS needs the original user gesture to show the keyboard. */
+    code.addEventListener("pointerdown", function(){
+      this.readOnly=false;
+      this.disabled=false;
+    }, {passive:true});
+
+    code.addEventListener("click", function(){
+      this.readOnly=false;
+      this.disabled=false;
+      if(document.activeElement!==this){
+        try{ this.focus({preventScroll:true}); }
+        catch(_){ this.focus(); }
+      }
+    });
+  }
+
+  /* Rebind the mobile dock explicitly. This is intentionally idempotent and
+     does not rely only on inline onclick attributes. */
+  if(dock && !dock.dataset.snakeInteractionBound){
+    dock.dataset.snakeInteractionBound="1";
+    const buttons=[...dock.querySelectorAll(".tool")];
+
+    const actions=[
+      ()=>window.showCode?.(),
+      ()=>window.showScene?.(),
+      ()=>window.openPreview?.(),
+      ()=>window.togglePanel?.(),
+      ()=>window.toggleInspector?.()
+    ];
+
+    buttons.forEach((btn,index)=>{
+      btn.style.pointerEvents="auto";
+
+      btn.addEventListener("pointerup", e=>{
+        if(e.pointerType==="touch"){
+          /* click normally follows pointerup; only use fallback if a browser
+             suppresses click after the touch sequence. */
+          const action=actions[index];
+          setTimeout(()=>{
+            if(!btn.dataset.snakeClickSeen && typeof action==="function") action();
+            btn.dataset.snakeClickSeen="";
+          },0);
+        }
+      }, {passive:true});
+
+      btn.addEventListener("click", ()=>{
+        btn.dataset.snakeClickSeen="1";
+      });
+    });
+  }
+
+  /* Ensure mode switches leave a real, editable code viewport. */
+  const originalShowCode = window.showCode;
+  if(typeof originalShowCode==="function" && !originalShowCode.__snakeMobileFixed){
+    const wrapped=function(){
+      const result=originalShowCode.apply(this,arguments);
+      if(codeArea){
+        codeArea.style.display="flex";
+        codeArea.style.minHeight="0";
+      }
+      if(code){
+        code.readOnly=false;
+        code.disabled=false;
+      }
+      return result;
+    };
+    wrapped.__snakeMobileFixed=true;
+    window.showCode=wrapped;
+  }
+
+  const originalShowScene = window.showScene;
+  if(typeof originalShowScene==="function" && !originalShowScene.__snakeMobileFixed){
+    const wrapped=function(){
+      const result=originalShowScene.apply(this,arguments);
+      const scene=document.getElementById("sceneArea");
+      if(scene){
+        scene.style.width="100%";
+        scene.style.height="100%";
+        scene.style.minHeight="0";
+      }
+      return result;
+    };
+    wrapped.__snakeMobileFixed=true;
+    window.showScene=wrapped;
+  }
+
+  /* Last safety check after project opening/layout settlement. */
+  window.addEventListener("resize", ()=>{
+    if(code && codeArea?.style.display!=="none"){
+      code.readOnly=false;
+      code.disabled=false;
+    }
+  }, {passive:true});
+})();
+</script>
+
 </body>
 </html>
