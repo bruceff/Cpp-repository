@@ -6243,5 +6243,282 @@ window.addEventListener("unhandledrejection",e=>{
 }
 </style>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — MOBILE PROJECT EDITOR PANEL FIX
+   1) Remove bottom hotbar
+   2) Make OUTPUT / ERRORS / DEBUG tabs interactive
+   3) Keep code area usable while keyboard is open
+===================================================== */
+
+/* Remove the circled bottom hotbar entirely. */
+#editor .tool-dock{
+  display:none !important;
+}
+
+/* Bottom panel should remain compact and not push over the code editor. */
+#editor #bottomPanel{
+  position:relative !important;
+  z-index:20 !important;
+  flex:0 0 auto !important;
+  min-height:39px !important;
+  max-height:190px !important;
+  overflow:hidden !important;
+}
+
+/* The panel tabs must always accept taps/clicks. */
+#editor #bottomPanel .panel-tabs,
+#editor #bottomPanel .panel-tab{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+
+#editor #bottomPanel .panel-tab{
+  position:relative;
+  z-index:2;
+}
+
+/* Panel content modes */
+#editor #bottomPanel .panel-content-view{
+  display:none;
+  flex:1;
+  min-height:0;
+  overflow:auto;
+}
+
+#editor #bottomPanel .panel-content-view.active{
+  display:block;
+}
+
+/* Keep code/editor as the flexible region. */
+#editor .editor-main{
+  min-height:0 !important;
+  flex:1 1 auto !important;
+}
+
+#editor #codeArea{
+  min-height:0 !important;
+  flex:1 1 auto !important;
+}
+
+#editor #codeArea .code-wrapper{
+  min-height:0 !important;
+  flex:1 1 auto !important;
+}
+
+/* Mobile: panel starts collapsed so it does not fight the keyboard. */
+@media(max-width:700px){
+  #editor #bottomPanel{
+    height:39px !important;
+    min-height:39px !important;
+  }
+
+  #editor #bottomPanel.mobile-expanded{
+    height:150px !important;
+    min-height:150px !important;
+  }
+
+  /* When typing, force panel collapsed to keep code visible. */
+  body.snake-code-typing #editor #bottomPanel{
+    height:39px !important;
+    min-height:39px !important;
+  }
+
+  body.snake-code-typing #editor #bottomPanel .output,
+  body.snake-code-typing #editor #bottomPanel .panel-content-view{
+    display:none !important;
+  }
+
+  #editor #codeArea #code{
+    font-size:16px !important;
+    line-height:24px !important;
+  }
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — OUTPUT / ERRORS / DEBUG TABS
+   + MOBILE KEYBOARD-SAFE CODE EDITING
+===================================================== */
+(function(){
+  "use strict";
+
+  const panel = document.getElementById("bottomPanel");
+  const tabs = panel ? [...panel.querySelectorAll(".panel-tab")] : [];
+  const output = document.getElementById("output");
+  const code = document.getElementById("code");
+
+  if(!panel || !tabs.length) return;
+
+  /* Build real ERRORS and DEBUG views while preserving the existing OUTPUT. */
+  if(output && !output.classList.contains("panel-content-view")){
+    output.classList.add("panel-content-view","active");
+    output.dataset.panelView = "output";
+  }
+
+  let errorsView = panel.querySelector('[data-panel-view="errors"]');
+  if(!errorsView){
+    errorsView = document.createElement("div");
+    errorsView.className = "output panel-content-view";
+    errorsView.dataset.panelView = "errors";
+    errorsView.innerHTML = '<div class="output-line">No errors.</div>';
+    panel.appendChild(errorsView);
+  }
+
+  let debugView = panel.querySelector('[data-panel-view="debug"]');
+  if(!debugView){
+    debugView = document.createElement("div");
+    debugView.className = "output panel-content-view";
+    debugView.dataset.panelView = "debug";
+    debugView.innerHTML = '<div class="output-line">Runtime debug ready.</div>';
+    panel.appendChild(debugView);
+  }
+
+  const views = {
+    output,
+    errors: errorsView,
+    debug: debugView
+  };
+
+  function setPanelTab(name){
+    tabs.forEach((tab,i)=>{
+      const key = i===0 ? "output" : i===1 ? "errors" : "debug";
+      tab.classList.toggle("active", key===name);
+    });
+
+    Object.entries(views).forEach(([key,el])=>{
+      if(el) el.classList.toggle("active", key===name);
+    });
+
+    /* On mobile, tapping a panel tab expands it.
+       Tapping the active tab again collapses it. */
+    if(window.matchMedia("(max-width:700px)").matches){
+      panel.classList.add("mobile-expanded");
+    }
+  }
+
+  tabs.forEach((tab,i)=>{
+    const key = i===0 ? "output" : i===1 ? "errors" : "debug";
+    tab.style.pointerEvents = "auto";
+
+    tab.addEventListener("click", e=>{
+      e.preventDefault();
+      e.stopPropagation();
+
+      const alreadyActive = tab.classList.contains("active");
+
+      if(window.matchMedia("(max-width:700px)").matches && alreadyActive && panel.classList.contains("mobile-expanded")){
+        panel.classList.remove("mobile-expanded");
+        return;
+      }
+
+      setPanelTab(key);
+    });
+
+    tab.addEventListener("pointerup", e=>{
+      e.stopPropagation();
+    }, {passive:true});
+  });
+
+  /* Route runtime/script errors into the ERRORS panel. */
+  function appendError(text){
+    if(!errorsView) return;
+    if(errorsView.textContent.trim()==="No errors.") errorsView.innerHTML="";
+    const line = document.createElement("div");
+    line.className = "output-line error";
+    line.textContent = text;
+    errorsView.appendChild(line);
+    errorsView.scrollTop = errorsView.scrollHeight;
+  }
+
+  window.addEventListener("error", e=>{
+    appendError(e.error?.message || e.message || "Unknown error");
+  });
+
+  window.addEventListener("unhandledrejection", e=>{
+    appendError(e.reason?.message || String(e.reason || "Unhandled rejection"));
+  });
+
+  /* Keep DEBUG tab useful with current runtime state. */
+  function refreshDebug(){
+    if(!debugView) return;
+
+    const running = !!window.snakeRuntime?.running;
+    const paused = !!window.snakeRuntime?.paused;
+    const fps = window.snakeRuntime?.fps || 0;
+    const frame = window.snakeRuntime?.frames || 0;
+    const elapsed = window.snakeRuntime?.elapsed || 0;
+    const scripts = window.Scripts?.instances?.size || 0;
+    const physics = window.Physics?.stats?.() || {};
+    const audio = window.AudioSystem?.stats?.() || {};
+
+    debugView.innerHTML = `
+      <div class="output-line">Runtime: ${running ? (paused ? "PAUSED" : "RUNNING") : "STOPPED"}</div>
+      <div class="output-line">FPS: ${fps}</div>
+      <div class="output-line">Frame: ${frame}</div>
+      <div class="output-line">Time: ${Number(elapsed).toFixed(2)}s</div>
+      <div class="output-line">Scripts: ${scripts}</div>
+      <div class="output-line">Physics contacts: ${physics.contacts || 0}</div>
+      <div class="output-line">Audio active: ${audio.active || 0}</div>
+    `;
+  }
+
+  setInterval(()=>{
+    if(debugView?.classList.contains("active")) refreshDebug();
+  },500);
+
+  /* iPhone/iOS: collapse the lower panel when code receives focus.
+     This prevents OUTPUT from rising and taking over the visible editor area. */
+  if(code){
+    const enterTypingMode = ()=>{
+      document.body.classList.add("snake-code-typing");
+      panel.classList.remove("mobile-expanded");
+    };
+
+    const leaveTypingMode = ()=>{
+      setTimeout(()=>{
+        if(document.activeElement !== code){
+          document.body.classList.remove("snake-code-typing");
+        }
+      },80);
+    };
+
+    code.addEventListener("focus", enterTypingMode);
+    code.addEventListener("pointerdown", enterTypingMode, {passive:true});
+    code.addEventListener("blur", leaveTypingMode);
+
+    /* VisualViewport is the most reliable way to react to the iOS keyboard. */
+    if(window.visualViewport){
+      let baseline = window.visualViewport.height;
+
+      const onViewportChange = ()=>{
+        const vv = window.visualViewport;
+        const keyboardLikelyOpen = baseline - vv.height > 120;
+
+        if(keyboardLikelyOpen && document.activeElement===code){
+          document.body.classList.add("snake-code-typing");
+          panel.classList.remove("mobile-expanded");
+        }else if(!keyboardLikelyOpen && document.activeElement!==code){
+          document.body.classList.remove("snake-code-typing");
+          baseline = Math.max(baseline, vv.height);
+        }
+      };
+
+      window.visualViewport.addEventListener("resize", onViewportChange, {passive:true});
+      window.visualViewport.addEventListener("scroll", onViewportChange, {passive:true});
+    }
+  }
+
+  /* Initial state */
+  panel.classList.remove("mobile-expanded");
+  setPanelTab("output");
+  if(window.matchMedia("(max-width:700px)").matches){
+    panel.classList.remove("mobile-expanded");
+  }
+})();
+</script>
+
 </body>
 </html>
