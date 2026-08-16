@@ -18863,5 +18863,229 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   BUILD & EXPORT ACCESS HOTFIX
+===================================================== */
+.build-access-fab{
+  position:absolute;
+  right:12px;
+  bottom:calc(58px + env(safe-area-inset-bottom));
+  z-index:205;
+  min-width:122px;
+  height:42px;
+  padding:0 12px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid #3e5f3c;
+  border-radius:10px;
+  background:#172019;
+  color:#b8f0a1;
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.05em;
+  touch-action:manipulation;
+}
+.build-access-fab.show{display:flex}
+.build-access-fab:active{transform:scale(.97)}
+.build-access-fab svg{width:16px;height:16px}
+
+.build-access-toolbar-btn{
+  width:44px;
+  height:38px;
+  border-radius:8px;
+  background:none;
+  color:#91e864;
+  display:grid;
+  place-items:center;
+  touch-action:manipulation;
+}
+.build-access-toolbar-btn svg{width:19px;height:19px}
+
+@media(max-width:700px){
+  .build-access-fab{
+    right:10px;
+    bottom:calc(54px + env(safe-area-inset-bottom));
+    min-width:112px;
+    height:40px;
+  }
+}
+</style>
+
+<script>
+(function(){
+"use strict";
+
+function editorIsOpen(){
+  const editor=document.getElementById("editor");
+  return !!editor?.classList.contains("active");
+}
+function buildManagerOpen(){
+  return !!document.getElementById("buildManagerV1")?.classList.contains("show");
+}
+function openBuildManagerSafe(){
+  try{
+    if(window.BuildExport?.open){
+      BuildExport.open();
+      return true;
+    }
+  }catch(e){console.error("BuildExport.open:",e)}
+
+  const manager=document.getElementById("buildManagerV1");
+  if(manager){
+    manager.classList.add("show");
+    try{refreshManager?.()}catch(_){}
+    return true;
+  }
+
+  showToast?.("Build & Export indisponível");
+  return false;
+}
+function syncBuildAccessVisibility(){
+  const fab=document.getElementById("buildAccessFab");
+  if(!fab)return;
+
+  const visible=
+    editorIsOpen() &&
+    !buildManagerOpen() &&
+    !document.getElementById("preview")?.classList.contains("show");
+
+  fab.classList.toggle("show",visible);
+}
+function ensureBuildAccess(){
+  const editor=document.getElementById("editor");
+  if(!editor)return;
+
+  let fab=document.getElementById("buildAccessFab");
+  if(!fab){
+    fab=document.createElement("button");
+    fab.id="buildAccessFab";
+    fab.type="button";
+    fab.className="build-access-fab";
+    fab.setAttribute("aria-label","Build & Export");
+    fab.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+      '<path d="M12 3v12"/>'+
+      '<path d="m7 10 5 5 5-5"/>'+
+      '<path d="M5 20h14"/>'+
+      '</svg>'+
+      'BUILD / EXPORT';
+
+    fab.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openBuildManagerSafe();
+      syncBuildAccessVisibility();
+    });
+    editor.appendChild(fab);
+  }
+
+  const dock=editor.querySelector(".tool-dock");
+  if(dock && !document.getElementById("buildAccessToolbarBtn")){
+    const btn=document.createElement("button");
+    btn.id="buildAccessToolbarBtn";
+    btn.type="button";
+    btn.className="build-access-toolbar-btn";
+    btn.setAttribute("aria-label","Build & Export");
+    btn.title="Build & Export";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+      '<path d="M12 3v12"/>'+
+      '<path d="m7 10 5 5 5-5"/>'+
+      '<path d="M5 20h14"/>'+
+      '</svg>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openBuildManagerSafe();
+      syncBuildAccessVisibility();
+    });
+    dock.appendChild(btn);
+  }
+
+  syncBuildAccessVisibility();
+}
+
+/* The manager back button closes only Build & Export. */
+document.addEventListener("click",e=>{
+  const close=e.target.closest?.("[data-build-v1-close]");
+  if(!close)return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  document.getElementById("buildManagerV1")?.classList.remove("show");
+
+  requestAnimationFrame(()=>{
+    try{SnakeStabilizer?.restoreEditorInteraction?.()}catch(_){}
+    syncBuildAccessVisibility();
+  });
+},true);
+
+const oldOpenProjectBuildFix=window.openProject;
+if(typeof oldOpenProjectBuildFix==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProjectBuildFix.apply(this,arguments);
+    ensureBuildAccess();
+    syncBuildAccessVisibility();
+    return r;
+  };
+}
+
+const oldBackBuildFix=window.backToDashboard;
+if(typeof oldBackBuildFix==="function"){
+  window.backToDashboard=function(){
+    const r=oldBackBuildFix.apply(this,arguments);
+    syncBuildAccessVisibility();
+    return r;
+  };
+}
+
+const oldOpenPreviewBuildFix=window.openPreview;
+if(typeof oldOpenPreviewBuildFix==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreviewBuildFix.apply(this,arguments);
+    syncBuildAccessVisibility();
+    return r;
+  };
+}
+
+const oldClosePreviewBuildFix=window.closePreview;
+if(typeof oldClosePreviewBuildFix==="function"){
+  window.closePreview=function(){
+    const r=oldClosePreviewBuildFix.apply(this,arguments);
+    requestAnimationFrame(syncBuildAccessVisibility);
+    return r;
+  };
+}
+
+const observer=new MutationObserver(syncBuildAccessVisibility);
+function attachObserver(){
+  const manager=document.getElementById("buildManagerV1");
+  if(manager && !manager.dataset.buildAccessObserved){
+    manager.dataset.buildAccessObserved="1";
+    observer.observe(manager,{attributes:true,attributeFilter:["class"]});
+  }
+}
+
+requestAnimationFrame(()=>{
+  ensureBuildAccess();
+  attachObserver();
+  syncBuildAccessVisibility();
+});
+setTimeout(()=>{
+  ensureBuildAccess();
+  attachObserver();
+  syncBuildAccessVisibility();
+},250);
+
+})();
+</script>
+
 </body>
 </html>
