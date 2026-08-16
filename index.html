@@ -24664,5 +24664,451 @@ if(typeof oldOpenProject==="function"){
 })();
 </script>
 
+
+<script>
+/* =====================================================
+   RPG DEMO — FIELD RENDER FIX v1
+   Fixes the state seen after START:
+   HUD changes to RPG Field, but Player/Enemies/TileMap were
+   not being drawn by the code-driven RPG renderer.
+===================================================== */
+(function(){
+"use strict";
+
+const RPG_PROJECT="RPG Demo";
+
+function isRPG(){
+  try{return currentProject===RPG_PROJECT}catch{return false}
+}
+
+/* -----------------------------------------------------
+   Make sure runtime entities exist and are queryable.
+----------------------------------------------------- */
+function getRPGPlayer(){
+  try{
+    if(window.RPGFlow?.state?.player)return RPGFlow.state.player;
+  }catch(_){}
+
+  try{
+    const tagged=RuntimeEntities?.findByTag?.("Player");
+    if(tagged?.length)return tagged[0];
+  }catch(_){}
+
+  return null;
+}
+
+function getRPGEnemies(){
+  try{
+    if(Array.isArray(window.RPGFlow?.state?.enemies)){
+      return RPGFlow.state.enemies.filter(Boolean);
+    }
+  }catch(_){}
+
+  try{
+    return RuntimeEntities?.findByTag?.("Enemy")||[];
+  }catch{
+    return [];
+  }
+}
+
+/* -----------------------------------------------------
+   Dedicated renderer.
+   It does NOT depend on the old Snake scene renderer.
+----------------------------------------------------- */
+const FieldRenderer={
+  canvas:null,
+  ctx:null,
+  raf:0,
+  running:false,
+  last:0,
+
+  ensure(){
+    const host=document.querySelector("#preview .game-screen")||
+               document.querySelector("#preview .runtime-stage");
+
+    if(!host)return false;
+
+    if(getComputedStyle(host).position==="static"){
+      host.style.position="relative";
+    }
+
+    let canvas=document.getElementById("rpgFieldRenderCanvas");
+
+    if(!canvas){
+      canvas=document.createElement("canvas");
+      canvas.id="rpgFieldRenderCanvas";
+      canvas.style.position="absolute";
+      canvas.style.inset="0";
+      canvas.style.width="100%";
+      canvas.style.height="100%";
+      canvas.style.zIndex="18";
+      canvas.style.pointerEvents="none";
+      canvas.style.imageRendering="pixelated";
+      host.appendChild(canvas);
+    }
+
+    this.canvas=canvas;
+    this.ctx=canvas.getContext("2d");
+    return true;
+  },
+
+  resize(){
+    if(!this.canvas||!this.ctx)return;
+
+    const host=this.canvas.parentElement;
+    const r=host?.getBoundingClientRect();
+
+    if(!r?.width||!r?.height)return;
+
+    const d=Math.min(2,devicePixelRatio||1);
+
+    const w=Math.round(r.width*d);
+    const h=Math.round(r.height*d);
+
+    if(this.canvas.width!==w||this.canvas.height!==h){
+      this.canvas.width=w;
+      this.canvas.height=h;
+      this.ctx.setTransform(d,0,0,d,0,0);
+      this.ctx.imageSmoothingEnabled=false;
+    }
+  },
+
+  asset(id){
+    try{
+      const a=(typeof assets2!=="undefined"?assets2:[])
+        .find(x=>x.id===id||x.name===id);
+
+      if(!a?.data)return null;
+
+      if(!a.__rpgFieldImg){
+        const img=new Image();
+        img.src=a.data;
+        a.__rpgFieldImg=img;
+      }
+
+      return a.__rpgFieldImg;
+    }catch{
+      return null;
+    }
+  },
+
+  world(){
+    try{
+      return window.RPGFlow?.state?.world ||
+             window.SnakeTileMapRuntime?.world ||
+             null;
+    }catch{
+      return null;
+    }
+  },
+
+  drawFallbackRect(g,x,y,w,h,color){
+    g.fillStyle=color;
+    g.fillRect(x,y,w,h);
+  },
+
+  draw(){
+    if(!this.ctx||!this.canvas)return;
+
+    const d=Math.min(2,devicePixelRatio||1);
+    const w=this.canvas.width/d;
+    const h=this.canvas.height/d;
+    const g=this.ctx;
+
+    g.clearRect(0,0,w,h);
+
+    if(!isRPG())return;
+
+    const currentScene=
+      window.RPGFlow?.state?.scene ||
+      window.RuntimeScenes?.current?.name ||
+      "";
+
+    if(currentScene!=="RPG Field")return;
+
+    const player=getRPGPlayer();
+    if(!player)return;
+
+    const world=this.world();
+    const camX=Number(player.transform?.x||0);
+    const camY=Number(player.transform?.y||0);
+
+    const ox=w/2-camX;
+    const oy=h/2-camY;
+
+    /* TileMap */
+    if(world?.layers){
+      const ts=Number(world.tileSize||32);
+
+      for(const layer of world.layers){
+        if(!layer.visible||layer.collision)continue;
+
+        for(const [k,assetId] of Object.entries(layer.tiles||{})){
+          const [tx,ty]=k.split(",").map(Number);
+
+          const sx=Math.round(ox+tx*ts);
+          const sy=Math.round(oy+ty*ts);
+
+          if(sx+ts<0||sy+ts<0||sx>w||sy>h)continue;
+
+          const img=this.asset(assetId);
+
+          if(img?.complete && img.naturalWidth){
+            g.drawImage(img,sx,sy,ts,ts);
+          }else{
+            if(assetId==="rpg-grass.png"){
+              this.drawFallbackRect(g,sx,sy,ts,ts,"#263b2b");
+            }else if(assetId==="rpg-wall.png"){
+              this.drawFallbackRect(g,sx,sy,ts,ts,"#4a5158");
+            }else if(assetId==="rpg-exit.png"){
+              this.drawFallbackRect(g,sx,sy,ts,ts,"#275d39");
+            }
+          }
+        }
+      }
+    }
+
+    /* Exit marker, even if asset failed. */
+    const exit=window.RPGFlow?.state?.exit||{x:880,y:496};
+    const ex=ox+Number(exit.x||880);
+    const ey=oy+Number(exit.y||496);
+
+    g.strokeStyle="#91e864";
+    g.lineWidth=2;
+    g.strokeRect(ex-15,ey-15,30,30);
+
+    /* Enemies */
+    const enemyImg=this.asset("rpg-enemy.png");
+
+    for(const enemy of getRPGEnemies()){
+      if(enemy?.meta?.alive===false)continue;
+
+      const x=ox+Number(enemy.transform?.x||0);
+      const y=oy+Number(enemy.transform?.y||0);
+
+      if(enemyImg?.complete && enemyImg.naturalWidth){
+        g.drawImage(enemyImg,x-16,y-16,32,32);
+      }else{
+        this.drawFallbackRect(g,x-11,y-11,22,22,"#c54e55");
+      }
+
+      const hp=Math.max(0,Number(enemy.meta?.hp??3));
+      const max=Math.max(1,Number(enemy.meta?.maxHp??3));
+
+      g.fillStyle="#190b0d";
+      g.fillRect(x-14,y-23,28,4);
+
+      g.fillStyle="#e86464";
+      g.fillRect(x-14,y-23,28*(hp/max),4);
+    }
+
+    /* Player */
+    const playerImg=this.asset("rpg-player.png");
+    const px=w/2;
+    const py=h/2;
+
+    if(playerImg?.complete && playerImg.naturalWidth){
+      g.drawImage(playerImg,px-16,py-16,32,32);
+    }else{
+      this.drawFallbackRect(g,px-11,py-11,22,22,"#5f8fd1");
+    }
+
+    /* Attack visual */
+    const cd=Number(window.RPGFlow?.state?.attackCooldown||0);
+
+    if(cd>.20){
+      const dx=Number(player.meta?.dirX??1);
+      const dy=Number(player.meta?.dirY??0);
+      const len=Math.max(.001,Math.hypot(dx,dy));
+
+      g.strokeStyle="#91e864";
+      g.lineWidth=2;
+      g.beginPath();
+      g.arc(
+        px+(dx/len)*24,
+        py+(dy/len)*24,
+        18,
+        0,
+        Math.PI*2
+      );
+      g.stroke();
+    }
+  },
+
+  start(){
+    if(this.running)return;
+    if(!this.ensure())return;
+
+    this.running=true;
+    this.last=performance.now();
+
+    const loop=t=>{
+      if(!this.running)return;
+
+      this.resize();
+
+      /*
+        The project flow already ticks through runtimeUpdate/RPGCodeRuntime.
+        This loop is intentionally render-only to avoid double-speed gameplay.
+      */
+      this.draw();
+
+      this.raf=requestAnimationFrame(loop);
+    };
+
+    this.raf=requestAnimationFrame(loop);
+  },
+
+  stop(){
+    this.running=false;
+    cancelAnimationFrame(this.raf);
+    this.raf=0;
+
+    if(this.ctx&&this.canvas){
+      this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    }
+
+    this.canvas?.remove();
+    this.canvas=null;
+    this.ctx=null;
+  }
+};
+
+window.RPGFieldRenderer=FieldRenderer;
+
+/* -----------------------------------------------------
+   Hide the generic legacy square/node representation in RPG.
+   The dedicated renderer now owns Player/Enemy visuals.
+----------------------------------------------------- */
+function suppressLegacyVisuals(){
+  if(!isRPG())return;
+
+  const scene=window.RPGFlow?.state?.scene||
+              window.RuntimeScenes?.current?.name;
+
+  if(scene==="RPG Field"){
+    const legacy=document.getElementById("rpgDemoCanvas");
+    if(legacy){
+      legacy.classList.remove("show");
+      legacy.style.display="none";
+    }
+
+    const oldCode=document.getElementById("rpgCodeCanvas");
+    if(oldCode){
+      oldCode.style.display="none";
+    }
+  }
+}
+
+/* -----------------------------------------------------
+   START transition hardening.
+   When RPG Field finishes initialization, start renderer.
+----------------------------------------------------- */
+function hookFlow(){
+  if(!window.RPGFlow||RPGFlow.__fieldRendererHooked)return;
+  RPGFlow.__fieldRendererHooked=true;
+
+  const oldEnterField=RPGFlow.enterField;
+
+  if(typeof oldEnterField==="function"){
+    RPGFlow.enterField=async function(){
+      const result=await oldEnterField.apply(this,arguments);
+
+      suppressLegacyVisuals();
+      FieldRenderer.start();
+
+      return result;
+    };
+  }
+
+  const oldMenu=RPGFlow.enterMenu;
+
+  if(typeof oldMenu==="function"){
+    RPGFlow.enterMenu=async function(){
+      FieldRenderer.stop();
+      const result=await oldMenu.apply(this,arguments);
+      return result;
+    };
+  }
+
+  const oldVictory=RPGFlow.enterVictory;
+
+  if(typeof oldVictory==="function"){
+    RPGFlow.enterVictory=async function(){
+      FieldRenderer.stop();
+      const result=await oldVictory.apply(this,arguments);
+      return result;
+    };
+  }
+}
+
+/* RPGFlow is created dynamically when scripts execute. */
+window.addEventListener("snake:sceneloaded",e=>{
+  if(!isRPG())return;
+
+  hookFlow();
+
+  const name=e.detail?.scene?.name;
+
+  if(name==="RPG Field"){
+    suppressLegacyVisuals();
+    FieldRenderer.start();
+  }else{
+    FieldRenderer.stop();
+  }
+});
+
+/* Poll only while Preview is open; no global observer. */
+let hookTimer=0;
+
+function startHookPolling(){
+  clearInterval(hookTimer);
+
+  hookTimer=setInterval(()=>{
+    if(!document.getElementById("preview")?.classList.contains("show")){
+      clearInterval(hookTimer);
+      hookTimer=0;
+      return;
+    }
+
+    hookFlow();
+    suppressLegacyVisuals();
+
+    if(window.RPGFlow?.state?.scene==="RPG Field"){
+      FieldRenderer.start();
+    }
+  },180);
+}
+
+const oldOpenPreviewField=window.openPreview;
+
+if(typeof oldOpenPreviewField==="function"){
+  window.openPreview=function(){
+    const result=oldOpenPreviewField.apply(this,arguments);
+
+    if(isRPG()){
+      setTimeout(startHookPolling,220);
+    }
+
+    return result;
+  };
+}
+
+const oldClosePreviewField=window.closePreview;
+
+if(typeof oldClosePreviewField==="function"){
+  window.closePreview=function(){
+    clearInterval(hookTimer);
+    hookTimer=0;
+
+    FieldRenderer.stop();
+
+    return oldClosePreviewField.apply(this,arguments);
+  };
+}
+
+})();
+</script>
+
 </body>
 </html>
