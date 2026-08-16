@@ -6829,5 +6829,238 @@ window.addEventListener("unhandledrejection",e=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — PROJECT DELETE ACTION FIX
+===================================================== */
+.snake-delete-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:flex-end;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(4px);
+}
+.snake-delete-overlay.show{display:flex}
+
+.snake-delete-sheet{
+  width:100%;
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  background:#12161b;
+  border-top:1px solid #303841;
+  border-radius:20px 20px 0 0;
+  box-shadow:0 -20px 50px rgba(0,0,0,.35);
+}
+.snake-delete-sheet h3{
+  margin:0 0 8px;
+  font-size:18px;
+  color:#edf0f2;
+}
+.snake-delete-sheet p{
+  margin:0;
+  color:#8b949e;
+  font-size:13px;
+  line-height:1.5;
+}
+.snake-delete-name{
+  margin-top:10px !important;
+  color:#fff !important;
+  font-weight:700;
+}
+.snake-delete-actions{
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+}
+.snake-delete-actions button{
+  flex:1;
+  height:48px;
+  border-radius:10px;
+  font-weight:700;
+}
+.snake-delete-cancel{
+  background:#1c2229;
+  color:#aeb6bf;
+  border:1px solid #303841;
+}
+.snake-delete-confirm{
+  background:#421c20;
+  color:#ff868c;
+  border:1px solid #74343a;
+}
+</style>
+
+<div id="snakeDeleteOverlay" class="snake-delete-overlay" aria-hidden="true">
+  <div class="snake-delete-sheet" role="dialog" aria-modal="true" aria-labelledby="snakeDeleteTitle">
+    <h3 id="snakeDeleteTitle">Excluir projeto</h3>
+    <p>Esta ação remove o projeto e seus arquivos salvos neste navegador.</p>
+    <p id="snakeDeleteProjectName" class="snake-delete-name"></p>
+
+    <div class="snake-delete-actions">
+      <button type="button" id="snakeDeleteCancel" class="snake-delete-cancel">
+        Cancelar
+      </button>
+      <button type="button" id="snakeDeleteConfirm" class="snake-delete-confirm">
+        Excluir
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — PROJECT DELETE FUNCTIONAL FIX
+   Replaces the previous confirm/event chain with one
+   deterministic in-app delete flow.
+===================================================== */
+(function(){
+  "use strict";
+
+  let pendingDeleteId = null;
+
+  const overlay = document.getElementById("snakeDeleteOverlay");
+  const projectNameEl = document.getElementById("snakeDeleteProjectName");
+  const cancelBtn = document.getElementById("snakeDeleteCancel");
+  const confirmBtn = document.getElementById("snakeDeleteConfirm");
+
+  function getProject(id){
+    const projects = typeof getProjects === "function" ? getProjects() : [];
+    return projects.find(p => String(p.id) === String(id)) || null;
+  }
+
+  function openDeleteDialog(id){
+    const project = getProject(id);
+
+    if(!project){
+      if(typeof showToast === "function") showToast("Projeto não encontrado");
+      return;
+    }
+
+    pendingDeleteId = String(project.id);
+    projectNameEl.textContent = project.name;
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden","false");
+  }
+
+  function closeDeleteDialog(){
+    pendingDeleteId = null;
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden","true");
+  }
+
+  function permanentlyDeleteProject(){
+    if(!pendingDeleteId) return;
+
+    const id = pendingDeleteId;
+    const projects = typeof getProjects === "function" ? getProjects() : [];
+    const project = projects.find(p => String(p.id) === String(id));
+
+    if(!project){
+      closeDeleteDialog();
+      if(typeof showToast === "function") showToast("Projeto não encontrado");
+      return;
+    }
+
+    const remaining = projects.filter(p => String(p.id) !== String(id));
+
+    try{
+      if(typeof saveProjects === "function"){
+        saveProjects(remaining);
+      }else{
+        localStorage.setItem("snakeForgeProjects", JSON.stringify(remaining));
+      }
+
+      if(typeof FILES_KEY !== "undefined"){
+        localStorage.removeItem(FILES_KEY + "_" + project.name);
+      }
+
+      /* Remove known project-specific storage without touching other projects. */
+      [
+        "snake_project_" + project.name,
+        "myengine_project_" + project.name,
+        "snakeEngineProject_" + project.name,
+        "snakeProjectWorkspace_" + project.name
+      ].forEach(key => {
+        try{ localStorage.removeItem(key); }catch(_){}
+      });
+
+      if(typeof currentProject !== "undefined" && currentProject === project.name){
+        currentProject = null;
+      }
+
+      closeDeleteDialog();
+
+      if(typeof renderProjects === "function") renderProjects();
+      if(typeof showToast === "function") showToast("Projeto excluído");
+    }catch(err){
+      console.error("Falha ao excluir projeto:", err);
+      closeDeleteDialog();
+      if(typeof showToast === "function") showToast("Não foi possível excluir o projeto");
+    }
+  }
+
+  /* One delegated handler at document level.
+     This works even after renderProjects() rebuilds every button. */
+  document.addEventListener("click", function(e){
+    const btn = e.target.closest?.("[data-delete-project], .project-delete");
+    if(!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const id =
+      btn.dataset.deleteProject ||
+      btn.closest("[data-project-id]")?.dataset.projectId;
+
+    if(id) openDeleteDialog(id);
+  }, true);
+
+  /* Touch fallback for iOS browsers that occasionally suppress click. */
+  document.addEventListener("pointerup", function(e){
+    const btn = e.target.closest?.("[data-delete-project], .project-delete");
+    if(!btn || e.pointerType !== "touch") return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const id =
+      btn.dataset.deleteProject ||
+      btn.closest("[data-project-id]")?.dataset.projectId;
+
+    if(id && !overlay.classList.contains("show")){
+      openDeleteDialog(id);
+    }
+  }, true);
+
+  cancelBtn.addEventListener("click", function(e){
+    e.preventDefault();
+    closeDeleteDialog();
+  });
+
+  confirmBtn.addEventListener("click", function(e){
+    e.preventDefault();
+    permanentlyDeleteProject();
+  });
+
+  overlay.addEventListener("click", function(e){
+    if(e.target === overlay) closeDeleteDialog();
+  });
+
+  /* Override old function so any legacy inline/listener call uses this flow. */
+  window.deleteProject = function(id, e){
+    if(e){
+      e.preventDefault?.();
+      e.stopPropagation?.();
+    }
+    openDeleteDialog(id);
+  };
+
+  window.SnakeDeleteProject = openDeleteDialog;
+})();
+</script>
+
 </body>
 </html>
