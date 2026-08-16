@@ -8562,5 +8562,392 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — SNAKE GAME DEMO
+===================================================== */
+.snake-demo-btn{
+  width:100%;
+  min-height:48px;
+  margin-top:10px;
+  border:1px solid #3c5c3b;
+  border-radius:10px;
+  background:#172019;
+  color:#b7f0a1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-weight:750;
+}
+.snake-demo-btn:active{transform:scale(.99)}
+.snake-demo-btn .ui-icon{width:18px;height:18px}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — FIRST REAL GAME: SNAKE
+   Creates a complete playable Snake demo project using
+   the Script API already present in the engine.
+===================================================== */
+(function(){
+"use strict";
+
+const SNAKE_DEMO_NAME = "Snake Demo";
+
+const SNAKE_MAIN = `// Snake Engine demo project
+// Open player.js to edit the game logic.
+
+function start(){
+  log("Snake Demo ready");
+}
+`;
+
+const SNAKE_GAME = `// Snake Game — Snake Engine
+// Uses Nodes, Input, Time and Scene APIs.
+
+let direction = {x: 1, y: 0};
+let nextDirection = {x: 1, y: 0};
+let snake = [];
+let food = null;
+
+const CELL = 22;
+const COLS = 18;
+const ROWS = 12;
+const SPEED = 7;
+
+let accumulator = 0;
+let score = 0;
+let gameOver = false;
+
+function start(){
+  buildGame();
+}
+
+function buildGame(){
+  snake = [];
+  score = 0;
+  gameOver = false;
+  accumulator = 0;
+  direction = {x:1,y:0};
+  nextDirection = {x:1,y:0};
+
+  // Hide the default runtime player. It still owns this script.
+  self.visible = false;
+
+  createSegment(0, 0, 0);
+  createSegment(-1, 0, 1);
+  createSegment(-2, 0, 2);
+
+  spawnFood();
+  log("Snake started");
+}
+
+function createSegment(gx, gy, index){
+  const n = scene.create("Sprite", "Snake_" + index, {
+    x: gx * CELL,
+    y: gy * CELL
+  });
+
+  n.meta = n.meta || {};
+  n.meta.size = CELL - 3;
+  n.meta.snake = true;
+
+  snake.push({
+    node: n,
+    x: gx,
+    y: gy
+  });
+
+  return n;
+}
+
+function spawnFood(){
+  if(food && food.node){
+    scene.destroy(food.node);
+  }
+
+  let x = 0;
+  let y = 0;
+  let safe = false;
+
+  while(!safe){
+    x = Math.floor(Math.random() * COLS) - Math.floor(COLS / 2);
+    y = Math.floor(Math.random() * ROWS) - Math.floor(ROWS / 2);
+
+    safe = !snake.some(s => s.x === x && s.y === y);
+  }
+
+  const n = scene.create("Sprite", "Food", {
+    x: x * CELL,
+    y: y * CELL
+  });
+
+  n.meta = n.meta || {};
+  n.meta.size = CELL - 6;
+  n.meta.food = true;
+
+  food = {node:n,x,y};
+}
+
+function update(dt){
+  if(input.pressed("up") || input.pressed("move_up")){
+    if(direction.y !== 1) nextDirection = {x:0,y:-1};
+  }
+
+  if(input.pressed("down") || input.pressed("move_down")){
+    if(direction.y !== -1) nextDirection = {x:0,y:1};
+  }
+
+  if(input.pressed("left") || input.pressed("move_left")){
+    if(direction.x !== 1) nextDirection = {x:-1,y:0};
+  }
+
+  if(input.pressed("right") || input.pressed("move_right")){
+    if(direction.x !== -1) nextDirection = {x:1,y:0};
+  }
+
+  // Fallback for analog/mobile vector input.
+  const v = input.vector();
+
+  if(Math.abs(v.x) > Math.abs(v.y) && Math.abs(v.x) > .45){
+    if(v.x > 0 && direction.x !== -1) nextDirection = {x:1,y:0};
+    if(v.x < 0 && direction.x !== 1) nextDirection = {x:-1,y:0};
+  }
+
+  if(Math.abs(v.y) > Math.abs(v.x) && Math.abs(v.y) > .45){
+    if(v.y > 0 && direction.y !== -1) nextDirection = {x:0,y:1};
+    if(v.y < 0 && direction.y !== 1) nextDirection = {x:0,y:-1};
+  }
+
+  if(gameOver){
+    if(input.pressed("primary")){
+      clearGame();
+      buildGame();
+    }
+    return;
+  }
+
+  accumulator += dt;
+
+  if(accumulator >= 1 / SPEED){
+    accumulator -= 1 / SPEED;
+    stepSnake();
+  }
+}
+
+function stepSnake(){
+  direction = nextDirection;
+
+  const head = snake[0];
+  const nx = head.x + direction.x;
+  const ny = head.y + direction.y;
+
+  const halfCols = Math.floor(COLS / 2);
+  const halfRows = Math.floor(ROWS / 2);
+
+  if(
+    nx < -halfCols ||
+    nx >= halfCols ||
+    ny < -halfRows ||
+    ny >= halfRows
+  ){
+    finishGame();
+    return;
+  }
+
+  if(snake.some((s,i) => i > 0 && s.x === nx && s.y === ny)){
+    finishGame();
+    return;
+  }
+
+  const ate = food && nx === food.x && ny === food.y;
+
+  let tail;
+
+  if(ate){
+    tail = createSegment(
+      snake[snake.length-1].x,
+      snake[snake.length-1].y,
+      snake.length
+    );
+
+    score += 10;
+
+    if(typeof audio !== "undefined"){
+      // Works when a compatible sound is later added.
+    }
+
+    spawnFood();
+    log("Score", score);
+  }else{
+    tail = snake.pop();
+  }
+
+  for(let i = snake.length - 1; i > 0; i--){
+    snake[i].x = snake[i-1].x;
+    snake[i].y = snake[i-1].y;
+  }
+
+  if(snake.length > 0){
+    snake[0].x = nx;
+    snake[0].y = ny;
+  }
+
+  if(tail && !ate){
+    tail.x = nx;
+    tail.y = ny;
+    snake.unshift(tail);
+  }
+
+  syncVisuals();
+}
+
+function syncVisuals(){
+  snake.forEach((s,i)=>{
+    s.node.transform.x = s.x * CELL;
+    s.node.transform.y = s.y * CELL;
+
+    s.node.meta = s.node.meta || {};
+    s.node.meta.size = i === 0 ? CELL - 2 : CELL - 4;
+  });
+}
+
+function finishGame(){
+  gameOver = true;
+  log("GAME OVER — score:", score);
+  log("Press primary action to restart");
+}
+
+function clearGame(){
+  snake.forEach(s => {
+    if(s.node) scene.destroy(s.node);
+  });
+
+  if(food && food.node){
+    scene.destroy(food.node);
+  }
+
+  snake = [];
+  food = null;
+}
+`;
+
+const SNAKE_README = `SNAKE DEMO
+
+Controls:
+- Keyboard: arrows / WASD
+- Mobile: virtual stick / directional input
+- Primary action after Game Over: restart
+
+Files:
+- main.js      project entry
+- player.js    full game logic
+
+This project was created entirely inside Snake Engine.
+`;
+
+async function ensureSnakeDemoProject(openAfter=false){
+  try{
+    if(window.SnakeDB?.ready){
+      await SnakeDB.ready;
+    }
+
+    let projects = typeof getProjects === "function" ? getProjects() : [];
+
+    let project = projects.find(p => p.name === SNAKE_DEMO_NAME);
+
+    if(!project){
+      project = {
+        id: String(Date.now()),
+        name: SNAKE_DEMO_NAME,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        template: "snake-demo"
+      };
+
+      projects.unshift(project);
+
+      if(typeof saveProjects === "function"){
+        saveProjects(projects);
+      }
+    }
+
+    const files = {
+      "main.js": SNAKE_MAIN,
+      "player.js": SNAKE_GAME,
+      "README.txt": SNAKE_README
+    };
+
+    if(window.SnakeDB){
+      await SnakeDB.saveProjectFiles(SNAKE_DEMO_NAME, files);
+    }
+
+    try{
+      const key = (typeof FILES_KEY !== "undefined" ? FILES_KEY : "snakeForgeFiles") + "_" + SNAKE_DEMO_NAME;
+      localStorage.setItem(key, JSON.stringify(files));
+    }catch(_){}
+
+    if(typeof renderProjects === "function"){
+      renderProjects();
+    }
+
+    if(typeof showToast === "function"){
+      showToast(project ? "Snake Demo pronto" : "Snake Demo criado");
+    }
+
+    if(openAfter){
+      if(typeof openProject === "function"){
+        await openProject(SNAKE_DEMO_NAME);
+      }
+    }
+
+    return project;
+  }catch(err){
+    console.error("Snake demo creation:", err);
+    if(typeof showToast === "function"){
+      showToast("Não foi possível criar o Snake Demo");
+    }
+    return null;
+  }
+}
+
+function installDemoButtons(){
+  const projectsScreen=document.getElementById("projectsScreen");
+  if(projectsScreen && !document.getElementById("snakeDemoProjectBtn")){
+    const main=projectsScreen.querySelector(".dashboard-content");
+    const newBtn=main?.querySelector(".new-project");
+
+    if(main && newBtn){
+      const btn=document.createElement("button");
+      btn.type="button";
+      btn.id="snakeDemoProjectBtn";
+      btn.className="snake-demo-btn";
+      btn.innerHTML=`
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
+          <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
+          <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+        CREATE SNAKE DEMO
+      `;
+      btn.addEventListener("click",()=>ensureSnakeDemoProject(true));
+      newBtn.insertAdjacentElement("afterend",btn);
+    }
+  }
+}
+
+window.createSnakeDemoProject=()=>ensureSnakeDemoProject(true);
+
+Promise.resolve(window.SnakeDB?.ready).then(()=>{
+  installDemoButtons();
+}).catch(()=>{
+  installDemoButtons();
+});
+
+})();
+</script>
+
 </body>
 </html>
