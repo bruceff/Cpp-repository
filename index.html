@@ -11827,5 +11827,513 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — PREFAB SYSTEM v2
+===================================================== */
+.prefab-instance-badge.override{
+  color:#f2c66d;
+  border-color:#6b572c;
+  background:#241d10;
+}
+.prefab-instance-tools{
+  position:absolute;
+  right:0;
+  top:-44px;
+  display:none;
+  gap:4px;
+  z-index:20;
+}
+.scene-object.selected[data-prefab-id] .prefab-instance-tools{
+  display:flex;
+}
+.prefab-instance-tools button{
+  min-width:30px;
+  height:28px;
+  padding:0 6px;
+  border-radius:6px;
+  border:1px solid #2c363f;
+  background:#12191f;
+  color:#8f9ca6;
+  font-size:8px;
+  font-weight:700;
+}
+.prefab-instance-tools button.apply{
+  color:#b8ef9f;
+  border-color:#3d5d3c;
+}
+.prefab-instance-tools button.revert{
+  color:#f0c978;
+  border-color:#66542b;
+}
+.prefab-instance-tools button.unpack{
+  color:#e98e94;
+  border-color:#643439;
+}
+.prefab-nested{
+  margin-top:6px;
+  padding:6px 8px;
+  border:1px solid #26313a;
+  border-radius:6px;
+  background:#0d1318;
+  color:#6f7c86;
+  font-size:8px;
+}
+.prefab-nested strong{color:#aab5bd}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — PREFAB SYSTEM v2
+   Overrides · Apply · Revert · Unpack · Nested Prefabs
+===================================================== */
+(function(){
+"use strict";
+
+if(!window.Prefabs){
+  console.warn("[Prefab v2] Prefab System v1 not found.");
+  return;
+}
+
+const V1=window.Prefabs;
+
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function project(){try{return currentProject||null}catch{return null}}
+
+async function state(){
+  const list=await V1.list();
+  return list;
+}
+
+async function getPrefab(idOrName){
+  const list=await state();
+  return list.find(p=>p.id===idOrName||p.name===idOrName)||null;
+}
+
+function instanceElements(prefabId){
+  return [...document.querySelectorAll(`.scene-object[data-prefab-id="${CSS.escape(prefabId)}"]`)];
+}
+
+function ensureInstanceTools(el){
+  if(!el || !el.dataset.prefabId)return;
+  if(el.querySelector(".prefab-instance-tools"))return;
+
+  const tools=document.createElement("div");
+  tools.className="prefab-instance-tools";
+  tools.innerHTML=`
+    <button type="button" class="apply" data-prefab-v2-apply>APPLY</button>
+    <button type="button" class="revert" data-prefab-v2-revert>REVERT</button>
+    <button type="button" class="unpack" data-prefab-v2-unpack>UNPACK</button>
+  `;
+  el.appendChild(tools);
+}
+
+function readInstance(el){
+  const label=el.querySelector(".selection-label")?.textContent?.trim()||"";
+  const kind=el.querySelector(".object-food")?"Food":"Player";
+  return {
+    name:label,
+    kind,
+    transform:{
+      x:parseInt(el.style.left)||0,
+      y:parseInt(el.style.top)||0,
+      rotation:Number(el.dataset.rotation||0),
+      scaleX:Number(el.dataset.scaleX||1),
+      scaleY:Number(el.dataset.scaleY||1)
+    }
+  };
+}
+
+function diffInstance(el,prefab){
+  const a=readInstance(el);
+  const b=prefab?.template||{};
+  const bt=b.transform||{};
+
+  const overrides={};
+
+  if(a.name!==b.name)overrides.name=a.name;
+  if(a.kind!==b.kind)overrides.kind=a.kind;
+
+  const t={};
+  if(a.transform.x!==Number(bt.x||0))t.x=a.transform.x;
+  if(a.transform.y!==Number(bt.y||0))t.y=a.transform.y;
+  if(a.transform.rotation!==Number(bt.rotation||0))t.rotation=a.transform.rotation;
+  if(a.transform.scaleX!==Number(bt.scaleX||1))t.scaleX=a.transform.scaleX;
+  if(a.transform.scaleY!==Number(bt.scaleY||1))t.scaleY=a.transform.scaleY;
+  if(Object.keys(t).length)overrides.transform=t;
+
+  return overrides;
+}
+
+function hasOverrides(overrides){
+  return overrides && Object.keys(overrides).length>0;
+}
+
+function saveOverridesToElement(el,overrides){
+  el.dataset.prefabOverrides=JSON.stringify(overrides||{});
+  const badge=el.querySelector(".prefab-instance-badge");
+  if(badge){
+    badge.classList.toggle("override",hasOverrides(overrides));
+    badge.textContent=hasOverrides(overrides)?"PREFAB • OVERRIDE":"PREFAB";
+  }
+}
+
+async function refreshOverrides(el){
+  if(!el?.dataset.prefabId)return;
+  const prefab=await getPrefab(el.dataset.prefabId);
+  if(!prefab)return;
+  const overrides=diffInstance(el,prefab);
+  saveOverridesToElement(el,overrides);
+}
+
+function applyTemplateToElement(el,prefab,keepOverrides=true){
+  if(!el||!prefab)return;
+
+  let overrides={};
+  if(keepOverrides){
+    try{overrides=JSON.parse(el.dataset.prefabOverrides||"{}")}catch(_){}
+  }
+
+  const t=prefab.template||{};
+  const tr=t.transform||{};
+  const otr=overrides.transform||{};
+
+  el.style.left=(otr.x??tr.x??0)+"px";
+  el.style.top=(otr.y??tr.y??0)+"px";
+  el.dataset.rotation=String(otr.rotation??tr.rotation??0);
+  el.dataset.scaleX=String(otr.scaleX??tr.scaleX??1);
+  el.dataset.scaleY=String(otr.scaleY??tr.scaleY??1);
+
+  const name=overrides.name??t.name??prefab.name;
+  const label=el.querySelector(".selection-label");
+  if(label)label.textContent=name;
+
+  const kind=overrides.kind??t.kind??"Player";
+  const wantsFood=kind==="Food";
+  const hasFood=!!el.querySelector(".object-food");
+
+  if(wantsFood!==hasFood){
+    el.querySelector(".object-body,.object-food")?.remove();
+    const body=document.createElement("div");
+    body.className=wantsFood?"object-food":"object-body";
+    const badge=el.querySelector(".prefab-instance-badge");
+    if(badge)el.insertBefore(body,badge);
+    else el.appendChild(body);
+  }
+
+  saveOverridesToElement(el,overrides);
+  ensureInstanceTools(el);
+}
+
+async function applyOverrides(el){
+  if(!el?.dataset.prefabId)return;
+  const prefab=await getPrefab(el.dataset.prefabId);
+  if(!prefab)return;
+
+  const overrides=diffInstance(el,prefab);
+  if(!hasOverrides(overrides)){
+    showToast?.("Nenhum override para aplicar");
+    return;
+  }
+
+  const list=await V1.list();
+  const target=list.find(p=>p.id===prefab.id);
+  if(!target)return;
+
+  const instance=readInstance(el);
+  target.template={
+    ...clone(target.template),
+    name:instance.name,
+    kind:instance.kind,
+    transform:clone(instance.transform)
+  };
+  target.updatedAt=new Date().toISOString();
+
+  /* Persist through v1 API by temporarily selecting and using update flow
+     when possible, otherwise write the known storage mirrors directly. */
+  try{
+    const key="snake_prefabs_v1:"+project();
+    const raw=localStorage.getItem(key);
+    const s=raw?JSON.parse(raw):{version:1,prefabs:[]};
+    const i=s.prefabs.findIndex(p=>p.id===target.id);
+    if(i>=0)s.prefabs[i]=target;
+    localStorage.setItem(key,JSON.stringify(s));
+
+    if(window.SnakeDB){
+      const projectId=await SnakeDB.projectIdForName(project());
+      await SnakeDB.put("assets",{
+        id:"prefab-index:"+projectId,
+        type:"application/x-snake-prefab-index",
+        name:"Prefab Index",
+        folder:"other",
+        projectId,
+        source:"prefab-system",
+        state:s,
+        updatedAt:new Date().toISOString()
+      });
+    }
+
+    if(typeof assets2!=="undefined"){
+      const asset=assets2.find(a=>a.id==="prefab:"+target.id);
+      if(asset){
+        asset.data=JSON.stringify(target);
+        asset.updatedAt=target.updatedAt;
+        await Promise.resolve(saveAssets2?.());
+      }
+    }
+  }catch(e){
+    console.error("Apply overrides:",e);
+    showToast?.("Falha ao aplicar overrides");
+    return;
+  }
+
+  /* Propagate prefab change to all linked instances, preserving each
+     instance's own independent overrides. */
+  for(const inst of instanceElements(target.id)){
+    if(inst===el){
+      saveOverridesToElement(inst,{});
+      applyTemplateToElement(inst,target,false);
+    }else{
+      applyTemplateToElement(inst,target,true);
+      await refreshOverrides(inst);
+    }
+  }
+
+  showToast?.("Overrides aplicados ao Prefab");
+}
+
+async function revertOverrides(el){
+  if(!el?.dataset.prefabId)return;
+  const prefab=await getPrefab(el.dataset.prefabId);
+  if(!prefab)return;
+  el.dataset.prefabOverrides="{}";
+  applyTemplateToElement(el,prefab,false);
+  showToast?.("Instância revertida");
+}
+
+function unpack(el){
+  if(!el?.dataset.prefabId)return;
+
+  delete el.dataset.prefabId;
+  delete el.dataset.prefabInstanceId;
+  delete el.dataset.prefabOverrides;
+
+  el.querySelector(".prefab-instance-badge")?.remove();
+  el.querySelector(".prefab-instance-tools")?.remove();
+
+  showToast?.("Vínculo com Prefab removido");
+}
+
+async function synchronizeAll(){
+  const prefabs=await V1.list();
+  for(const prefab of prefabs){
+    for(const el of instanceElements(prefab.id)){
+      ensureInstanceTools(el);
+      if(!el.dataset.prefabOverrides){
+        const overrides=diffInstance(el,prefab);
+        saveOverridesToElement(el,overrides);
+      }
+    }
+  }
+}
+
+/* -----------------------------------------------------
+   Nested Prefabs
+----------------------------------------------------- */
+async function createNestedPrefab(parentPrefabId,childPrefabName,localTransform={}){
+  const parent=await getPrefab(parentPrefabId);
+  const child=await getPrefab(childPrefabName);
+  if(!parent||!child)return false;
+
+  parent.children=Array.isArray(parent.children)?parent.children:[];
+  parent.children.push({
+    prefabId:child.id,
+    localTransform:{
+      x:Number(localTransform.x||0),
+      y:Number(localTransform.y||0),
+      rotation:Number(localTransform.rotation||0),
+      scaleX:Number(localTransform.scaleX||1),
+      scaleY:Number(localTransform.scaleY||1)
+    }
+  });
+
+  const key="snake_prefabs_v1:"+project();
+  try{
+    const raw=localStorage.getItem(key);
+    const s=raw?JSON.parse(raw):{version:1,prefabs:[]};
+    const i=s.prefabs.findIndex(p=>p.id===parent.id);
+    if(i>=0)s.prefabs[i]=parent;
+    localStorage.setItem(key,JSON.stringify(s));
+
+    if(window.SnakeDB){
+      const projectId=await SnakeDB.projectIdForName(project());
+      await SnakeDB.put("assets",{
+        id:"prefab-index:"+projectId,
+        type:"application/x-snake-prefab-index",
+        name:"Prefab Index",
+        folder:"other",
+        projectId,
+        source:"prefab-system",
+        state:s,
+        updatedAt:new Date().toISOString()
+      });
+    }
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+
+  showToast?.("Prefab aninhado adicionado");
+  return true;
+}
+
+async function instantiateRuntimeNested(prefabNameOrId,options={}){
+  const root=await V1.instantiateRuntime(prefabNameOrId,options);
+  const prefab=await getPrefab(prefabNameOrId);
+  if(!root||!prefab)return root;
+
+  const children=Array.isArray(prefab.children)?prefab.children:[];
+  root.meta=root.meta||{};
+  root.meta.prefabChildren=[];
+
+  for(const childDef of children){
+    const childPrefab=await getPrefab(childDef.prefabId);
+    if(!childPrefab)continue;
+
+    const lt=childDef.localTransform||{};
+    const child=await V1.instantiateRuntime(childPrefab.id,{
+      x:(root.transform.x||0)+Number(lt.x||0),
+      y:(root.transform.y||0)+Number(lt.y||0),
+      rotation:Number(lt.rotation||0),
+      scaleX:Number(lt.scaleX||1),
+      scaleY:Number(lt.scaleY||1)
+    });
+
+    if(child){
+      child.meta=child.meta||{};
+      child.meta.prefabParentId=root.id;
+      root.meta.prefabChildren.push(child.id);
+    }
+  }
+
+  return root;
+}
+
+/* -----------------------------------------------------
+   Editor interaction hooks
+----------------------------------------------------- */
+document.addEventListener("click",async e=>{
+  const apply=e.target.closest("[data-prefab-v2-apply]");
+  if(apply){
+    e.preventDefault();e.stopPropagation();
+    return applyOverrides(apply.closest(".scene-object"));
+  }
+
+  const revert=e.target.closest("[data-prefab-v2-revert]");
+  if(revert){
+    e.preventDefault();e.stopPropagation();
+    return revertOverrides(revert.closest(".scene-object"));
+  }
+
+  const unp=e.target.closest("[data-prefab-v2-unpack]");
+  if(unp){
+    e.preventDefault();e.stopPropagation();
+    return unpack(unp.closest(".scene-object"));
+  }
+},true);
+
+/* Position/name edits immediately become explicit overrides. */
+["posX","posY","propName","rotation","scaleX","scaleY"].forEach(id=>{
+  document.getElementById(id)?.addEventListener("input",()=>{
+    const el=selectedObject?.() || document.querySelector(".scene-object.selected");
+    if(el?.dataset.prefabId){
+      setTimeout(()=>refreshOverrides(el),0);
+    }
+  });
+});
+
+const oldInstantiate=V1.instantiate;
+V1.instantiate=async function(){
+  const el=await oldInstantiate.apply(this,arguments);
+  if(el){
+    ensureInstanceTools(el);
+    await refreshOverrides(el);
+  }
+  return el;
+};
+
+const oldInstantiateRuntime=V1.instantiateRuntime;
+V1.instantiateRuntime=instantiateRuntimeNested;
+
+V1.applyOverrides=applyOverrides;
+V1.revertOverrides=revertOverrides;
+V1.unpack=unpack;
+V1.addNested=createNestedPrefab;
+V1.sync=synchronizeAll;
+
+/* -----------------------------------------------------
+   Script API extension
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const previousBuild=Scripts.buildAPI.bind(Scripts);
+
+  Scripts.buildAPI=function(node){
+    const api=previousBuild(node);
+
+    return Object.freeze({
+      ...api,
+      prefab:{
+        ...(api.prefab||{}),
+        instantiate(name,options){return instantiateRuntimeNested(name,options)},
+        async nested(parent,child,transform){return createNestedPrefab(parent,child,transform)}
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   Manager UI enhancement
+----------------------------------------------------- */
+const oldRenderManager=window.renderPrefabManager;
+if(typeof oldRenderManager==="function"){
+  window.renderPrefabManager=async function(){
+    await oldRenderManager.apply(this,arguments);
+
+    const list=await V1.list();
+    document.querySelectorAll("#prefabList .prefab-card").forEach((card,index)=>{
+      const p=list[index];
+      if(!p)return;
+
+      let nested=card.querySelector(".prefab-nested");
+      if(!nested){
+        nested=document.createElement("div");
+        nested.className="prefab-nested";
+        card.querySelector(".prefab-info")?.appendChild(nested);
+      }
+
+      const count=Array.isArray(p.children)?p.children.length:0;
+      nested.innerHTML=`<strong>${count}</strong> nested prefab${count===1?"":"s"}`;
+    });
+  };
+}
+
+/* Existing v1 renderer is lexical in some browsers; add post-sync after open. */
+const oldOpenManager=V1.open;
+V1.open=async function(){
+  const r=await oldOpenManager.apply(this,arguments);
+  await synchronizeAll();
+  return r;
+};
+
+/* Initial upgrade */
+setTimeout(()=>synchronizeAll().catch(console.error),250);
+
+})();
+</script>
+
 </body>
 </html>
