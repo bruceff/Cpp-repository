@@ -25110,5 +25110,101 @@ if(typeof oldClosePreviewField==="function"){
 })();
 </script>
 
+
+<script>
+/* =====================================================
+   RPG DEMO — INPUT BRIDGE FIX v1
+   The Runtime joystick is .se-stick and writes directly to
+   SnakeInput.stick. InputV2 was not reading that analog state.
+===================================================== */
+(function(){
+"use strict";
+
+if(!window.InputV2)return;
+
+/*
+  Important:
+  SnakeInput.vector() was previously redirected to InputV2.vector(),
+  so using SnakeInput.vector() as a fallback would recurse.
+  The original virtual joystick still updates SnakeInput.stick.x/y,
+  therefore we read that physical analog state directly.
+*/
+InputV2.vector=function(){
+  let x=0;
+  let y=0;
+
+  /* Keyboard / digital virtual actions */
+  if(this.down("move_left"))x-=1;
+  if(this.down("move_right"))x+=1;
+  if(this.down("move_up"))y-=1;
+  if(this.down("move_down"))y+=1;
+
+  /* InputV2-owned analog vector */
+  const own=this.pointerVector||{x:0,y:0};
+  if(Math.hypot(Number(own.x)||0,Number(own.y)||0) > Number(this.config?.deadzone??.18)){
+    x=Number(own.x)||0;
+    y=Number(own.y)||0;
+  }
+
+  /*
+    Native Snake Runtime virtual joystick.
+    .se-stick updates this object continuously on pointermove.
+  */
+  const stick=window.SnakeInput?.stick;
+  const sx=Number(stick?.x)||0;
+  const sy=Number(stick?.y)||0;
+  const deadzone=Number(this.config?.deadzone??.18);
+
+  if(Math.hypot(sx,sy)>deadzone){
+    x=sx;
+    y=sy;
+  }
+
+  const len=Math.hypot(x,y);
+  if(len>1){
+    x/=len;
+    y/=len;
+  }
+
+  return {x,y};
+};
+
+/* Keep every public input facade on the same vector source. */
+if(window.SnakeInput){
+  SnakeInput.vector=()=>InputV2.vector();
+}
+
+if(window.input){
+  window.input.vector=()=>InputV2.vector();
+}
+
+/* RPG bridge uses the corrected unified vector directly. */
+if(window.RPGCodeRuntime?.api){
+  const previousApi=RPGCodeRuntime.api.bind(RPGCodeRuntime);
+
+  RPGCodeRuntime.api=function(){
+    const result=previousApi();
+
+    if(result?.api?.input){
+      result.api.input.vector=()=>InputV2.vector();
+    }
+
+    return result;
+  };
+}
+
+/* Flow runtime created later also receives the same fixed InputV2 globally. */
+window.RPGInputBridge={
+  version:"1.0.0",
+  vector:()=>InputV2.vector(),
+  rawStick:()=>({
+    x:Number(window.SnakeInput?.stick?.x)||0,
+    y:Number(window.SnakeInput?.stick?.y)||0
+  })
+};
+
+})();
+</script>
+
 </body>
 </html>
