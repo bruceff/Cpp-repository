@@ -19087,5 +19087,626 @@ setTimeout(()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — PROJECT SETTINGS v1
+===================================================== */
+.project-settings-v1{
+  position:absolute;
+  inset:0;
+  z-index:232;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.project-settings-v1.show{display:flex}
+
+.ps-v1-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.ps-v1-head-title{flex:1;min-width:0}
+.ps-v1-head-title strong{display:block;font-size:13px}
+.ps-v1-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.ps-v1-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+
+.ps-v1-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.ps-v1-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.ps-v1-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.ps-v1-panel-body{padding:9px}
+
+.ps-v1-row{
+  display:grid;
+  grid-template-columns:1fr 130px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.ps-v1-row label{
+  color:#89959e;
+  font-size:9px;
+}
+.ps-v1-row input,
+.ps-v1-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.ps-v1-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.ps-v1-actions button{
+  flex:1;
+  min-height:40px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.ps-v1-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.ps-v1-summary{
+  padding:10px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0c1115;
+  color:#7b8790;
+  font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+
+@media(max-width:700px){
+  .ps-v1-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — PROJECT SETTINGS v1
+   Central game configuration for runtime + build.
+===================================================== */
+(function(){
+"use strict";
+
+const SETTINGS_PREFIX="snake_project_settings_v1:";
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function key(name){return SETTINGS_PREFIX+name}
+
+function defaultSettings(){
+  return {
+    version:1,
+    product:{
+      name:project()||"Snake Game",
+      version:"0.1.0"
+    },
+    display:{
+      width:960,
+      height:540,
+      orientation:"landscape",
+      scaleMode:"fit",
+      targetFPS:60,
+      background:"#0b1014"
+    },
+    runtime:{
+      runInBackground:false,
+      pauseOnBlur:true
+    },
+    scene:{
+      startup:null
+    },
+    physics:{
+      gravityX:0,
+      gravityY:0
+    },
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const s=JSON.parse(raw);
+      if(s?.version===1)return s;
+    }
+  }catch(_){}
+  const s=defaultSettings();
+  if(name)localStorage.setItem(key(name),JSON.stringify(s));
+  return s;
+}
+
+async function loadSettings(name=project()){
+  if(!name)return defaultSettings();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("preferences","project-settings:"+projectId);
+      if(row?.value?.version===1){
+        localStorage.setItem(key(name),JSON.stringify(row.value));
+        return clone(row.value);
+      }
+    }catch(e){console.warn("Project Settings load:",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveSettings(settings,name=project()){
+  if(!name)return;
+  settings.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(settings));
+
+  if(window.SnakeDB){
+    try{
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("preferences",{
+        key:"project-settings:"+projectId,
+        value:clone(settings),
+        updatedAt:settings.updatedAt
+      });
+    }catch(e){console.warn("Project Settings save:",e)}
+  }
+}
+
+async function syncFromExistingSystems(){
+  const s=await loadSettings();
+
+  try{
+    const buildCfg=typeof loadConfig==="function" ? loadConfig() : null;
+    if(buildCfg?.title)s.product.name=buildCfg.title;
+    if(buildCfg?.width)s.display.width=buildCfg.width;
+    if(buildCfg?.height)s.display.height=buildCfg.height;
+    if(buildCfg?.orientation)s.display.orientation=buildCfg.orientation;
+    if(buildCfg?.scaleMode)s.display.scaleMode=buildCfg.scaleMode;
+    if(buildCfg?.background)s.display.background=buildCfg.background;
+  }catch(_){}
+
+  try{
+    const scene=await SceneManager?.startup?.();
+    if(scene?.id)s.scene.startup=scene.id;
+  }catch(_){}
+
+  try{
+    const phys=await PhysicsManager?.load?.();
+    if(phys?.gravity){
+      s.physics.gravityX=Number(phys.gravity.x||0);
+      s.physics.gravityY=Number(phys.gravity.y||0);
+    }
+  }catch(_){}
+
+  await saveSettings(s);
+  return s;
+}
+
+async function applySettingsToSystems(settings){
+  /* Startup scene */
+  try{
+    if(settings.scene?.startup){
+      await SceneManager?.setStartup?.(settings.scene.startup);
+    }
+  }catch(e){console.warn(e)}
+
+  /* Physics */
+  try{
+    const phys=await PhysicsManager?.load?.();
+    if(phys){
+      phys.gravity={
+        x:Number(settings.physics?.gravityX||0),
+        y:Number(settings.physics?.gravityY||0)
+      };
+      await PhysicsManager.save(phys);
+      if(window.Physics2D){
+        Physics2D.gravity=clone(phys.gravity);
+      }
+    }
+  }catch(e){console.warn(e)}
+
+  /* Build settings */
+  try{
+    const buildKey="snake_build_v1:"+project();
+    let build={};
+    try{build=JSON.parse(localStorage.getItem(buildKey)||"{}")}catch(_){}
+    build.version=1;
+    build.title=settings.product?.name||project();
+    build.width=Number(settings.display?.width||960);
+    build.height=Number(settings.display?.height||540);
+    build.orientation=settings.display?.orientation||"landscape";
+    build.scaleMode=settings.display?.scaleMode||"fit";
+    build.background=settings.display?.background||"#0b1014";
+    build.updatedAt=new Date().toISOString();
+    localStorage.setItem(buildKey,JSON.stringify(build));
+  }catch(e){console.warn(e)}
+
+  /* Runtime metadata */
+  window.SnakeProjectSettingsRuntime={
+    name:settings.product?.name,
+    version:settings.product?.version,
+    targetFPS:Number(settings.display?.targetFPS||60),
+    runInBackground:!!settings.runtime?.runInBackground,
+    pauseOnBlur:settings.runtime?.pauseOnBlur!==false,
+    resolution:{
+      width:Number(settings.display?.width||960),
+      height:Number(settings.display?.height||540)
+    }
+  };
+}
+
+async function sceneOptions(){
+  try{
+    return await SceneManager?.list?.()||[];
+  }catch{return []}
+}
+
+/* -----------------------------------------------------
+   Runtime behavior
+----------------------------------------------------- */
+let runtimeFrameInterval=1000/60;
+let runtimeFrameAccumulator=0;
+
+async function applyRuntimeSettings(){
+  const s=await loadSettings();
+  runtimeFrameInterval=1000/Math.max(1,Number(s.display?.targetFPS||60));
+  await applySettingsToSystems(s);
+}
+
+document.addEventListener("visibilitychange",async()=>{
+  const s=await loadSettings();
+
+  if(document.visibilityState==="hidden"){
+    if(s.runtime?.pauseOnBlur!==false && !s.runtime?.runInBackground){
+      try{SnakePlayDebug?.pause?.()}catch(_){}
+    }
+  }else{
+    if(s.runtime?.pauseOnBlur!==false && !s.runtime?.runInBackground){
+      try{
+        if(SnakePlayDebug?.state==="paused"){
+          SnakePlayDebug.resume?.();
+        }
+      }catch(_){}
+    }
+  }
+});
+
+/* -----------------------------------------------------
+   Manager UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("projectSettingsV1"))return;
+
+  const ui=document.createElement("section");
+  ui.id="projectSettingsV1";
+  ui.className="project-settings-v1";
+  ui.innerHTML=`
+    <header class="ps-v1-head">
+      <button class="icon-btn" type="button" data-ps-v1-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="ps-v1-head-title">
+        <strong>PROJECT SETTINGS</strong>
+        <small>Central game configuration</small>
+      </div>
+      <button class="icon-btn" type="button" data-ps-v1-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2-5.3"/><path d="M20 4v6h-6"/></svg>
+      </button>
+    </header>
+
+    <main class="ps-v1-body">
+      <div class="ps-v1-actions">
+        <button type="button" class="primary" data-ps-v1-save>SAVE SETTINGS</button>
+        <button type="button" data-ps-v1-reset>RESET DEFAULTS</button>
+      </div>
+
+      <div class="ps-v1-grid">
+        <section class="ps-v1-panel">
+          <h3>PRODUCT</h3>
+          <div class="ps-v1-panel-body">
+            <div class="ps-v1-row"><label>Game Name</label><input id="psV1Name"></div>
+            <div class="ps-v1-row"><label>Version</label><input id="psV1Version" value="0.1.0"></div>
+          </div>
+        </section>
+
+        <section class="ps-v1-panel">
+          <h3>DISPLAY</h3>
+          <div class="ps-v1-panel-body">
+            <div class="ps-v1-row"><label>Width</label><input id="psV1Width" type="number"></div>
+            <div class="ps-v1-row"><label>Height</label><input id="psV1Height" type="number"></div>
+            <div class="ps-v1-row">
+              <label>Orientation</label>
+              <select id="psV1Orientation">
+                <option value="landscape">Landscape</option>
+                <option value="portrait">Portrait</option>
+              </select>
+            </div>
+            <div class="ps-v1-row">
+              <label>Scale Mode</label>
+              <select id="psV1Scale">
+                <option value="fit">Fit</option>
+                <option value="fill">Fill</option>
+                <option value="pixel-perfect">Pixel Perfect</option>
+              </select>
+            </div>
+            <div class="ps-v1-row"><label>Target FPS</label><input id="psV1FPS" type="number" min="15" max="240"></div>
+            <div class="ps-v1-row"><label>Background</label><input id="psV1Background" type="color"></div>
+          </div>
+        </section>
+
+        <section class="ps-v1-panel">
+          <h3>RUNTIME</h3>
+          <div class="ps-v1-panel-body">
+            <div class="ps-v1-row"><label>Run In Background</label><input id="psV1BackgroundRun" type="checkbox"></div>
+            <div class="ps-v1-row"><label>Pause On Blur</label><input id="psV1PauseBlur" type="checkbox"></div>
+          </div>
+        </section>
+
+        <section class="ps-v1-panel">
+          <h3>SCENE & PHYSICS</h3>
+          <div class="ps-v1-panel-body">
+            <div class="ps-v1-row"><label>Startup Scene</label><select id="psV1Startup"></select></div>
+            <div class="ps-v1-row"><label>Gravity X</label><input id="psV1GravityX" type="number" step="10"></div>
+            <div class="ps-v1-row"><label>Gravity Y</label><input id="psV1GravityY" type="number" step="10"></div>
+          </div>
+        </section>
+
+        <section class="ps-v1-panel">
+          <h3>SUMMARY</h3>
+          <div class="ps-v1-panel-body">
+            <div id="psV1Summary" class="ps-v1-summary"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  /* Add a dedicated visible button next to Build access, not another tiny header icon. */
+  if(!document.getElementById("projectSettingsAccessBtn")){
+    const btn=document.createElement("button");
+    btn.id="projectSettingsAccessBtn";
+    btn.type="button";
+    btn.className="build-access-fab";
+    btn.style.right="146px";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+      '<circle cx="12" cy="12" r="3"/>'+
+      '<path d="M19 15a2 2 0 0 0 .4 2l-2.3 2.3a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8H10a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1V10a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2L6.9 4.6a2 2 0 0 0 2 .4A2 2 0 0 0 10 3.2h4A2 2 0 0 0 15.1 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1v3.8A2 2 0 0 0 19 15z"/>'+
+      '</svg>'+
+      'PROJECT SETTINGS';
+    btn.addEventListener("click",openManager);
+    editor.appendChild(btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-ps-v1-close]"))return closeManager();
+    if(e.target.closest("[data-ps-v1-refresh]"))return refreshManager();
+
+    if(e.target.closest("[data-ps-v1-save]")){
+      const s=await loadSettings();
+      s.product.name=document.getElementById("psV1Name")?.value||project()||"Snake Game";
+      s.product.version=document.getElementById("psV1Version")?.value||"0.1.0";
+
+      s.display.width=Math.max(240,Number(document.getElementById("psV1Width")?.value||960));
+      s.display.height=Math.max(160,Number(document.getElementById("psV1Height")?.value||540));
+      s.display.orientation=document.getElementById("psV1Orientation")?.value||"landscape";
+      s.display.scaleMode=document.getElementById("psV1Scale")?.value||"fit";
+      s.display.targetFPS=Math.max(15,Math.min(240,Number(document.getElementById("psV1FPS")?.value||60)));
+      s.display.background=document.getElementById("psV1Background")?.value||"#0b1014";
+
+      s.runtime.runInBackground=!!document.getElementById("psV1BackgroundRun")?.checked;
+      s.runtime.pauseOnBlur=!!document.getElementById("psV1PauseBlur")?.checked;
+
+      s.scene.startup=document.getElementById("psV1Startup")?.value||null;
+      s.physics.gravityX=Number(document.getElementById("psV1GravityX")?.value||0);
+      s.physics.gravityY=Number(document.getElementById("psV1GravityY")?.value||0);
+
+      await saveSettings(s);
+      await applySettingsToSystems(s);
+      showToast?.("Project Settings salvos");
+      refreshManager();
+      return;
+    }
+
+    if(e.target.closest("[data-ps-v1-reset]")){
+      const s=defaultSettings();
+      await saveSettings(s);
+      await applySettingsToSystems(s);
+      showToast?.("Project Settings restaurados");
+      refreshManager();
+    }
+  });
+}
+
+async function refreshManager(){
+  ensureUI();
+  const s=await loadSettings();
+  const scenes=await sceneOptions();
+
+  const set=(id,v)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.type==="checkbox")el.checked=!!v;
+    else el.value=v??"";
+  };
+
+  set("psV1Name",s.product?.name);
+  set("psV1Version",s.product?.version);
+  set("psV1Width",s.display?.width);
+  set("psV1Height",s.display?.height);
+  set("psV1Orientation",s.display?.orientation);
+  set("psV1Scale",s.display?.scaleMode);
+  set("psV1FPS",s.display?.targetFPS);
+  set("psV1Background",s.display?.background);
+  set("psV1BackgroundRun",s.runtime?.runInBackground);
+  set("psV1PauseBlur",s.runtime?.pauseOnBlur);
+  set("psV1GravityX",s.physics?.gravityX);
+  set("psV1GravityY",s.physics?.gravityY);
+
+  const startup=document.getElementById("psV1Startup");
+  if(startup){
+    startup.innerHTML=scenes.map(sc=>
+      `<option value="${sc.id}">${escapeHTML?.(sc.name)||sc.name}</option>`
+    ).join("");
+    startup.value=s.scene?.startup||scenes[0]?.id||"";
+  }
+
+  const summary=document.getElementById("psV1Summary");
+  if(summary){
+    const startName=scenes.find(x=>x.id===(s.scene?.startup))?.name||"—";
+    summary.textContent=
+`Game: ${s.product?.name}
+Version: ${s.product?.version}
+Resolution: ${s.display?.width} x ${s.display?.height}
+Orientation: ${s.display?.orientation}
+Scale: ${s.display?.scaleMode}
+Target FPS: ${s.display?.targetFPS}
+Startup Scene: ${startName}
+Gravity: ${s.physics?.gravityX}, ${s.physics?.gravityY}`;
+  }
+
+  syncAccess();
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("projectSettingsV1")?.classList.add("show");
+  await refreshManager();
+  syncAccess();
+}
+function closeManager(){
+  document.getElementById("projectSettingsV1")?.classList.remove("show");
+  syncAccess();
+}
+
+function syncAccess(){
+  const btn=document.getElementById("projectSettingsAccessBtn");
+  if(!btn)return;
+
+  const editor=document.getElementById("editor");
+  const preview=document.getElementById("preview");
+
+  const visible=
+    editor?.classList.contains("active") &&
+    !document.getElementById("projectSettingsV1")?.classList.contains("show") &&
+    !preview?.classList.contains("show");
+
+  btn.classList.toggle("show",!!visible);
+}
+
+window.ProjectSettings={
+  version:"1.0.0",
+  load:loadSettings,
+  save:saveSettings,
+  apply:applySettingsToSystems,
+  open:openManager,
+  syncFromSystems:syncFromExistingSystems
+};
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProject.apply(this,arguments);
+    ensureUI();
+
+    let s=await loadSettings();
+    if(!s.product?.name || s.product.name==="Snake Game"){
+      s=await syncFromExistingSystems();
+    }
+    await applySettingsToSystems(s);
+    syncAccess();
+    return r;
+  };
+}
+
+const oldOpenPreview=window.openPreview;
+if(typeof oldOpenPreview==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreview.apply(this,arguments);
+    syncAccess();
+    return r;
+  };
+}
+
+const oldClosePreview=window.closePreview;
+if(typeof oldClosePreview==="function"){
+  window.closePreview=function(){
+    const r=oldClosePreview.apply(this,arguments);
+    requestAnimationFrame(syncAccess);
+    return r;
+  };
+}
+
+const oldBack=window.backToDashboard;
+if(typeof oldBack==="function"){
+  window.backToDashboard=function(){
+    const r=oldBack.apply(this,arguments);
+    syncAccess();
+    return r;
+  };
+}
+
+Promise.resolve(window.SnakeDB?.ready).then(async()=>{
+  ensureUI();
+  await applyRuntimeSettings();
+  syncAccess();
+}).catch(()=>{
+  ensureUI();
+  syncAccess();
+});
+
+})();
+</script>
+
 </body>
 </html>
