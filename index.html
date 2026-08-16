@@ -8038,5 +8038,529 @@ SnakeDB.ready=(async()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — ASSET LIBRARY v2
+===================================================== */
+#tool-assets .folder-row{
+  gap:6px;
+  padding:2px 0 8px;
+  scrollbar-width:none;
+}
+#tool-assets .folder-row::-webkit-scrollbar{display:none}
+
+#tool-assets .folder-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:34px;
+  padding:0 10px;
+  border:1px solid #29323b;
+  background:#11171d;
+  color:#89949e;
+  border-radius:7px;
+  white-space:nowrap;
+}
+#tool-assets .folder-chip.active{
+  color:#dff4d4;
+  background:#18231a;
+  border-color:#3a5839;
+}
+#tool-assets .folder-chip .ui-icon{
+  width:14px;height:14px;
+}
+#tool-assets .folder-chip-count{
+  min-width:18px;
+  height:17px;
+  padding:0 5px;
+  display:inline-grid;
+  place-items:center;
+  border-radius:999px;
+  background:#0a0f13;
+  color:#71808b;
+  font-size:8px;
+}
+
+#tool-assets .asset-item{
+  min-height:126px;
+}
+#tool-assets .asset-preview2{
+  height:84px;
+}
+#tool-assets .asset-meta{
+  padding:7px 8px 8px;
+}
+#tool-assets .asset-name2{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  color:#d8dee3;
+  font-size:10px;
+  font-weight:650;
+}
+#tool-assets .asset-kind2{
+  margin-top:3px;
+  color:#66737e;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+#tool-assets .asset-del{
+  width:30px !important;
+  height:30px !important;
+  display:grid;
+  place-items:center;
+  z-index:8;
+  pointer-events:auto !important;
+  touch-action:manipulation;
+}
+#tool-assets .asset-del .ui-icon{
+  width:14px;height:14px;
+  pointer-events:none;
+}
+.asset-tilemap-preview{
+  width:64px;height:52px;
+  border:1px solid #35424e;
+  background:
+    linear-gradient(#1d2932 1px,transparent 1px),
+    linear-gradient(90deg,#1d2932 1px,transparent 1px),
+    #0d1318;
+  background-size:10px 10px;
+  border-radius:4px;
+  position:relative;
+}
+.asset-tilemap-preview:after{
+  content:"";
+  position:absolute;
+  left:10px;top:10px;
+  width:19px;height:19px;
+  background:#426a42;
+  box-shadow:20px 0 #6c7543, 0 20px #3e566a, 20px 20px #60435b;
+}
+.asset-generic-preview{
+  width:48px;height:48px;
+  display:grid;
+  place-items:center;
+  border:1px solid #303a43;
+  border-radius:8px;
+  color:#71808b;
+  background:#11171d;
+}
+.asset-generic-preview .ui-icon{width:24px;height:24px}
+
+.snake-asset-delete-overlay{
+  position:fixed;
+  inset:0;
+  z-index:10020;
+  display:none;
+  align-items:flex-end;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(4px);
+}
+.snake-asset-delete-overlay.show{display:flex}
+.snake-asset-delete-sheet{
+  width:100%;
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  border-top:1px solid #303841;
+  border-radius:20px 20px 0 0;
+  background:#12161b;
+}
+.snake-asset-delete-sheet h3{margin:0 0 7px;font-size:18px}
+.snake-asset-delete-sheet p{margin:0;color:#818b94;font-size:12px;line-height:1.5}
+.snake-asset-delete-name{margin-top:9px !important;color:#eef1f3 !important;font-weight:700}
+.snake-asset-delete-actions{display:flex;gap:9px;margin-top:17px}
+.snake-asset-delete-actions button{
+  flex:1;height:48px;border-radius:9px;font-weight:700;
+}
+.snake-asset-delete-cancel{background:#1b2127;color:#adb6be;border:1px solid #303840}
+.snake-asset-delete-confirm{background:#421c20;color:#ff8e94;border:1px solid #74343a}
+
+@media(max-width:700px){
+  #tool-assets .asset-grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #tool-assets .asset-item{min-width:0}
+}
+</style>
+
+<div id="snakeAssetDeleteOverlay" class="snake-asset-delete-overlay" aria-hidden="true">
+  <div class="snake-asset-delete-sheet" role="dialog" aria-modal="true">
+    <h3>Excluir recurso</h3>
+    <p>O recurso será removido da biblioteca da Snake Engine e do SnakeDB.</p>
+    <p id="snakeAssetDeleteName" class="snake-asset-delete-name"></p>
+    <div class="snake-asset-delete-actions">
+      <button type="button" id="snakeAssetDeleteCancel" class="snake-asset-delete-cancel">Cancelar</button>
+      <button type="button" id="snakeAssetDeleteConfirm" class="snake-asset-delete-confirm">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — ASSET LIBRARY v2
+   Automatic categories + reliable deletion.
+===================================================== */
+(function(){
+"use strict";
+
+const DEFAULT_ASSET_FOLDERS = [
+  {id:"all",      name:"Todos",     icon:'<path d="M4 5h6l2 2h8v12H4z"/>'},
+  {id:"sprites",  name:"Sprites",   icon:'<rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h.01M15 9h.01M9 15h6"/>'},
+  {id:"tilemaps", name:"Tilemaps",  icon:'<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>'},
+  {id:"audio",    name:"Áudio",     icon:'<path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="3"/><circle cx="16.5" cy="16" r="3"/>'},
+  {id:"imports",  name:"Importados",icon:'<path d="M12 4v11M8 11l4 4 4-4M5 20h14"/>'},
+  {id:"other",    name:"Outros",    icon:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5"/>'}
+];
+
+let pendingAssetDelete = null;
+
+function safeEsc(v){
+  if(typeof escapeHTML==="function")return escapeHTML(String(v??""));
+  const d=document.createElement("div");d.textContent=String(v??"");return d.innerHTML;
+}
+
+function loadGlobalTilemaps(){
+  try{
+    const maps=JSON.parse(localStorage.getItem("snake_global_tilemaps")||"[]");
+    return Array.isArray(maps)?maps:[];
+  }catch{return []}
+}
+
+function assetCategory(asset){
+  if(!asset)return "other";
+  if(asset.__kind==="tilemap")return "tilemaps";
+  if(asset.source==="art-studio" || asset.folder==="sprites")return "sprites";
+  if(String(asset.type||"").startsWith("audio/") || asset.folder==="audio")return "audio";
+  if(asset.folder==="imports" || asset.source==="import")return "imports";
+  if(asset.folder && ["sprites","tilemaps","audio","imports","other"].includes(asset.folder))return asset.folder;
+  if(asset.source==="tilemap")return "tilemaps";
+  return "other";
+}
+
+function virtualAssetList(){
+  const base=(typeof assets2!=="undefined"?assets2:[]).map(a=>({
+    ...a,
+    __kind:"asset",
+    __category:assetCategory(a)
+  }));
+
+  const tilemaps=loadGlobalTilemaps().map((m,i)=>({
+    id:String(m.id ?? ("tilemap-"+i+"-"+m.name)),
+    name:m.name||("Tilemap "+(i+1)),
+    type:"application/x-snake-tilemap",
+    folder:"tilemaps",
+    source:"tilemap",
+    __kind:"tilemap",
+    __category:"tilemaps",
+    __data:m
+  }));
+
+  return [...base,...tilemaps];
+}
+
+function countsByFolder(list){
+  const c={all:list.length,sprites:0,tilemaps:0,audio:0,imports:0,other:0};
+  list.forEach(a=>{
+    const cat=a.__category||assetCategory(a);
+    if(c[cat]!=null)c[cat]++;
+    else c.other++;
+  });
+  return c;
+}
+
+function renderFolderChips(list){
+  const row=document.getElementById("folderRow2");
+  if(!row)return;
+  const counts=countsByFolder(list);
+  if(!["all","sprites","tilemaps","audio","imports","other"].includes(assetFolder2)){
+    assetFolder2="all";
+  }
+
+  row.innerHTML=DEFAULT_ASSET_FOLDERS.map(f=>`
+    <button type="button"
+      class="folder-chip ${assetFolder2===f.id?"active":""}"
+      data-asset-folder="${f.id}">
+      <svg class="ui-icon" viewBox="0 0 24 24">${f.icon}</svg>
+      <span>${f.name}</span>
+      <span class="folder-chip-count">${counts[f.id]||0}</span>
+    </button>
+  `).join("");
+}
+
+function assetPreview(item){
+  if(item.__kind==="tilemap"){
+    return '<div class="asset-tilemap-preview"></div>';
+  }
+  if(String(item.type||"").startsWith("image/")){
+    return item.data
+      ? `<img src="${item.data}" alt="">`
+      : '<div class="asset-generic-preview"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="m6 16 4-4 3 3 2-2 3 3"/></svg></div>';
+  }
+  if(String(item.type||"").startsWith("audio/")){
+    return '<div class="asset-generic-preview"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="3"/><circle cx="16.5" cy="16" r="3"/></svg></div>';
+  }
+  return '<div class="asset-generic-preview"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h5M9 13h6M9 17h4"/></svg></div>';
+}
+
+function kindLabel(item){
+  const cat=item.__category||assetCategory(item);
+  return {
+    sprites:"Sprite",
+    tilemaps:"Tilemap",
+    audio:"Audio",
+    imports:"Importado",
+    other:"Asset"
+  }[cat]||"Asset";
+}
+
+/* Replace the old flat Assets renderer. */
+window.renderAssets2=function(){
+  const grid=document.getElementById("assetGrid2");
+  const count=document.getElementById("assetCount2");
+  if(!grid)return;
+
+  const all=virtualAssetList();
+  const q=(document.getElementById("assetSearch2")?.value||"").trim().toLowerCase();
+
+  renderFolderChips(all);
+
+  const visible=all.filter(item=>{
+    const folderMatch=assetFolder2==="all" || item.__category===assetFolder2;
+    const searchMatch=!q || String(item.name||"").toLowerCase().includes(q);
+    return folderMatch && searchMatch;
+  });
+
+  if(count){
+    count.textContent=
+      assetFolder2==="all"
+        ? `${all.length} itens`
+        : `${visible.length} em ${DEFAULT_ASSET_FOLDERS.find(f=>f.id===assetFolder2)?.name||"pasta"}`;
+  }
+
+  grid.innerHTML=visible.length ? visible.map(item=>`
+    <div class="asset-item" data-asset-card="${safeEsc(item.id)}" data-asset-kind="${item.__kind}">
+      <div class="asset-preview2">${assetPreview(item)}</div>
+      <div class="asset-meta">
+        <div class="asset-name2">${safeEsc(item.name)}</div>
+        <div class="asset-kind2">${kindLabel(item)}</div>
+      </div>
+      <button type="button"
+        class="asset-del"
+        data-asset-delete="${safeEsc(item.id)}"
+        data-asset-delete-kind="${item.__kind}"
+        aria-label="Excluir ${safeEsc(item.name)}"
+        title="Excluir">
+        <svg class="ui-icon" viewBox="0 0 24 24">
+          <path d="M5 7h14M9 7V4h6v3M8 10v7M12 10v7M16 10v7M7 7l1 13h8l1-13"/>
+        </svg>
+      </button>
+    </div>
+  `).join("") : '<div class="tool-muted">Nenhum recurso nesta pasta.</div>';
+};
+
+/* Folder navigation uses delegation so rerendering is safe. */
+document.getElementById("folderRow2")?.addEventListener("click",e=>{
+  const chip=e.target.closest("[data-asset-folder]");
+  if(!chip)return;
+  assetFolder2=chip.dataset.assetFolder;
+  renderAssets2();
+});
+
+/* Imported assets are automatically kept in their own category. */
+window.importAssets2=function(e){
+  const files=[...(e.target.files||[])];
+  files.forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const folder=f.type.startsWith("audio/") ? "audio" : "imports";
+      assets2.push({
+        id:"asset-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),
+        name:f.name,
+        type:f.type||"file",
+        data:reader.result,
+        folder,
+        source:"import"
+      });
+      saveAssets2?.();
+      renderAssets2();
+    };
+    if(f.type.startsWith("image/")||f.type.startsWith("audio/"))reader.readAsDataURL(f);
+    else reader.readAsText(f);
+  });
+  e.target.value="";
+};
+
+/* Sprite Studio saves into Sprites instead of root.
+   Preserve the current working-sprite model while making deletion reliable. */
+window.saveArtAsset2=function(){
+  try{
+    const canvas=artComposite2();
+    const data=canvas.toDataURL("image/png");
+    assets2=assets2||[];
+
+    const existing=assets2.find(a=>a.id==="generated-art"||a.source==="art-studio");
+    if(existing){
+      existing.id="generated-art";
+      existing.name=existing.name||"Sprite Studio.png";
+      existing.type="image/png";
+      existing.data=data;
+      existing.folder="sprites";
+      existing.source="art-studio";
+      existing.updatedAt=new Date().toISOString();
+    }else{
+      assets2.push({
+        id:"generated-art",
+        name:"Sprite Studio.png",
+        type:"image/png",
+        data,
+        folder:"sprites",
+        source:"art-studio",
+        createdAt:new Date().toISOString()
+      });
+    }
+
+    saveAssets2?.();
+    renderAssets2();
+  }catch(e){
+    console.error("Sprite asset save:",e);
+    showToast?.("Não foi possível salvar o sprite");
+  }
+};
+
+/* Make text assets respect the current category where possible. */
+window.newTextAsset2=function(){
+  const n=prompt("Nome do asset","novo.txt");
+  if(!n)return;
+  assets2.push({
+    id:"text-"+Date.now(),
+    name:n,
+    type:"text/plain",
+    data:"",
+    folder:["sprites","audio","tilemaps"].includes(assetFolder2)?"other":(assetFolder2==="all"?"other":assetFolder2),
+    source:"created"
+  });
+  saveAssets2?.();
+  renderAssets2();
+};
+
+/* "Nova pasta" now explains the automatic professional organization.
+   We intentionally keep fixed resource classes instead of arbitrary folders,
+   so assets remain predictable for future import/build pipelines. */
+window.newFolder2=function(){
+  showToast?.("Sprites, Tilemaps, Áudio e Importados são organizados automaticamente");
+};
+
+function findVirtualItem(id,kind){
+  return virtualAssetList().find(x=>String(x.id)===String(id) && (!kind||x.__kind===kind))||null;
+}
+
+function openAssetDelete(id,kind){
+  const item=findVirtualItem(id,kind);
+  if(!item){
+    showToast?.("Recurso não encontrado");
+    return;
+  }
+  pendingAssetDelete={id:String(id),kind:item.__kind,name:item.name};
+  document.getElementById("snakeAssetDeleteName").textContent=item.name;
+  const overlay=document.getElementById("snakeAssetDeleteOverlay");
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden","false");
+}
+
+function closeAssetDelete(){
+  pendingAssetDelete=null;
+  const overlay=document.getElementById("snakeAssetDeleteOverlay");
+  overlay.classList.remove("show");
+  overlay.setAttribute("aria-hidden","true");
+}
+
+async function confirmAssetDelete(){
+  const p=pendingAssetDelete;
+  if(!p)return;
+
+  try{
+    if(p.kind==="tilemap"){
+      const maps=loadGlobalTilemaps();
+      const next=maps.filter(m=>String(m.id)!==String(p.id));
+      localStorage.setItem("snake_global_tilemaps",JSON.stringify(next));
+
+      try{
+        const active=JSON.parse(localStorage.getItem("myengine_tilemap")||"null");
+        const removed=maps.find(m=>String(m.id)===String(p.id));
+        if(active && removed && active.name===removed.name){
+          localStorage.removeItem("myengine_tilemap");
+        }
+      }catch(_){}
+
+      if(window.SnakeDB){
+        try{await SnakeDB.delete("tilemaps",String(p.id))}catch(_){}
+        /* Older migration IDs can differ if the legacy map had no id. */
+        try{
+          const rows=await SnakeDB.getAll("tilemaps");
+          const hit=rows.find(r=>r.name===p.name);
+          if(hit)await SnakeDB.delete("tilemaps",hit.id);
+        }catch(_){}
+      }
+    }else{
+      assets2=assets2.filter(a=>String(a.id)!==String(p.id));
+      await Promise.resolve(saveAssets2?.());
+
+      if(window.SnakeDB){
+        try{await SnakeDB.delete("assets",String(p.id))}catch(_){}
+        if(p.kind==="asset"){
+          try{await SnakeDB.delete("audio",String(p.id))}catch(_){}
+        }
+      }
+    }
+
+    closeAssetDelete();
+    renderAssets2();
+    renderAudio2?.();
+    showToast?.("Recurso excluído");
+  }catch(e){
+    console.error("Asset delete:",e);
+    closeAssetDelete();
+    showToast?.("Não foi possível excluir o recurso");
+  }
+}
+
+/* Reliable delete action on mobile, without inline JS IDs. */
+document.getElementById("assetGrid2")?.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-asset-delete]");
+  if(!btn)return;
+  e.preventDefault();
+  e.stopPropagation();
+  openAssetDelete(btn.dataset.assetDelete,btn.dataset.assetDeleteKind);
+});
+
+document.getElementById("snakeAssetDeleteCancel")?.addEventListener("click",closeAssetDelete);
+document.getElementById("snakeAssetDeleteConfirm")?.addEventListener("click",confirmAssetDelete);
+document.getElementById("snakeAssetDeleteOverlay")?.addEventListener("click",e=>{
+  if(e.target===e.currentTarget)closeAssetDelete();
+});
+
+/* Keep legacy calls working, including the old generated-art string ID. */
+window.deleteAsset2=function(id){
+  openAssetDelete(String(id),"asset");
+};
+
+/* Normalize already-migrated resources once SnakeDB is ready. */
+Promise.resolve(window.SnakeDB?.ready).then(async()=>{
+  if(typeof assets2!=="undefined"){
+    let changed=false;
+    assets2.forEach(a=>{
+      if(a.source==="art-studio" && a.folder!=="sprites"){a.folder="sprites";changed=true}
+      if(String(a.type||"").startsWith("audio/") && a.folder!=="audio"){a.folder="audio";changed=true}
+      if((!a.folder||a.folder==="root") && a.source==="import"){a.folder="imports";changed=true}
+      if(!a.folder||a.folder==="root"){a.folder=assetCategory(a);changed=true}
+    });
+    if(changed)await Promise.resolve(saveAssets2?.());
+  }
+  assetFolder2="all";
+  renderAssets2();
+}).catch(console.error);
+
+})();
+</script>
+
 </body>
 </html>
