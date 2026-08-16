@@ -11479,5 +11479,353 @@ window.addEventListener("resize",()=>Demo.resize());window.SnakeDemo=Demo;
 })();
 </script>
 
+
+<style>
+.prefab-manager{position:absolute;inset:0;z-index:215;display:none;flex-direction:column;background:#0a0d10}
+.prefab-manager.show{display:flex}
+.prefab-head{min-height:58px;display:flex;align-items:center;gap:8px;padding:0 10px;background:#0d1014;border-bottom:1px solid #252b32}
+.prefab-head-title{flex:1;min-width:0}.prefab-head-title strong{display:block;font-size:13px}.prefab-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+.prefab-body{flex:1;min-height:0;overflow:auto;padding:14px 12px 100px}
+.prefab-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prefab-primary,.prefab-secondary{min-height:44px;border-radius:9px;font-size:10px;font-weight:750}
+.prefab-primary{background:#91e864;color:#091006}.prefab-secondary{background:#151b20;color:#9ba5ad;border:1px solid #2b343c}
+.prefab-section-title{margin:19px 2px 9px;color:#68737c;font-size:9px;font-weight:800;letter-spacing:.1em}
+.prefab-list{display:grid;gap:7px}
+.prefab-card{min-height:68px;display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #252e36;border-radius:10px;background:#10151a}
+.prefab-icon{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:8px;background:#1a2025;color:#91e864}
+.prefab-icon svg{width:19px;height:19px}.prefab-info{flex:1;min-width:0}.prefab-name{color:#dce2e6;font-size:11px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prefab-meta{margin-top:4px;color:#68747e;font-size:9px}.prefab-card-actions{display:flex;gap:4px}
+.prefab-mini{width:34px;height:34px;display:grid;place-items:center;border-radius:7px;background:#171d22;color:#79858e}.prefab-mini.danger{color:#e77c82}
+.prefab-empty{padding:25px 15px;border:1px dashed #29333b;border-radius:10px;color:#68737c;text-align:center;font-size:10px;line-height:1.5}
+.prefab-sheet{position:absolute;inset:0;z-index:235;display:none;align-items:flex-end;background:rgba(0,0,0,.7)}.prefab-sheet.show{display:flex}
+.prefab-sheet-card{width:100%;padding:18px 14px calc(18px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;border-top:1px solid #303840;background:#12171c}
+.prefab-sheet-card h3{margin:0 0 5px;font-size:16px}.prefab-sheet-card p{margin:0 0 13px;color:#707b84;font-size:10px}
+.prefab-sheet-row{display:flex;gap:8px;margin-top:9px}.prefab-sheet-row button{flex:1;min-height:43px;border-radius:8px;font-weight:700}
+.prefab-instance-badge{position:absolute;top:-18px;right:0;padding:2px 5px;border:1px solid #3f5a3f;border-radius:4px;background:#142019;color:#91e864;font-size:7px;letter-spacing:.05em}
+</style>
+
+<script>
+(function(){
+"use strict";
+
+const PREFIX="snake_prefabs_v1:";
+let pendingSource=null;
+
+function project(){try{return currentProject||null}catch{return null}}
+function clone(v){try{return structuredClone(v)}catch{return JSON.parse(JSON.stringify(v))}}
+function uid(){return "prefab_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)}
+function stateKey(name){return PREFIX+name}
+function emptyState(){return {version:1,prefabs:[],updatedAt:new Date().toISOString()}}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(stateKey(name));
+    if(raw){
+      const s=JSON.parse(raw);
+      if(s?.version===1&&Array.isArray(s.prefabs))return s;
+    }
+  }catch(_){}
+  const s=emptyState();
+  if(name)localStorage.setItem(stateKey(name),JSON.stringify(s));
+  return s;
+}
+
+async function loadState(name=project()){
+  if(!name)return emptyState();
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("assets","prefab-index:"+projectId);
+      if(row?.state?.version===1){
+        localStorage.setItem(stateKey(name),JSON.stringify(row.state));
+        return clone(row.state);
+      }
+    }catch(e){console.warn("Prefab load",e)}
+  }
+  return loadLocal(name);
+}
+
+async function saveState(state,name=project()){
+  if(!name)return;
+  state.updatedAt=new Date().toISOString();
+  localStorage.setItem(stateKey(name),JSON.stringify(state));
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("assets",{
+        id:"prefab-index:"+projectId,
+        type:"application/x-snake-prefab-index",
+        name:"Prefab Index",
+        folder:"other",
+        projectId,
+        source:"prefab-system",
+        state:clone(state),
+        updatedAt:state.updatedAt
+      });
+    }catch(e){console.warn("Prefab save",e)}
+  }
+}
+
+function selectedObject(){return document.querySelector(".scene-object.selected")||null}
+
+function serializeObject(el){
+  if(!el)return null;
+  const label=el.querySelector(".selection-label")?.textContent?.trim()||"Prefab";
+  const kind=el.querySelector(".object-food")?"Food":"Player";
+  return {
+    name:label,
+    kind,
+    transform:{
+      x:parseInt(el.style.left)||0,
+      y:parseInt(el.style.top)||0,
+      rotation:0,
+      scaleX:1,
+      scaleY:1
+    },
+    meta:{size:kind==="Food"?16:22}
+  };
+}
+
+function buildSceneInstance(prefab,overrides={}){
+  const world=document.getElementById("sceneWorld");
+  if(!world)return null;
+  const t=clone(prefab.template);
+  const el=document.createElement("div");
+  el.className="scene-object";
+  el.dataset.prefabId=prefab.id;
+  el.dataset.prefabInstanceId="instance_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
+  el.style.left=(overrides.x??t.transform?.x??150)+"px";
+  el.style.top=(overrides.y??t.transform?.y??120)+"px";
+  const name=overrides.name||t.name||prefab.name;
+  el.innerHTML=`
+    <span class="selection-label">${escapeHTML?.(name)||name}</span>
+    ${t.kind==="Food"?'<div class="object-food"></div>':'<div class="object-body"></div>'}
+    <span class="prefab-instance-badge">PREFAB</span>`;
+  el.addEventListener("click",e=>{
+    e.stopPropagation();
+    document.querySelectorAll(".scene-object").forEach(x=>x.classList.remove("selected"));
+    el.classList.add("selected");
+    try{
+      selectedObject=t.kind==="Food"?"Food":"Player";
+      document.getElementById("propName").value=name;
+      document.getElementById("posX").value=parseInt(el.style.left)||0;
+      document.getElementById("posY").value=parseInt(el.style.top)||0;
+    }catch(_){}
+  });
+  world.appendChild(el);
+  return el;
+}
+
+async function mirrorAsset(prefab){
+  if(typeof assets2==="undefined")return;
+  const id="prefab:"+prefab.id;
+  const asset={
+    id,
+    name:prefab.name+".prefab",
+    type:"application/x-snake-prefab",
+    folder:"other",
+    source:"prefab-system",
+    prefabId:prefab.id,
+    data:JSON.stringify(prefab),
+    updatedAt:prefab.updatedAt
+  };
+  const existing=assets2.find(a=>a.id===id);
+  if(existing)Object.assign(existing,asset);else assets2.push(asset);
+  await Promise.resolve(saveAssets2?.());
+}
+
+async function createFromSelection(name){
+  name=String(name||"").trim().slice(0,40);
+  const source=pendingSource||selectedObject();
+  if(!source){showToast?.("Selecione um objeto da cena");return false}
+  if(!name){showToast?.("Informe o nome do Prefab");return false}
+  const state=await loadState();
+  if(state.prefabs.some(p=>p.name.toLowerCase()===name.toLowerCase())){
+    showToast?.("Já existe um Prefab com esse nome");return false;
+  }
+  const prefab={id:uid(),name,template:serializeObject(source),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  state.prefabs.push(prefab);
+  await saveState(state);
+  await mirrorAsset(prefab);
+  source.dataset.prefabId=prefab.id;
+  if(!source.querySelector(".prefab-instance-badge")){
+    const b=document.createElement("span");b.className="prefab-instance-badge";b.textContent="PREFAB";source.appendChild(b);
+  }
+  closeSheet();await renderManager();renderAssets2?.();showToast?.("Prefab criado");return true;
+}
+
+async function instantiate(id,overrides={}){
+  const state=await loadState();
+  const prefab=state.prefabs.find(p=>p.id===id||p.name===id);
+  if(!prefab)return null;
+  const el=buildSceneInstance(prefab,overrides);
+  try{await SceneManager?.saveCurrent?.()}catch(_){}
+  return el;
+}
+
+async function updateFromSelection(id){
+  const el=selectedObject();
+  if(!el){showToast?.("Selecione uma instância");return}
+  const state=await loadState();
+  const prefab=state.prefabs.find(p=>p.id===id);
+  if(!prefab)return;
+  prefab.template=serializeObject(el);
+  prefab.updatedAt=new Date().toISOString();
+  await saveState(state);
+  await mirrorAsset(prefab);
+  showToast?.("Prefab atualizado");
+  await renderManager();renderAssets2?.();
+}
+
+async function removePrefab(id){
+  const state=await loadState();
+  const prefab=state.prefabs.find(p=>p.id===id);
+  if(!prefab)return;
+  if(!confirm(`Excluir o Prefab "${prefab.name}"?`))return;
+  state.prefabs=state.prefabs.filter(p=>p.id!==id);
+  await saveState(state);
+  document.querySelectorAll(`.scene-object[data-prefab-id="${CSS.escape(id)}"]`).forEach(el=>{
+    delete el.dataset.prefabId;el.querySelector(".prefab-instance-badge")?.remove();
+  });
+  try{
+    assets2=assets2.filter(a=>a.id!=="prefab:"+id);
+    await Promise.resolve(saveAssets2?.());
+  }catch(_){}
+  try{await SnakeDB?.delete?.("assets","prefab:"+id)}catch(_){}
+  await renderManager();renderAssets2?.();showToast?.("Prefab excluído");
+}
+
+async function instantiateRuntime(id,options={}){
+  const state=await loadState();
+  const prefab=state.prefabs.find(p=>p.id===id||p.name===id);
+  if(!prefab)return null;
+  const graph=snakeRuntime?.graph;if(!graph)return null;
+  const t=prefab.template||{};
+  const node=new SnakeNode(options.name||t.name||prefab.name,"Sprite");
+  node.transform.x=Number(options.x??t.transform?.x??0);
+  node.transform.y=Number(options.y??t.transform?.y??0);
+  node.transform.rotation=Number(options.rotation??t.transform?.rotation??0);
+  node.transform.scaleX=Number(options.scaleX??t.transform?.scaleX??1);
+  node.transform.scaleY=Number(options.scaleY??t.transform?.scaleY??1);
+  node.meta=node.meta||{};
+  node.meta.prefabId=prefab.id;
+  node.meta.prefabInstance=true;
+  node.meta.sceneKind=t.kind||"Node";
+  node.meta.size=t.meta?.size||22;
+  graph.add(node);
+  try{SnakeEngine?.runtime?.Physics?.rebuildFromGraph?.(graph)}catch(_){}
+  return node;
+}
+
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("prefabManager"))return;
+  const ui=document.createElement("section");
+  ui.id="prefabManager";ui.className="prefab-manager";
+  ui.innerHTML=`
+    <header class="prefab-head">
+      <button class="icon-btn" type="button" data-prefab-close><svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div class="prefab-head-title"><strong>PREFABS</strong><small>Reusable linked objects</small></div>
+      <button class="icon-btn" type="button" data-prefab-new><svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
+    </header>
+    <main class="prefab-body">
+      <div class="prefab-actions">
+        <button class="prefab-primary" type="button" data-prefab-new>CREATE FROM SELECTION</button>
+        <button class="prefab-secondary" type="button" data-prefab-refresh>REFRESH</button>
+      </div>
+      <div class="prefab-section-title">PROJECT PREFABS</div>
+      <div id="prefabList" class="prefab-list"></div>
+    </main>
+    <div id="prefabSheet" class="prefab-sheet">
+      <div class="prefab-sheet-card">
+        <h3>Create Prefab</h3><p>The selected scene object becomes a reusable asset.</p>
+        <input id="prefabName" class="input" maxlength="40" placeholder="Prefab name">
+        <div class="prefab-sheet-row">
+          <button class="cancel" type="button" data-prefab-sheet-cancel>Cancel</button>
+          <button class="create" type="button" data-prefab-sheet-create>Create</button>
+        </div>
+      </div>
+    </div>`;
+  editor.appendChild(ui);
+
+  const header=document.querySelector("#editor .editor-header");
+  const sceneBtn=document.getElementById("sceneManagerHeaderBtn");
+  if(header&&!document.getElementById("prefabHeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="prefabHeaderBtn";btn.className="icon-btn";btn.type="button";btn.setAttribute("aria-label","Prefabs");
+    btn.innerHTML='<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M7 5h10v6H7z"/><path d="M5 13h6v6H5zM13 13h6v6h-6z"/><path d="M12 11v2M8 13v-2h8v2"/></svg>';
+    btn.addEventListener("click",openManager);
+    if(sceneBtn)sceneBtn.insertAdjacentElement("afterend",btn);else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-prefab-close]"))return closeManager();
+    if(e.target.closest("[data-prefab-refresh]"))return renderManager();
+    if(e.target.closest("[data-prefab-new]"))return openSheet();
+    if(e.target.closest("[data-prefab-sheet-cancel]"))return closeSheet();
+    if(e.target.closest("[data-prefab-sheet-create]"))return createFromSelection(document.getElementById("prefabName")?.value);
+    const inst=e.target.closest("[data-prefab-instantiate]");if(inst){await instantiate(inst.dataset.prefabInstantiate,{x:250,y:130});closeManager();showScene?.();return}
+    const upd=e.target.closest("[data-prefab-update]");if(upd)return updateFromSelection(upd.dataset.prefabUpdate);
+    const del=e.target.closest("[data-prefab-delete]");if(del)return removePrefab(del.dataset.prefabDelete);
+  });
+}
+
+function openSheet(){
+  pendingSource=selectedObject();
+  if(!pendingSource){showToast?.("Selecione um objeto da cena primeiro");return}
+  const sheet=document.getElementById("prefabSheet"),input=document.getElementById("prefabName");
+  if(!sheet||!input)return;
+  input.value=pendingSource.querySelector(".selection-label")?.textContent?.trim()||"New Prefab";
+  sheet.classList.add("show");setTimeout(()=>{input.focus();input.select()},50);
+}
+function closeSheet(){document.getElementById("prefabSheet")?.classList.remove("show");pendingSource=null}
+async function openManager(){ensureUI();document.getElementById("prefabManager")?.classList.add("show");await renderManager()}
+function closeManager(){closeSheet();document.getElementById("prefabManager")?.classList.remove("show")}
+async function renderManager(){
+  ensureUI();const state=await loadState(),list=document.getElementById("prefabList");if(!list)return;
+  list.innerHTML=state.prefabs.length?state.prefabs.map(p=>`
+    <div class="prefab-card">
+      <div class="prefab-icon"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M7 5h10v6H7z"/><path d="M5 13h6v6H5zM13 13h6v6h-6z"/><path d="M12 11v2M8 13v-2h8v2"/></svg></div>
+      <div class="prefab-info"><div class="prefab-name">${escapeHTML?.(p.name)||p.name}</div><div class="prefab-meta">${escapeHTML?.(p.template?.kind||"Node")} · linked instances</div></div>
+      <div class="prefab-card-actions">
+        <button class="prefab-mini" type="button" data-prefab-instantiate="${p.id}" title="Instantiate">＋</button>
+        <button class="prefab-mini" type="button" data-prefab-update="${p.id}" title="Update">↻</button>
+        <button class="prefab-mini danger" type="button" data-prefab-delete="${p.id}" title="Delete">×</button>
+      </div>
+    </div>`).join(""):'<div class="prefab-empty">No Prefabs yet.<br>Select a scene object and create one.</div>';
+}
+
+window.Prefabs={version:"1.0.0",list:async()=>clone((await loadState()).prefabs),createFromSelection,instantiate,instantiateRuntime,updateFromSelection,remove:removePrefab,open:openManager};
+window.prefabs=window.Prefabs;
+
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+    return Object.freeze({...api,prefab:{
+      instantiate(name,options){return instantiateRuntime(name,options)},
+      destroy(target){try{target?.destroy?.();snakeRuntime?.graph?.remove?.(target)}catch(_){}},
+      async list(){return clone((await loadState()).prefabs)}
+    }});
+  };
+}
+
+async function ensureSnakeDemoPrefabs(){
+  if(project()!=="Snake Demo")return;
+  const state=await loadState(),names=new Set(state.prefabs.map(p=>p.name));let changed=false;
+  if(!names.has("Snake Segment")){state.prefabs.push({id:uid(),name:"Snake Segment",template:{name:"Snake Segment",kind:"Player",transform:{x:0,y:0,rotation:0,scaleX:1,scaleY:1},meta:{size:18}},createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});changed=true}
+  if(!names.has("Food")){state.prefabs.push({id:uid(),name:"Food",template:{name:"Food",kind:"Food",transform:{x:0,y:0,rotation:0,scaleX:1,scaleY:1},meta:{size:16}},createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});changed=true}
+  if(changed){await saveState(state);for(const p of state.prefabs)if(p.name==="Snake Segment"||p.name==="Food")await mirrorAsset(p)}
+}
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function")window.openProject=async function(){const r=await oldOpenProject.apply(this,arguments);ensureUI();try{await ensureSnakeDemoPrefabs()}catch(e){console.warn(e)}return r};
+
+Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
+})();
+</script>
+
 </body>
 </html>
