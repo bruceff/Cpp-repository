@@ -5521,5 +5521,372 @@ function updateScriptPanel(){
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — 9/9 PLAY / DEBUG SYSTEM
+===================================================== */
+.se-debug-drawer{
+  position:absolute;inset:auto 8px 8px 8px;max-height:46vh;overflow:auto;
+  display:none;padding:10px;background:#080d12f2;border:1px solid #29343d;border-radius:8px;
+  color:#8796a2;font:8px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;z-index:20;
+  box-shadow:0 14px 36px #0009;backdrop-filter:blur(10px)
+}
+.se-debug-drawer.show{display:block}
+.se-debug-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.se-debug-head strong{color:#d4dde4;letter-spacing:.08em}
+.se-debug-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.se-debug-card{padding:7px;border:1px solid #202a33;background:#0d1318;border-radius:6px}
+.se-debug-card span{display:block;color:#64727e}.se-debug-card b{display:block;margin-top:2px;color:#c6d0d8;font-size:10px}
+.se-debug-section{margin-top:8px;padding-top:8px;border-top:1px solid #1f2932}
+.se-debug-line{display:grid;grid-template-columns:1fr auto;gap:8px;padding:3px 0;border-bottom:1px solid #182129}
+.se-debug-line .k{color:#64727e}.se-debug-line .v{color:#aeb9c2}
+.se-debug-toolbar{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.se-debug-mini{height:28px;padding:0 8px;border:1px solid #2a3540;background:#111820;color:#9aa8b3;border-radius:5px}
+.runtime-btn.debug-on{color:#a9e99a;border-color:#34543a;background:#142019}
+@media(max-width:700px){.se-debug-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.se-debug-drawer{bottom:132px}}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — 9/9: PLAY / DEBUG SYSTEM
+   Play · Pause · Step · Restart · Stop · snapshot restore
+   Runtime inspection · error capture · performance stats
+===================================================== */
+(function(){
+"use strict";
+
+const RT = window.SnakeEngine = window.SnakeEngine || {};
+RT.runtime = RT.runtime || {};
+
+const PlayDebug = {
+  state:"stopped",
+  snapshot:null,
+  errorLog:[],
+  warningLog:[],
+  frameTimes:[],
+  lastStamp:0,
+  drawerOpen:false,
+  selectedNodeId:null,
+  session:0,
+
+  captureSnapshot(){
+    try{
+      const graph=snakeRuntime.graph;
+      const scene=[];
+      graph?.traverse(node=>{
+        if(node===graph.root)return;
+        scene.push({
+          id:node.id,
+          name:node.name,
+          type:node.type,
+          active:node.active,
+          visible:node.visible,
+          locked:node.locked,
+          meta:structuredClone?structuredClone(node.meta||{}):JSON.parse(JSON.stringify(node.meta||{})),
+          transform:{
+            x:node.transform.x,y:node.transform.y,z:node.transform.z,
+            rotation:node.transform.rotation,
+            scaleX:node.transform.scaleX,scaleY:node.transform.scaleY
+          }
+        });
+      });
+      this.snapshot={
+        scene,
+        currentProject,
+        currentFile,
+        code:document.getElementById("code")?.value||"",
+        timestamp:Date.now()
+      };
+      return true;
+    }catch(e){
+      this.errorLog.push("Snapshot failed: "+e.message);
+      return false;
+    }
+  },
+
+  restoreSnapshot(){
+    const s=this.snapshot;
+    if(!s||!snakeRuntime.graph)return;
+    try{
+      snakeRuntime.graph.clear();
+      for(const item of s.scene){
+        const n=new SnakeNode(item.name,item.type);
+        n.id=item.id;
+        n.active=item.active;
+        n.visible=item.visible;
+        n.locked=item.locked;
+        n.meta=item.meta||{};
+        Object.assign(n.transform,item.transform||{});
+        snakeRuntime.graph.add(n);
+      }
+      if(s.code!=null&&document.getElementById("code")){
+        document.getElementById("code").value=s.code;
+        updateLines?.();
+      }
+    }catch(e){
+      this.errorLog.push("Restore failed: "+e.message);
+    }
+  },
+
+  begin(){
+    this.session++;
+    this.captureSnapshot();
+    this.errorLog=[];
+    this.warningLog=[];
+    this.frameTimes=[];
+    this.lastStamp=performance.now();
+    this.state="running";
+    this.updateUI();
+  },
+
+  pause(){
+    if(this.state!=="running")return;
+    this.state="paused";
+    snakeRuntime.paused=true;
+    this.updateUI();
+  },
+
+  resume(){
+    if(this.state!=="paused")return;
+    this.state="running";
+    snakeRuntime.paused=false;
+    document.getElementById("runtimeOverlay")?.classList.remove("show");
+    this.updateUI();
+  },
+
+  step(){
+    if(this.state==="stopped"){
+      openPreview();
+      this.begin();
+    }
+    snakeRuntime.paused=true;
+    this.state="paused";
+    runtimeStep();
+    this.updateUI();
+  },
+
+  restart(){
+    const wasOpen=document.getElementById("preview")?.classList.contains("show");
+    runtimeStop();
+    Scripts?.clear?.();
+    SnakeAudio?.stopAll?.();
+    if(this.snapshot)this.restoreSnapshot();
+    if(wasOpen){
+      runtimeStart();
+      this.begin();
+    }
+    this.updateUI();
+  },
+
+  stop({restore=true}={}){
+    runtimeStop();
+    SnakeAudio?.stopAll?.();
+    Scripts?.clear?.();
+    if(restore)this.restoreSnapshot();
+    this.state="stopped";
+    this.updateUI();
+  },
+
+  markFrame(){
+    const now=performance.now();
+    if(this.lastStamp){
+      const dt=now-this.lastStamp;
+      this.frameTimes.push(dt);
+      if(this.frameTimes.length>120)this.frameTimes.shift();
+    }
+    this.lastStamp=now;
+  },
+
+  avgFrame(){
+    if(!this.frameTimes.length)return 0;
+    return this.frameTimes.reduce((a,b)=>a+b,0)/this.frameTimes.length;
+  },
+
+  toggleDrawer(){
+    this.drawerOpen=!this.drawerOpen;
+    document.getElementById("playDebugDrawer")?.classList.toggle("show",this.drawerOpen);
+    document.getElementById("playDebugBtn")?.classList.toggle("debug-on",this.drawerOpen);
+    this.renderDrawer();
+  },
+
+  inspectNode(id){
+    this.selectedNodeId=id;
+    this.renderDrawer();
+  },
+
+  renderDrawer(){
+    const el=document.getElementById("playDebugDrawer");
+    if(!el)return;
+    const renderer=RT.runtime.Renderer?.getStats?.()||RT.runtime.renderer?.getStats?.()||{};
+    const physics=window.Physics?.stats?.()||{};
+    const scriptStats=window.Scripts?.stats||{};
+    const audioStats=window.AudioSystem?.stats?.()||{};
+    const avg=this.avgFrame();
+    const nodes=[];
+    snakeRuntime.graph?.traverse(n=>{if(n!==snakeRuntime.graph.root)nodes.push(n)});
+    const selected=nodes.find(n=>String(n.id)===String(this.selectedNodeId))||snakeRuntime.playerNode||nodes[0];
+
+    el.innerHTML=`
+      <div class="se-debug-head">
+        <strong>PLAY / DEBUG</strong>
+        <span>${this.state.toUpperCase()}</span>
+      </div>
+
+      <div class="se-debug-grid">
+        <div class="se-debug-card"><span>FPS</span><b>${snakeRuntime.fps||0}</b></div>
+        <div class="se-debug-card"><span>Frame</span><b>${avg?avg.toFixed(2):"0.00"} ms</b></div>
+        <div class="se-debug-card"><span>Nodes</span><b>${nodes.length}</b></div>
+        <div class="se-debug-card"><span>Scripts</span><b>${scriptStats.scripts||Scripts?.instances?.size||0}</b></div>
+        <div class="se-debug-card"><span>Contacts</span><b>${physics.contacts||0}</b></div>
+        <div class="se-debug-card"><span>Audio</span><b>${audioStats.active||0}</b></div>
+        <div class="se-debug-card"><span>Draw calls</span><b>${renderer.drawCalls||0}</b></div>
+        <div class="se-debug-card"><span>Session</span><b>#${this.session}</b></div>
+      </div>
+
+      <div class="se-debug-section">
+        <div class="se-debug-line"><span class="k">Selected</span><span class="v">${selected?.name||"—"}</span></div>
+        <div class="se-debug-line"><span class="k">Type</span><span class="v">${selected?.type||"—"}</span></div>
+        <div class="se-debug-line"><span class="k">Position</span><span class="v">${selected?selected.transform.x.toFixed(1)+", "+selected.transform.y.toFixed(1):"—"}</span></div>
+        <div class="se-debug-line"><span class="k">Rotation</span><span class="v">${selected?selected.transform.rotation.toFixed(1):"—"}</span></div>
+        <div class="se-debug-line"><span class="k">Scale</span><span class="v">${selected?selected.transform.scaleX.toFixed(2)+", "+selected.transform.scaleY.toFixed(2):"—"}</span></div>
+      </div>
+
+      <div class="se-debug-section">
+        <div class="se-debug-line"><span class="k">Errors</span><span class="v">${this.errorLog.length}</span></div>
+        <div class="se-debug-line"><span class="k">Warnings</span><span class="v">${this.warningLog.length}</span></div>
+        ${this.errorLog.slice(-5).map(x=>`<div class="se-debug-line"><span class="k">ERR</span><span class="v">${escapeHTML(x)}</span></div>`).join("")}
+      </div>
+
+      <div class="se-debug-toolbar">
+        <button class="se-debug-mini" onclick="SnakePlayDebug.pause()">PAUSE</button>
+        <button class="se-debug-mini" onclick="SnakePlayDebug.resume()">RESUME</button>
+        <button class="se-debug-mini" onclick="SnakePlayDebug.step()">STEP</button>
+        <button class="se-debug-mini" onclick="SnakePlayDebug.restart()">RESTART</button>
+        <button class="se-debug-mini" onclick="SnakePlayDebug.stop({restore:true});closePreview()">STOP</button>
+      </div>
+    `;
+  },
+
+  updateUI(){
+    document.getElementById("runtimeStateChip")?.classList.toggle("active",this.state==="running");
+    if(document.getElementById("runtimeStateChip")){
+      document.getElementById("runtimeStateChip").textContent=this.state.toUpperCase();
+    }
+    if(document.getElementById("runtimeFooterState")){
+      document.getElementById("runtimeFooterState").textContent=
+        this.state==="running"?"Game loop active":
+        this.state==="paused"?"Game loop paused":"Runtime stopped";
+    }
+    this.renderDrawer();
+  }
+};
+
+window.SnakePlayDebug=PlayDebug;
+RT.runtime.PlayDebug=PlayDebug;
+
+// Wrap the public run entry so snapshots are captured before gameplay mutates scene state.
+const previousRunProject9=runProject;
+runProject=function(){
+  PlayDebug.captureSnapshot();
+  previousRunProject9();
+  PlayDebug.begin();
+};
+
+// Preserve old openPreview behavior while keeping debugger state coherent.
+const previousOpenPreview9=openPreview;
+openPreview=function(){
+  previousOpenPreview9();
+  if(PlayDebug.state==="stopped")PlayDebug.begin();
+};
+
+// Stop now restores pre-play editor state.
+const previousClosePreview9=closePreview;
+closePreview=function(){
+  PlayDebug.stop({restore:true});
+  previousClosePreview9();
+};
+
+// Runtime pause button becomes state-aware.
+const previousRuntimeTogglePause9=runtimeTogglePause;
+runtimeTogglePause=function(){
+  if(PlayDebug.state==="paused"){
+    PlayDebug.resume();
+    previousRuntimeTogglePause9();
+    return;
+  }
+  previousRuntimeTogglePause9();
+  PlayDebug.state=snakeRuntime.paused?"paused":"running";
+  PlayDebug.updateUI();
+};
+
+const previousRuntimeStep9=runtimeStep;
+runtimeStep=function(){
+  previousRuntimeStep9();
+  PlayDebug.state="paused";
+  PlayDebug.updateUI();
+};
+
+const previousRuntimeRestart9=runtimeRestart;
+runtimeRestart=function(){
+  previousRuntimeRestart9();
+  PlayDebug.state="running";
+  PlayDebug.updateUI();
+};
+
+// Frame profiler piggybacks on runtime render.
+const previousRuntimeRender9=runtimeRender;
+runtimeRender=function(){
+  PlayDebug.markFrame();
+  previousRuntimeRender9();
+  PlayDebug.renderDrawer();
+};
+
+// Global error capture for the play session.
+window.addEventListener("error",e=>{
+  const msg=(e.error?.message||e.message||"Unknown runtime error");
+  PlayDebug.errorLog.push(msg);
+  if(PlayDebug.errorLog.length>50)PlayDebug.errorLog.shift();
+  if(typeof addOutput==="function")addOutput("[Runtime] "+msg,"error");
+  PlayDebug.renderDrawer();
+});
+
+window.addEventListener("unhandledrejection",e=>{
+  const msg=e.reason?.message||String(e.reason||"Unhandled promise rejection");
+  PlayDebug.errorLog.push(msg);
+  if(PlayDebug.errorLog.length>50)PlayDebug.errorLog.shift();
+  if(typeof addOutput==="function")addOutput("[Promise] "+msg,"error");
+  PlayDebug.renderDrawer();
+});
+
+// Install debug UI.
+(function installPlayDebugUI(){
+  const stage=document.querySelector("#preview .runtime-stage");
+  if(stage&&!document.getElementById("playDebugDrawer")){
+    const drawer=document.createElement("div");
+    drawer.id="playDebugDrawer";
+    drawer.className="se-debug-drawer";
+    stage.appendChild(drawer);
+  }
+
+  const header=document.querySelector("#preview .preview-header");
+  if(header&&!document.getElementById("playDebugBtn")){
+    const btn=document.createElement("button");
+    btn.id="playDebugBtn";
+    btn.className="runtime-btn";
+    btn.title="Play / Debug";
+    btn.setAttribute("aria-label","Play / Debug");
+    btn.innerHTML='<svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/><path d="M4 9h4M16 9h4M4 15h4M16 15h4"/></svg>';
+    btn.onclick=()=>PlayDebug.toggleDrawer();
+    const meta=header.querySelector(".preview-meta");
+    header.insertBefore(btn,meta||null);
+  }
+
+  PlayDebug.updateUI();
+})();
+
+})();
+</script>
+
 </body>
 </html>
