@@ -5888,5 +5888,158 @@ window.addEventListener("unhandledrejection",e=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — CODE EDITOR MOBILE INPUT FIX
+===================================================== */
+#codeArea,
+#codeArea .code-wrapper{
+  pointer-events:auto !important;
+}
+
+#codeArea .code-wrapper{
+  position:relative;
+  z-index:2;
+}
+
+#codeArea #lineNumbers{
+  z-index:1;
+  pointer-events:none !important;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+#codeArea #code{
+  z-index:2;
+  pointer-events:auto !important;
+  user-select:text !important;
+  -webkit-user-select:text !important;
+  touch-action:manipulation;
+  -webkit-touch-callout:default;
+  opacity:1 !important;
+}
+
+#codeArea #code:focus{
+  outline:none;
+  box-shadow:inset 2px 0 0 rgba(126,227,91,.55);
+}
+
+@media(max-width:700px){
+  /* 16px prevents iOS from treating the textarea as a zoom target
+     and makes the virtual keyboard interaction considerably more reliable. */
+  #codeArea #code{
+    font-size:16px !important;
+    line-height:24px !important;
+    padding-top:14px;
+  }
+
+  #codeArea #lineNumbers{
+    font-size:11px !important;
+    line-height:24px !important;
+    padding-top:14px;
+  }
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — EDITABLE CODE AREA
+===================================================== */
+(function(){
+  "use strict";
+
+  const code = document.getElementById("code");
+  const wrapper = document.querySelector("#codeArea .code-wrapper");
+
+  if(!code) return;
+
+  // Explicitly keep the editor writable even if an older project/browser
+  // restored textarea state from a previous DOM session.
+  code.readOnly = false;
+  code.disabled = false;
+  code.removeAttribute("readonly");
+  code.removeAttribute("disabled");
+  code.setAttribute("inputmode","text");
+  code.setAttribute("enterkeyhint","enter");
+  code.setAttribute("aria-label","Editor de código da Snake Engine");
+
+  function editorIsVisible(){
+    const area=document.getElementById("codeArea");
+    if(!area) return false;
+    const style=getComputedStyle(area);
+    return style.display!=="none" && area.offsetParent!==null;
+  }
+
+  function focusCodeFromGesture(){
+    if(!editorIsVisible()) return;
+    if(document.getElementById("preview")?.classList.contains("show")) return;
+
+    code.readOnly=false;
+    code.disabled=false;
+
+    // Calling focus synchronously from the user's pointer/touch gesture
+    // is required by iOS to open the software keyboard.
+    try{
+      code.focus({preventScroll:true});
+    }catch{
+      code.focus();
+    }
+  }
+
+  code.addEventListener("pointerdown",()=>{
+    code.readOnly=false;
+    code.disabled=false;
+  },{passive:true});
+
+  code.addEventListener("touchend",()=>{
+    if(document.activeElement!==code) focusCodeFromGesture();
+  },{passive:true});
+
+  code.addEventListener("click",focusCodeFromGesture);
+
+  wrapper?.addEventListener("pointerup",e=>{
+    if(e.target===wrapper || e.target===document.getElementById("lineNumbers")){
+      focusCodeFromGesture();
+    }
+  },{passive:true});
+
+  // Reassert editability whenever CODE mode or a file is opened.
+  document.querySelectorAll('#projectContextbar [data-mode="code"], .tool-dock .tool:first-child')
+    .forEach(btn=>btn.addEventListener("click",()=>{
+      code.readOnly=false;
+      code.disabled=false;
+    }));
+
+  const oldProjectOpenFile = window.projectOpenFile;
+  if(typeof oldProjectOpenFile==="function"){
+    window.projectOpenFile=function(file){
+      const result=oldProjectOpenFile.apply(this,arguments);
+      code.readOnly=false;
+      code.disabled=false;
+      return result;
+    };
+  }
+
+  // Preserve ordinary mobile editing behavior. Runtime hotkeys remain active
+  // only while the Play preview itself is open.
+  code.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){
+      code.blur();
+    }
+  });
+
+  window.SnakeCodeEditor = {
+    focus: focusCodeFromGesture,
+    get value(){ return code.value; },
+    set value(v){
+      code.value=String(v??"");
+      if(typeof updateEditor==="function") updateEditor();
+    },
+    get editable(){ return !code.readOnly && !code.disabled; }
+  };
+})();
+</script>
+
 </body>
 </html>
