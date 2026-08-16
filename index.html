@@ -19929,5 +19929,909 @@ if(document.readyState==="loading"){
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — TILEMAP / WORLD SYSTEM v2
+===================================================== */
+.tilemap-manager-v2{
+  position:absolute;
+  inset:0;
+  z-index:234;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.tilemap-manager-v2.show{display:flex}
+
+.tm-v2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.tm-v2-head-title{flex:1;min-width:0}
+.tm-v2-head-title strong{display:block;font-size:13px}
+.tm-v2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.tm-v2-body{
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:190px 1fr 210px;
+  background:#090c0f;
+}
+.tm-v2-sidebar{
+  min-height:0;
+  overflow:auto;
+  padding:10px;
+  border-right:1px solid #242b32;
+  background:#0e1318;
+}
+.tm-v2-sidebar.right{
+  border-right:0;
+  border-left:1px solid #242b32;
+}
+.tm-v2-section-title{
+  margin:5px 2px 8px;
+  color:#6e7a84;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.1em;
+}
+.tm-v2-row{
+  display:grid;
+  grid-template-columns:1fr 92px;
+  gap:7px;
+  align-items:center;
+  margin-bottom:7px;
+}
+.tm-v2-row label{color:#89959e;font-size:9px}
+.tm-v2-row input,
+.tm-v2-row select{
+  height:31px;
+  border:1px solid #2b343c;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 7px;
+  font-size:9px;
+}
+.tm-v2-btn{
+  width:100%;
+  min-height:36px;
+  margin-bottom:6px;
+  border:1px solid #2b353e;
+  border-radius:7px;
+  background:#151b21;
+  color:#909ba4;
+  font-size:9px;
+  font-weight:750;
+}
+.tm-v2-btn.primary{
+  background:#91e864;
+  border-color:#91e864;
+  color:#091006;
+}
+.tm-v2-btn.active{
+  color:#91e864;
+  border-color:#3d5b3c;
+  background:#151f16;
+}
+
+.tm-v2-layer{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-height:38px;
+  margin-bottom:5px;
+  padding:0 7px;
+  border:1px solid #28323a;
+  border-radius:7px;
+  background:#12181d;
+}
+.tm-v2-layer.active{border-color:#476345;background:#151e16}
+.tm-v2-layer button{
+  flex:1;
+  background:none;
+  color:#a6b0b8;
+  text-align:left;
+  font-size:9px;
+}
+.tm-v2-layer small{color:#69757e;font-size:8px}
+
+.tm-v2-palette{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+}
+.tm-v2-tile{
+  aspect-ratio:1;
+  min-width:0;
+  padding:3px;
+  overflow:hidden;
+  border:1px solid #28323a;
+  border-radius:6px;
+  background:#11171c;
+}
+.tm-v2-tile.active{border-color:#91e864}
+.tm-v2-tile img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  image-rendering:pixelated;
+}
+.tm-v2-empty{
+  padding:14px 8px;
+  color:#68737c;
+  font-size:9px;
+  text-align:center;
+  line-height:1.5;
+}
+
+.tm-v2-center{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+.tm-v2-toolbar{
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:0 7px;
+  overflow-x:auto;
+  border-bottom:1px solid #242b32;
+  background:#10151a;
+}
+.tm-v2-tool{
+  min-width:35px;
+  height:31px;
+  padding:0 8px;
+  border-radius:7px;
+  background:none;
+  color:#74808a;
+  font-size:9px;
+  white-space:nowrap;
+}
+.tm-v2-tool.active{
+  color:#91e864;
+  background:#182019;
+}
+.tm-v2-workspace{
+  flex:1;
+  min-height:0;
+  position:relative;
+  overflow:auto;
+  background:#080b0e;
+  touch-action:none;
+}
+#tmV2Canvas{
+  display:block;
+  margin:18px auto;
+  border:1px solid #323c44;
+  background:#0b1014;
+  image-rendering:pixelated;
+  touch-action:none;
+}
+.tm-v2-status{
+  min-height:30px;
+  display:flex;
+  align-items:center;
+  padding:0 9px;
+  border-top:1px solid #242b32;
+  color:#68747d;
+  font:8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  background:#0e1318;
+}
+
+.tilemap-runtime-layer{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  image-rendering:pixelated;
+}
+
+@media(max-width:800px){
+  .tm-v2-body{
+    grid-template-columns:126px 1fr;
+  }
+  .tm-v2-sidebar.right{
+    display:none;
+  }
+  .tm-v2-sidebar{
+    padding:7px;
+  }
+  .tm-v2-palette{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — TILEMAP / WORLD SYSTEM v2
+   Multi-layer tilemaps, per-scene persistence, palette,
+   paint/erase/fill, collision layer and runtime rendering.
+===================================================== */
+(function(){
+"use strict";
+
+const TM_PREFIX="snake_tilemap_v2:";
+const DEFAULT_TILE=32;
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function key(name){return TM_PREFIX+name}
+function uid(prefix="tm"){return prefix+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)}
+
+function defaultWorld(){
+  return {
+    version:2,
+    tileSize:DEFAULT_TILE,
+    width:24,
+    height:14,
+    activeLayerId:"ground",
+    layers:[
+      {id:"ground",name:"Ground",visible:true,collision:false,tiles:{}},
+      {id:"objects",name:"Objects",visible:true,collision:false,tiles:{}},
+      {id:"collision",name:"Collision",visible:true,collision:true,tiles:{}}
+    ],
+    updatedAt:new Date().toISOString()
+  };
+}
+function defaultState(){
+  return {
+    version:2,
+    scenes:{},
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function sceneName(){
+  try{
+    return window.RuntimeScenes?.current?.name ||
+      document.querySelector(".world-label")?.textContent?.replace("WORLD / ","").trim() ||
+      "Main";
+  }catch{return "Main"}
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const s=JSON.parse(raw);
+      if(s?.version===2)return s;
+    }
+  }catch(_){}
+  const s=defaultState();
+  if(name)localStorage.setItem(key(name),JSON.stringify(s));
+  return s;
+}
+
+async function loadState(name=project()){
+  if(!name)return defaultState();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("metadata","tilemap:"+projectId);
+      if(row?.state?.version===2){
+        localStorage.setItem(key(name),JSON.stringify(row.state));
+        return clone(row.state);
+      }
+    }catch(e){console.warn("TileMap load",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveState(state,name=project()){
+  if(!name)return;
+  state.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(state));
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("metadata",{
+        id:"tilemap:"+projectId,
+        kind:"tilemap-world",
+        projectId,
+        projectName:name,
+        state:clone(state),
+        updatedAt:state.updatedAt
+      });
+    }catch(e){console.warn("TileMap save",e)}
+  }
+}
+
+async function worldForScene(name=sceneName()){
+  const state=await loadState();
+  if(!state.scenes[name]){
+    state.scenes[name]=defaultWorld();
+    await saveState(state);
+  }
+  return {state,world:state.scenes[name],scene:name};
+}
+
+function tileKey(x,y){return x+","+y}
+function parseKey(k){
+  const [x,y]=k.split(",").map(Number);
+  return {x,y};
+}
+function activeLayer(world){
+  return world.layers.find(l=>l.id===world.activeLayerId)||world.layers[0];
+}
+
+function tileAssets(){
+  try{
+    return (typeof assets2!=="undefined"?assets2:[])
+      .filter(a=>String(a.type||"").startsWith("image/"))
+      .filter(a=>a.data);
+  }catch{return []}
+}
+
+/* -----------------------------------------------------
+   Editor state
+----------------------------------------------------- */
+let tmTool="paint";
+let tmSelectedAsset=null;
+let tmScene=null;
+let tmWorld=null;
+let tmPointerDown=false;
+
+function ensureCanvas(){
+  const canvas=document.getElementById("tmV2Canvas");
+  if(!canvas||!tmWorld)return null;
+
+  const size=tmWorld.tileSize;
+  canvas.width=tmWorld.width*size;
+  canvas.height=tmWorld.height*size;
+  canvas.style.width=canvas.width+"px";
+  canvas.style.height=canvas.height+"px";
+  return canvas;
+}
+
+async function assetImage(id){
+  const asset=tileAssets().find(a=>a.id===id);
+  if(!asset)return null;
+
+  if(asset.__tmImage && asset.__tmImage.complete)return asset.__tmImage;
+  const img=new Image();
+  img.src=asset.data;
+  asset.__tmImage=img;
+  try{await img.decode()}catch(_){}
+  return img;
+}
+
+async function drawEditor(){
+  const canvas=ensureCanvas();
+  if(!canvas||!tmWorld)return;
+  const ctx=canvas.getContext("2d");
+  const size=tmWorld.tileSize;
+  ctx.imageSmoothingEnabled=false;
+
+  ctx.fillStyle="#0b1014";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  for(const layer of tmWorld.layers){
+    if(!layer.visible)continue;
+
+    if(layer.collision){
+      ctx.fillStyle="rgba(232,100,100,.25)";
+      ctx.strokeStyle="rgba(232,100,100,.65)";
+      for(const k of Object.keys(layer.tiles||{})){
+        const {x,y}=parseKey(k);
+        ctx.fillRect(x*size,y*size,size,size);
+        ctx.strokeRect(x*size+.5,y*size+.5,size-1,size-1);
+      }
+      continue;
+    }
+
+    for(const [k,assetId] of Object.entries(layer.tiles||{})){
+      const {x,y}=parseKey(k);
+      const img=await assetImage(assetId);
+      if(img?.complete){
+        ctx.drawImage(img,x*size,y*size,size,size);
+      }
+    }
+  }
+
+  ctx.strokeStyle="#182027";
+  ctx.lineWidth=1;
+
+  for(let x=0;x<=tmWorld.width;x++){
+    ctx.beginPath();
+    ctx.moveTo(x*size+.5,0);
+    ctx.lineTo(x*size+.5,canvas.height);
+    ctx.stroke();
+  }
+  for(let y=0;y<=tmWorld.height;y++){
+    ctx.beginPath();
+    ctx.moveTo(0,y*size+.5);
+    ctx.lineTo(canvas.width,y*size+.5);
+    ctx.stroke();
+  }
+
+  updateStatus();
+}
+
+async function persistWorld(){
+  if(!tmScene||!tmWorld)return;
+  const state=await loadState();
+  state.scenes[tmScene]=clone(tmWorld);
+  state.scenes[tmScene].updatedAt=new Date().toISOString();
+  await saveState(state);
+}
+
+function coordsFromEvent(e){
+  const canvas=document.getElementById("tmV2Canvas");
+  if(!canvas||!tmWorld)return null;
+  const r=canvas.getBoundingClientRect();
+  const sx=canvas.width/r.width;
+  const sy=canvas.height/r.height;
+  const px=(e.clientX-r.left)*sx;
+  const py=(e.clientY-r.top)*sy;
+  return {
+    x:Math.floor(px/tmWorld.tileSize),
+    y:Math.floor(py/tmWorld.tileSize)
+  };
+}
+
+async function editTile(x,y){
+  if(!tmWorld)return;
+  if(x<0||y<0||x>=tmWorld.width||y>=tmWorld.height)return;
+
+  const layer=activeLayer(tmWorld);
+  if(!layer)return;
+
+  const k=tileKey(x,y);
+
+  if(tmTool==="erase"){
+    delete layer.tiles[k];
+  }else if(tmTool==="fill"){
+    if(layer.collision){
+      const value=layer.tiles[k]?null:true;
+      for(let yy=0;yy<tmWorld.height;yy++){
+        for(let xx=0;xx<tmWorld.width;xx++){
+          const kk=tileKey(xx,yy);
+          if(value)layer.tiles[kk]=1;
+          else delete layer.tiles[kk];
+        }
+      }
+    }else if(tmSelectedAsset){
+      for(let yy=0;yy<tmWorld.height;yy++){
+        for(let xx=0;xx<tmWorld.width;xx++){
+          layer.tiles[tileKey(xx,yy)]=tmSelectedAsset;
+        }
+      }
+    }
+    tmTool="paint";
+    document.querySelectorAll(".tm-v2-tool").forEach(x=>x.classList.remove("active"));
+    document.querySelector('[data-tm-tool="paint"]')?.classList.add("active");
+  }else{
+    if(layer.collision){
+      layer.tiles[k]=1;
+    }else if(tmSelectedAsset){
+      layer.tiles[k]=tmSelectedAsset;
+    }else{
+      showToast?.("Selecione um tile");
+      return;
+    }
+  }
+
+  await persistWorld();
+  await drawEditor();
+}
+
+function bindCanvas(){
+  const canvas=document.getElementById("tmV2Canvas");
+  if(!canvas||canvas.dataset.bound)return;
+  canvas.dataset.bound="1";
+
+  canvas.addEventListener("pointerdown",async e=>{
+    e.preventDefault();
+    tmPointerDown=true;
+    canvas.setPointerCapture?.(e.pointerId);
+    const p=coordsFromEvent(e);
+    if(p)await editTile(p.x,p.y);
+  });
+
+  canvas.addEventListener("pointermove",async e=>{
+    if(!tmPointerDown||tmTool==="fill")return;
+    e.preventDefault();
+    const p=coordsFromEvent(e);
+    if(p)await editTile(p.x,p.y);
+  });
+
+  const end=()=>{tmPointerDown=false};
+  canvas.addEventListener("pointerup",end);
+  canvas.addEventListener("pointercancel",end);
+}
+
+function updateStatus(){
+  const el=document.getElementById("tmV2Status");
+  if(!el||!tmWorld)return;
+  const layer=activeLayer(tmWorld);
+  el.textContent=
+    `${tmScene||"—"} · ${tmWorld.width}x${tmWorld.height} · ${tmWorld.tileSize}px · ${layer?.name||"—"} · ${tmTool.toUpperCase()}`;
+}
+
+/* -----------------------------------------------------
+   Manager rendering
+----------------------------------------------------- */
+async function renderPalette(){
+  const root=document.getElementById("tmV2Palette");
+  if(!root)return;
+  const assets=tileAssets();
+
+  root.innerHTML=assets.length?assets.map(a=>`
+    <button type="button" class="tm-v2-tile ${a.id===tmSelectedAsset?"active":""}" data-tm-asset="${a.id}" title="${escapeHTML?.(a.name)||a.name}">
+      <img src="${a.data}" alt="">
+    </button>
+  `).join(""):'<div class="tm-v2-empty">No image assets yet.</div>';
+}
+
+function renderLayers(){
+  const root=document.getElementById("tmV2Layers");
+  if(!root||!tmWorld)return;
+
+  root.innerHTML=tmWorld.layers.map(l=>`
+    <div class="tm-v2-layer ${l.id===tmWorld.activeLayerId?"active":""}">
+      <button type="button" data-tm-layer="${l.id}">${escapeHTML?.(l.name)||l.name}</button>
+      <small>${l.collision?"COL":"VIS"}</small>
+    </div>
+  `).join("");
+}
+
+async function refreshManager(){
+  const data=await worldForScene(sceneName());
+  tmScene=data.scene;
+  tmWorld=data.world;
+
+  if(!tmSelectedAsset){
+    tmSelectedAsset=tileAssets()[0]?.id||null;
+  }
+
+  const set=(id,v)=>{
+    const el=document.getElementById(id);
+    if(el)el.value=v;
+  };
+  set("tmV2Width",tmWorld.width);
+  set("tmV2Height",tmWorld.height);
+  set("tmV2TileSize",tmWorld.tileSize);
+
+  renderLayers();
+  await renderPalette();
+  bindCanvas();
+  await drawEditor();
+}
+
+async function resizeWorld(){
+  if(!tmWorld)return;
+
+  const width=Math.max(1,Math.min(256,Number(document.getElementById("tmV2Width")?.value||24)));
+  const height=Math.max(1,Math.min(256,Number(document.getElementById("tmV2Height")?.value||14)));
+  const tileSize=Math.max(8,Math.min(128,Number(document.getElementById("tmV2TileSize")?.value||32)));
+
+  tmWorld.width=width;
+  tmWorld.height=height;
+  tmWorld.tileSize=tileSize;
+
+  for(const layer of tmWorld.layers){
+    for(const k of Object.keys(layer.tiles||{})){
+      const {x,y}=parseKey(k);
+      if(x>=width||y>=height)delete layer.tiles[k];
+    }
+  }
+
+  await persistWorld();
+  await drawEditor();
+  showToast?.("World resized");
+}
+
+async function clearLayer(){
+  const layer=activeLayer(tmWorld);
+  if(!layer)return;
+  if(!confirm(`Clear layer "${layer.name}"?`))return;
+  layer.tiles={};
+  await persistWorld();
+  await drawEditor();
+}
+
+/* -----------------------------------------------------
+   Runtime renderer
+----------------------------------------------------- */
+async function renderRuntimeTilemap(scene=sceneName()){
+  const host=document.querySelector("#preview .game-screen")||
+             document.querySelector("#preview .runtime-stage");
+  if(!host)return;
+
+  if(getComputedStyle(host).position==="static")host.style.position="relative";
+
+  let canvas=document.getElementById("tilemapRuntimeLayer");
+  if(!canvas){
+    canvas=document.createElement("canvas");
+    canvas.id="tilemapRuntimeLayer";
+    canvas.className="tilemap-runtime-layer";
+    host.insertBefore(canvas,host.firstChild);
+  }
+
+  const {world}=await worldForScene(scene);
+  const r=host.getBoundingClientRect();
+  const d=Math.min(2,devicePixelRatio||1);
+  canvas.width=Math.max(1,Math.round(r.width*d));
+  canvas.height=Math.max(1,Math.round(r.height*d));
+
+  const ctx=canvas.getContext("2d");
+  ctx.setTransform(d,0,0,d,0,0);
+  ctx.imageSmoothingEnabled=false;
+  ctx.clearRect(0,0,r.width,r.height);
+
+  const tileSize=world.tileSize;
+  const worldW=world.width*tileSize;
+  const worldH=world.height*tileSize;
+  const scale=Math.min(r.width/worldW,r.height/worldH);
+  const ox=(r.width-worldW*scale)/2;
+  const oy=(r.height-worldH*scale)/2;
+
+  for(const layer of world.layers){
+    if(!layer.visible||layer.collision)continue;
+
+    for(const [k,assetId] of Object.entries(layer.tiles||{})){
+      const {x,y}=parseKey(k);
+      const img=await assetImage(assetId);
+      if(img?.complete){
+        ctx.drawImage(
+          img,
+          ox+x*tileSize*scale,
+          oy+y*tileSize*scale,
+          tileSize*scale,
+          tileSize*scale
+        );
+      }
+    }
+  }
+
+  window.SnakeTileMapRuntime={
+    scene,
+    world:clone(world),
+    screenToTile(px,py){
+      return {
+        x:Math.floor((px-ox)/(tileSize*scale)),
+        y:Math.floor((py-oy)/(tileSize*scale))
+      };
+    },
+    isBlocked(x,y){
+      const collision=world.layers.find(l=>l.collision);
+      return !!collision?.tiles?.[tileKey(x,y)];
+    }
+  };
+}
+
+window.addEventListener("snake:sceneloaded",e=>{
+  const name=e.detail?.scene?.name;
+  if(name)renderRuntimeTilemap(name);
+});
+
+const oldOpenPreviewTM=window.openPreview;
+if(typeof oldOpenPreviewTM==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreviewTM.apply(this,arguments);
+    setTimeout(()=>renderRuntimeTilemap(sceneName()),100);
+    return r;
+  };
+}
+
+const oldClosePreviewTM=window.closePreview;
+if(typeof oldClosePreviewTM==="function"){
+  window.closePreview=function(){
+    document.getElementById("tilemapRuntimeLayer")?.remove();
+    return oldClosePreviewTM.apply(this,arguments);
+  };
+}
+
+/* -----------------------------------------------------
+   Script API
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    return Object.freeze({
+      ...api,
+      tilemap:{
+        blocked(x,y){
+          return !!window.SnakeTileMapRuntime?.isBlocked?.(x,y);
+        },
+        world(){
+          return clone(window.SnakeTileMapRuntime?.world||null);
+        },
+        scene(){
+          return window.SnakeTileMapRuntime?.scene||null;
+        }
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("tilemapManagerV2"))return;
+
+  const ui=document.createElement("section");
+  ui.id="tilemapManagerV2";
+  ui.className="tilemap-manager-v2";
+  ui.innerHTML=`
+    <header class="tm-v2-head">
+      <button class="icon-btn" type="button" data-tm-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="tm-v2-head-title">
+        <strong>TILEMAP / WORLD</strong>
+        <small>Paint large 2D worlds by scene</small>
+      </div>
+      <button class="icon-btn" type="button" data-tm-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2-5.3"/><path d="M20 4v6h-6"/></svg>
+      </button>
+    </header>
+
+    <main class="tm-v2-body">
+      <aside class="tm-v2-sidebar">
+        <div class="tm-v2-section-title">LAYERS</div>
+        <div id="tmV2Layers"></div>
+
+        <div class="tm-v2-section-title">PALETTE</div>
+        <div id="tmV2Palette" class="tm-v2-palette"></div>
+      </aside>
+
+      <section class="tm-v2-center">
+        <div class="tm-v2-toolbar">
+          <button class="tm-v2-tool active" type="button" data-tm-tool="paint">PAINT</button>
+          <button class="tm-v2-tool" type="button" data-tm-tool="erase">ERASE</button>
+          <button class="tm-v2-tool" type="button" data-tm-tool="fill">FILL</button>
+          <button class="tm-v2-tool" type="button" data-tm-clear>CLEAR LAYER</button>
+        </div>
+
+        <div class="tm-v2-workspace">
+          <canvas id="tmV2Canvas"></canvas>
+        </div>
+
+        <div id="tmV2Status" class="tm-v2-status"></div>
+      </section>
+
+      <aside class="tm-v2-sidebar right">
+        <div class="tm-v2-section-title">WORLD</div>
+        <div class="tm-v2-row"><label>Width</label><input id="tmV2Width" type="number" min="1" max="256"></div>
+        <div class="tm-v2-row"><label>Height</label><input id="tmV2Height" type="number" min="1" max="256"></div>
+        <div class="tm-v2-row"><label>Tile Size</label><input id="tmV2TileSize" type="number" min="8" max="128"></div>
+        <button class="tm-v2-btn primary" type="button" data-tm-resize>APPLY WORLD SIZE</button>
+
+        <div class="tm-v2-section-title">INFO</div>
+        <div class="tm-v2-empty" style="text-align:left">
+          Ground and Objects render visually.<br><br>
+          Collision is a logical layer used by runtime code through <b>tilemap.blocked(x,y)</b>.
+        </div>
+      </aside>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-tm-close]"))return closeManager();
+    if(e.target.closest("[data-tm-refresh]"))return refreshManager();
+
+    const tool=e.target.closest("[data-tm-tool]");
+    if(tool){
+      tmTool=tool.dataset.tmTool;
+      document.querySelectorAll(".tm-v2-tool").forEach(x=>x.classList.remove("active"));
+      tool.classList.add("active");
+      updateStatus();
+      return;
+    }
+
+    const layer=e.target.closest("[data-tm-layer]");
+    if(layer && tmWorld){
+      tmWorld.activeLayerId=layer.dataset.tmLayer;
+      await persistWorld();
+      renderLayers();
+      updateStatus();
+      return;
+    }
+
+    const asset=e.target.closest("[data-tm-asset]");
+    if(asset){
+      tmSelectedAsset=asset.dataset.tmAsset;
+      await renderPalette();
+      return;
+    }
+
+    if(e.target.closest("[data-tm-resize]"))return resizeWorld();
+    if(e.target.closest("[data-tm-clear]"))return clearLayer();
+  });
+
+  /* Add TileMap to the already-clean three-dot menu. */
+  const menu=document.getElementById("editorMoreMenu");
+  if(menu && !document.getElementById("editorMoreTileMap")){
+    const btn=document.createElement("button");
+    btn.id="editorMoreTileMap";
+    btn.type="button";
+    btn.className="editor-more-item";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<rect x="4" y="4" width="7" height="7"/>'+
+        '<rect x="13" y="4" width="7" height="7"/>'+
+        '<rect x="4" y="13" width="7" height="7"/>'+
+        '<rect x="13" y="13" width="7" height="7"/>'+
+      '</svg>'+
+      '<span>TileMap / World</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("tilemapManagerV2")?.classList.add("show");
+  await refreshManager();
+}
+function closeManager(){
+  document.getElementById("tilemapManagerV2")?.classList.remove("show");
+}
+
+window.TileMapWorld={
+  version:"2.0.0",
+  open:openManager,
+  load:loadState,
+  save:saveState,
+  world:async name=>clone((await worldForScene(name)).world),
+  runtime:()=>window.SnakeTileMapRuntime||null
+};
+
+const oldOpenProjectTM=window.openProject;
+if(typeof oldOpenProjectTM==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProjectTM.apply(this,arguments);
+    ensureUI();
+    return r;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",ensureUI,{once:true});
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
 </body>
 </html>
