@@ -1492,37 +1492,6 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
       DEBUG
     </button>
 
-    <div class="output-static-actions">
-      <button
-        id="outputProjectSettingsStatic"
-        class="output-static-btn"
-        type="button"
-        aria-label="Project Settings"
-        title="Project Settings"
-        onclick="window.ProjectSettings && window.ProjectSettings.open ? window.ProjectSettings.open() : void 0"
-      >
-        <svg viewBox="0 0 24 24" stroke-width="1.8">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19 15a2 2 0 0 0 .4 2l-2.3 2.3a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8H10a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1V10a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2L6.9 4.6a2 2 0 0 0 2 .4A2 2 0 0 0 10 3.2h4A2 2 0 0 0 15.1 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1v3.8A2 2 0 0 0 19 15z"/>
-        </svg>
-      </button>
-
-      <button
-        id="outputBuildExportStatic"
-        class="output-static-btn build"
-        type="button"
-        aria-label="Build & Export"
-        title="Build & Export"
-        onclick="window.BuildExport && window.BuildExport.open ? window.BuildExport.open() : void 0"
-      >
-        <svg viewBox="0 0 24 24" stroke-width="1.8">
-          <path d="M12 3v12"/>
-          <path d="m7 10 5 5 5-5"/>
-          <path d="M5 20h14"/>
-        </svg>
-      </button>
-    </div>
-
   </div>
 
   <div id="output" class="output">
@@ -19738,88 +19707,6 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 
 })();
 </script>
-
-
-<style>
-/* =====================================================
-   STATIC OUTPUT HOTBAR ACCESS
-   No observers, no wrappers, no global event interception.
-===================================================== */
-#buildAccessFab,
-#projectSettingsAccessBtn{
-  display:none !important;
-  pointer-events:none !important;
-}
-
-#editor #bottomPanel .panel-tabs{
-  position:relative;
-  z-index:30 !important;
-  overflow:visible !important;
-}
-
-.output-static-actions{
-  margin-left:auto;
-  height:39px;
-  display:flex;
-  align-items:center;
-  gap:4px;
-  padding:0 5px;
-  flex:0 0 auto;
-  position:relative;
-  z-index:50;
-  pointer-events:auto !important;
-}
-
-.output-static-btn{
-  width:32px;
-  height:31px;
-  padding:0;
-  border:1px solid #2a333b;
-  border-radius:7px;
-  background:#151b20;
-  color:#89959e;
-  display:grid;
-  place-items:center;
-  position:relative;
-  z-index:51;
-  pointer-events:auto !important;
-  touch-action:manipulation !important;
-  -webkit-user-select:none;
-  user-select:none;
-}
-
-.output-static-btn.build{
-  color:#91e864;
-  border-color:#365438;
-  background:#162019;
-}
-
-.output-static-btn:active{
-  background:#20282e;
-}
-
-.output-static-btn svg{
-  width:15px;
-  height:15px;
-  pointer-events:none;
-}
-
-@media(max-width:700px){
-  #editor #bottomPanel .panel-tab{
-    padding-left:9px !important;
-    padding-right:9px !important;
-  }
-  .output-static-actions{
-    gap:3px;
-    padding-right:4px;
-    padding-left:2px;
-  }
-  .output-static-btn{
-    width:31px;
-    height:30px;
-  }
-}
-</style>
 
 </body>
 </html>
