@@ -24290,5 +24290,153 @@ if(typeof oldClosePreviewCodeRPG==="function"){
 })();
 </script>
 
+
+<script>
+/* =====================================================
+   RPG DEMO — ANALOG INPUT HOTFIX v1
+   Ensures RPG reads virtual joystick vector directly.
+===================================================== */
+(function(){
+"use strict";
+
+if(!window.RPGCodeRuntime)return;
+
+const originalApi=RPGCodeRuntime.api.bind(RPGCodeRuntime);
+
+RPGCodeRuntime.api=function(){
+  const result=originalApi();
+  const api=result.api;
+
+  const originalVector=api.input.vector;
+
+  api.input.vector=function(){
+    try{
+      /* Prefer the unified Input v2 analog vector. */
+      const v=window.InputV2?.vector?.();
+      if(v && (Math.abs(v.x)>0.001 || Math.abs(v.y)>0.001)){
+        return v;
+      }
+    }catch(_){}
+
+    try{
+      /* Fallback to original SnakeInput joystick vector if present. */
+      const v=window.SnakeInput?.vector?.();
+      if(v && (Math.abs(v.x)>0.001 || Math.abs(v.y)>0.001)){
+        return v;
+      }
+    }catch(_){}
+
+    try{
+      /* Last fallback: RPG legacy analog state. */
+      const v=window.InputV2?.pointerVector;
+      if(v && (Math.abs(v.x)>0.001 || Math.abs(v.y)>0.001)){
+        return {x:v.x,y:v.y};
+      }
+    }catch(_){}
+
+    return originalVector ? originalVector() : {x:0,y:0};
+  };
+
+  return result;
+};
+
+/* Rebind virtual controls when preview opens, because some mobile builds
+   create joystick DOM after the initial Input v2 binding pass. */
+function forceBindVirtualControls(){
+  try{
+    const preview=document.getElementById("preview");
+    if(!preview)return;
+
+    const candidates=[
+      preview.querySelector(".runtime-stick"),
+      preview.querySelector(".joystick"),
+      preview.querySelector(".virtual-stick"),
+      preview.querySelector("[data-joystick]")
+    ].filter(Boolean);
+
+    for(const joystick of candidates){
+      if(joystick.dataset.rpgAnalogBound)return;
+      joystick.dataset.rpgAnalogBound="1";
+
+      let pointerId=null;
+
+      const move=e=>{
+        if(pointerId!==e.pointerId)return;
+
+        const r=joystick.getBoundingClientRect();
+        const cx=r.left+r.width/2;
+        const cy=r.top+r.height/2;
+        const radius=Math.max(1,Math.min(r.width,r.height)/2);
+
+        let x=(e.clientX-cx)/radius;
+        let y=(e.clientY-cy)/radius;
+
+        const len=Math.hypot(x,y);
+        if(len>1){x/=len;y/=len}
+
+        if(window.InputV2?.setVector){
+          InputV2.setVector(x,y);
+        }else if(window.InputV2){
+          InputV2.pointerVector={x,y};
+        }
+      };
+
+      const end=e=>{
+        if(pointerId!==e.pointerId)return;
+        pointerId=null;
+
+        if(window.InputV2?.setVector){
+          InputV2.setVector(0,0);
+        }else if(window.InputV2){
+          InputV2.pointerVector={x:0,y:0};
+        }
+      };
+
+      joystick.addEventListener("pointerdown",e=>{
+        pointerId=e.pointerId;
+        joystick.setPointerCapture?.(e.pointerId);
+        move(e);
+      },{passive:true});
+
+      joystick.addEventListener("pointermove",move,{passive:true});
+      joystick.addEventListener("pointerup",end,{passive:true});
+      joystick.addEventListener("pointercancel",end,{passive:true});
+    }
+  }catch(e){
+    console.warn("RPG analog bind:",e);
+  }
+}
+
+const oldOpenPreviewAnalog=window.openPreview;
+if(typeof oldOpenPreviewAnalog==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreviewAnalog.apply(this,arguments);
+
+    if(typeof currentProject!=="undefined" && currentProject==="RPG Demo"){
+      setTimeout(forceBindVirtualControls,120);
+      setTimeout(forceBindVirtualControls,350);
+    }
+
+    return r;
+  };
+}
+
+const oldRunProjectAnalog=window.runProject;
+if(typeof oldRunProjectAnalog==="function"){
+  window.runProject=function(){
+    const r=oldRunProjectAnalog.apply(this,arguments);
+
+    if(typeof currentProject!=="undefined" && currentProject==="RPG Demo"){
+      setTimeout(forceBindVirtualControls,900);
+      setTimeout(forceBindVirtualControls,1200);
+    }
+
+    return r;
+  };
+}
+
+})();
+</script>
+
 </body>
 </html>
