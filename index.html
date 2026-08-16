@@ -1492,6 +1492,37 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
       DEBUG
     </button>
 
+    <div class="output-static-actions">
+      <button
+        id="outputProjectSettingsStatic"
+        class="output-static-btn"
+        type="button"
+        aria-label="Project Settings"
+        title="Project Settings"
+        onclick="window.ProjectSettings && window.ProjectSettings.open ? window.ProjectSettings.open() : void 0"
+      >
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19 15a2 2 0 0 0 .4 2l-2.3 2.3a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8H10a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1V10a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2L6.9 4.6a2 2 0 0 0 2 .4A2 2 0 0 0 10 3.2h4A2 2 0 0 0 15.1 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1v3.8A2 2 0 0 0 19 15z"/>
+        </svg>
+      </button>
+
+      <button
+        id="outputBuildExportStatic"
+        class="output-static-btn build"
+        type="button"
+        aria-label="Build & Export"
+        title="Build & Export"
+        onclick="window.BuildExport && window.BuildExport.open ? window.BuildExport.open() : void 0"
+      >
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M12 3v12"/>
+          <path d="m7 10 5 5 5-5"/>
+          <path d="M5 20h14"/>
+        </svg>
+      </button>
+    </div>
+
   </div>
 
   <div id="output" class="output">
@@ -19711,8 +19742,8 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 
 <style>
 /* =====================================================
-   OUTPUT HOTBAR FIX
-   Keep the editor interaction layer untouched.
+   STATIC OUTPUT HOTBAR ACCESS
+   No observers, no wrappers, no global event interception.
 ===================================================== */
 #buildAccessFab,
 #projectSettingsAccessBtn{
@@ -19720,167 +19751,75 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
   pointer-events:none !important;
 }
 
-#outputToolsV2{
+#editor #bottomPanel .panel-tabs{
+  position:relative;
+  z-index:30 !important;
+  overflow:visible !important;
+}
+
+.output-static-actions{
   margin-left:auto;
+  height:39px;
   display:flex;
   align-items:center;
   gap:4px;
-  padding:0 6px 0 4px;
+  padding:0 5px;
   flex:0 0 auto;
+  position:relative;
+  z-index:50;
+  pointer-events:auto !important;
 }
 
-.output-tool-v2{
+.output-static-btn{
   width:32px;
   height:31px;
   padding:0;
-  display:grid;
-  place-items:center;
   border:1px solid #2a333b;
   border-radius:7px;
   background:#151b20;
   color:#89959e;
-  touch-action:manipulation;
-  pointer-events:auto;
+  display:grid;
+  place-items:center;
+  position:relative;
+  z-index:51;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none;
+  user-select:none;
 }
 
-.output-tool-v2:active{
-  background:#1d252b;
-}
-
-.output-tool-v2.build{
+.output-static-btn.build{
   color:#91e864;
   border-color:#365438;
   background:#162019;
 }
 
-.output-tool-v2 svg{
-  width:15px;
-  height:15px;
+.output-static-btn:active{
+  background:#20282e;
 }
 
-#bottomPanel .panel-tabs{
-  min-width:0;
+.output-static-btn svg{
+  width:15px;
+  height:15px;
+  pointer-events:none;
 }
 
 @media(max-width:700px){
-  #bottomPanel .panel-tab{
-    padding-left:10px;
-    padding-right:10px;
+  #editor #bottomPanel .panel-tab{
+    padding-left:9px !important;
+    padding-right:9px !important;
+  }
+  .output-static-actions{
+    gap:3px;
+    padding-right:4px;
+    padding-left:2px;
+  }
+  .output-static-btn{
+    width:31px;
+    height:30px;
   }
 }
 </style>
-
-<script>
-(function(){
-"use strict";
-
-/*
-  Important: this patch intentionally uses no MutationObserver,
-  no capture-phase global click interception and no interaction
-  restoration hooks. It only adds two normal buttons to OUTPUT.
-*/
-
-function openProjectSettingsSafe(){
-  if(window.ProjectSettings && typeof window.ProjectSettings.open==="function"){
-    window.ProjectSettings.open();
-    return;
-  }
-
-  const panel=document.getElementById("projectSettingsV1");
-  if(panel){
-    panel.classList.add("show");
-  }else{
-    window.showToast?.("Project Settings indisponível");
-  }
-}
-
-function openBuildSafe(){
-  if(window.BuildExport && typeof window.BuildExport.open==="function"){
-    window.BuildExport.open();
-    return;
-  }
-
-  const panel=document.getElementById("buildManagerV1");
-  if(panel){
-    panel.classList.add("show");
-  }else{
-    window.showToast?.("Build & Export indisponível");
-  }
-}
-
-function installOutputTools(){
-  const tabs=document.querySelector("#bottomPanel .panel-tabs");
-  if(!tabs)return false;
-
-  if(document.getElementById("outputToolsV2"))return true;
-
-  const tools=document.createElement("div");
-  tools.id="outputToolsV2";
-
-  const settings=document.createElement("button");
-  settings.id="outputProjectSettingsV2";
-  settings.type="button";
-  settings.className="output-tool-v2";
-  settings.title="Project Settings";
-  settings.setAttribute("aria-label","Project Settings");
-  settings.innerHTML=
-    '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
-      '<circle cx="12" cy="12" r="3"/>'+
-      '<path d="M19 15a2 2 0 0 0 .4 2l-2.3 2.3a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8H10a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1V10a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2L6.9 4.6a2 2 0 0 0 2 .4A2 2 0 0 0 10 3.2h4A2 2 0 0 0 15.1 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1v3.8A2 2 0 0 0 19 15z"/>'+
-    '</svg>';
-
-  const build=document.createElement("button");
-  build.id="outputBuildV2";
-  build.type="button";
-  build.className="output-tool-v2 build";
-  build.title="Build & Export";
-  build.setAttribute("aria-label","Build & Export");
-  build.innerHTML=
-    '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
-      '<path d="M12 3v12"/>'+
-      '<path d="m7 10 5 5 5-5"/>'+
-      '<path d="M5 20h14"/>'+
-    '</svg>';
-
-  settings.addEventListener("click",function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    openProjectSettingsSafe();
-  });
-
-  build.addEventListener("click",function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    openBuildSafe();
-  });
-
-  tools.append(settings,build);
-  tabs.appendChild(tools);
-  return true;
-}
-
-/* CSS is sufficient to hide the old floating access points. */
-function install(){
-  installOutputTools();
-}
-
-if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded",install,{once:true});
-}else{
-  install();
-}
-
-const previousOpenProject=window.openProject;
-if(typeof previousOpenProject==="function"){
-  window.openProject=async function(){
-    const result=await previousOpenProject.apply(this,arguments);
-    installOutputTools();
-    return result;
-  };
-}
-
-})();
-</script>
 
 </body>
 </html>
