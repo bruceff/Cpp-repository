@@ -10400,5 +10400,698 @@ setTimeout(installRecoveryUI,0);
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — SCENE MANAGER v1
+===================================================== */
+.scene-manager-v1{
+  position:absolute;
+  inset:0;
+  z-index:210;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.scene-manager-v1.show{display:flex}
+.sm-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.sm-head-title{flex:1;min-width:0}
+.sm-head-title strong{display:block;font-size:13px}
+.sm-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+.sm-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.sm-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.sm-primary,.sm-secondary{
+  min-height:44px;
+  border-radius:9px;
+  font-size:10px;
+  font-weight:750;
+}
+.sm-primary{background:#91e864;color:#091006}
+.sm-secondary{
+  border:1px solid #2b343c;
+  background:#151b20;
+  color:#9ba5ad;
+}
+.sm-section-title{
+  margin:19px 2px 9px;
+  color:#68737c;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.1em;
+}
+.sm-list{display:grid;gap:7px}
+.sm-card{
+  width:100%;
+  min-height:64px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  text-align:left;
+}
+.sm-card.active{
+  border-color:#496947;
+  background:#141d15;
+}
+.sm-card-icon{
+  width:38px;height:38px;flex:0 0 38px;
+  display:grid;place-items:center;
+  border-radius:8px;
+  background:#1a2025;color:#91e864;
+}
+.sm-card-icon svg{width:19px;height:19px}
+.sm-card-info{flex:1;min-width:0}
+.sm-card-name{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:#dce2e6;font-size:11px;font-weight:750;
+}
+.sm-card-meta{margin-top:4px;color:#68747e;font-size:9px}
+.sm-card-actions{display:flex;gap:4px}
+.sm-mini{
+  width:33px;height:33px;
+  display:grid;place-items:center;
+  border-radius:7px;
+  background:#171d22;color:#79858e;
+}
+.sm-mini.danger{color:#e77c82}
+.sm-mini svg{width:15px;height:15px}
+.sm-empty{
+  padding:25px 15px;
+  border:1px dashed #29333b;
+  border-radius:10px;
+  color:#68737c;
+  text-align:center;
+  font-size:10px;
+  line-height:1.5;
+}
+.sm-sheet{
+  position:absolute;
+  inset:0;
+  z-index:230;
+  display:none;
+  align-items:flex-end;
+  background:rgba(0,0,0,.7);
+}
+.sm-sheet.show{display:flex}
+.sm-sheet-card{
+  width:100%;
+  padding:18px 14px calc(18px + env(safe-area-inset-bottom));
+  border-radius:18px 18px 0 0;
+  border-top:1px solid #303840;
+  background:#12171c;
+}
+.sm-sheet-card h3{margin:0 0 5px;font-size:16px}
+.sm-sheet-card p{margin:0 0 13px;color:#707b84;font-size:10px}
+.sm-sheet-row{display:flex;gap:8px;margin-top:9px}
+.sm-sheet-row button{flex:1;min-height:43px;border-radius:8px;font-weight:700}
+.sm-runtime-scene{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:6;
+  padding:5px 8px;
+  border:1px solid #2c363e;
+  border-radius:6px;
+  background:rgba(8,11,14,.82);
+  color:#8b969f;
+  font:8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  pointer-events:none;
+}
+@media(min-width:700px){
+  .sm-body{max-width:720px;width:100%;margin:0 auto}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — SCENE MANAGER v1
+   Multi-scene projects, startup scene, persistence and
+   runtime transitions.
+===================================================== */
+(function(){
+"use strict";
+
+const SCENE_PREFIX="snake_scenes_v1:";
+let smCurrentScene=null;
+
+function projectName(){
+  try{return typeof currentProject!=="undefined"?currentProject:null}
+  catch{return null}
+}
+function sceneKey(name){return SCENE_PREFIX+name}
+function uid(){return "scene_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function defaultScene(name="Main"){
+  return {
+    id:uid(),
+    name,
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString(),
+    nodes:[],
+    meta:{}
+  };
+}
+function defaultState(){
+  const s=defaultScene("Main");
+  return {
+    version:1,
+    startupSceneId:s.id,
+    activeSceneId:s.id,
+    scenes:[s],
+    updatedAt:new Date().toISOString()
+  };
+}
+function loadLocal(project){
+  try{
+    const raw=localStorage.getItem(sceneKey(project));
+    if(raw){
+      const state=JSON.parse(raw);
+      if(state?.version===1 && Array.isArray(state.scenes))return state;
+    }
+  }catch(_){}
+  const state=defaultState();
+  saveLocal(project,state);
+  return state;
+}
+function saveLocal(project,state){
+  state.updatedAt=new Date().toISOString();
+  localStorage.setItem(sceneKey(project),JSON.stringify(state));
+}
+async function loadState(project=projectName()){
+  if(!project)return defaultState();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(project);
+      const row=await SnakeDB.get("scenes","manager:"+projectId);
+      if(row?.state?.version===1){
+        saveLocal(project,row.state);
+        return clone(row.state);
+      }
+    }catch(e){console.warn("Scene Manager DB load:",e)}
+  }
+  return loadLocal(project);
+}
+async function saveState(state,project=projectName()){
+  if(!project)return;
+  saveLocal(project,state);
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(project);
+      await SnakeDB.put("scenes",{
+        id:"manager:"+projectId,
+        projectId,
+        projectName:project,
+        state:clone(state),
+        updatedAt:new Date().toISOString()
+      });
+    }catch(e){console.warn("Scene Manager DB save:",e)}
+  }
+}
+function normalizeName(name){
+  return String(name||"").trim().replace(/\s+/g," ").slice(0,40);
+}
+async function ensureProjectScenes(){
+  const project=projectName();
+  if(!project)return null;
+  const state=await loadState(project);
+  if(!state.scenes.length){
+    const s=defaultScene("Main");
+    state.scenes=[s];
+    state.startupSceneId=s.id;
+    state.activeSceneId=s.id;
+    await saveState(state,project);
+  }
+  smCurrentScene=state.activeSceneId||state.startupSceneId||state.scenes[0].id;
+  return state;
+}
+
+/* -----------------------------------------------------
+   Capture/restore lightweight scene editor objects.
+----------------------------------------------------- */
+function captureEditorScene(){
+  const world=document.getElementById("sceneWorld");
+  if(!world)return [];
+
+  return [...world.querySelectorAll(".scene-object")].map((el,index)=>{
+    const label=el.querySelector(".selection-label")?.textContent?.trim()||("Object "+(index+1));
+    const kind=el.querySelector(".object-food")?"Food":"Player";
+    return {
+      id:el.dataset.sceneNodeId||("node_"+Date.now()+"_"+index),
+      name:label,
+      kind,
+      x:parseInt(el.style.left)||0,
+      y:parseInt(el.style.top)||0
+    };
+  });
+}
+function restoreEditorScene(nodes=[]){
+  const world=document.getElementById("sceneWorld");
+  if(!world)return;
+
+  world.querySelectorAll(".scene-object").forEach(el=>el.remove());
+
+  nodes.forEach((n,index)=>{
+    const object=document.createElement("div");
+    object.className="scene-object"+(index===0?" selected":"");
+    object.dataset.sceneNodeId=n.id||("node_"+Date.now()+"_"+index);
+    object.style.left=(Number(n.x)||0)+"px";
+    object.style.top=(Number(n.y)||0)+"px";
+    object.innerHTML=`
+      <span class="selection-label">${escapeHTML?.(n.name)||n.name}</span>
+      ${n.kind==="Food"?'<div class="object-food"></div>':'<div class="object-body"></div>'}
+    `;
+    object.addEventListener("click",e=>{
+      e.stopPropagation();
+      document.querySelectorAll(".scene-object").forEach(x=>x.classList.remove("selected"));
+      object.classList.add("selected");
+      try{
+        selectedObject=n.kind==="Food"?"Food":"Player";
+        document.getElementById("propName").value=n.name;
+        document.getElementById("posX").value=parseInt(object.style.left)||0;
+        document.getElementById("posY").value=parseInt(object.style.top)||0;
+      }catch(_){}
+    });
+    world.appendChild(object);
+  });
+
+  const status=document.querySelector(".scene-status");
+  if(status)status.textContent=`${nodes.length} OBJECT${nodes.length===1?"":"S"}`;
+}
+async function saveActiveScene(){
+  const state=await ensureProjectScenes();
+  if(!state)return;
+  const id=smCurrentScene||state.activeSceneId;
+  const scene=state.scenes.find(s=>s.id===id);
+  if(!scene)return;
+  scene.nodes=captureEditorScene();
+  scene.updatedAt=new Date().toISOString();
+  state.activeSceneId=scene.id;
+  await saveState(state);
+}
+async function loadSceneIntoEditor(id){
+  await saveActiveScene();
+  const state=await ensureProjectScenes();
+  const scene=state.scenes.find(s=>s.id===id);
+  if(!scene)return false;
+
+  smCurrentScene=scene.id;
+  state.activeSceneId=scene.id;
+  await saveState(state);
+  restoreEditorScene(scene.nodes||[]);
+
+  const label=document.querySelector(".world-label");
+  if(label)label.textContent="WORLD / "+scene.name.toUpperCase();
+
+  showToast?.("Cena: "+scene.name);
+  renderSceneManager();
+  return true;
+}
+
+/* -----------------------------------------------------
+   CRUD
+----------------------------------------------------- */
+async function createScene(name){
+  name=normalizeName(name);
+  if(!name)return false;
+  const state=await ensureProjectScenes();
+
+  if(state.scenes.some(s=>s.name.toLowerCase()===name.toLowerCase())){
+    showToast?.("Já existe uma cena com esse nome");
+    return false;
+  }
+
+  await saveActiveScene();
+
+  const scene=defaultScene(name);
+  state.scenes.push(scene);
+  state.activeSceneId=scene.id;
+  smCurrentScene=scene.id;
+  await saveState(state);
+  restoreEditorScene([]);
+  closeSceneSheet();
+  renderSceneManager();
+  showToast?.("Cena criada");
+  return true;
+}
+async function renameScene(id,name){
+  name=normalizeName(name);
+  if(!name)return;
+  const state=await ensureProjectScenes();
+  if(state.scenes.some(s=>s.id!==id&&s.name.toLowerCase()===name.toLowerCase())){
+    showToast?.("Nome de cena já utilizado");
+    return;
+  }
+  const scene=state.scenes.find(s=>s.id===id);
+  if(!scene)return;
+  scene.name=name;
+  scene.updatedAt=new Date().toISOString();
+  await saveState(state);
+  renderSceneManager();
+}
+async function duplicateScene(id){
+  const state=await ensureProjectScenes();
+  const source=state.scenes.find(s=>s.id===id);
+  if(!source)return;
+
+  let base=source.name+" Copy";
+  let name=base, i=2;
+  while(state.scenes.some(s=>s.name.toLowerCase()===name.toLowerCase())){
+    name=base+" "+i++;
+  }
+
+  const copy=clone(source);
+  copy.id=uid();
+  copy.name=name;
+  copy.createdAt=copy.updatedAt=new Date().toISOString();
+  state.scenes.push(copy);
+  await saveState(state);
+  renderSceneManager();
+  showToast?.("Cena duplicada");
+}
+async function deleteScene(id){
+  const state=await ensureProjectScenes();
+  if(state.scenes.length<=1){
+    showToast?.("O projeto precisa ter pelo menos uma cena");
+    return;
+  }
+  const scene=state.scenes.find(s=>s.id===id);
+  if(!scene)return;
+  if(!confirm(`Excluir a cena "${scene.name}"?`))return;
+
+  state.scenes=state.scenes.filter(s=>s.id!==id);
+
+  if(state.startupSceneId===id)state.startupSceneId=state.scenes[0].id;
+  if(state.activeSceneId===id || smCurrentScene===id){
+    state.activeSceneId=state.scenes[0].id;
+    smCurrentScene=state.scenes[0].id;
+    restoreEditorScene(state.scenes[0].nodes||[]);
+  }
+  await saveState(state);
+  renderSceneManager();
+  showToast?.("Cena excluída");
+}
+async function setStartup(id){
+  const state=await ensureProjectScenes();
+  if(!state.scenes.some(s=>s.id===id))return;
+  state.startupSceneId=id;
+  await saveState(state);
+  renderSceneManager();
+  showToast?.("Cena inicial definida");
+}
+
+/* -----------------------------------------------------
+   Manager UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor || document.getElementById("sceneManagerV1"))return;
+
+  const ui=document.createElement("section");
+  ui.id="sceneManagerV1";
+  ui.className="scene-manager-v1";
+  ui.innerHTML=`
+    <header class="sm-head">
+      <button class="icon-btn" type="button" data-sm-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="sm-head-title">
+        <strong>SCENE MANAGER</strong>
+        <small id="smProjectLabel">Project scenes</small>
+      </div>
+      <button class="icon-btn" type="button" data-sm-new>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+      </button>
+    </header>
+    <main class="sm-body">
+      <div class="sm-actions">
+        <button class="sm-primary" type="button" data-sm-new>NEW SCENE</button>
+        <button class="sm-secondary" type="button" data-sm-save>SAVE CURRENT</button>
+      </div>
+      <div class="sm-section-title">PROJECT SCENES</div>
+      <div id="smSceneList" class="sm-list"></div>
+    </main>
+    <div id="smSheet" class="sm-sheet">
+      <div class="sm-sheet-card">
+        <h3>New Scene</h3>
+        <p>Create another scene inside this project.</p>
+        <input id="smSceneName" class="input" maxlength="40" placeholder="Scene name">
+        <div class="sm-sheet-row">
+          <button class="cancel" type="button" data-sm-sheet-cancel>Cancel</button>
+          <button class="create" type="button" data-sm-sheet-create>Create</button>
+        </div>
+      </div>
+    </div>
+  `;
+  editor.appendChild(ui);
+
+  /* Add Scene Manager access to the editor header without creating another hotbar. */
+  const header=document.querySelector("#editor .editor-header");
+  const run=header?.querySelector(".run-btn");
+  if(header && run && !document.getElementById("sceneManagerHeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="sceneManagerHeaderBtn";
+    btn.type="button";
+    btn.className="icon-btn";
+    btn.setAttribute("aria-label","Scene Manager");
+    btn.innerHTML=`<svg viewBox="0 0 24 24" stroke-width="1.8">
+      <rect x="4" y="4" width="7" height="7" rx="1"/>
+      <rect x="13" y="4" width="7" height="7" rx="1"/>
+      <rect x="4" y="13" width="7" height="7" rx="1"/>
+      <path d="M16.5 14v5M14 16.5h5"/>
+    </svg>`;
+    btn.addEventListener("click",openSceneManager);
+    run.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-sm-close]")){closeSceneManager();return}
+    if(e.target.closest("[data-sm-new]")){openSceneSheet();return}
+    if(e.target.closest("[data-sm-save]")){
+      await saveActiveScene(); showToast?.("Cena salva"); renderSceneManager(); return;
+    }
+    if(e.target.closest("[data-sm-sheet-cancel]")){closeSceneSheet();return}
+    if(e.target.closest("[data-sm-sheet-create]")){
+      await createScene(document.getElementById("smSceneName")?.value); return;
+    }
+
+    const open=e.target.closest("[data-sm-open]");
+    if(open){await loadSceneIntoEditor(open.dataset.smOpen);closeSceneManager();showScene?.();return}
+
+    const startup=e.target.closest("[data-sm-startup]");
+    if(startup){await setStartup(startup.dataset.smStartup);return}
+
+    const duplicate=e.target.closest("[data-sm-duplicate]");
+    if(duplicate){await duplicateScene(duplicate.dataset.smDuplicate);return}
+
+    const rename=e.target.closest("[data-sm-rename]");
+    if(rename){
+      const state=await ensureProjectScenes();
+      const s=state.scenes.find(x=>x.id===rename.dataset.smRename);
+      const n=prompt("Novo nome da cena:",s?.name||"");
+      if(n!==null)await renameScene(rename.dataset.smRename,n);
+      return;
+    }
+
+    const del=e.target.closest("[data-sm-delete]");
+    if(del){await deleteScene(del.dataset.smDelete);return}
+  });
+
+  document.getElementById("smSceneName")?.addEventListener("keydown",e=>{
+    if(e.key==="Enter")createScene(e.target.value);
+  });
+}
+function openSceneSheet(){
+  const sheet=document.getElementById("smSheet");
+  if(!sheet)return;
+  sheet.classList.add("show");
+  const input=document.getElementById("smSceneName");
+  input.value="";
+  setTimeout(()=>input.focus(),50);
+}
+function closeSceneSheet(){document.getElementById("smSheet")?.classList.remove("show")}
+async function openSceneManager(){
+  ensureUI();
+  await saveActiveScene();
+  document.getElementById("sceneManagerV1")?.classList.add("show");
+  renderSceneManager();
+}
+function closeSceneManager(){
+  closeSceneSheet();
+  document.getElementById("sceneManagerV1")?.classList.remove("show");
+}
+async function renderSceneManager(){
+  ensureUI();
+  const state=await ensureProjectScenes();
+  if(!state)return;
+  const list=document.getElementById("smSceneList");
+  const label=document.getElementById("smProjectLabel");
+  if(label)label.textContent=projectName()||"Project";
+  if(!list)return;
+
+  list.innerHTML=state.scenes.length?state.scenes.map(scene=>`
+    <div class="sm-card ${scene.id===state.activeSceneId?"active":""}">
+      <button type="button" class="sm-card-icon" data-sm-open="${scene.id}" aria-label="Open scene">
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+          <circle cx="9" cy="9" r="1.5"/>
+          <path d="m5 17 4-4 3 3 3-4 4 5"/>
+        </svg>
+      </button>
+      <div class="sm-card-info">
+        <div class="sm-card-name">${escapeHTML?.(scene.name)||scene.name}</div>
+        <div class="sm-card-meta">
+          ${scene.id===state.startupSceneId?"STARTUP · ":""}${(scene.nodes||[]).length} objects
+        </div>
+      </div>
+      <div class="sm-card-actions">
+        <button class="sm-mini" type="button" data-sm-startup="${scene.id}" title="Set startup">★</button>
+        <button class="sm-mini" type="button" data-sm-duplicate="${scene.id}" title="Duplicate">⧉</button>
+        <button class="sm-mini" type="button" data-sm-rename="${scene.id}" title="Rename">✎</button>
+        <button class="sm-mini danger" type="button" data-sm-delete="${scene.id}" title="Delete">×</button>
+      </div>
+    </div>
+  `).join(""):`<div class="sm-empty">No scenes.</div>`;
+}
+
+/* -----------------------------------------------------
+   Runtime scene API
+----------------------------------------------------- */
+async function runtimeLoadScene(nameOrId){
+  const state=await loadState();
+  const target=state.scenes.find(s=>s.id===nameOrId||s.name===nameOrId);
+  if(!target){
+    console.warn("Scene not found:",nameOrId);
+    return false;
+  }
+
+  state.activeSceneId=target.id;
+  smCurrentScene=target.id;
+  await saveState(state);
+
+  /* Reset transient runtime nodes when the current runtime exposes them. */
+  try{
+    if(window.Scene?.nodes && Array.isArray(Scene.nodes)){
+      Scene.nodes.length=0;
+    }
+  }catch(_){}
+
+  restoreEditorScene(target.nodes||[]);
+  updateRuntimeSceneBadge(target.name);
+
+  /* Scene scripts can observe this event without coupling to the manager. */
+  window.dispatchEvent(new CustomEvent("snake:scenechange",{
+    detail:{id:target.id,name:target.name,scene:clone(target)}
+  }));
+
+  return true;
+}
+async function startupScene(){
+  const state=await loadState();
+  return state.scenes.find(s=>s.id===state.startupSceneId)||state.scenes[0]||null;
+}
+function updateRuntimeSceneBadge(name){
+  const screen=document.querySelector("#preview .game-screen");
+  if(!screen)return;
+  let badge=document.getElementById("smRuntimeSceneBadge");
+  if(!badge){
+    badge=document.createElement("div");
+    badge.id="smRuntimeSceneBadge";
+    badge.className="sm-runtime-scene";
+    screen.appendChild(badge);
+  }
+  badge.textContent="SCENE · "+String(name||"").toUpperCase();
+}
+
+window.SceneManager={
+  version:"1.0.0",
+  list:async()=>clone((await loadState()).scenes),
+  current:async()=>{
+    const state=await loadState();
+    return clone(state.scenes.find(s=>s.id===state.activeSceneId)||null);
+  },
+  startup:startupScene,
+  load:runtimeLoadScene,
+  create:createScene,
+  duplicate:duplicateScene,
+  rename:renameScene,
+  remove:deleteScene,
+  setStartup,
+  saveCurrent:saveActiveScene,
+  open:openSceneManager
+};
+
+/* Friendly Script API alias. */
+window.sceneManager=window.SceneManager;
+
+/* -----------------------------------------------------
+   Project/runtime integration
+----------------------------------------------------- */
+const oldOpenProjectSM=window.openProject;
+if(typeof oldOpenProjectSM==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectSM.apply(this,arguments);
+    ensureUI();
+    const state=await ensureProjectScenes();
+    const scene=state?.scenes.find(s=>s.id===state.activeSceneId)||state?.scenes[0];
+    if(scene){
+      smCurrentScene=scene.id;
+      restoreEditorScene(scene.nodes||[]);
+      const label=document.querySelector(".world-label");
+      if(label)label.textContent="WORLD / "+scene.name.toUpperCase();
+    }
+    return result;
+  };
+}
+
+const oldRunProjectSM=window.runProject;
+if(typeof oldRunProjectSM==="function"){
+  window.runProject=async function(){
+    await saveActiveScene();
+    const start=await startupScene();
+    if(start){
+      smCurrentScene=start.id;
+      updateRuntimeSceneBadge(start.name);
+    }
+    return oldRunProjectSM.apply(this,arguments);
+  };
+}
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="hidden")saveActiveScene();
+});
+window.addEventListener("pagehide",()=>saveActiveScene());
+
+ensureUI();
+
+})();
+</script>
+
 </body>
 </html>
