@@ -12335,5 +12335,955 @@ setTimeout(()=>synchronizeAll().catch(console.error),250);
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — ANIMATION SYSTEM v2 / ANIMATOR CONTROLLER
+===================================================== */
+.animator-manager{
+  position:absolute;
+  inset:0;
+  z-index:218;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.animator-manager.show{display:flex}
+
+.animator-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.animator-head-title{flex:1;min-width:0}
+.animator-head-title strong{display:block;font-size:13px}
+.animator-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.animator-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.animator-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.animator-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.animator-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.animator-panel-body{padding:9px}
+
+.animator-state-list,.animator-transition-list{
+  display:grid;
+  gap:6px;
+}
+.animator-state{
+  min-height:46px;
+  padding:8px 9px;
+  border:1px solid #2a343d;
+  border-radius:8px;
+  background:#12181e;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.animator-state.active{
+  border-color:#496947;
+  background:#151f16;
+}
+.animator-state-info{flex:1;min-width:0}
+.animator-state-name{
+  color:#dce2e6;
+  font-size:10px;
+  font-weight:750;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.animator-state-meta{
+  margin-top:3px;
+  color:#697680;
+  font-size:8px;
+}
+.animator-state-actions{display:flex;gap:4px}
+.animator-mini{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:6px;
+  background:#171d22;
+  color:#7f8a93;
+  font-size:9px;
+}
+.animator-mini.danger{color:#e67d84}
+
+.animator-toolbar{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.animator-toolbar button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.animator-toolbar button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.animator-param{
+  display:grid;
+  grid-template-columns:1fr 96px;
+  gap:7px;
+  align-items:center;
+  margin-bottom:7px;
+}
+.animator-param label{
+  color:#89959e;
+  font-size:9px;
+}
+.animator-param input,
+.animator-param select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.animator-sheet{
+  position:absolute;
+  inset:0;
+  z-index:238;
+  display:none;
+  align-items:flex-end;
+  background:rgba(0,0,0,.72);
+}
+.animator-sheet.show{display:flex}
+.animator-sheet-card{
+  width:100%;
+  padding:18px 14px calc(18px + env(safe-area-inset-bottom));
+  border-radius:18px 18px 0 0;
+  border-top:1px solid #303840;
+  background:#12171c;
+}
+.animator-sheet-card h3{margin:0 0 5px;font-size:16px}
+.animator-sheet-card p{margin:0 0 13px;color:#707b84;font-size:10px}
+.animator-sheet-grid{display:grid;gap:8px}
+.animator-sheet-row{display:flex;gap:8px;margin-top:9px}
+.animator-sheet-row button{flex:1;min-height:43px;border-radius:8px;font-weight:700}
+
+.animator-empty{
+  padding:18px;
+  border:1px dashed #29333b;
+  border-radius:8px;
+  color:#68737c;
+  text-align:center;
+  font-size:9px;
+  line-height:1.5;
+}
+
+@media(max-width:700px){
+  .animator-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — ANIMATION SYSTEM v2
+   Animator Controllers · states · parameters · transitions
+   clip binding · runtime evaluation · prefab-friendly config
+===================================================== */
+(function(){
+"use strict";
+
+const CTRL_PREFIX="snake_animator_controllers_v2:";
+const DEFAULT_PARAMS={
+  speed:{type:"float",value:0},
+  moving:{type:"bool",value:false},
+  attack:{type:"trigger",value:false}
+};
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function uid(prefix="anim"){
+  return prefix+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)
+}
+function key(name){return CTRL_PREFIX+name}
+
+function defaultController(){
+  return {
+    version:2,
+    id:"controller-main",
+    name:"Main Animator",
+    entryStateId:null,
+    parameters:clone(DEFAULT_PARAMS),
+    states:[],
+    transitions:[],
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const c=JSON.parse(raw);
+      if(c?.version===2)return c;
+    }
+  }catch(_){}
+  const c=defaultController();
+  if(name)localStorage.setItem(key(name),JSON.stringify(c));
+  return c;
+}
+
+async function loadController(name=project()){
+  if(!name)return defaultController();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("assets","animator-controller:"+projectId);
+      if(row?.controller?.version===2){
+        localStorage.setItem(key(name),JSON.stringify(row.controller));
+        return clone(row.controller);
+      }
+    }catch(e){console.warn("Animator load:",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveController(controller,name=project()){
+  if(!name)return;
+
+  controller.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(controller));
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("assets",{
+        id:"animator-controller:"+projectId,
+        type:"application/x-snake-animator-controller",
+        name:controller.name+".animator",
+        folder:"other",
+        projectId,
+        source:"animation-system-v2",
+        controller:clone(controller),
+        updatedAt:controller.updatedAt
+      });
+    }catch(e){console.warn("Animator save:",e)}
+  }
+
+  try{
+    if(typeof assets2!=="undefined"){
+      const id="animator-controller:"+name;
+      const asset={
+        id,
+        name:controller.name+".animator",
+        type:"application/x-snake-animator-controller",
+        folder:"other",
+        source:"animation-system-v2",
+        data:JSON.stringify(controller),
+        updatedAt:controller.updatedAt
+      };
+      const existing=assets2.find(a=>a.id===id);
+      if(existing)Object.assign(existing,asset);
+      else assets2.push(asset);
+      await Promise.resolve(saveAssets2?.());
+    }
+  }catch(_){}
+}
+
+function availableClips(){
+  const result=[];
+
+  try{
+    if(typeof assets2!=="undefined"){
+      for(const a of assets2){
+        if(a.animation?.frames?.length){
+          result.push({
+            id:"asset:"+a.id,
+            name:a.animation.name||a.name||"Animation",
+            assetId:a.id,
+            fps:a.animation.fps||8
+          });
+        }
+      }
+    }
+  }catch(_){}
+
+  try{
+    const raw=localStorage.getItem("myengine_arte_pro");
+    if(raw){
+      const d=JSON.parse(raw);
+      if(d?.frames?.length){
+        result.push({
+          id:"sprite-studio",
+          name:"Sprite Studio",
+          assetId:"generated-art",
+          fps:d.fps||8
+        });
+      }
+    }
+  }catch(_){}
+
+  if(!result.length){
+    result.push({id:"default",name:"Default",assetId:"generated-art",fps:8});
+  }
+
+  return result;
+}
+
+async function addState(name,clipId){
+  name=String(name||"").trim().slice(0,40);
+  if(!name){showToast?.("Informe o nome do estado");return}
+
+  const c=await loadController();
+
+  if(c.states.some(s=>s.name.toLowerCase()===name.toLowerCase())){
+    showToast?.("Esse estado já existe");
+    return;
+  }
+
+  const state={
+    id:uid("state"),
+    name,
+    clipId:clipId||availableClips()[0]?.id||"default",
+    speed:1,
+    loop:true
+  };
+
+  c.states.push(state);
+  if(!c.entryStateId)c.entryStateId=state.id;
+
+  await saveController(c);
+  renderAnimatorManager();
+  showToast?.("Estado criado");
+}
+
+async function removeState(id){
+  const c=await loadController();
+  c.states=c.states.filter(s=>s.id!==id);
+  c.transitions=c.transitions.filter(t=>t.from!==id&&t.to!==id);
+  if(c.entryStateId===id)c.entryStateId=c.states[0]?.id||null;
+  await saveController(c);
+  renderAnimatorManager();
+}
+
+async function setEntry(id){
+  const c=await loadController();
+  if(!c.states.some(s=>s.id===id))return;
+  c.entryStateId=id;
+  await saveController(c);
+  renderAnimatorManager();
+  showToast?.("Estado inicial definido");
+}
+
+async function addTransition(from,to,param,op,value){
+  if(!from||!to||from===to){
+    showToast?.("Escolha estados diferentes");
+    return;
+  }
+
+  const c=await loadController();
+
+  c.transitions.push({
+    id:uid("transition"),
+    from,
+    to,
+    condition:{
+      param:param||"moving",
+      op:op||"==",
+      value:value
+    },
+    exitTime:null,
+    priority:0
+  });
+
+  await saveController(c);
+  renderAnimatorManager();
+  showToast?.("Transição criada");
+}
+
+async function removeTransition(id){
+  const c=await loadController();
+  c.transitions=c.transitions.filter(t=>t.id!==id);
+  await saveController(c);
+  renderAnimatorManager();
+}
+
+async function setParameter(name,value){
+  const c=await loadController();
+  const p=c.parameters[name];
+  if(!p)return;
+
+  if(p.type==="bool")p.value=!!value;
+  else if(p.type==="float")p.value=Number(value)||0;
+  else if(p.type==="int")p.value=Math.trunc(Number(value)||0);
+  else if(p.type==="trigger")p.value=!!value;
+
+  await saveController(c);
+}
+
+function evalCondition(condition,parameters){
+  const p=parameters[condition.param];
+  if(!p)return false;
+  const v=p.value;
+  const target=condition.value;
+
+  if(p.type==="trigger"){
+    return !!v;
+  }
+
+  switch(condition.op){
+    case ">": return Number(v)>Number(target);
+    case "<": return Number(v)<Number(target);
+    case ">=": return Number(v)>=Number(target);
+    case "<=": return Number(v)<=Number(target);
+    case "!=": return v!=target;
+    default: return v==target;
+  }
+}
+
+async function clipById(id){
+  const clips=availableClips();
+  const meta=clips.find(c=>c.id===id)||clips[0];
+  if(!meta)return null;
+
+  try{
+    const asset=typeof assets2!=="undefined"
+      ?assets2.find(a=>a.id===meta.assetId)
+      :null;
+
+    if(asset && window.SnakeEngine?.runtime?.clipFromAsset){
+      return SnakeEngine.runtime.clipFromAsset(asset,meta.name);
+    }
+
+    if(meta.id==="sprite-studio" && window.SnakeEngine?.runtime?.clipFromSpriteStudioSnapshot){
+      return SnakeEngine.runtime.clipFromSpriteStudioSnapshot(
+        localStorage.getItem("myengine_arte_pro"),
+        meta.name,
+        meta.fps||8
+      );
+    }
+  }catch(e){console.warn(e)}
+
+  return null;
+}
+
+async function applyControllerToAnimator(node,controller){
+  if(!node||!window.SnakeEngine?.runtime?.Animator)return null;
+
+  let animator=node.getComponent?.(SnakeEngine.runtime.Animator);
+  if(!animator)animator=node.addComponent(new SnakeEngine.runtime.Animator());
+
+  animator.clips.clear();
+  animator.states.clear();
+  animator.transitions=[];
+  animator.parameters.clear();
+
+  for(const [name,param] of Object.entries(controller.parameters||{})){
+    animator.parameters.set(name,clone(param.value));
+  }
+
+  for(const state of controller.states){
+    const clip=await clipById(state.clipId);
+    if(clip){
+      clip.loop=state.loop!==false;
+      clip.speed=state.speed==null?1:Number(state.speed);
+      animator.addClip(clip);
+      animator.addState(state.name,clip.name,{speed:state.speed||1});
+    }
+  }
+
+  for(const transition of controller.transitions){
+    const from=controller.states.find(s=>s.id===transition.from)?.name;
+    const to=controller.states.find(s=>s.id===transition.to)?.name;
+    if(!from||!to)continue;
+
+    animator.addTransition(
+      from,
+      to,
+      a=>{
+        const condition=transition.condition;
+        const stored={
+          [condition.param]:{
+            type:controller.parameters?.[condition.param]?.type||"bool",
+            value:a.get(condition.param)
+          }
+        };
+
+        const ok=evalCondition(condition,stored);
+
+        if(ok && stored[condition.param].type==="trigger"){
+          a.parameters.set(condition.param,false);
+        }
+
+        return ok;
+      },
+      {priority:transition.priority||0}
+    );
+  }
+
+  const entry=controller.states.find(s=>s.id===controller.entryStateId)||controller.states[0];
+  if(entry)animator.play(entry.name,true);
+
+  node.meta=node.meta||{};
+  node.meta.animatorController=controller.id;
+
+  return animator;
+}
+
+async function applyToSelected(){
+  const el=document.querySelector(".scene-object.selected");
+  if(!el){
+    showToast?.("Selecione um objeto da cena");
+    return;
+  }
+
+  const c=await loadController();
+  el.dataset.animatorController=c.id;
+  showToast?.("Animator Controller vinculado");
+
+  try{await SceneManager?.saveCurrent?.()}catch(_){}
+}
+
+async function ensureSnakeDemoController(){
+  if(project()!=="Snake Demo")return;
+
+  const c=await loadController();
+
+  if(c.states.length)return;
+
+  const clips=availableClips();
+
+  const idle={
+    id:uid("state"),name:"Idle",clipId:clips[0]?.id||"default",speed:1,loop:true
+  };
+  const move={
+    id:uid("state"),name:"Move",clipId:clips[0]?.id||"default",speed:1.5,loop:true
+  };
+  const eat={
+    id:uid("state"),name:"Eat",clipId:clips[0]?.id||"default",speed:2,loop:false
+  };
+
+  c.states=[idle,move,eat];
+  c.entryStateId=idle.id;
+
+  c.transitions=[
+    {
+      id:uid("transition"),
+      from:idle.id,to:move.id,
+      condition:{param:"moving",op:"==",value:true},
+      exitTime:null,priority:0
+    },
+    {
+      id:uid("transition"),
+      from:move.id,to:idle.id,
+      condition:{param:"moving",op:"==",value:false},
+      exitTime:null,priority:0
+    },
+    {
+      id:uid("transition"),
+      from:move.id,to:eat.id,
+      condition:{param:"attack",op:"==",value:true},
+      exitTime:null,priority:10
+    }
+  ];
+
+  await saveController(c);
+}
+
+/* -----------------------------------------------------
+   Manager UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("animatorManager"))return;
+
+  const ui=document.createElement("section");
+  ui.id="animatorManager";
+  ui.className="animator-manager";
+  ui.innerHTML=`
+    <header class="animator-head">
+      <button class="icon-btn" type="button" data-anim-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="animator-head-title">
+        <strong>ANIMATOR</strong>
+        <small>States, parameters and transitions</small>
+      </div>
+      <button class="icon-btn" type="button" data-anim-apply>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M5 12h14"/><path d="m14 7 5 5-5 5"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="animator-body">
+      <div class="animator-toolbar">
+        <button type="button" class="primary" data-anim-new-state>NEW STATE</button>
+        <button type="button" data-anim-new-transition>NEW TRANSITION</button>
+      </div>
+
+      <div class="animator-grid">
+        <section class="animator-panel">
+          <h3>STATES</h3>
+          <div class="animator-panel-body">
+            <div id="animStateList" class="animator-state-list"></div>
+          </div>
+        </section>
+
+        <section class="animator-panel">
+          <h3>PARAMETERS</h3>
+          <div class="animator-panel-body" id="animParamList"></div>
+        </section>
+
+        <section class="animator-panel">
+          <h3>TRANSITIONS</h3>
+          <div class="animator-panel-body">
+            <div id="animTransitionList" class="animator-transition-list"></div>
+          </div>
+        </section>
+
+        <section class="animator-panel">
+          <h3>PREVIEW / BINDING</h3>
+          <div class="animator-panel-body">
+            <button class="prefab-primary" style="width:100%" type="button" data-anim-apply>
+              APPLY TO SELECTED OBJECT
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="animStateSheet" class="animator-sheet">
+      <div class="animator-sheet-card">
+        <h3>New State</h3>
+        <p>Create an Animator state and bind it to an Animation Clip.</p>
+        <div class="animator-sheet-grid">
+          <input id="animStateName" class="input" placeholder="State name">
+          <select id="animStateClip" class="input"></select>
+        </div>
+        <div class="animator-sheet-row">
+          <button class="cancel" type="button" data-anim-sheet-cancel>Cancel</button>
+          <button class="create" type="button" data-anim-sheet-create>Create</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="animTransitionSheet" class="animator-sheet">
+      <div class="animator-sheet-card">
+        <h3>New Transition</h3>
+        <p>Connect two states using an Animator parameter.</p>
+        <div class="animator-sheet-grid">
+          <select id="animTransFrom" class="input"></select>
+          <select id="animTransTo" class="input"></select>
+          <select id="animTransParam" class="input"></select>
+          <select id="animTransOp" class="input">
+            <option value="==">==</option>
+            <option value="!=">!=</option>
+            <option value=">">&gt;</option>
+            <option value="<">&lt;</option>
+          </select>
+          <input id="animTransValue" class="input" value="true" placeholder="Value">
+        </div>
+        <div class="animator-sheet-row">
+          <button class="cancel" type="button" data-anim-transition-cancel>Cancel</button>
+          <button class="create" type="button" data-anim-transition-create>Create</button>
+        </div>
+      </div>
+    </div>
+  `;
+  editor.appendChild(ui);
+
+  const header=document.querySelector("#editor .editor-header");
+  const prefabBtn=document.getElementById("prefabHeaderBtn");
+
+  if(header&&!document.getElementById("animatorHeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="animatorHeaderBtn";
+    btn.className="icon-btn";
+    btn.type="button";
+    btn.setAttribute("aria-label","Animator");
+    btn.innerHTML=`
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <circle cx="6" cy="12" r="2"/>
+        <circle cx="18" cy="6" r="2"/>
+        <circle cx="18" cy="18" r="2"/>
+        <path d="M8 12h4l4-5M12 12l4 5"/>
+      </svg>`;
+    btn.addEventListener("click",openManager);
+
+    if(prefabBtn)prefabBtn.insertAdjacentElement("afterend",btn);
+    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-anim-close]"))return closeManager();
+    if(e.target.closest("[data-anim-apply]"))return applyToSelected();
+    if(e.target.closest("[data-anim-new-state]"))return openStateSheet();
+    if(e.target.closest("[data-anim-new-transition]"))return openTransitionSheet();
+    if(e.target.closest("[data-anim-sheet-cancel]"))return closeStateSheet();
+    if(e.target.closest("[data-anim-transition-cancel]"))return closeTransitionSheet();
+
+    if(e.target.closest("[data-anim-sheet-create]")){
+      const name=document.getElementById("animStateName")?.value;
+      const clip=document.getElementById("animStateClip")?.value;
+      await addState(name,clip);
+      closeStateSheet();
+      return;
+    }
+
+    if(e.target.closest("[data-anim-transition-create]")){
+      const from=document.getElementById("animTransFrom")?.value;
+      const to=document.getElementById("animTransTo")?.value;
+      const param=document.getElementById("animTransParam")?.value;
+      const op=document.getElementById("animTransOp")?.value;
+      let value=document.getElementById("animTransValue")?.value;
+
+      if(value==="true")value=true;
+      else if(value==="false")value=false;
+      else if(!Number.isNaN(Number(value)))value=Number(value);
+
+      await addTransition(from,to,param,op,value);
+      closeTransitionSheet();
+      return;
+    }
+
+    const entry=e.target.closest("[data-anim-entry]");
+    if(entry)return setEntry(entry.dataset.animEntry);
+
+    const delState=e.target.closest("[data-anim-state-delete]");
+    if(delState)return removeState(delState.dataset.animStateDelete);
+
+    const delTrans=e.target.closest("[data-anim-transition-delete]");
+    if(delTrans)return removeTransition(delTrans.dataset.animTransitionDelete);
+  });
+
+  ui.addEventListener("change",async e=>{
+    const input=e.target.closest("[data-anim-param]");
+    if(!input)return;
+
+    const name=input.dataset.animParam;
+    const type=input.dataset.animType;
+    let value;
+
+    if(type==="bool"||type==="trigger")value=input.checked;
+    else value=input.value;
+
+    await setParameter(name,value);
+  });
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("animatorManager")?.classList.add("show");
+  await renderAnimatorManager();
+}
+function closeManager(){
+  closeStateSheet();
+  closeTransitionSheet();
+  document.getElementById("animatorManager")?.classList.remove("show");
+}
+
+function openStateSheet(){
+  const clips=availableClips();
+  const select=document.getElementById("animStateClip");
+  if(select){
+    select.innerHTML=clips.map(c=>`<option value="${c.id}">${escapeHTML?.(c.name)||c.name}</option>`).join("");
+  }
+  const input=document.getElementById("animStateName");
+  if(input)input.value="";
+  document.getElementById("animStateSheet")?.classList.add("show");
+  setTimeout(()=>input?.focus(),50);
+}
+function closeStateSheet(){
+  document.getElementById("animStateSheet")?.classList.remove("show");
+}
+
+async function openTransitionSheet(){
+  const c=await loadController();
+  const opts=c.states.map(s=>`<option value="${s.id}">${escapeHTML?.(s.name)||s.name}</option>`).join("");
+
+  document.getElementById("animTransFrom").innerHTML=opts;
+  document.getElementById("animTransTo").innerHTML=opts;
+
+  document.getElementById("animTransParam").innerHTML=
+    Object.keys(c.parameters).map(p=>`<option value="${p}">${p}</option>`).join("");
+
+  document.getElementById("animTransitionSheet")?.classList.add("show");
+}
+function closeTransitionSheet(){
+  document.getElementById("animTransitionSheet")?.classList.remove("show");
+}
+
+async function renderAnimatorManager(){
+  ensureUI();
+
+  const c=await loadController();
+  const stateList=document.getElementById("animStateList");
+  const paramList=document.getElementById("animParamList");
+  const transList=document.getElementById("animTransitionList");
+
+  if(stateList){
+    stateList.innerHTML=c.states.length?c.states.map(s=>`
+      <div class="animator-state ${s.id===c.entryStateId?"active":""}">
+        <div class="animator-state-info">
+          <div class="animator-state-name">${escapeHTML?.(s.name)||s.name}</div>
+          <div class="animator-state-meta">${escapeHTML?.(s.clipId)||s.clipId} · ${s.speed}x</div>
+        </div>
+        <div class="animator-state-actions">
+          <button type="button" class="animator-mini" data-anim-entry="${s.id}" title="Set entry">★</button>
+          <button type="button" class="animator-mini danger" data-anim-state-delete="${s.id}" title="Delete">×</button>
+        </div>
+      </div>
+    `).join(""):`<div class="animator-empty">No states yet.</div>`;
+  }
+
+  if(paramList){
+    paramList.innerHTML=Object.entries(c.parameters).map(([name,p])=>{
+      if(p.type==="bool"||p.type==="trigger"){
+        return `
+          <div class="animator-param">
+            <label>${name} · ${p.type}</label>
+            <input type="checkbox" data-anim-param="${name}" data-anim-type="${p.type}" ${p.value?"checked":""}>
+          </div>`;
+      }
+
+      return `
+        <div class="animator-param">
+          <label>${name} · ${p.type}</label>
+          <input type="number" step="0.1" data-anim-param="${name}" data-anim-type="${p.type}" value="${Number(p.value||0)}">
+        </div>`;
+    }).join("");
+  }
+
+  if(transList){
+    transList.innerHTML=c.transitions.length?c.transitions.map(t=>{
+      const from=c.states.find(s=>s.id===t.from)?.name||"?";
+      const to=c.states.find(s=>s.id===t.to)?.name||"?";
+      return `
+        <div class="animator-state">
+          <div class="animator-state-info">
+            <div class="animator-state-name">${escapeHTML?.(from)||from} → ${escapeHTML?.(to)||to}</div>
+            <div class="animator-state-meta">${t.condition.param} ${t.condition.op} ${String(t.condition.value)}</div>
+          </div>
+          <button type="button" class="animator-mini danger" data-anim-transition-delete="${t.id}">×</button>
+        </div>`;
+    }).join(""):`<div class="animator-empty">No transitions yet.</div>`;
+  }
+}
+
+/* -----------------------------------------------------
+   Runtime integration
+----------------------------------------------------- */
+const oldRuntimeBuildScene=window.runtimeBuildScene;
+if(typeof oldRuntimeBuildScene==="function"){
+  window.runtimeBuildScene=function(){
+    const r=oldRuntimeBuildScene.apply(this,arguments);
+
+    Promise.resolve().then(async()=>{
+      const c=await loadController();
+      const player=snakeRuntime?.playerNode;
+      if(player && c.states.length){
+        await applyControllerToAnimator(player,c);
+      }
+    }).catch(console.error);
+
+    return r;
+  };
+}
+
+const oldRuntimeUpdate=window.runtimeUpdate;
+if(typeof oldRuntimeUpdate==="function"){
+  window.runtimeUpdate=function(dt){
+    try{
+      const player=snakeRuntime?.playerNode;
+      const animator=player?.getComponent?.(SnakeEngine.runtime.Animator);
+      if(animator){
+        const v=SnakeInput?.vector?.()||{x:0,y:0};
+        const moving=Math.abs(v.x)>.1||Math.abs(v.y)>.1;
+
+        animator.parameters.set("moving",moving);
+        animator.parameters.set("speed",Math.hypot(v.x,v.y));
+
+        if(SnakeInput?.pressed?.("primary")){
+          animator.parameters.set("attack",true);
+        }else if(animator.parameters.get("attack")===true && animator.currentState==="Eat"){
+          animator.parameters.set("attack",false);
+        }
+      }
+    }catch(_){}
+
+    return oldRuntimeUpdate.apply(this,arguments);
+  };
+}
+
+/* -----------------------------------------------------
+   Public API
+----------------------------------------------------- */
+window.AnimatorController={
+  version:"2.0.0",
+  load:loadController,
+  save:saveController,
+  addState,
+  addTransition,
+  setParameter,
+  applyToSelected,
+  applyToNode:applyControllerToAnimator,
+  open:openManager
+};
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProject.apply(this,arguments);
+    ensureUI();
+    try{await ensureSnakeDemoController()}catch(e){console.warn(e)}
+    return r;
+  };
+}
+
+Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
+
+})();
+</script>
+
 </body>
 </html>
