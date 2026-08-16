@@ -16505,5 +16505,920 @@ setTimeout(()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — INPUT SYSTEM v2
+===================================================== */
+.input-manager-v2{
+  position:absolute;
+  inset:0;
+  z-index:226;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.input-manager-v2.show{display:flex}
+
+.input-v2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.input-v2-head-title{flex:1;min-width:0}
+.input-v2-head-title strong{display:block;font-size:13px}
+.input-v2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.input-v2-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.input-v2-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.input-v2-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.input-v2-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.input-v2-panel-body{padding:9px}
+
+.input-v2-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.input-v2-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.input-v2-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.input-v2-map-list{
+  display:grid;
+  gap:6px;
+}
+.input-v2-map{
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 9px;
+  border:1px solid #2a343d;
+  border-radius:8px;
+  background:#12181e;
+}
+.input-v2-map-info{flex:1;min-width:0}
+.input-v2-map-name{
+  color:#dce2e6;
+  font-size:10px;
+  font-weight:750;
+}
+.input-v2-map-bind{
+  margin-top:3px;
+  color:#68747e;
+  font-size:8px;
+}
+.input-v2-mini{
+  min-width:32px;
+  height:30px;
+  padding:0 7px;
+  display:grid;
+  place-items:center;
+  border-radius:6px;
+  background:#171d22;
+  color:#7f8a93;
+  font-size:8px;
+  font-weight:700;
+}
+.input-v2-mini.danger{color:#e67d84}
+
+.input-v2-row{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.input-v2-row label{
+  color:#89959e;
+  font-size:9px;
+}
+.input-v2-row input,
+.input-v2-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.input-v2-sheet{
+  position:absolute;
+  inset:0;
+  z-index:240;
+  display:none;
+  align-items:flex-end;
+  background:rgba(0,0,0,.72);
+}
+.input-v2-sheet.show{display:flex}
+.input-v2-sheet-card{
+  width:100%;
+  padding:18px 14px calc(18px + env(safe-area-inset-bottom));
+  border-radius:18px 18px 0 0;
+  border-top:1px solid #303840;
+  background:#12171c;
+}
+.input-v2-sheet-card h3{margin:0 0 5px;font-size:16px}
+.input-v2-sheet-card p{margin:0 0 13px;color:#707b84;font-size:10px}
+.input-v2-sheet-grid{display:grid;gap:8px}
+.input-v2-sheet-row{display:flex;gap:8px;margin-top:9px}
+.input-v2-sheet-row button{flex:1;min-height:43px;border-radius:8px;font-weight:700}
+
+.input-v2-debug{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  z-index:9;
+  display:none;
+  padding:6px 8px;
+  border:1px solid #34404a;
+  border-radius:6px;
+  background:rgba(8,11,14,.82);
+  color:#7e8b95;
+  font:8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  pointer-events:none;
+}
+.input-v2-debug.show{display:block}
+
+@media(max-width:700px){
+  .input-v2-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — INPUT SYSTEM v2
+   Action Maps · keyboard · touch · virtual controls
+   pressed/down/released/value/vector · rebinding
+===================================================== */
+(function(){
+"use strict";
+
+const INPUT_CFG_PREFIX="snake_input_v2:";
+const DEFAULT_ACTIONS={
+  move_up:{type:"button",keys:["ArrowUp","KeyW"],virtual:["up"]},
+  move_down:{type:"button",keys:["ArrowDown","KeyS"],virtual:["down"]},
+  move_left:{type:"button",keys:["ArrowLeft","KeyA"],virtual:["left"]},
+  move_right:{type:"button",keys:["ArrowRight","KeyD"],virtual:["right"]},
+  primary:{type:"button",keys:["Space","Enter"],virtual:["a"]},
+  secondary:{type:"button",keys:["ShiftLeft","KeyX"],virtual:["b"]},
+  pause:{type:"button",keys:["Escape","KeyP"],virtual:[]}
+};
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function key(name){return INPUT_CFG_PREFIX+name}
+function defaultConfig(){
+  return {
+    version:2,
+    actions:clone(DEFAULT_ACTIONS),
+    deadzone:.18,
+    virtualControls:true,
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const cfg=JSON.parse(raw);
+      if(cfg?.version===2)return cfg;
+    }
+  }catch(_){}
+  const cfg=defaultConfig();
+  if(name)localStorage.setItem(key(name),JSON.stringify(cfg));
+  return cfg;
+}
+
+async function loadConfig(name=project()){
+  if(!name)return defaultConfig();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("preferences","input:"+projectId);
+      if(row?.value?.version===2){
+        localStorage.setItem(key(name),JSON.stringify(row.value));
+        return clone(row.value);
+      }
+    }catch(e){console.warn("Input v2 config load",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveConfig(cfg,name=project()){
+  if(!name)return;
+  cfg.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(cfg));
+
+  if(window.SnakeDB){
+    try{
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("preferences",{
+        key:"input:"+projectId,
+        value:clone(cfg),
+        updatedAt:cfg.updatedAt
+      });
+    }catch(e){console.warn("Input v2 config save",e)}
+  }
+}
+
+/* -----------------------------------------------------
+   Runtime input core
+----------------------------------------------------- */
+const InputV2={
+  config:defaultConfig(),
+  keysDown:new Set(),
+  keysPressed:new Set(),
+  keysReleased:new Set(),
+  virtualDown:new Set(),
+  virtualPressed:new Set(),
+  virtualReleased:new Set(),
+  pointerVector:{x:0,y:0},
+  frame:0,
+  debug:false,
+
+  async load(){
+    this.config=await loadConfig();
+    return this.config;
+  },
+
+  action(name){
+    return this.config.actions?.[name]||null;
+  },
+
+  down(name){
+    const a=this.action(name);
+    if(!a)return false;
+
+    return (a.keys||[]).some(k=>this.keysDown.has(k)) ||
+           (a.virtual||[]).some(v=>this.virtualDown.has(v));
+  },
+
+  pressed(name){
+    const a=this.action(name);
+    if(!a)return false;
+
+    return (a.keys||[]).some(k=>this.keysPressed.has(k)) ||
+           (a.virtual||[]).some(v=>this.virtualPressed.has(v));
+  },
+
+  released(name){
+    const a=this.action(name);
+    if(!a)return false;
+
+    return (a.keys||[]).some(k=>this.keysReleased.has(k)) ||
+           (a.virtual||[]).some(v=>this.virtualReleased.has(v));
+  },
+
+  value(name){
+    return this.down(name)?1:0;
+  },
+
+  vector(){
+    let x=0,y=0;
+
+    if(this.down("move_left"))x-=1;
+    if(this.down("move_right"))x+=1;
+    if(this.down("move_up"))y-=1;
+    if(this.down("move_down"))y+=1;
+
+    /* Prefer analog virtual joystick when it is active. */
+    const pv=this.pointerVector;
+    if(Math.hypot(pv.x,pv.y)>this.config.deadzone){
+      x=pv.x;
+      y=pv.y;
+    }
+
+    const len=Math.hypot(x,y);
+    if(len>1){
+      x/=len;y/=len;
+    }
+
+    return {x,y};
+  },
+
+  setVirtual(name,active){
+    const was=this.virtualDown.has(name);
+
+    if(active){
+      this.virtualDown.add(name);
+      if(!was)this.virtualPressed.add(name);
+    }else{
+      this.virtualDown.delete(name);
+      if(was)this.virtualReleased.add(name);
+    }
+  },
+
+  setVector(x,y){
+    const len=Math.hypot(x,y);
+    if(len>1){x/=len;y/=len}
+    this.pointerVector={x,y};
+  },
+
+  endFrame(){
+    this.keysPressed.clear();
+    this.keysReleased.clear();
+    this.virtualPressed.clear();
+    this.virtualReleased.clear();
+    this.frame++;
+  },
+
+  stats(){
+    return {
+      frame:this.frame,
+      down:[...this.keysDown],
+      virtual:[...this.virtualDown],
+      vector:this.vector()
+    };
+  }
+};
+
+window.InputV2=InputV2;
+SnakeEngine.runtime.InputV2=InputV2;
+
+/* Keyboard */
+window.addEventListener("keydown",e=>{
+  if(!e.repeat){
+    InputV2.keysPressed.add(e.code);
+  }
+  InputV2.keysDown.add(e.code);
+});
+
+window.addEventListener("keyup",e=>{
+  InputV2.keysDown.delete(e.code);
+  InputV2.keysReleased.add(e.code);
+});
+
+window.addEventListener("blur",()=>{
+  for(const k of InputV2.keysDown)InputV2.keysReleased.add(k);
+  InputV2.keysDown.clear();
+
+  for(const v of InputV2.virtualDown)InputV2.virtualReleased.add(v);
+  InputV2.virtualDown.clear();
+
+  InputV2.setVector(0,0);
+});
+
+/* -----------------------------------------------------
+   Integrate existing virtual joystick and A/B buttons
+----------------------------------------------------- */
+function bindVirtualControls(){
+  const preview=document.getElementById("preview");
+  if(!preview||preview.dataset.inputV2Bound)return;
+  preview.dataset.inputV2Bound="1";
+
+  /* Existing control markup differs across revisions, so bind semantically. */
+  const buttons=[...preview.querySelectorAll("button,[role='button'],.runtime-btn,.control-btn")];
+
+  for(const btn of buttons){
+    const txt=(btn.textContent||"").trim().toLowerCase();
+    const aria=(btn.getAttribute("aria-label")||"").toLowerCase();
+
+    let virtual=null;
+    if(txt==="a"||aria.includes("primary"))virtual="a";
+    else if(txt==="b"||aria.includes("secondary"))virtual="b";
+    else if(aria.includes("up"))virtual="up";
+    else if(aria.includes("down"))virtual="down";
+    else if(aria.includes("left"))virtual="left";
+    else if(aria.includes("right"))virtual="right";
+
+    if(!virtual)continue;
+
+    const on=e=>{
+      e.preventDefault();
+      InputV2.setVirtual(virtual,true);
+    };
+    const off=e=>{
+      e.preventDefault();
+      InputV2.setVirtual(virtual,false);
+    };
+
+    btn.addEventListener("pointerdown",on,{passive:false});
+    btn.addEventListener("pointerup",off,{passive:false});
+    btn.addEventListener("pointercancel",off,{passive:false});
+    btn.addEventListener("pointerleave",off,{passive:false});
+  }
+
+  /* Bind analog joystick by geometry, without depending on internal old API. */
+  const joystick=
+    preview.querySelector(".runtime-stick") ||
+    preview.querySelector(".joystick") ||
+    preview.querySelector(".virtual-stick") ||
+    preview.querySelector("[data-joystick]");
+
+  if(joystick){
+    let pointerId=null;
+
+    const move=e=>{
+      if(pointerId!==e.pointerId)return;
+      const r=joystick.getBoundingClientRect();
+      const cx=r.left+r.width/2;
+      const cy=r.top+r.height/2;
+      const radius=Math.max(1,Math.min(r.width,r.height)/2);
+      InputV2.setVector(
+        Math.max(-1,Math.min(1,(e.clientX-cx)/radius)),
+        Math.max(-1,Math.min(1,(e.clientY-cy)/radius))
+      );
+    };
+
+    joystick.addEventListener("pointerdown",e=>{
+      pointerId=e.pointerId;
+      joystick.setPointerCapture?.(e.pointerId);
+      move(e);
+    });
+
+    joystick.addEventListener("pointermove",move);
+
+    const end=e=>{
+      if(pointerId!==e.pointerId)return;
+      pointerId=null;
+      InputV2.setVector(0,0);
+    };
+
+    joystick.addEventListener("pointerup",end);
+    joystick.addEventListener("pointercancel",end);
+  }
+}
+
+/* -----------------------------------------------------
+   Compatibility: old SnakeInput now delegates to Input v2
+----------------------------------------------------- */
+if(window.SnakeInput){
+  const oldSnakeInput=window.SnakeInput;
+
+  oldSnakeInput.down=name=>InputV2.down(name);
+  oldSnakeInput.pressed=name=>InputV2.pressed(name);
+  oldSnakeInput.released=name=>InputV2.released(name);
+  oldSnakeInput.vector=()=>InputV2.vector();
+  oldSnakeInput.value=name=>InputV2.value(name);
+}
+
+window.input=window.input||{};
+window.input.down=name=>InputV2.down(name);
+window.input.pressed=name=>InputV2.pressed(name);
+window.input.released=name=>InputV2.released(name);
+window.input.vector=()=>InputV2.vector();
+window.input.value=name=>InputV2.value(name);
+
+/* -----------------------------------------------------
+   Action map editor
+----------------------------------------------------- */
+let editingAction=null;
+
+async function addAction(name,type,keyCode){
+  name=String(name||"").trim().replace(/\s+/g,"_").toLowerCase();
+  if(!name){showToast?.("Informe o nome da ação");return}
+
+  const cfg=await loadConfig();
+
+  if(cfg.actions[name]){
+    showToast?.("Essa ação já existe");
+    return;
+  }
+
+  cfg.actions[name]={
+    type:type||"button",
+    keys:keyCode?[keyCode]:[],
+    virtual:[]
+  };
+
+  await saveConfig(cfg);
+  InputV2.config=cfg;
+  closeActionSheet();
+  renderManager();
+}
+
+async function removeAction(name){
+  const cfg=await loadConfig();
+  delete cfg.actions[name];
+  await saveConfig(cfg);
+  InputV2.config=cfg;
+  renderManager();
+}
+
+async function rebindAction(name,keyCode){
+  const cfg=await loadConfig();
+  if(!cfg.actions[name])return;
+
+  cfg.actions[name].keys=[keyCode];
+  await saveConfig(cfg);
+  InputV2.config=cfg;
+  renderManager();
+  showToast?.(`${name} → ${keyCode}`);
+}
+
+function beginRebind(name){
+  editingAction=name;
+  showToast?.("Pressione uma tecla...");
+
+  const handler=async e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    window.removeEventListener("keydown",handler,true);
+    await rebindAction(name,e.code);
+    editingAction=null;
+  };
+
+  window.addEventListener("keydown",handler,true);
+}
+
+/* -----------------------------------------------------
+   UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("inputManagerV2"))return;
+
+  const ui=document.createElement("section");
+  ui.id="inputManagerV2";
+  ui.className="input-manager-v2";
+  ui.innerHTML=`
+    <header class="input-v2-head">
+      <button class="icon-btn" type="button" data-input-v2-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="input-v2-head-title">
+        <strong>INPUT</strong>
+        <small>Action maps, keyboard and virtual controls</small>
+      </div>
+      <button class="icon-btn" type="button" data-input-v2-debug>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M7 8h10l3 4-3 4H7l-3-4z"/>
+          <path d="M9 12h6"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="input-v2-body">
+      <div class="input-v2-actions">
+        <button type="button" class="primary" data-input-v2-new>NEW ACTION</button>
+        <button type="button" data-input-v2-reset>RESET DEFAULTS</button>
+      </div>
+
+      <div class="input-v2-grid">
+        <section class="input-v2-panel">
+          <h3>ACTION MAP</h3>
+          <div class="input-v2-panel-body">
+            <div id="inputV2ActionList" class="input-v2-map-list"></div>
+          </div>
+        </section>
+
+        <section class="input-v2-panel">
+          <h3>SETTINGS</h3>
+          <div class="input-v2-panel-body">
+            <div class="input-v2-row">
+              <label>Deadzone</label>
+              <input id="inputV2Deadzone" type="number" min="0" max="1" step="0.01" value="0.18">
+            </div>
+            <div class="input-v2-row">
+              <label>Virtual Controls</label>
+              <input id="inputV2Virtual" type="checkbox" checked>
+            </div>
+            <button class="prefab-primary" style="width:100%" type="button" data-input-v2-save-settings>
+              SAVE SETTINGS
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="inputV2Sheet" class="input-v2-sheet">
+      <div class="input-v2-sheet-card">
+        <h3>New Action</h3>
+        <p>Create a reusable action for keyboard, touch or virtual controls.</p>
+        <div class="input-v2-sheet-grid">
+          <input id="inputV2ActionName" class="input" placeholder="Action name (ex: jump)">
+          <select id="inputV2ActionType" class="input">
+            <option value="button">Button</option>
+          </select>
+          <input id="inputV2ActionKey" class="input" placeholder="Key code (ex: Space)">
+        </div>
+        <div class="input-v2-sheet-row">
+          <button class="cancel" type="button" data-input-v2-sheet-cancel>Cancel</button>
+          <button class="create" type="button" data-input-v2-sheet-create>Create</button>
+        </div>
+      </div>
+    </div>
+  `;
+  editor.appendChild(ui);
+
+  const header=document.querySelector("#editor .editor-header");
+  const uiBtn=document.getElementById("uiV2HeaderBtn");
+
+  if(header&&!document.getElementById("inputV2HeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="inputV2HeaderBtn";
+    btn.className="icon-btn";
+    btn.type="button";
+    btn.setAttribute("aria-label","Input");
+    btn.innerHTML=`
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <path d="M7 8h10l3 4-3 4H7l-3-4z"/>
+        <path d="M9 12h6M12 9v6"/>
+      </svg>`;
+    btn.addEventListener("click",openManager);
+
+    if(uiBtn)uiBtn.insertAdjacentElement("afterend",btn);
+    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-input-v2-close]"))return closeManager();
+
+    if(e.target.closest("[data-input-v2-new]")){
+      document.getElementById("inputV2Sheet")?.classList.add("show");
+      setTimeout(()=>document.getElementById("inputV2ActionName")?.focus(),50);
+      return;
+    }
+
+    if(e.target.closest("[data-input-v2-sheet-cancel]"))return closeActionSheet();
+
+    if(e.target.closest("[data-input-v2-sheet-create]")){
+      return addAction(
+        document.getElementById("inputV2ActionName")?.value,
+        document.getElementById("inputV2ActionType")?.value,
+        document.getElementById("inputV2ActionKey")?.value
+      );
+    }
+
+    const rebind=e.target.closest("[data-input-v2-rebind]");
+    if(rebind)return beginRebind(rebind.dataset.inputV2Rebind);
+
+    const del=e.target.closest("[data-input-v2-delete]");
+    if(del)return removeAction(del.dataset.inputV2Delete);
+
+    if(e.target.closest("[data-input-v2-reset]")){
+      const cfg=defaultConfig();
+      await saveConfig(cfg);
+      InputV2.config=cfg;
+      renderManager();
+      showToast?.("Input restaurado");
+      return;
+    }
+
+    if(e.target.closest("[data-input-v2-save-settings]")){
+      const cfg=await loadConfig();
+      cfg.deadzone=Math.max(0,Math.min(1,Number(document.getElementById("inputV2Deadzone")?.value||.18)));
+      cfg.virtualControls=!!document.getElementById("inputV2Virtual")?.checked;
+      await saveConfig(cfg);
+      InputV2.config=cfg;
+      showToast?.("Input salvo");
+      return;
+    }
+
+    if(e.target.closest("[data-input-v2-debug]")){
+      InputV2.debug=!InputV2.debug;
+      updateDebugBadge();
+      showToast?.(InputV2.debug?"Input Debug ON":"Input Debug OFF");
+      return;
+    }
+  });
+}
+
+function closeActionSheet(){
+  document.getElementById("inputV2Sheet")?.classList.remove("show");
+  const n=document.getElementById("inputV2ActionName");
+  const k=document.getElementById("inputV2ActionKey");
+  if(n)n.value="";
+  if(k)k.value="";
+}
+
+async function renderManager(){
+  ensureUI();
+  const cfg=await loadConfig();
+  InputV2.config=cfg;
+
+  const root=document.getElementById("inputV2ActionList");
+  if(root){
+    root.innerHTML=Object.entries(cfg.actions||{}).map(([name,a])=>`
+      <div class="input-v2-map">
+        <div class="input-v2-map-info">
+          <div class="input-v2-map-name">${escapeHTML?.(name)||name}</div>
+          <div class="input-v2-map-bind">
+            ${(a.keys||[]).join(" / ") || "No key"}${(a.virtual||[]).length?" · "+a.virtual.join(", "):""}
+          </div>
+        </div>
+        <button type="button" class="input-v2-mini" data-input-v2-rebind="${name}">BIND</button>
+        <button type="button" class="input-v2-mini danger" data-input-v2-delete="${name}">×</button>
+      </div>
+    `).join("");
+  }
+
+  const dz=document.getElementById("inputV2Deadzone");
+  const vc=document.getElementById("inputV2Virtual");
+  if(dz)dz.value=cfg.deadzone??.18;
+  if(vc)vc.checked=cfg.virtualControls!==false;
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("inputManagerV2")?.classList.add("show");
+  await renderManager();
+}
+function closeManager(){
+  closeActionSheet();
+  document.getElementById("inputManagerV2")?.classList.remove("show");
+}
+
+/* -----------------------------------------------------
+   Runtime debug
+----------------------------------------------------- */
+function updateDebugBadge(){
+  const host=document.querySelector("#preview .game-screen");
+  if(!host)return;
+
+  let badge=document.getElementById("inputV2DebugBadge");
+  if(!badge){
+    badge=document.createElement("div");
+    badge.id="inputV2DebugBadge";
+    badge.className="input-v2-debug";
+    host.appendChild(badge);
+  }
+
+  badge.classList.toggle("show",InputV2.debug);
+
+  if(InputV2.debug){
+    const v=InputV2.vector();
+    badge.textContent=
+      `INPUT · X ${v.x.toFixed(2)} · Y ${v.y.toFixed(2)} · A ${InputV2.down("primary")?1:0} · B ${InputV2.down("secondary")?1:0}`;
+  }
+}
+
+/* -----------------------------------------------------
+   Runtime frame integration
+----------------------------------------------------- */
+const oldRuntimeUpdate=window.runtimeUpdate;
+if(typeof oldRuntimeUpdate==="function"){
+  window.runtimeUpdate=function(dt){
+    const r=oldRuntimeUpdate.apply(this,arguments);
+    updateDebugBadge();
+    requestAnimationFrame(()=>InputV2.endFrame());
+    return r;
+  };
+}
+
+/* -----------------------------------------------------
+   Script API extension
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    return Object.freeze({
+      ...api,
+      input:{
+        down(name){return InputV2.down(name)},
+        pressed(name){return InputV2.pressed(name)},
+        released(name){return InputV2.released(name)},
+        value(name){return InputV2.value(name)},
+        vector(){return InputV2.vector()}
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   Snake Demo: remove direct key dependence and use Input v2
+----------------------------------------------------- */
+function patchSnakeDemoInput(){
+  if(!window.SnakeDemo||SnakeDemo.__inputV2Patched)return;
+  SnakeDemo.__inputV2Patched=true;
+
+  const oldUpdate=SnakeDemo.update?.bind(SnakeDemo);
+
+  SnakeDemo.update=function(dt){
+    if(this.scene==="Game"){
+      const v=InputV2.vector();
+
+      if(Math.abs(v.x)>.55 && Math.abs(v.x)>Math.abs(v.y)){
+        this.turn(v.x>0?1:-1,0);
+      }
+      if(Math.abs(v.y)>.55 && Math.abs(v.y)>Math.abs(v.x)){
+        this.turn(0,v.y>0?1:-1);
+      }
+
+      if(InputV2.pressed("pause")){
+        try{
+          UIRuntime?.dispatch?.("snake.pause");
+        }catch(_){}
+      }
+    }
+
+    /* Keep movement timing/gameplay logic from existing demo. */
+    if(this.scene!=="Game")return;
+
+    this.acc+=dt;
+    if(this.acc>=1/this.rate){
+      this.acc-=1/this.rate;
+      this.step();
+    }
+  };
+}
+
+/* -----------------------------------------------------
+   Public API
+----------------------------------------------------- */
+window.InputManagerV2={
+  version:"2.0.0",
+  load:loadConfig,
+  save:saveConfig,
+  open:openManager,
+  runtime:InputV2,
+  rebind:rebindAction,
+  reset:async()=>{
+    const cfg=defaultConfig();
+    await saveConfig(cfg);
+    InputV2.config=cfg;
+  }
+};
+
+const oldOpenPreview=window.openPreview;
+if(typeof oldOpenPreview==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreview.apply(this,arguments);
+    setTimeout(()=>{
+      bindVirtualControls();
+      patchSnakeDemoInput();
+      InputV2.load();
+    },100);
+    return r;
+  };
+}
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProject.apply(this,arguments);
+    ensureUI();
+    await InputV2.load();
+    patchSnakeDemoInput();
+    return r;
+  };
+}
+
+Promise.resolve(window.SnakeDB?.ready).then(async()=>{
+  ensureUI();
+  await InputV2.load();
+  patchSnakeDemoInput();
+}).catch(()=>{
+  ensureUI();
+  patchSnakeDemoInput();
+});
+
+})();
+</script>
+
 </body>
 </html>
