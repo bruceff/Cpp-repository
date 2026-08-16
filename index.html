@@ -6520,5 +6520,151 @@ window.addEventListener("unhandledrejection",e=>{
 })();
 </script>
 
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — RUNTIME EXIT / BACK FREEZE FIX
+   Makes leaving Play Mode single-pass and idempotent.
+===================================================== */
+(function(){
+  "use strict";
+
+  let exitingRuntime = false;
+
+  function safeHidePreview(){
+    const preview = document.getElementById("preview");
+    if(preview) preview.classList.remove("show");
+
+    const overlay = document.getElementById("runtimeOverlay");
+    if(overlay) overlay.classList.remove("show");
+  }
+
+  function safeRuntimeStopOnce(){
+    try{
+      if(window.snakeRuntime){
+        snakeRuntime.running = false;
+        snakeRuntime.paused = false;
+
+        if(snakeRuntime.raf){
+          cancelAnimationFrame(snakeRuntime.raf);
+          snakeRuntime.raf = 0;
+        }
+      }
+    }catch(e){
+      console.warn("Runtime stop state cleanup:", e);
+    }
+
+    try{ window.SnakeInput?.resetPhysical?.(); }catch(e){}
+    try{ window.AudioSystem?.stopAll?.(); }catch(e){}
+
+    try{
+      if(window.Scripts?.instances){
+        for(const inst of [...Scripts.instances.values()]){
+          try{ inst.hooks?.destroy?.call(inst.api); }catch(e){}
+        }
+      }
+      window.Scripts?.clear?.();
+    }catch(e){}
+  }
+
+  function restoreEditorSnapshotDeferred(snapshot){
+    if(!snapshot) return;
+
+    /* Let Safari paint the editor first. Rebuilding the scene graph while
+       the full-screen Runtime is still on screen can stall mobile Safari. */
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        try{
+          const graph = window.snakeRuntime?.graph;
+          if(graph && Array.isArray(snapshot.scene)){
+            graph.clear();
+
+            for(const item of snapshot.scene){
+              const n = new SnakeNode(item.name, item.type);
+              n.id = item.id;
+              n.active = item.active;
+              n.visible = item.visible;
+              n.locked = item.locked;
+              n.meta = item.meta || {};
+              Object.assign(n.transform, item.transform || {});
+              graph.add(n);
+            }
+          }
+
+          const code = document.getElementById("code");
+          if(code && snapshot.code != null){
+            code.value = snapshot.code;
+            if(typeof updateLines === "function") updateLines();
+          }
+        }catch(e){
+          console.warn("Runtime snapshot restore:", e);
+        }
+
+        if(window.SnakePlayDebug){
+          SnakePlayDebug.state = "stopped";
+          SnakePlayDebug.snapshot = null;
+          SnakePlayDebug.updateUI?.();
+        }
+
+        exitingRuntime = false;
+      });
+    });
+  }
+
+  /* Final authoritative closePreview. We intentionally do NOT call the old
+     wrapper chain, because 7/9 + 8/9 + 9/9 each wrapped stop/close and the
+     accumulated calls caused multiple graph/script/audio shutdown passes. */
+  window.closePreview = function(){
+    if(exitingRuntime) return;
+    exitingRuntime = true;
+
+    const snapshot = window.SnakePlayDebug?.snapshot || null;
+
+    /* Hide first so iPhone returns interaction to the editor immediately. */
+    safeHidePreview();
+    safeRuntimeStopOnce();
+
+    if(window.SnakePlayDebug){
+      SnakePlayDebug.state = "stopped";
+      SnakePlayDebug.drawerOpen = false;
+
+      document
+        .getElementById("playDebugDrawer")
+        ?.classList.remove("show");
+
+      document
+        .getElementById("playDebugBtn")
+        ?.classList.remove("debug-on");
+
+      SnakePlayDebug.updateUI?.();
+    }
+
+    restoreEditorSnapshotDeferred(snapshot);
+  };
+
+  /* The debug STOP button previously called stop() AND closePreview(),
+     producing two complete shutdowns. Make it use the same single exit path. */
+  document.addEventListener("click", e=>{
+    const btn = e.target.closest?.(".se-debug-toolbar .se-debug-mini");
+    if(!btn) return;
+
+    if(btn.textContent.trim().toUpperCase() === "STOP"){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      window.closePreview();
+    }
+  }, true);
+
+  /* Defensive cleanup if the browser page visibility changes mid-play. */
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.hidden && window.snakeRuntime?.running){
+      try{
+        snakeRuntime.paused = true;
+      }catch(e){}
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
