@@ -16237,5 +16237,273 @@ Promise.resolve(window.SnakeDB?.ready).then(()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — UI SYSTEM v2 HOTFIX
+   Removes legacy Snake Demo UI duplication and hardens touch.
+===================================================== */
+#snakeDemoHud{
+  display:none !important;
+  pointer-events:none !important;
+}
+
+.ui-runtime-layer{
+  z-index:40 !important;
+}
+
+.ui-runtime-button{
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  cursor:pointer;
+}
+
+.ui-runtime-button:active{
+  transform:scale(.97);
+}
+
+/* Keep UI clear of the virtual controls on mobile. */
+@media(max-width:700px){
+  [data-ui-id="snake-ui-pause"]{
+    min-width:88px !important;
+    min-height:36px !important;
+    font-size:10px !important;
+  }
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — UI SYSTEM v2 HOTFIX
+   Snake Demo now renders ONLY gameplay on the canvas.
+   Menu/GameOver/HUD are owned exclusively by UIRuntime.
+===================================================== */
+(function(){
+"use strict";
+
+function installSnakeUIHotfix(){
+  if(!window.SnakeDemo || SnakeDemo.__uiHotfixInstalled)return;
+  SnakeDemo.__uiHotfixInstalled=true;
+
+  /* Hide legacy HUD forever. */
+  try{
+    const hud=document.getElementById("snakeDemoHud");
+    if(hud){
+      hud.classList.remove("show");
+      hud.style.display="none";
+      hud.style.pointerEvents="none";
+    }
+  }catch(_){}
+
+  /* Preserve only the gameplay renderer from the original demo. */
+  const originalDraw=SnakeDemo.draw?.bind(SnakeDemo);
+
+  if(originalDraw){
+    SnakeDemo.draw=function(){
+      if(!this.running||!this.ctx)return;
+
+      const d=Math.min(2,devicePixelRatio||1);
+      const w=this.canvas.width/d;
+      const h=this.canvas.height/d;
+      const g=this.ctx;
+
+      g.clearRect(0,0,w,h);
+      this.bg(w,h);
+
+      /* Menu and GameOver are now rendered exclusively by UI System v2. */
+      if(this.scene==="Menu" || this.scene==="GameOver"){
+        return;
+      }
+
+      if(this.scene==="Game"){
+        const bw=this.cols*this.cell;
+        const bh=this.rows*this.cell;
+        const ox=Math.round((w-bw)/2);
+        const oy=Math.round((h-bh)/2);
+        const hx=Math.floor(this.cols/2);
+        const hy=Math.floor(this.rows/2);
+        const px=x=>ox+(x+hx)*this.cell;
+        const py=y=>oy+(y+hy)*this.cell;
+
+        g.fillStyle="#0d1317";
+        g.fillRect(ox,oy,bw,bh);
+        g.strokeStyle="#344149";
+        g.strokeRect(ox+.5,oy+.5,bw-1,bh-1);
+
+        const f=this.imgs["snake-demo-food"];
+        if(f?.complete){
+          g.drawImage(f,px(this.food.x)+3,py(this.food.y)+3,this.cell-6,this.cell-6);
+        }else{
+          g.fillStyle="#e86464";
+          g.fillRect(px(this.food.x)+4,py(this.food.y)+4,this.cell-8,this.cell-8);
+        }
+
+        this.snake.forEach((s,i)=>{
+          const im=this.imgs[i?"snake-demo-body":"snake-demo-head"];
+          if(im?.complete){
+            g.drawImage(im,px(s.x)+2,py(s.y)+2,this.cell-4,this.cell-4);
+          }else{
+            g.fillStyle=i?"#65b94a":"#91e864";
+            g.fillRect(px(s.x)+2,py(s.y)+2,this.cell-4,this.cell-4);
+          }
+        });
+      }
+    };
+  }
+
+  /* The old canvas-wide click behavior conflicts with real UI buttons.
+     While UI v2 is active, prevent Menu/GameOver taps from triggering
+     the legacy fallback behavior underneath the buttons. */
+  if(SnakeDemo.canvas && !SnakeDemo.canvas.dataset.uiHotfixPointer){
+    SnakeDemo.canvas.dataset.uiHotfixPointer="1";
+    SnakeDemo.canvas.addEventListener("pointerdown",e=>{
+      if(SnakeDemo.scene==="Menu" || SnakeDemo.scene==="GameOver"){
+        e.stopImmediatePropagation();
+      }
+    },true);
+  }
+
+  /* Rebind UI actions explicitly and keep transitions single-fire. */
+  let actionLock=false;
+  async function guarded(fn){
+    if(actionLock)return;
+    actionLock=true;
+    try{await fn()}finally{setTimeout(()=>{actionLock=false},220)}
+  }
+
+  if(window.UIRuntime){
+    UIRuntime.registerAction("snake.play",()=>guarded(()=>SnakeDemo.goGame()));
+    UIRuntime.registerAction("snake.restart",()=>guarded(()=>SnakeDemo.goGame()));
+    UIRuntime.registerAction("snake.menu",()=>guarded(()=>SnakeDemo.goMenu()));
+
+    UIRuntime.registerAction("snake.pause",()=>{
+      try{
+        const paused=window.SnakePlayDebug?.state==="paused";
+        if(paused){
+          SnakePlayDebug.resume?.();
+          UIRuntime.setText("PauseButton","PAUSE");
+        }else{
+          SnakePlayDebug?.pause?.();
+          UIRuntime.setText("PauseButton","RESUME");
+        }
+      }catch(e){
+        console.warn("Pause UI:",e);
+      }
+    });
+  }
+}
+
+async function normalizeSnakeDemoUI(){
+  if(typeof currentProject==="undefined" || currentProject!=="Snake Demo")return;
+  if(!window.UIManagerV2?.load || !window.UIManagerV2?.save)return;
+
+  try{
+    const cfg=await UIManagerV2.load();
+
+    /* Remove duplicates from earlier UI preset versions. */
+    const uniqueById=list=>{
+      const seen=new Set();
+      return (list||[]).filter(x=>{
+        if(seen.has(x.id))return false;
+        seen.add(x.id);
+        return true;
+      });
+    };
+
+    cfg.screens.Menu=uniqueById(cfg.screens.Menu).filter(x=>
+      ["snake-ui-title","snake-ui-play"].includes(x.id)
+    );
+
+    cfg.screens.Game=uniqueById(cfg.screens.Game).filter(x=>
+      ["snake-ui-score","snake-ui-best","snake-ui-pause"].includes(x.id)
+    );
+
+    cfg.screens.GameOver=uniqueById(cfg.screens.GameOver).filter(x=>
+      ["snake-ui-gameover","snake-ui-final-score","snake-ui-restart","snake-ui-menu"].includes(x.id)
+    );
+
+    /* Professional mobile placement, avoiding the virtual joystick/buttons. */
+    const score=cfg.screens.Game.find(x=>x.id==="snake-ui-score");
+    if(score){score.anchor="top-left";score.x=12;score.y=12;score.fontSize=12;}
+
+    const best=cfg.screens.Game.find(x=>x.id==="snake-ui-best");
+    if(best){best.anchor="top-right";best.x=12;best.y=12;best.fontSize=12;}
+
+    const pause=cfg.screens.Game.find(x=>x.id==="snake-ui-pause");
+    if(pause){
+      pause.anchor="top-center";
+      pause.x=0;
+      pause.y=10;
+      pause.width=92;
+      pause.height=36;
+      pause.fontSize=10;
+    }
+
+    const title=cfg.screens.Menu.find(x=>x.id==="snake-ui-title");
+    if(title){title.anchor="top-center";title.x=0;title.y=110;title.fontSize=30;}
+
+    const play=cfg.screens.Menu.find(x=>x.id==="snake-ui-play");
+    if(play){play.anchor="center";play.x=0;play.y=45;play.width=180;play.height=46;}
+
+    const gameover=cfg.screens.GameOver.find(x=>x.id==="snake-ui-gameover");
+    if(gameover){gameover.anchor="top-center";gameover.x=0;gameover.y=130;gameover.fontSize=26;}
+
+    const finalScore=cfg.screens.GameOver.find(x=>x.id==="snake-ui-final-score");
+    if(finalScore){finalScore.anchor="center";finalScore.x=0;finalScore.y=-10;finalScore.fontSize=16;}
+
+    const restart=cfg.screens.GameOver.find(x=>x.id==="snake-ui-restart");
+    if(restart){restart.anchor="center";restart.x=0;restart.y=55;restart.width=190;restart.height=44;}
+
+    const menu=cfg.screens.GameOver.find(x=>x.id==="snake-ui-menu");
+    if(menu){menu.anchor="center";menu.x=0;menu.y=110;menu.width=190;menu.height=40;}
+
+    await UIManagerV2.save(cfg);
+
+    if(window.UIRuntime?.currentScreen){
+      await UIRuntime.render(UIRuntime.currentScreen);
+    }
+  }catch(e){
+    console.warn("Snake UI normalize:",e);
+  }
+}
+
+/* Ensure our patch runs after the demo canvas exists. */
+const oldOpenPreviewHotfix=window.openPreview;
+if(typeof oldOpenPreviewHotfix==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreviewHotfix.apply(this,arguments);
+    setTimeout(async()=>{
+      installSnakeUIHotfix();
+      await normalizeSnakeDemoUI();
+      if(window.UIRuntime && window.SnakeDemo){
+        await UIRuntime.show(SnakeDemo.scene||"Menu");
+      }
+    },120);
+    return r;
+  };
+}
+
+const oldOpenProjectHotfix=window.openProject;
+if(typeof oldOpenProjectHotfix==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProjectHotfix.apply(this,arguments);
+    if(currentProject==="Snake Demo"){
+      installSnakeUIHotfix();
+      await normalizeSnakeDemoUI();
+    }
+    return r;
+  };
+}
+
+setTimeout(()=>{
+  installSnakeUIHotfix();
+  normalizeSnakeDemoUI();
+},300);
+
+})();
+</script>
+
 </body>
 </html>
