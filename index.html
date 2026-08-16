@@ -18045,5 +18045,823 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — BUILD & EXPORT SYSTEM v1
+===================================================== */
+.build-manager-v1{
+  position:absolute;
+  inset:0;
+  z-index:230;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.build-manager-v1.show{display:flex}
+.build-v1-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.build-v1-head-title{flex:1;min-width:0}
+.build-v1-head-title strong{display:block;font-size:13px}
+.build-v1-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.build-v1-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.build-v1-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.build-v1-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.build-v1-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.build-v1-panel-body{padding:9px}
+.build-v1-row{
+  display:grid;
+  grid-template-columns:1fr 125px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.build-v1-row label{color:#89959e;font-size:9px}
+.build-v1-row input,
+.build-v1-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+.build-v1-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.build-v1-actions button{
+  flex:1;
+  min-height:40px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.build-v1-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+.build-v1-status{
+  display:grid;
+  gap:6px;
+}
+.build-v1-check{
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 8px;
+  border:1px solid #28323a;
+  border-radius:7px;
+  background:#11171c;
+}
+.build-v1-check i{
+  width:8px;height:8px;flex:0 0 8px;border-radius:50%;
+  background:#66717a;
+}
+.build-v1-check.ok i{background:#91e864}
+.build-v1-check.warn i{background:#e1b665}
+.build-v1-check.error i{background:#e86d73}
+.build-v1-check span{
+  flex:1;color:#a5afb7;font-size:9px
+}
+.build-v1-check small{
+  color:#65717a;font-size:8px
+}
+.build-v1-summary{
+  padding:10px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0c1115;
+  color:#7b8790;
+  font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+.build-v1-progress{
+  height:7px;
+  overflow:hidden;
+  border:1px solid #28323a;
+  border-radius:999px;
+  background:#080d11;
+  margin-top:8px;
+}
+.build-v1-progress > i{
+  display:block;
+  width:0%;
+  height:100%;
+  background:#91e864;
+  transition:width .18s ease;
+}
+.build-v1-note{
+  color:#65717a;
+  font-size:9px;
+  line-height:1.5;
+}
+@media(max-width:700px){
+  .build-v1-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — BUILD & EXPORT SYSTEM v1
+   Validates project data and exports a standalone HTML build.
+===================================================== */
+(function(){
+"use strict";
+
+const BUILD_CFG_PREFIX="snake_build_v1:";
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function key(name){return BUILD_CFG_PREFIX+name}
+function safeName(v){
+  return String(v||"SnakeGame")
+    .trim()
+    .replace(/[^\w\- ]+/g,"")
+    .replace(/\s+/g,"_")
+    .slice(0,48)||"SnakeGame";
+}
+function defaultConfig(){
+  return {
+    version:1,
+    title:project()||"Snake Game",
+    width:960,
+    height:540,
+    orientation:"landscape",
+    scaleMode:"fit",
+    background:"#0b1014",
+    includeDebug:false,
+    includeSaveData:false,
+    updatedAt:new Date().toISOString()
+  };
+}
+function loadConfig(name=project()){
+  if(!name)return defaultConfig();
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const cfg=JSON.parse(raw);
+      if(cfg?.version===1)return cfg;
+    }
+  }catch(_){}
+  const cfg=defaultConfig();
+  localStorage.setItem(key(name),JSON.stringify(cfg));
+  return cfg;
+}
+function saveConfig(cfg,name=project()){
+  if(!name)return;
+  cfg.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(cfg));
+}
+
+async function getProjectFiles(){
+  const p=project();
+  if(!p)return {};
+  try{
+    if(window.SnakeDB){
+      const files=await SnakeDB.loadProjectFiles(p);
+      if(files&&Object.keys(files).length)return files;
+    }
+  }catch(_){}
+  try{return getFiles?.()||{}}catch{return {}}
+}
+
+async function getSceneData(){
+  try{
+    if(window.SceneManager){
+      return {
+        scenes:await SceneManager.list(),
+        startup:await SceneManager.startup()
+      };
+    }
+  }catch(_){}
+  return {scenes:[],startup:null};
+}
+
+async function getPrefabs(){
+  try{return window.Prefabs?await Prefabs.list():[]}catch{return []}
+}
+async function getAnimator(){
+  try{return window.AnimatorController?await AnimatorController.load():null}catch{return null}
+}
+async function getPhysics(){
+  try{return window.PhysicsManager?await PhysicsManager.load():null}catch{return null}
+}
+async function getAudioConfig(){
+  try{return window.AudioManagerV2?await AudioManagerV2.load():null}catch{return null}
+}
+async function getUIConfig(){
+  try{return window.UIManagerV2?await UIManagerV2.load():null}catch{return null}
+}
+async function getInputConfig(){
+  try{return window.InputManagerV2?await InputManagerV2.load():null}catch{return null}
+}
+async function getSaveData(){
+  try{
+    if(!window.SaveGame)return null;
+    return clone(SaveGame.data||{});
+  }catch{return null}
+}
+function getAssets(){
+  try{
+    return (typeof assets2!=="undefined"?assets2:[]).map(a=>({
+      id:a.id,
+      name:a.name,
+      type:a.type,
+      folder:a.folder,
+      source:a.source,
+      data:a.data||null,
+      meta:a.meta||null,
+      animation:a.animation||null,
+      prefabId:a.prefabId||null
+    }));
+  }catch{return []}
+}
+
+async function collectProject(){
+  const cfg=loadConfig();
+  const files=await getProjectFiles();
+  const scenes=await getSceneData();
+
+  return {
+    format:"snake-build-v1",
+    engine:"Snake Engine",
+    engineVersion:"1.0",
+    project:{
+      name:project(),
+      title:cfg.title||project(),
+      buildAt:new Date().toISOString(),
+      resolution:{width:Number(cfg.width)||960,height:Number(cfg.height)||540},
+      orientation:cfg.orientation,
+      scaleMode:cfg.scaleMode,
+      background:cfg.background
+    },
+    startupScene:scenes.startup?.name||null,
+    scenes:scenes.scenes,
+    files,
+    assets:getAssets(),
+    prefabs:await getPrefabs(),
+    animator:await getAnimator(),
+    physics:await getPhysics(),
+    audio:await getAudioConfig(),
+    ui:await getUIConfig(),
+    input:await getInputConfig(),
+    save:cfg.includeSaveData?await getSaveData():null,
+    debug:!!cfg.includeDebug
+  };
+}
+
+function estimateBytes(value){
+  try{return new Blob([JSON.stringify(value)]).size}catch{return 0}
+}
+function formatBytes(n){
+  n=Number(n)||0;
+  if(n<1024)return n+" B";
+  const units=["KB","MB","GB"];
+  let v=n/1024,i=0;
+  while(v>=1024&&i<units.length-1){v/=1024;i++}
+  return v.toFixed(v>=100?0:v>=10?1:2)+" "+units[i];
+}
+
+async function validateBuild(bundle=null){
+  const b=bundle||await collectProject();
+  const checks=[];
+
+  checks.push({
+    level:b.project?.name?"ok":"error",
+    name:"Project",
+    detail:b.project?.name||"No project open"
+  });
+
+  checks.push({
+    level:b.startupScene?"ok":"warn",
+    name:"Startup Scene",
+    detail:b.startupScene||"Not defined"
+  });
+
+  const fileCount=Object.keys(b.files||{}).length;
+  checks.push({
+    level:fileCount?"ok":"warn",
+    name:"Scripts / Files",
+    detail:fileCount+" file(s)"
+  });
+
+  checks.push({
+    level:b.assets?.length?"ok":"warn",
+    name:"Assets",
+    detail:(b.assets?.length||0)+" asset(s)"
+  });
+
+  checks.push({
+    level:b.input?"ok":"warn",
+    name:"Input Map",
+    detail:b.input?"Included":"Default runtime input"
+  });
+
+  checks.push({
+    level:b.ui?"ok":"warn",
+    name:"Game UI",
+    detail:b.ui?"Included":"No UI config"
+  });
+
+  const huge=(b.assets||[]).some(a=>typeof a.data==="string"&&a.data.length>12_000_000);
+  if(huge){
+    checks.push({
+      level:"warn",
+      name:"Large Asset",
+      detail:"One or more assets may make single-file builds heavy"
+    });
+  }
+
+  return checks;
+}
+
+function escapeScriptJSON(obj){
+  return JSON.stringify(obj)
+    .replace(/</g,"\\u003c")
+    .replace(/>/g,"\\u003e")
+    .replace(/&/g,"\\u0026")
+    .replace(/\u2028/g,"\\u2028")
+    .replace(/\u2029/g,"\\u2029");
+}
+
+function buildStandaloneHTML(bundle){
+  const title=String(bundle.project.title||bundle.project.name||"Snake Game")
+    .replace(/[<>&"]/g,m=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[m]));
+
+  const data=escapeScriptJSON(bundle);
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="${bundle.project.background}">
+<title>${title}</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:${bundle.project.background};font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{display:grid;place-items:center}
+#game{position:relative;width:min(100vw,calc(100vh * ${bundle.project.resolution.width}/${bundle.project.resolution.height}));aspect-ratio:${bundle.project.resolution.width}/${bundle.project.resolution.height};overflow:hidden;background:${bundle.project.background};touch-action:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+#ui{position:absolute;inset:0;pointer-events:none}
+.ui{position:absolute;pointer-events:auto;user-select:none}
+button.ui{border:1px solid #91e864;background:#91e864;color:#091006;border-radius:8px;font-weight:750;padding:0 14px;min-height:42px}
+.text{color:#e8edf1;white-space:nowrap}
+.panel{background:rgba(13,18,23,.88);border:1px solid #2d3942;border-radius:8px}
+.progress{overflow:hidden;border:1px solid #33404a;border-radius:999px;background:#0a0f13}
+.progress>i{display:block;height:100%;background:#91e864}
+#msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#84919a;font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div id="game">
+  <canvas id="canvas"></canvas>
+  <div id="ui"></div>
+  <div id="msg"></div>
+</div>
+<script>
+const BUILD=${data};
+const game=document.getElementById("game");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+const ui=document.getElementById("ui");
+const msg=document.getElementById("msg");
+let currentScene=BUILD.startupScene||BUILD.scenes?.[0]?.name||"Game";
+let running=true;
+let keys=new Set();
+let pressed=new Set();
+let released=new Set();
+
+function resize(){
+  const r=game.getBoundingClientRect();
+  const d=Math.min(2,devicePixelRatio||1);
+  canvas.width=Math.max(1,Math.round(r.width*d));
+  canvas.height=Math.max(1,Math.round(r.height*d));
+  ctx.setTransform(d,0,0,d,0,0);
+  ctx.imageSmoothingEnabled=false;
+}
+addEventListener("resize",resize);resize();
+
+addEventListener("keydown",e=>{if(!keys.has(e.code))pressed.add(e.code);keys.add(e.code)});
+addEventListener("keyup",e=>{keys.delete(e.code);released.add(e.code)});
+
+function actionDown(name){
+  const a=BUILD.input?.actions?.[name];
+  return !!a&&(a.keys||[]).some(k=>keys.has(k));
+}
+function actionPressed(name){
+  const a=BUILD.input?.actions?.[name];
+  return !!a&&(a.keys||[]).some(k=>pressed.has(k));
+}
+function inputVector(){
+  let x=0,y=0;
+  if(actionDown("move_left"))x--;
+  if(actionDown("move_right"))x++;
+  if(actionDown("move_up"))y--;
+  if(actionDown("move_down"))y++;
+  const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}
+  return {x,y};
+}
+
+function anchor(el){
+  const x=Number(el.x||0),y=Number(el.y||0);
+  switch(el.anchor){
+    case "top-right":return {right:x+"px",top:y+"px"};
+    case "bottom-left":return {left:x+"px",bottom:y+"px"};
+    case "bottom-right":return {right:x+"px",bottom:y+"px"};
+    case "top-center":return {left:"50%",top:y+"px",transform:"translateX(-50%)"};
+    case "bottom-center":return {left:"50%",bottom:y+"px",transform:"translateX(-50%)"};
+    case "center":return {left:"50%",top:"50%",transform:"translate(-50%,-50%) translate("+x+"px,"+y+"px)"};
+    default:return {left:x+"px",top:y+"px"};
+  }
+}
+function renderUI(scene){
+  ui.innerHTML="";
+  const list=BUILD.ui?.screens?.[scene]||[];
+  for(const d of list){
+    let el;
+    if(d.type==="button"){el=document.createElement("button");el.textContent=d.text||"Button"}
+    else if(d.type==="image"){el=document.createElement("img");const a=BUILD.assets.find(a=>a.id===d.asset||a.name===d.asset);if(a?.data)el.src=a.data}
+    else{el=document.createElement("div");el.textContent=d.text||""}
+    el.className="ui "+(d.type==="text"?"text":d.type==="panel"?"panel":"");
+    el.dataset.id=d.id;
+    el.dataset.name=d.name||"";
+    Object.assign(el.style,anchor(d));
+    if(d.width)el.style.width=d.width+"px";
+    if(d.height)el.style.height=d.height+"px";
+    if(d.fontSize)el.style.fontSize=d.fontSize+"px";
+    if(d.type==="progress"){el.className="ui progress";el.innerHTML='<i style="width:'+Math.round((d.value||0)*100)+'%"></i>'}
+    if(d.type==="button"&&d.action)el.onclick=()=>dispatchUI(d.action,d);
+    ui.appendChild(el);
+  }
+}
+function uiText(id,text){
+  const el=[...ui.children].find(x=>x.dataset.id===id||x.dataset.name===id);
+  if(el)el.textContent=text;
+}
+function dispatchUI(action,data){
+  window.dispatchEvent(new CustomEvent("snake:uiaction",{detail:{name:action,payload:data}}));
+}
+async function loadScene(name){
+  currentScene=name;
+  renderUI(name);
+  window.dispatchEvent(new CustomEvent("snake:sceneloaded",{detail:{scene:{name}}}));
+}
+
+const API={
+  input:{down:actionDown,pressed:actionPressed,vector:inputVector},
+  ui:{text:uiText,show:renderUI,on:(name,fn)=>addEventListener("snake:uiaction",e=>{if(e.detail.name===name)fn(e.detail.payload)})},
+  scene:{load:loadScene,name:()=>currentScene},
+  save:{
+    get:(k,f=null)=>{try{const d=JSON.parse(localStorage.getItem("snake_export_save")||"{}");return k in d?d[k]:f}catch{return f}},
+    set:(k,v)=>{let d={};try{d=JSON.parse(localStorage.getItem("snake_export_save")||"{}")}catch{}d[k]=v;localStorage.setItem("snake_export_save",JSON.stringify(d));return v}
+  },
+  log:(...a)=>console.log("[Snake]",...a)
+};
+
+function runScripts(){
+  const files=BUILD.files||{};
+  const js=Object.entries(files).filter(([n])=>/\\.(js|snake)$/i.test(n));
+  for(const [name,src] of js){
+    try{
+      const fn=new Function("engine","input","ui","scene","save","log",src+"\\n//# sourceURL="+name);
+      fn(API,API.input,API.ui,API.scene,API.save,API.log);
+    }catch(e){console.error(name,e)}
+  }
+}
+
+function frame(){
+  if(!running)return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pressed.clear();released.clear();
+  requestAnimationFrame(frame);
+}
+
+renderUI(currentScene);
+runScripts();
+msg.textContent="";
+requestAnimationFrame(frame);
+<\/script>
+</body>
+</html>`;
+}
+
+function downloadText(filename,text,type="text/html"){
+  const blob=new Blob([text],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+async function exportHTML(){
+  const progress=document.getElementById("buildV1ProgressBar");
+  const setProgress=v=>{if(progress)progress.style.width=v+"%"};
+
+  setProgress(8);
+  const bundle=await collectProject();
+  setProgress(35);
+
+  const checks=await validateBuild(bundle);
+  const hasError=checks.some(c=>c.level==="error");
+  if(hasError){
+    renderValidation(checks,bundle);
+    showToast?.("Build bloqueado por erro");
+    setProgress(0);
+    return;
+  }
+
+  const standalone=buildStandaloneHTML(bundle);
+  setProgress(82);
+
+  const filename=safeName(bundle.project.title||bundle.project.name)+".html";
+  downloadText(filename,standalone,"text/html;charset=utf-8");
+  setProgress(100);
+
+  setTimeout(()=>setProgress(0),1200);
+  showToast?.("Build exportado");
+}
+
+async function exportManifest(){
+  const bundle=await collectProject();
+  downloadText(
+    safeName(bundle.project.title||bundle.project.name)+".snakebuild.json",
+    JSON.stringify(bundle,null,2),
+    "application/json"
+  );
+  showToast?.("Manifest exportado");
+}
+
+function renderValidation(checks,bundle){
+  const root=document.getElementById("buildV1Checks");
+  if(root){
+    root.innerHTML=checks.map(c=>`
+      <div class="build-v1-check ${c.level}">
+        <i></i>
+        <span>${c.name}</span>
+        <small>${c.detail}</small>
+      </div>
+    `).join("");
+  }
+
+  const summary=document.getElementById("buildV1Summary");
+  if(summary&&bundle){
+    summary.textContent=
+`Project: ${bundle.project.name}
+Startup: ${bundle.startupScene||"—"}
+Scenes: ${bundle.scenes?.length||0}
+Files: ${Object.keys(bundle.files||{}).length}
+Assets: ${bundle.assets?.length||0}
+Prefabs: ${bundle.prefabs?.length||0}
+Estimated payload: ${formatBytes(estimateBytes(bundle))}`;
+  }
+}
+
+async function refreshManager(){
+  const cfg=loadConfig();
+
+  const set=(id,v)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.type==="checkbox")el.checked=!!v;
+    else el.value=v;
+  };
+
+  set("buildV1Title",cfg.title);
+  set("buildV1Width",cfg.width);
+  set("buildV1Height",cfg.height);
+  set("buildV1Orientation",cfg.orientation);
+  set("buildV1Scale",cfg.scaleMode);
+  set("buildV1Background",cfg.background);
+  set("buildV1Debug",cfg.includeDebug);
+  set("buildV1SaveData",cfg.includeSaveData);
+
+  const bundle=await collectProject();
+  const checks=await validateBuild(bundle);
+  renderValidation(checks,bundle);
+}
+
+function saveManagerConfig(){
+  const cfg=loadConfig();
+  cfg.title=document.getElementById("buildV1Title")?.value||project()||"Snake Game";
+  cfg.width=Math.max(240,Number(document.getElementById("buildV1Width")?.value||960));
+  cfg.height=Math.max(160,Number(document.getElementById("buildV1Height")?.value||540));
+  cfg.orientation=document.getElementById("buildV1Orientation")?.value||"landscape";
+  cfg.scaleMode=document.getElementById("buildV1Scale")?.value||"fit";
+  cfg.background=document.getElementById("buildV1Background")?.value||"#0b1014";
+  cfg.includeDebug=!!document.getElementById("buildV1Debug")?.checked;
+  cfg.includeSaveData=!!document.getElementById("buildV1SaveData")?.checked;
+  saveConfig(cfg);
+  showToast?.("Build settings salvos");
+  refreshManager();
+}
+
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("buildManagerV1"))return;
+
+  const ui=document.createElement("section");
+  ui.id="buildManagerV1";
+  ui.className="build-manager-v1";
+  ui.innerHTML=`
+    <header class="build-v1-head">
+      <button class="icon-btn" type="button" data-build-v1-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="build-v1-head-title">
+        <strong>BUILD & EXPORT</strong>
+        <small>Create a standalone playable game</small>
+      </div>
+      <button class="icon-btn" type="button" data-build-v1-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2-5.3"/><path d="M20 4v6h-6"/></svg>
+      </button>
+    </header>
+
+    <main class="build-v1-body">
+      <div class="build-v1-actions">
+        <button type="button" class="primary" data-build-v1-export>EXPORT HTML</button>
+        <button type="button" data-build-v1-manifest>EXPORT MANIFEST</button>
+      </div>
+
+      <div class="build-v1-grid">
+        <section class="build-v1-panel">
+          <h3>BUILD SETTINGS</h3>
+          <div class="build-v1-panel-body">
+            <div class="build-v1-row"><label>Game Title</label><input id="buildV1Title"></div>
+            <div class="build-v1-row"><label>Width</label><input id="buildV1Width" type="number" value="960"></div>
+            <div class="build-v1-row"><label>Height</label><input id="buildV1Height" type="number" value="540"></div>
+            <div class="build-v1-row">
+              <label>Orientation</label>
+              <select id="buildV1Orientation">
+                <option value="landscape">Landscape</option>
+                <option value="portrait">Portrait</option>
+              </select>
+            </div>
+            <div class="build-v1-row">
+              <label>Scale Mode</label>
+              <select id="buildV1Scale">
+                <option value="fit">Fit</option>
+                <option value="fill">Fill</option>
+                <option value="pixel-perfect">Pixel Perfect</option>
+              </select>
+            </div>
+            <div class="build-v1-row"><label>Background</label><input id="buildV1Background" type="color" value="#0b1014"></div>
+            <div class="build-v1-row"><label>Include Debug</label><input id="buildV1Debug" type="checkbox"></div>
+            <div class="build-v1-row"><label>Include Current Save</label><input id="buildV1SaveData" type="checkbox"></div>
+            <button class="prefab-primary" style="width:100%" type="button" data-build-v1-save-settings>SAVE SETTINGS</button>
+          </div>
+        </section>
+
+        <section class="build-v1-panel">
+          <h3>BUILD VALIDATION</h3>
+          <div class="build-v1-panel-body">
+            <div id="buildV1Checks" class="build-v1-status"></div>
+          </div>
+        </section>
+
+        <section class="build-v1-panel">
+          <h3>PACKAGE SUMMARY</h3>
+          <div class="build-v1-panel-body">
+            <div id="buildV1Summary" class="build-v1-summary">Collecting project...</div>
+            <div class="build-v1-progress"><i id="buildV1ProgressBar"></i></div>
+          </div>
+        </section>
+
+        <section class="build-v1-panel">
+          <h3>OUTPUT</h3>
+          <div class="build-v1-panel-body">
+            <div class="build-v1-note">
+              EXPORT HTML generates a single self-contained game file with scenes, scripts,
+              assets, UI and input data embedded. The exported game does not include the
+              Snake Engine editor interface.
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  const header=document.querySelector("#editor .editor-header");
+  const saveBtn=document.getElementById("saveV1HeaderBtn");
+
+  if(header&&!document.getElementById("buildV1HeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="buildV1HeaderBtn";
+    btn.className="icon-btn";
+    btn.type="button";
+    btn.setAttribute("aria-label","Build & Export");
+    btn.innerHTML=`<svg viewBox="0 0 24 24" stroke-width="1.8">
+      <path d="M12 3v12"/>
+      <path d="m7 10 5 5 5-5"/>
+      <path d="M5 20h14"/>
+    </svg>`;
+    btn.addEventListener("click",openManager);
+
+    if(saveBtn)saveBtn.insertAdjacentElement("afterend",btn);
+    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-build-v1-close]"))return closeManager();
+    if(e.target.closest("[data-build-v1-refresh]"))return refreshManager();
+    if(e.target.closest("[data-build-v1-save-settings]"))return saveManagerConfig();
+    if(e.target.closest("[data-build-v1-export]")){
+      saveManagerConfig();
+      return exportHTML();
+    }
+    if(e.target.closest("[data-build-v1-manifest]")){
+      saveManagerConfig();
+      return exportManifest();
+    }
+  });
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("buildManagerV1")?.classList.add("show");
+  await refreshManager();
+}
+function closeManager(){
+  document.getElementById("buildManagerV1")?.classList.remove("show");
+}
+
+window.BuildExport={
+  version:"1.0.0",
+  collect:collectProject,
+  validate:validateBuild,
+  exportHTML,
+  exportManifest,
+  open:openManager
+};
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProject.apply(this,arguments);
+    ensureUI();
+
+    const cfg=loadConfig();
+    if(!cfg.title||cfg.title==="Snake Game"){
+      cfg.title=currentProject||"Snake Game";
+      saveConfig(cfg);
+    }
+
+    return r;
+  };
+}
+
+Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
+
+})();
+</script>
+
 </body>
 </html>
