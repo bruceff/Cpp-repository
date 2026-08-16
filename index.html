@@ -9649,5 +9649,378 @@ setTimeout(installDictionaryV2UI,0);
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — STABILIZATION v1
+   Mobile interaction hardening / modal state / runtime exit
+===================================================== */
+html.snake-modal-lock,
+body.snake-modal-lock{
+  overscroll-behavior:none;
+}
+button,[role="button"],input,textarea,select{
+  touch-action:manipulation;
+}
+textarea,input{
+  -webkit-user-select:text;
+  user-select:text;
+}
+.snake-engine-blocker{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  display:none;
+  background:transparent;
+  pointer-events:none;
+}
+.snake-engine-blocker.active{display:block}
+</style>
+
+<div id="snakeEngineBlocker" class="snake-engine-blocker" aria-hidden="true"></div>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — STABILIZATION LAYER v1
+
+   Goals:
+   1. Centralize screen/runtime cleanup.
+   2. Prevent invisible overlays from stealing mobile taps.
+   3. Restore editor keyboard/scroll after preview/runtime closes.
+   4. Flush project state safely on page hide.
+   5. Avoid duplicate fast taps on destructive/navigation controls.
+   6. Add a small diagnostic surface for later QA.
+===================================================== */
+(function(){
+"use strict";
+
+const Stabilizer = {
+  version:"1.0.0",
+  lastAction:"",
+  runtimeOpen:false,
+  lastError:null,
+  tapLocks:new WeakMap(),
+
+  visible(el){
+    if(!el)return false;
+    const s=getComputedStyle(el);
+    return s.display!=="none" && s.visibility!=="hidden" && s.opacity!=="0";
+  },
+
+  releaseBody(){
+    document.documentElement.classList.remove("snake-modal-lock");
+    document.body.classList.remove("snake-modal-lock");
+
+    /* Do not leave the page globally inert after closing a runtime/modal. */
+    try{
+      document.body.removeAttribute("inert");
+      document.querySelectorAll("[inert]").forEach(el=>{
+        if(!el.matches("[data-keep-inert]"))el.removeAttribute("inert");
+      });
+    }catch(_){}
+
+    document.body.style.pointerEvents="";
+    document.documentElement.style.pointerEvents="";
+  },
+
+  closeTransientUI(options={}){
+    const keepPreview=!!options.keepPreview;
+
+    const ids=[
+      "explorer",
+      "inspector",
+      "newProjectOverlay",
+      "projectDeleteOverlay",
+      "snakeAssetDeleteOverlay"
+    ];
+
+    ids.forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      el.classList.remove("open","show","active");
+      if(el.hasAttribute("aria-hidden"))el.setAttribute("aria-hidden","true");
+      el.style.pointerEvents="";
+    });
+
+    if(!keepPreview){
+      const preview=document.getElementById("preview");
+      if(preview){
+        preview.classList.remove("show","active","open");
+        preview.style.pointerEvents="";
+      }
+    }
+
+    this.releaseBody();
+  },
+
+  restoreEditorInteraction(){
+    this.releaseBody();
+
+    const code=document.getElementById("code");
+    if(code){
+      code.disabled=false;
+      code.readOnly=false;
+      code.style.pointerEvents="auto";
+      code.style.userSelect="text";
+      code.style.webkitUserSelect="text";
+    }
+
+    const engineCode=document.getElementById("engineCode");
+    if(engineCode){
+      engineCode.disabled=false;
+      engineCode.readOnly=false;
+      engineCode.style.pointerEvents="auto";
+      engineCode.style.userSelect="text";
+      engineCode.style.webkitUserSelect="text";
+    }
+
+    /* A collapsed panel must never retain a giant invisible hitbox. */
+    const panel=document.getElementById("bottomPanel");
+    if(panel?.classList.contains("collapsed")){
+      const output=panel.querySelector(".output");
+      if(output)output.style.pointerEvents="none";
+    }
+  },
+
+  flush(){
+    try{saveCurrentFile?.()}catch(e){this.lastError=e}
+    try{persistProjectWorkspace?.()}catch(e){this.lastError=e}
+    try{SnakeDB?.backupCurrentState?.()}catch(e){this.lastError=e}
+  },
+
+  mark(action){
+    this.lastAction=action;
+  },
+
+  guardTap(button,ms=320){
+    if(!button)return true;
+    const now=performance.now();
+    const last=this.tapLocks.get(button)||0;
+    if(now-last<ms)return false;
+    this.tapLocks.set(button,now);
+    return true;
+  },
+
+  diagnose(){
+    const code=document.getElementById("code");
+    const preview=document.getElementById("preview");
+    const panel=document.getElementById("bottomPanel");
+    return {
+      version:this.version,
+      runtimeOpen:this.runtimeOpen,
+      lastAction:this.lastAction,
+      codeEditable:!!code && !code.disabled && !code.readOnly,
+      previewVisible:this.visible(preview),
+      panelCollapsed:!!panel?.classList.contains("collapsed"),
+      activeScreen:document.querySelector(".screen.active")?.id||null,
+      lastError:this.lastError?String(this.lastError.message||this.lastError):null
+    };
+  }
+};
+
+window.SnakeStabilizer=Stabilizer;
+
+/* -----------------------------------------------------
+   Runtime / Preview lifecycle
+----------------------------------------------------- */
+const previousOpenPreview=window.openPreview;
+if(typeof previousOpenPreview==="function"){
+  window.openPreview=function(){
+    Stabilizer.mark("openPreview");
+    Stabilizer.closeTransientUI({keepPreview:true});
+    Stabilizer.runtimeOpen=true;
+
+    const result=previousOpenPreview.apply(this,arguments);
+
+    const preview=document.getElementById("preview");
+    if(preview){
+      preview.style.pointerEvents="auto";
+      preview.removeAttribute("inert");
+    }
+    return result;
+  };
+}
+
+const previousClosePreview=window.closePreview;
+if(typeof previousClosePreview==="function"){
+  window.closePreview=function(){
+    Stabilizer.mark("closePreview");
+
+    let result;
+    try{
+      result=previousClosePreview.apply(this,arguments);
+    }finally{
+      Stabilizer.runtimeOpen=false;
+
+      const preview=document.getElementById("preview");
+      if(preview){
+        preview.classList.remove("show","active","open");
+        preview.style.pointerEvents="none";
+      }
+
+      Stabilizer.restoreEditorInteraction();
+
+      /* iOS may preserve a stale focus target after a full-screen overlay. */
+      requestAnimationFrame(()=>{
+        Stabilizer.restoreEditorInteraction();
+        window.dispatchEvent(new Event("resize"));
+      });
+    }
+    return result;
+  };
+}
+
+/* -----------------------------------------------------
+   Dashboard/editor navigation cleanup
+----------------------------------------------------- */
+const previousBackToDashboard=window.backToDashboard;
+if(typeof previousBackToDashboard==="function"){
+  window.backToDashboard=function(){
+    Stabilizer.mark("backToDashboard");
+    Stabilizer.flush();
+    Stabilizer.closeTransientUI();
+    Stabilizer.runtimeOpen=false;
+
+    const result=previousBackToDashboard.apply(this,arguments);
+
+    requestAnimationFrame(()=>Stabilizer.restoreEditorInteraction());
+    return result;
+  };
+}
+
+const previousOpenProject=window.openProject;
+if(typeof previousOpenProject==="function"){
+  window.openProject=async function(){
+    Stabilizer.mark("openProject");
+    Stabilizer.closeTransientUI();
+
+    const result=await previousOpenProject.apply(this,arguments);
+
+    requestAnimationFrame(()=>Stabilizer.restoreEditorInteraction());
+    return result;
+  };
+}
+
+/* -----------------------------------------------------
+   Bottom panel + mobile keyboard
+----------------------------------------------------- */
+function keyboardAwareLayout(){
+  const vv=window.visualViewport;
+  if(!vv)return;
+
+  const keyboard=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);
+  document.documentElement.style.setProperty("--snake-keyboard-height",keyboard+"px");
+
+  const active=document.activeElement;
+  const editing=active && (
+    active.id==="code" ||
+    active.id==="engineCode" ||
+    active.tagName==="TEXTAREA"
+  );
+
+  const panel=document.getElementById("bottomPanel");
+
+  /* When the software keyboard is open, the output panel must not cover
+     the line being edited. Collapse it automatically, but only then. */
+  if(editing && keyboard>120 && panel && !panel.classList.contains("collapsed")){
+    panel.dataset.snakeAutoCollapsed="1";
+    panel.classList.add("collapsed");
+  }
+
+  if(keyboard<80 && panel?.dataset.snakeAutoCollapsed==="1"){
+    panel.classList.remove("collapsed");
+    delete panel.dataset.snakeAutoCollapsed;
+  }
+
+  Stabilizer.restoreEditorInteraction();
+}
+
+window.visualViewport?.addEventListener("resize",keyboardAwareLayout);
+window.visualViewport?.addEventListener("scroll",keyboardAwareLayout);
+
+/* -----------------------------------------------------
+   Global tap hardening
+----------------------------------------------------- */
+document.addEventListener("click",e=>{
+  const button=e.target.closest?.("button,[role='button']");
+  if(!button)return;
+
+  if(!Stabilizer.guardTap(button)){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return;
+  }
+
+  Stabilizer.mark(
+    button.id ||
+    button.getAttribute("aria-label") ||
+    button.textContent.trim().slice(0,40) ||
+    "button"
+  );
+},true);
+
+/* -----------------------------------------------------
+   Invisible overlay audit
+----------------------------------------------------- */
+function auditOverlays(){
+  [
+    "newProjectOverlay",
+    "projectDeleteOverlay",
+    "snakeAssetDeleteOverlay",
+    "preview"
+  ].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+
+    const shouldInteract=
+      el.classList.contains("show") ||
+      el.classList.contains("active") ||
+      el.classList.contains("open");
+
+    if(!shouldInteract){
+      el.style.pointerEvents="none";
+    }else{
+      el.style.pointerEvents="auto";
+    }
+  });
+}
+
+const overlayObserver=new MutationObserver(auditOverlays);
+["newProjectOverlay","projectDeleteOverlay","snakeAssetDeleteOverlay","preview"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)overlayObserver.observe(el,{attributes:true,attributeFilter:["class","style"]});
+});
+auditOverlays();
+
+/* -----------------------------------------------------
+   Safe persistence
+----------------------------------------------------- */
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="hidden")Stabilizer.flush();
+});
+
+window.addEventListener("pagehide",()=>Stabilizer.flush());
+
+window.addEventListener("error",e=>{
+  Stabilizer.lastError=e.error||new Error(e.message||"Unknown error");
+});
+
+window.addEventListener("unhandledrejection",e=>{
+  Stabilizer.lastError=e.reason instanceof Error?e.reason:new Error(String(e.reason));
+});
+
+/* -----------------------------------------------------
+   Initial state
+----------------------------------------------------- */
+requestAnimationFrame(()=>{
+  Stabilizer.closeTransientUI();
+  Stabilizer.restoreEditorInteraction();
+  auditOverlays();
+  console.info("[Snake Engine] Stabilization v1 active",Stabilizer.diagnose());
+});
+
+})();
+</script>
+
 </body>
 </html>
