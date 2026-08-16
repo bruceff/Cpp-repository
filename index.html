@@ -7062,5 +7062,981 @@ window.addEventListener("unhandledrejection",e=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — SNAKEDB v1 / INDEXEDDB
+===================================================== */
+.snakedb-card{
+  margin-top:18px;
+  padding:16px;
+  border:1px solid #29323b;
+  border-radius:12px;
+  background:#11161c;
+}
+.snakedb-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+.snakedb-head strong{font-size:13px;color:#edf0f2}
+.snakedb-status{
+  font:10px ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:#91e864;
+}
+.snakedb-grid{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px 12px;
+  color:#8c96a0;
+  font-size:12px;
+}
+.snakedb-grid b{
+  color:#d5dbe0;
+  font-weight:600;
+  text-align:right;
+}
+.snakedb-meter{
+  height:7px;
+  margin:12px 0 5px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#090d11;
+  border:1px solid #252e37;
+}
+.snakedb-meter i{
+  display:block;
+  height:100%;
+  width:0%;
+  background:#91e864;
+}
+.snakedb-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.snakedb-actions button{
+  min-height:38px;
+  padding:0 12px;
+  border-radius:8px;
+  border:1px solid #2d3741;
+  background:#171d24;
+  color:#aeb7bf;
+  font-size:11px;
+  font-weight:650;
+}
+.snakedb-actions button.primary{
+  color:#0a1007;
+  background:#91e864;
+  border-color:#91e864;
+}
+.snakedb-note{
+  margin-top:9px;
+  color:#68737e;
+  font-size:10px;
+  line-height:1.45;
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — SNAKEDB v1
+   IndexedDB storage layer + automatic localStorage migration.
+
+   Design:
+   - IndexedDB is the durable project store.
+   - localStorage remains a small compatibility cache for legacy UI.
+   - binary image/audio data is stored as Blob in IndexedDB.
+   - project/file APIs are hydrated before a project is opened.
+===================================================== */
+(function(){
+"use strict";
+
+const DB_NAME = "snake_engine_db";
+const DB_VERSION = 1;
+const LEGACY_ASSET_KEY = "myengine_assets2";
+const ASSET_MANIFEST_KEY = "snake_assets_manifest_v1";
+
+function reqPromise(req){
+  return new Promise((resolve,reject)=>{
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+
+function txDone(tx){
+  return new Promise((resolve,reject)=>{
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+    tx.onabort=()=>reject(tx.error || new Error("IndexedDB transaction aborted"));
+  });
+}
+
+function cloneSafe(value){
+  try{return structuredClone(value)}
+  catch{
+    try{return JSON.parse(JSON.stringify(value))}
+    catch{return value}
+  }
+}
+
+function languageFromPath(path){
+  const ext=String(path||"").split(".").pop().toLowerCase();
+  return ({
+    js:"javascript", snake:"snake-script", cpp:"cpp", h:"cpp",
+    hpp:"cpp", c:"c", json:"json", txt:"text", scene:"scene"
+  })[ext] || ext || "text";
+}
+
+async function dataURLToBlob(dataURL){
+  if(typeof dataURL!=="string" || !dataURL.startsWith("data:")) return null;
+  try{
+    const res=await fetch(dataURL);
+    return await res.blob();
+  }catch{return null}
+}
+
+function blobToDataURL(blob){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(r.result);
+    r.onerror=()=>reject(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
+const SnakeDB = {
+  db:null,
+  ready:null,
+  hydrated:false,
+  assetsHydrated:false,
+  projectCache:null,
+  fileCache:new Map(),
+  migrationVersion:1,
+  stats:{writes:0,reads:0,migrations:0,lastError:null},
+
+  async open(){
+    if(this.db) return this.db;
+
+    const request=indexedDB.open(DB_NAME,DB_VERSION);
+
+    request.onupgradeneeded=()=>{
+      const db=request.result;
+
+      const create=(name,options,indexes=[])=>{
+        let store;
+        if(!db.objectStoreNames.contains(name)){
+          store=db.createObjectStore(name,options);
+        }else{
+          store=request.transaction.objectStore(name);
+        }
+        for(const idx of indexes){
+          if(!store.indexNames.contains(idx.name)){
+            store.createIndex(idx.name,idx.keyPath,idx.options||{});
+          }
+        }
+      };
+
+      create("projects",{keyPath:"id"},[
+        {name:"name",keyPath:"name"},
+        {name:"updatedAt",keyPath:"updatedAt"}
+      ]);
+
+      create("files",{keyPath:"id"},[
+        {name:"projectId",keyPath:"projectId"},
+        {name:"projectName",keyPath:"projectName"},
+        {name:"path",keyPath:"path"}
+      ]);
+
+      create("assets",{keyPath:"id"},[
+        {name:"type",keyPath:"type"},
+        {name:"folder",keyPath:"folder"},
+        {name:"projectId",keyPath:"projectId"}
+      ]);
+
+      create("sprites",{keyPath:"id"});
+      create("tilemaps",{keyPath:"id"},[{name:"name",keyPath:"name"}]);
+      create("scenes",{keyPath:"id"},[{name:"name",keyPath:"name"}]);
+      create("audio",{keyPath:"id"},[{name:"name",keyPath:"name"}]);
+      create("dictionary",{keyPath:"id"});
+      create("preferences",{keyPath:"key"});
+      create("snapshots",{keyPath:"id"},[{name:"projectId",keyPath:"projectId"}]);
+      create("meta",{keyPath:"key"});
+    };
+
+    this.db=await reqPromise(request);
+    this.db.onversionchange=()=>this.db.close();
+    return this.db;
+  },
+
+  async get(store,key){
+    const db=await this.open();
+    const tx=db.transaction(store,"readonly");
+    const value=await reqPromise(tx.objectStore(store).get(key));
+    this.stats.reads++;
+    return value;
+  },
+
+  async getAll(store){
+    const db=await this.open();
+    const tx=db.transaction(store,"readonly");
+    const values=await reqPromise(tx.objectStore(store).getAll());
+    this.stats.reads++;
+    return values;
+  },
+
+  async getAllByIndex(store,index,key){
+    const db=await this.open();
+    const tx=db.transaction(store,"readonly");
+    const values=await reqPromise(tx.objectStore(store).index(index).getAll(key));
+    this.stats.reads++;
+    return values;
+  },
+
+  async put(store,value){
+    const db=await this.open();
+    const tx=db.transaction(store,"readwrite");
+    tx.objectStore(store).put(value);
+    await txDone(tx);
+    this.stats.writes++;
+    this.refreshStorageCard();
+    return value;
+  },
+
+  async putMany(store,values){
+    if(!values?.length) return;
+    const db=await this.open();
+    const tx=db.transaction(store,"readwrite");
+    const os=tx.objectStore(store);
+    values.forEach(v=>os.put(v));
+    await txDone(tx);
+    this.stats.writes+=values.length;
+    this.refreshStorageCard();
+  },
+
+  async delete(store,key){
+    const db=await this.open();
+    const tx=db.transaction(store,"readwrite");
+    tx.objectStore(store).delete(key);
+    await txDone(tx);
+    this.stats.writes++;
+  },
+
+  async deleteByIndex(store,index,key){
+    const rows=await this.getAllByIndex(store,index,key);
+    if(!rows.length)return;
+    const db=await this.open();
+    const tx=db.transaction(store,"readwrite");
+    const os=tx.objectStore(store);
+    rows.forEach(row=>os.delete(row.id));
+    await txDone(tx);
+  },
+
+  async clear(store){
+    const db=await this.open();
+    const tx=db.transaction(store,"readwrite");
+    tx.objectStore(store).clear();
+    await txDone(tx);
+  },
+
+  async projectIdForName(name){
+    const projects=this.projectCache || [];
+    const p=projects.find(x=>x.name===name);
+    return String(p?.id ?? name ?? "default");
+  },
+
+  async syncProjects(projects){
+    const list=(projects||[]).map(p=>({
+      ...cloneSafe(p),
+      id:String(p.id),
+      createdAt:p.createdAt || new Date().toISOString(),
+      updatedAt:new Date().toISOString()
+    }));
+
+    this.projectCache=list.map(cloneSafe);
+
+    const existing=await this.getAll("projects");
+    const keep=new Set(list.map(p=>String(p.id)));
+
+    const db=await this.open();
+    const tx=db.transaction(["projects","files"],"readwrite");
+    const ps=tx.objectStore("projects");
+    const fs=tx.objectStore("files");
+
+    list.forEach(p=>ps.put(p));
+
+    for(const old of existing){
+      if(!keep.has(String(old.id))){
+        ps.delete(old.id);
+        const index=fs.index("projectId");
+        const range=IDBKeyRange.only(String(old.id));
+        index.openCursor(range).onsuccess=e=>{
+          const cursor=e.target.result;
+          if(cursor){cursor.delete();cursor.continue();}
+        };
+        this.fileCache.delete(old.name);
+      }
+    }
+
+    await txDone(tx);
+    this.refreshStorageCard();
+  },
+
+  async saveProjectFiles(projectName,files){
+    const projectId=await this.projectIdForName(projectName);
+    const now=new Date().toISOString();
+    const rows=Object.entries(files||{}).map(([path,content])=>({
+      id:projectId+":"+path,
+      projectId,
+      projectName,
+      path,
+      language:languageFromPath(path),
+      content:String(content ?? ""),
+      updatedAt:now
+    }));
+
+    this.fileCache.set(projectName,cloneSafe(files||{}));
+
+    const old=await this.getAllByIndex("files","projectId",projectId);
+    const keep=new Set(rows.map(r=>r.id));
+
+    const db=await this.open();
+    const tx=db.transaction("files","readwrite");
+    const os=tx.objectStore("files");
+    rows.forEach(r=>os.put(r));
+    old.forEach(r=>{if(!keep.has(r.id))os.delete(r.id)});
+    await txDone(tx);
+    this.stats.writes+=rows.length;
+  },
+
+  async loadProjectFiles(projectName){
+    if(this.fileCache.has(projectName)) return cloneSafe(this.fileCache.get(projectName));
+    const projectId=await this.projectIdForName(projectName);
+    let rows=await this.getAllByIndex("files","projectId",projectId);
+    if(!rows.length){
+      rows=await this.getAllByIndex("files","projectName",projectName);
+    }
+    const files={};
+    rows.forEach(r=>files[r.path]=r.content);
+    if(Object.keys(files).length)this.fileCache.set(projectName,files);
+    return cloneSafe(files);
+  },
+
+  async serializeAsset(asset){
+    const a=cloneSafe(asset);
+    const row={
+      ...a,
+      id:String(a.id),
+      projectId:a.projectId==null?null:String(a.projectId),
+      updatedAt:new Date().toISOString()
+    };
+
+    if(typeof a.data==="string" && a.data.startsWith("data:")){
+      const blob=await dataURLToBlob(a.data);
+      if(blob){
+        row.blob=blob;
+        row.data=null;
+        row.storage="blob";
+      }
+    }
+    return row;
+  },
+
+  async saveAssets(list){
+    const rows=[];
+    for(const asset of (list||[])){
+      rows.push(await this.serializeAsset(asset));
+    }
+
+    const db=await this.open();
+    const tx=db.transaction(["assets","audio"],"readwrite");
+    const as=tx.objectStore("assets");
+    const au=tx.objectStore("audio");
+
+    as.clear();
+    au.clear();
+
+    rows.forEach(row=>{
+      as.put(row);
+      if(String(row.type||"").startsWith("audio/")){
+        au.put({
+          id:row.id,
+          name:row.name,
+          type:row.type,
+          blob:row.blob||null,
+          data:row.data||null,
+          meta:row.meta||{},
+          updatedAt:row.updatedAt
+        });
+      }
+    });
+
+    await txDone(tx);
+
+    try{
+      localStorage.setItem(ASSET_MANIFEST_KEY,JSON.stringify(rows.map(a=>({
+        id:a.id,name:a.name,type:a.type,folder:a.folder||"root",
+        source:a.source||null,meta:a.meta||null
+      }))));
+      /* Remove the giant legacy payload after IndexedDB has a copy. */
+      localStorage.removeItem(LEGACY_ASSET_KEY);
+    }catch(_){}
+
+    this.assetsHydrated=true;
+    this.refreshStorageCard();
+  },
+
+  async loadAssets(){
+    const rows=await this.getAll("assets");
+    const result=[];
+
+    for(const row of rows){
+      const a={...row};
+      if(a.blob instanceof Blob){
+        try{a.data=await blobToDataURL(a.blob)}catch{a.data=null}
+      }
+      delete a.blob;
+      delete a.storage;
+      result.push(a);
+    }
+
+    this.assetsHydrated=true;
+    return result;
+  },
+
+  async saveSingleton(store,id,data){
+    return this.put(store,{
+      id:String(id),
+      data:cloneSafe(data),
+      updatedAt:new Date().toISOString()
+    });
+  },
+
+  async savePreference(key,value){
+    return this.put("preferences",{
+      key:String(key),
+      value:cloneSafe(value),
+      updatedAt:new Date().toISOString()
+    });
+  },
+
+  async migrateLegacy(){
+    const migration=await this.get("meta","legacyMigrationV1");
+    if(migration?.done) return false;
+
+    let migrated=0;
+
+    try{
+      const raw=localStorage.getItem(typeof STORAGE_KEY!=="undefined"?STORAGE_KEY:"snakeForgeProjects");
+      const projects=raw?JSON.parse(raw):[];
+      if(Array.isArray(projects) && projects.length){
+        await this.syncProjects(projects);
+        migrated+=projects.length;
+
+        for(const p of projects){
+          const fk=(typeof FILES_KEY!=="undefined"?FILES_KEY:"snakeForgeFiles")+"_"+p.name;
+          try{
+            const fr=localStorage.getItem(fk);
+            if(fr){
+              const files=JSON.parse(fr);
+              await this.saveProjectFiles(p.name,files);
+              migrated+=Object.keys(files||{}).length;
+            }
+          }catch(_){}
+        }
+      }
+
+      try{
+        const d=localStorage.getItem(typeof DICT_SETTINGS_KEY!=="undefined"?DICT_SETTINGS_KEY:"myengine_dictionary_aliases");
+        if(d){
+          await this.put("dictionary",{id:"global",entries:JSON.parse(d),updatedAt:new Date().toISOString()});
+          migrated++;
+        }
+      }catch(_){}
+
+      try{
+        const art=localStorage.getItem("myengine_arte_pro");
+        if(art){
+          await this.saveSingleton("sprites","sprite-studio",JSON.parse(art));
+          migrated++;
+        }
+      }catch(_){}
+
+      try{
+        const scene=localStorage.getItem("myengine_scene_resource");
+        if(scene){
+          const data=JSON.parse(scene);
+          await this.put("scenes",{id:"scene-composer",name:data.name||"Main Scene",data,updatedAt:new Date().toISOString()});
+          migrated++;
+        }
+      }catch(_){}
+
+      try{
+        const maps=JSON.parse(localStorage.getItem("snake_global_tilemaps")||"[]");
+        if(Array.isArray(maps)&&maps.length){
+          await this.putMany("tilemaps",maps.map((m,i)=>({
+            id:String(m.id||("tilemap-"+i+"-"+m.name)),
+            name:m.name||("Tilemap "+(i+1)),
+            data:m,
+            updatedAt:new Date().toISOString()
+          })));
+          migrated+=maps.length;
+        }
+        const active=localStorage.getItem("myengine_tilemap");
+        if(active){
+          await this.put("tilemaps",{id:"active",name:"Active Tilemap",data:JSON.parse(active),updatedAt:new Date().toISOString()});
+          migrated++;
+        }
+      }catch(_){}
+
+      try{
+        const assets=JSON.parse(localStorage.getItem(LEGACY_ASSET_KEY)||"[]");
+        if(Array.isArray(assets)&&assets.length){
+          await this.saveAssets(assets);
+          migrated+=assets.length;
+        }
+      }catch(_){}
+
+      const prefKeys=[
+        "myengine_art_palette",
+        "myengine_project2",
+        "myengine_code",
+        "snake_engine_input_bindings"
+      ];
+
+      for(const key of prefKeys){
+        const raw=localStorage.getItem(key);
+        if(raw!=null){
+          let value=raw;
+          try{value=JSON.parse(raw)}catch(_){}
+          await this.savePreference(key,value);
+          migrated++;
+        }
+      }
+
+      await this.put("meta",{
+        key:"legacyMigrationV1",
+        done:true,
+        migrated,
+        at:new Date().toISOString()
+      });
+
+      this.stats.migrations=migrated;
+      return true;
+    }catch(err){
+      this.stats.lastError=String(err?.message||err);
+      console.error("SnakeDB migration:",err);
+      return false;
+    }
+  },
+
+  async hydrate(){
+    const dbProjects=await this.getAll("projects");
+    if(dbProjects.length){
+      this.projectCache=dbProjects.map(p=>({...p,id:p.id}));
+      try{
+        localStorage.setItem(
+          typeof STORAGE_KEY!=="undefined"?STORAGE_KEY:"snakeForgeProjects",
+          JSON.stringify(dbProjects)
+        );
+      }catch(_){}
+
+      for(const p of dbProjects){
+        const files=await this.loadProjectFiles(p.name);
+        if(Object.keys(files).length){
+          this.fileCache.set(p.name,files);
+
+          /* Small compatibility cache only. Large codebases stay IndexedDB-only. */
+          try{
+            const serialized=JSON.stringify(files);
+            if(serialized.length < 700000){
+              localStorage.setItem(
+                (typeof FILES_KEY!=="undefined"?FILES_KEY:"snakeForgeFiles")+"_"+p.name,
+                serialized
+              );
+            }
+          }catch(_){}
+        }
+      }
+    }else{
+      this.projectCache=[];
+    }
+
+    const dbAssets=await this.loadAssets();
+    if(dbAssets.length){
+      window.assets2=dbAssets;
+      try{
+        if(typeof assets2!=="undefined") assets2=dbAssets;
+      }catch(_){}
+    }else{
+      this.assetsHydrated=true;
+    }
+
+    const dict=await this.get("dictionary","global");
+    if(dict?.entries){
+      try{
+        localStorage.setItem(
+          typeof DICT_SETTINGS_KEY!=="undefined"?DICT_SETTINGS_KEY:"myengine_dictionary_aliases",
+          JSON.stringify(dict.entries)
+        );
+      }catch(_){}
+    }
+
+    this.hydrated=true;
+
+    try{renderProjects?.()}catch(_){}
+    try{renderAssets2?.()}catch(_){}
+    try{renderAudio2?.()}catch(_){}
+    try{renderSettingsDictionary?.()}catch(_){}
+
+    this.refreshStorageCard();
+  },
+
+  async storageEstimate(){
+    let estimate={usage:0,quota:0};
+    try{
+      if(navigator.storage?.estimate){
+        estimate=await navigator.storage.estimate();
+      }
+    }catch(_){}
+    let persisted=false;
+    try{
+      if(navigator.storage?.persisted) persisted=await navigator.storage.persisted();
+    }catch(_){}
+    return {
+      usage:Number(estimate.usage||0),
+      quota:Number(estimate.quota||0),
+      persisted
+    };
+  },
+
+  async requestPersistence(){
+    try{
+      if(!navigator.storage?.persist) return false;
+      const ok=await navigator.storage.persist();
+      this.refreshStorageCard();
+      return ok;
+    }catch{return false}
+  },
+
+  formatBytes(bytes){
+    const n=Number(bytes||0);
+    if(n<1024)return n+" B";
+    const u=["KB","MB","GB","TB"];
+    let v=n/1024,i=0;
+    while(v>=1024&&i<u.length-1){v/=1024;i++}
+    return v.toFixed(v>=100?0:v>=10?1:2)+" "+u[i];
+  },
+
+  installStorageCard(){
+    const settings=document.querySelector("#settingsScreen .dashboard-content");
+    if(!settings || document.getElementById("snakeDBCard")) return;
+
+    const section=document.createElement("section");
+    section.className="section";
+    section.innerHTML=`
+      <div class="section-head"><span>STORAGE</span><button type="button" id="snakeDBRefresh">Refresh</button></div>
+      <div id="snakeDBCard" class="snakedb-card">
+        <div class="snakedb-head">
+          <strong>SnakeDB v1</strong>
+          <span id="snakeDBStatus" class="snakedb-status">INITIALIZING</span>
+        </div>
+        <div class="snakedb-grid">
+          <span>Backend</span><b>IndexedDB</b>
+          <span>Uso</span><b id="snakeDBUsage">—</b>
+          <span>Quota disponível</span><b id="snakeDBQuota">—</b>
+          <span>Persistência</span><b id="snakeDBPersistent">—</b>
+          <span>Projetos</span><b id="snakeDBProjects">0</b>
+          <span>Assets</span><b id="snakeDBAssets">0</b>
+        </div>
+        <div class="snakedb-meter"><i id="snakeDBMeter"></i></div>
+        <div class="snakedb-actions">
+          <button type="button" class="primary" id="snakeDBPersistBtn">Proteger armazenamento</button>
+          <button type="button" id="snakeDBBackupBtn">Atualizar banco</button>
+        </div>
+        <div class="snakedb-note">
+          Código, sprites, tilemaps, cenas e assets são mantidos no IndexedDB.
+          Dados binários são armazenados como Blob; localStorage fica apenas como cache de compatibilidade.
+        </div>
+      </div>
+    `;
+    settings.appendChild(section);
+
+    document.getElementById("snakeDBRefresh")?.addEventListener("click",()=>this.refreshStorageCard());
+    document.getElementById("snakeDBPersistBtn")?.addEventListener("click",async()=>{
+      const ok=await this.requestPersistence();
+      if(typeof showToast==="function"){
+        showToast(ok?"Armazenamento persistente ativado":"O navegador não concedeu persistência");
+      }
+    });
+    document.getElementById("snakeDBBackupBtn")?.addEventListener("click",async()=>{
+      await this.backupCurrentState();
+      if(typeof showToast==="function")showToast("SnakeDB atualizado");
+    });
+  },
+
+  async refreshStorageCard(){
+    const status=document.getElementById("snakeDBStatus");
+    if(!status)return;
+    const s=await this.storageEstimate();
+    const projects=await this.getAll("projects");
+    const assets=await this.getAll("assets");
+    const pct=s.quota?Math.min(100,s.usage/s.quota*100):0;
+
+    status.textContent=this.hydrated?"READY":"LOADING";
+    document.getElementById("snakeDBUsage").textContent=this.formatBytes(s.usage);
+    document.getElementById("snakeDBQuota").textContent=this.formatBytes(s.quota);
+    document.getElementById("snakeDBPersistent").textContent=s.persisted?"ATIVO":"NÃO GARANTIDO";
+    document.getElementById("snakeDBProjects").textContent=projects.length;
+    document.getElementById("snakeDBAssets").textContent=assets.length;
+    document.getElementById("snakeDBMeter").style.width=pct.toFixed(2)+"%";
+  },
+
+  async backupCurrentState(){
+    try{
+      const projects=typeof getProjects==="function"?getProjects():[];
+      await this.syncProjects(projects);
+
+      for(const p of projects){
+        let files={};
+        if(this.fileCache.has(p.name)) files=this.fileCache.get(p.name);
+        else{
+          try{
+            const raw=localStorage.getItem((typeof FILES_KEY!=="undefined"?FILES_KEY:"snakeForgeFiles")+"_"+p.name);
+            files=raw?JSON.parse(raw):{};
+          }catch(_){}
+        }
+        await this.saveProjectFiles(p.name,files);
+      }
+
+      if(typeof assets2!=="undefined") await this.saveAssets(assets2);
+
+      if(typeof getDictionary==="function"){
+        await this.put("dictionary",{id:"global",entries:getDictionary(),updatedAt:new Date().toISOString()});
+      }
+
+      try{
+        const art=localStorage.getItem("myengine_arte_pro");
+        if(art)await this.saveSingleton("sprites","sprite-studio",JSON.parse(art));
+      }catch(_){}
+
+      try{
+        const scene=localStorage.getItem("myengine_scene_resource");
+        if(scene){
+          const data=JSON.parse(scene);
+          await this.put("scenes",{id:"scene-composer",name:data.name||"Main Scene",data,updatedAt:new Date().toISOString()});
+        }
+      }catch(_){}
+
+      this.refreshStorageCard();
+    }catch(e){
+      this.stats.lastError=String(e?.message||e);
+      console.error(e);
+    }
+  }
+};
+
+window.SnakeDB=SnakeDB;
+window.SnakeEngine=window.SnakeEngine||{};
+SnakeEngine.storage=SnakeDB;
+
+/* =====================================================
+   LEGACY API BRIDGE
+   Existing engine features keep their synchronous API,
+   while writes are mirrored to IndexedDB.
+===================================================== */
+
+const legacyGetProjects=window.getProjects;
+const legacySaveProjects=window.saveProjects;
+const legacyGetFiles=window.getFiles;
+const legacySaveFiles=window.saveFiles;
+const legacySaveDictionary=window.saveDictionary;
+const legacySaveAssets2=window.saveAssets2;
+const legacyLoadAssets2=window.loadAssets2;
+const legacyOpenProject=window.openProject;
+const legacyOpenProjectById=window.openProjectById;
+
+window.getProjects=function(){
+  if(SnakeDB.hydrated && Array.isArray(SnakeDB.projectCache)){
+    return SnakeDB.projectCache.map(cloneSafe);
+  }
+  return typeof legacyGetProjects==="function"?legacyGetProjects():[];
+};
+
+window.saveProjects=function(projects){
+  SnakeDB.projectCache=(projects||[]).map(p=>({...cloneSafe(p),id:String(p.id)}));
+
+  /* Projects metadata is tiny, so keep a compatibility mirror. */
+  try{
+    if(typeof legacySaveProjects==="function")legacySaveProjects(projects);
+  }catch(e){console.warn("local project cache:",e)}
+
+  SnakeDB.syncProjects(projects).catch(e=>{
+    SnakeDB.stats.lastError=String(e?.message||e);
+    console.error("SnakeDB projects:",e);
+  });
+};
+
+window.getFiles=function(){
+  const name=typeof currentProject!=="undefined"?currentProject:null;
+
+  if(name && SnakeDB.fileCache.has(name)){
+    return cloneSafe(SnakeDB.fileCache.get(name));
+  }
+
+  const files=typeof legacyGetFiles==="function"?legacyGetFiles():{};
+  if(name)SnakeDB.fileCache.set(name,cloneSafe(files));
+  return files;
+};
+
+window.saveFiles=function(files){
+  const name=typeof currentProject!=="undefined"?currentProject:null;
+  if(!name)return;
+
+  SnakeDB.fileCache.set(name,cloneSafe(files||{}));
+
+  /* Keep only small codebases mirrored in localStorage. */
+  try{
+    const serialized=JSON.stringify(files||{});
+    if(serialized.length<700000){
+      const key=(typeof FILES_KEY!=="undefined"?FILES_KEY:"snakeForgeFiles")+"_"+name;
+      localStorage.setItem(key,serialized);
+    }
+  }catch(_){}
+
+  SnakeDB.saveProjectFiles(name,files).catch(e=>{
+    SnakeDB.stats.lastError=String(e?.message||e);
+    console.error("SnakeDB files:",e);
+  });
+};
+
+window.saveDictionary=function(d){
+  try{legacySaveDictionary?.(d)}catch(_){}
+  SnakeDB.put("dictionary",{
+    id:"global",
+    entries:cloneSafe(d),
+    updatedAt:new Date().toISOString()
+  }).catch(console.error);
+};
+
+window.saveAssets2=function(){
+  /* Do not write giant data URLs back to localStorage anymore. */
+  SnakeDB.saveAssets(typeof assets2!=="undefined"?assets2:[]).catch(e=>{
+    SnakeDB.stats.lastError=String(e?.message||e);
+    console.error("SnakeDB assets:",e);
+  });
+};
+
+window.loadAssets2=function(){
+  /* Hydration happens at boot. Keep old fallback only for first migration. */
+  if(SnakeDB.assetsHydrated)return;
+  try{
+    legacyLoadAssets2?.();
+    if(typeof assets2!=="undefined"&&assets2.length){
+      SnakeDB.saveAssets(assets2).catch(console.error);
+    }
+  }catch(_){}
+};
+
+if(typeof legacyOpenProject==="function"){
+  window.openProject=async function(name){
+    try{await SnakeDB.ready}catch(_){}
+    return legacyOpenProject.apply(this,arguments);
+  };
+}
+
+if(typeof legacyOpenProjectById==="function"){
+  window.openProjectById=async function(id){
+    try{await SnakeDB.ready}catch(_){}
+    return legacyOpenProjectById.apply(this,arguments);
+  };
+}
+
+/* Additional resource save hooks. */
+function wrapSave(name,after){
+  const old=window[name];
+  if(typeof old!=="function")return;
+  window[name]=function(){
+    const result=old.apply(this,arguments);
+    Promise.resolve().then(after).catch(console.error);
+    return result;
+  };
+}
+
+wrapSave("saveArt2",async()=>{
+  try{
+    const raw=localStorage.getItem("myengine_arte_pro");
+    if(raw)await SnakeDB.saveSingleton("sprites","sprite-studio",JSON.parse(raw));
+  }catch(_){}
+});
+
+wrapSave("saveScene2",async()=>{
+  try{
+    const raw=localStorage.getItem("myengine_scene_resource");
+    if(raw){
+      const data=JSON.parse(raw);
+      await SnakeDB.put("scenes",{
+        id:"scene-composer",
+        name:data.name||"Main Scene",
+        data,
+        updatedAt:new Date().toISOString()
+      });
+    }
+  }catch(_){}
+});
+
+wrapSave("tmSaveResource",async()=>{
+  try{
+    const maps=JSON.parse(localStorage.getItem("snake_global_tilemaps")||"[]");
+    await SnakeDB.clear("tilemaps");
+    await SnakeDB.putMany("tilemaps",maps.map((m,i)=>({
+      id:String(m.id||("tilemap-"+i+"-"+m.name)),
+      name:m.name||("Tilemap "+(i+1)),
+      data:m,
+      updatedAt:new Date().toISOString()
+    })));
+  }catch(_){}
+});
+
+wrapSave("persistProjectWorkspace",async()=>{
+  if(typeof currentProject==="undefined"||!currentProject)return;
+  if(typeof projectWorkspace==="undefined")return;
+  const projectId=await SnakeDB.projectIdForName(currentProject);
+  await SnakeDB.saveSingleton("snapshots","workspace:"+projectId,{
+    projectId,
+    projectName:currentProject,
+    workspace:projectWorkspace
+  });
+});
+
+/* =====================================================
+   BOOT
+===================================================== */
+SnakeDB.ready=(async()=>{
+  try{
+    await SnakeDB.open();
+    SnakeDB.installStorageCard();
+    await SnakeDB.migrateLegacy();
+    await SnakeDB.hydrate();
+
+    /* Ask the browser whether this origin is already persistent.
+       We only REQUEST persist() after an explicit user tap in Settings. */
+    SnakeDB.refreshStorageCard();
+
+    console.info("[SnakeDB] IndexedDB ready.");
+    return SnakeDB;
+  }catch(err){
+    SnakeDB.stats.lastError=String(err?.message||err);
+    console.error("[SnakeDB] startup failed:",err);
+    document.getElementById("snakeDBStatus")?.replaceChildren(document.createTextNode("ERROR"));
+    return SnakeDB;
+  }
+})();
+
+})();
+</script>
+
 </body>
 </html>
