@@ -21644,5 +21644,1030 @@ if(document.readyState==="loading"){
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — ENTITY / WORLD OBJECT SYSTEM v1
+===================================================== */
+.entity-manager-v1{
+  position:absolute;
+  inset:0;
+  z-index:238;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.entity-manager-v1.show{display:flex}
+
+.ent-v1-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.ent-v1-head-title{flex:1;min-width:0}
+.ent-v1-head-title strong{display:block;font-size:13px}
+.ent-v1-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.ent-v1-body{
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:220px 1fr 240px;
+  background:#090c0f;
+}
+
+.ent-v1-sidebar{
+  min-height:0;
+  overflow:auto;
+  padding:10px;
+  border-right:1px solid #242b32;
+  background:#0e1318;
+}
+.ent-v1-sidebar.right{
+  border-right:0;
+  border-left:1px solid #242b32;
+}
+
+.ent-v1-section-title{
+  margin:5px 2px 8px;
+  color:#6e7a84;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.1em;
+}
+
+.ent-v1-list{display:grid;gap:6px}
+
+.ent-v1-item{
+  min-height:50px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#12181d;
+}
+.ent-v1-item.active{
+  border-color:#486547;
+  background:#151f16;
+}
+.ent-v1-item-info{flex:1;min-width:0}
+.ent-v1-item-name{
+  color:#dce2e6;
+  font-size:10px;
+  font-weight:750;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.ent-v1-item-meta{
+  margin-top:3px;
+  color:#68747e;
+  font-size:8px;
+}
+.ent-v1-mini{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:6px;
+  background:#171d22;
+  color:#7f8a93;
+  font-size:9px;
+}
+.ent-v1-mini.danger{color:#e67d84}
+
+.ent-v1-center{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.ent-v1-toolbar{
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:0 7px;
+  overflow-x:auto;
+  border-bottom:1px solid #242b32;
+  background:#10151a;
+}
+.ent-v1-tool{
+  min-width:38px;
+  height:31px;
+  padding:0 8px;
+  border-radius:7px;
+  background:none;
+  color:#74808a;
+  font-size:9px;
+  white-space:nowrap;
+}
+.ent-v1-tool.active{
+  color:#91e864;
+  background:#182019;
+}
+
+.ent-v1-workspace{
+  flex:1;
+  min-height:0;
+  position:relative;
+  overflow:auto;
+  background:
+    linear-gradient(#14191e 1px,transparent 1px),
+    linear-gradient(90deg,#14191e 1px,transparent 1px);
+  background-size:24px 24px;
+  touch-action:none;
+}
+
+#entV1World{
+  position:relative;
+  margin:18px auto;
+  border:1px solid #323c44;
+  background:#0b1014;
+  min-width:640px;
+  min-height:360px;
+  transform-origin:top left;
+}
+
+.ent-v1-world-object{
+  position:absolute;
+  min-width:30px;
+  min-height:30px;
+  border:1px solid #3a454d;
+  border-radius:6px;
+  background:#151c21;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#91e864;
+  font-size:9px;
+  user-select:none;
+  touch-action:none;
+  cursor:pointer;
+}
+.ent-v1-world-object.active{
+  outline:2px solid #91e864;
+  outline-offset:2px;
+}
+.ent-v1-world-object.prefab{
+  border-color:#4d6a49;
+  background:#152018;
+}
+.ent-v1-world-object .tag{
+  position:absolute;
+  top:-17px;
+  left:0;
+  color:#91e864;
+  font-size:7px;
+  white-space:nowrap;
+}
+
+.ent-v1-row{
+  display:grid;
+  grid-template-columns:1fr 110px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.ent-v1-row label{color:#89959e;font-size:9px}
+.ent-v1-row input,
+.ent-v1-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.ent-v1-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.ent-v1-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.ent-v1-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.ent-v1-summary{
+  padding:10px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0c1115;
+  color:#7b8790;
+  font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+
+@media(max-width:820px){
+  .ent-v1-body{
+    grid-template-columns:130px 1fr;
+  }
+  .ent-v1-sidebar.right{display:none}
+  .ent-v1-sidebar{padding:7px}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — ENTITY / WORLD OBJECT SYSTEM v1
+   Scene entities · components metadata · prefab spawning
+   hierarchy-ready records · runtime spawn/destroy/query API
+===================================================== */
+(function(){
+"use strict";
+
+const ENT_PREFIX="snake_entities_v1:";
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function uid(prefix="entity"){
+  return prefix+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)
+}
+function key(name){return ENT_PREFIX+name}
+function sceneName(){
+  try{
+    return window.RuntimeScenes?.current?.name ||
+      document.querySelector(".world-label")?.textContent?.replace("WORLD / ","").trim() ||
+      "Main";
+  }catch{return "Main"}
+}
+
+function defaultState(){
+  return {
+    version:1,
+    scenes:{},
+    updatedAt:new Date().toISOString()
+  };
+}
+function defaultScene(){
+  return {
+    entities:[],
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const state=JSON.parse(raw);
+      if(state?.version===1)return state;
+    }
+  }catch(_){}
+  const s=defaultState();
+  if(name)localStorage.setItem(key(name),JSON.stringify(s));
+  return s;
+}
+
+async function loadState(name=project()){
+  if(!name)return defaultState();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("metadata","entities:"+projectId);
+      if(row?.state?.version===1){
+        localStorage.setItem(key(name),JSON.stringify(row.state));
+        return clone(row.state);
+      }
+    }catch(e){console.warn("Entity load",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveState(state,name=project()){
+  if(!name)return;
+  state.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(state));
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("metadata",{
+        id:"entities:"+projectId,
+        kind:"world-entities",
+        projectId,
+        projectName:name,
+        state:clone(state),
+        updatedAt:state.updatedAt
+      });
+    }catch(e){console.warn("Entity save",e)}
+  }
+}
+
+async function sceneState(name=sceneName()){
+  const state=await loadState();
+  if(!state.scenes[name]){
+    state.scenes[name]=defaultScene();
+    await saveState(state);
+  }
+  return {state,scene:name,data:state.scenes[name]};
+}
+
+function prefabListSync(){
+  return window.Prefabs?.list ? window.Prefabs.list() : Promise.resolve([]);
+}
+
+function makeEntity(options={}){
+  return {
+    id:uid(),
+    name:options.name||"Entity",
+    tag:options.tag||"Untagged",
+    prefabId:options.prefabId||null,
+    parentId:options.parentId||null,
+    active:options.active!==false,
+    transform:{
+      x:Number(options.x||0),
+      y:Number(options.y||0),
+      rotation:Number(options.rotation||0),
+      scaleX:Number(options.scaleX==null?1:options.scaleX),
+      scaleY:Number(options.scaleY==null?1:options.scaleY)
+    },
+    components:clone(options.components||{}),
+    meta:clone(options.meta||{}),
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString()
+  };
+}
+
+async function createEntity(options={}){
+  const {state,scene,data}=await sceneState();
+  const entity=makeEntity(options);
+  data.entities.push(entity);
+  data.updatedAt=new Date().toISOString();
+  state.scenes[scene]=data;
+  await saveState(state);
+  return clone(entity);
+}
+
+async function updateEntity(id,patch={}){
+  const {state,scene,data}=await sceneState();
+  const ent=data.entities.find(e=>e.id===id);
+  if(!ent)return null;
+
+  if(patch.name!=null)ent.name=String(patch.name);
+  if(patch.tag!=null)ent.tag=String(patch.tag);
+  if(patch.active!=null)ent.active=!!patch.active;
+  if(patch.parentId!==undefined)ent.parentId=patch.parentId||null;
+
+  if(patch.transform){
+    ent.transform={...ent.transform,...clone(patch.transform)};
+  }
+
+  if(patch.components){
+    ent.components={...ent.components,...clone(patch.components)};
+  }
+
+  if(patch.meta){
+    ent.meta={...ent.meta,...clone(patch.meta)};
+  }
+
+  ent.updatedAt=new Date().toISOString();
+  state.scenes[scene]=data;
+  await saveState(state);
+  return clone(ent);
+}
+
+async function deleteEntity(id){
+  const {state,scene,data}=await sceneState();
+  data.entities=data.entities.filter(e=>e.id!==id);
+  for(const e of data.entities){
+    if(e.parentId===id)e.parentId=null;
+  }
+  state.scenes[scene]=data;
+  await saveState(state);
+}
+
+async function duplicateEntity(id){
+  const {data}=await sceneState();
+  const source=data.entities.find(e=>e.id===id);
+  if(!source)return null;
+  const copy=makeEntity({
+    ...clone(source),
+    name:source.name+" Copy",
+    x:Number(source.transform?.x||0)+24,
+    y:Number(source.transform?.y||0)+24
+  });
+  return createEntity(copy);
+}
+
+async function createFromPrefab(prefabId,x=0,y=0){
+  const prefabs=await prefabListSync();
+  const prefab=prefabs.find(p=>p.id===prefabId||p.name===prefabId);
+  if(!prefab)return null;
+
+  return createEntity({
+    name:prefab.name,
+    tag:prefab.template?.kind==="Food"?"Pickup":"Untagged",
+    prefabId:prefab.id,
+    x,y,
+    components:{
+      prefab:true
+    },
+    meta:{
+      kind:prefab.template?.kind||"Node"
+    }
+  });
+}
+
+/* -----------------------------------------------------
+   Editor
+----------------------------------------------------- */
+let entScene=null;
+let entData=null;
+let entSelected=null;
+let entTool="select";
+let entDragging=false;
+let entDragOffset={x:0,y:0};
+
+async function refreshData(){
+  const data=await sceneState(sceneName());
+  entScene=data.scene;
+  entData=data.data;
+
+  if(entSelected && !entData.entities.some(e=>e.id===entSelected)){
+    entSelected=null;
+  }
+  if(!entSelected && entData.entities.length){
+    entSelected=entData.entities[0].id;
+  }
+
+  await renderManager();
+}
+
+function selectedEntity(){
+  return entData?.entities?.find(e=>e.id===entSelected)||null;
+}
+
+async function worldSize(){
+  try{
+    const world=await TileMapWorld?.world?.(sceneName());
+    if(world){
+      return {
+        width:world.width*world.tileSize,
+        height:world.height*world.tileSize
+      };
+    }
+  }catch(_){}
+  return {width:960,height:540};
+}
+
+async function renderWorld(){
+  const world=document.getElementById("entV1World");
+  if(!world||!entData)return;
+
+  const size=await worldSize();
+  world.style.width=size.width+"px";
+  world.style.height=size.height+"px";
+  world.innerHTML="";
+
+  for(const entity of entData.entities){
+    const el=document.createElement("div");
+    el.className="ent-v1-world-object"+
+      (entity.id===entSelected?" active":"")+
+      (entity.prefabId?" prefab":"");
+    el.dataset.entityId=entity.id;
+    el.style.left=(entity.transform?.x||0)+"px";
+    el.style.top=(entity.transform?.y||0)+"px";
+    el.style.transform=`rotate(${Number(entity.transform?.rotation||0)}deg) scale(${Number(entity.transform?.scaleX||1)},${Number(entity.transform?.scaleY||1)})`;
+    el.innerHTML=
+      '<span class="tag">'+(escapeHTML?.(entity.name)||entity.name)+'</span>'+
+      '<span>'+(entity.prefabId?"P":"E")+'</span>';
+
+    el.addEventListener("pointerdown",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+
+      entSelected=entity.id;
+
+      document.querySelectorAll(".ent-v1-world-object").forEach(x=>x.classList.remove("active"));
+      el.classList.add("active");
+
+      if(entTool==="move"){
+        entDragging=true;
+        const r=world.getBoundingClientRect();
+        entDragOffset={
+          x:e.clientX-r.left-(entity.transform?.x||0),
+          y:e.clientY-r.top-(entity.transform?.y||0)
+        };
+        el.setPointerCapture?.(e.pointerId);
+      }
+
+      renderInspector();
+      renderEntityList();
+    });
+
+    el.addEventListener("pointermove",async e=>{
+      if(!entDragging||entSelected!==entity.id||entTool!=="move")return;
+      const r=world.getBoundingClientRect();
+      const x=Math.max(0,e.clientX-r.left-entDragOffset.x);
+      const y=Math.max(0,e.clientY-r.top-entDragOffset.y);
+      entity.transform.x=Math.round(x);
+      entity.transform.y=Math.round(y);
+      el.style.left=entity.transform.x+"px";
+      el.style.top=entity.transform.y+"px";
+      renderInspector();
+    });
+
+    const end=async()=>{
+      if(entDragging&&entSelected===entity.id){
+        entDragging=false;
+        await updateEntity(entity.id,{transform:entity.transform});
+      }
+    };
+
+    el.addEventListener("pointerup",end);
+    el.addEventListener("pointercancel",end);
+
+    world.appendChild(el);
+  }
+}
+
+function renderEntityList(){
+  const root=document.getElementById("entV1EntityList");
+  if(!root||!entData)return;
+
+  root.innerHTML=entData.entities.length
+    ?entData.entities.map(e=>`
+      <div class="ent-v1-item ${e.id===entSelected?"active":""}">
+        <button type="button" class="ent-v1-mini" data-ent-select="${e.id}">●</button>
+        <div class="ent-v1-item-info">
+          <div class="ent-v1-item-name">${escapeHTML?.(e.name)||e.name}</div>
+          <div class="ent-v1-item-meta">${e.prefabId?"PREFAB":"ENTITY"} · ${escapeHTML?.(e.tag)||e.tag}</div>
+        </div>
+        <button type="button" class="ent-v1-mini danger" data-ent-delete="${e.id}">×</button>
+      </div>
+    `).join("")
+    :'<div class="ent-v1-summary">No entities in this scene.</div>';
+}
+
+async function renderPrefabList(){
+  const root=document.getElementById("entV1PrefabList");
+  if(!root)return;
+
+  const prefabs=await prefabListSync();
+
+  root.innerHTML=prefabs.length
+    ?prefabs.map(p=>`
+      <div class="ent-v1-item">
+        <div class="ent-v1-item-info">
+          <div class="ent-v1-item-name">${escapeHTML?.(p.name)||p.name}</div>
+          <div class="ent-v1-item-meta">Prefab</div>
+        </div>
+        <button type="button" class="ent-v1-mini" data-ent-spawn-prefab="${p.id}">＋</button>
+      </div>
+    `).join("")
+    :'<div class="ent-v1-summary">No Prefabs yet.</div>';
+}
+
+function renderInspector(){
+  const e=selectedEntity();
+
+  const set=(id,v)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.type==="checkbox")el.checked=!!v;
+    else el.value=v??"";
+  };
+
+  if(!e){
+    ["entV1Name","entV1Tag","entV1X","entV1Y","entV1Rot","entV1ScaleX","entV1ScaleY"]
+      .forEach(id=>set(id,""));
+    return;
+  }
+
+  set("entV1Name",e.name);
+  set("entV1Tag",e.tag);
+  set("entV1X",e.transform?.x);
+  set("entV1Y",e.transform?.y);
+  set("entV1Rot",e.transform?.rotation);
+  set("entV1ScaleX",e.transform?.scaleX);
+  set("entV1ScaleY",e.transform?.scaleY);
+  set("entV1Active",e.active!==false);
+
+  const summary=document.getElementById("entV1Summary");
+  if(summary){
+    summary.textContent=
+`ID: ${e.id}
+Prefab: ${e.prefabId||"—"}
+Parent: ${e.parentId||"—"}
+Tag: ${e.tag}
+Active: ${e.active!==false?"YES":"NO"}`;
+  }
+}
+
+async function renderManager(){
+  renderEntityList();
+  await renderPrefabList();
+  renderInspector();
+  await renderWorld();
+}
+
+async function saveInspector(){
+  const e=selectedEntity();
+  if(!e)return;
+
+  await updateEntity(e.id,{
+    name:document.getElementById("entV1Name")?.value||e.name,
+    tag:document.getElementById("entV1Tag")?.value||"Untagged",
+    active:!!document.getElementById("entV1Active")?.checked,
+    transform:{
+      x:Number(document.getElementById("entV1X")?.value||0),
+      y:Number(document.getElementById("entV1Y")?.value||0),
+      rotation:Number(document.getElementById("entV1Rot")?.value||0),
+      scaleX:Number(document.getElementById("entV1ScaleX")?.value||1),
+      scaleY:Number(document.getElementById("entV1ScaleY")?.value||1)
+    }
+  });
+
+  await refreshData();
+  showToast?.("Entity salvo");
+}
+
+/* -----------------------------------------------------
+   Runtime
+----------------------------------------------------- */
+const RuntimeEntities={
+  map:new Map(),
+  scene:null,
+
+  async rebuild(scene=sceneName()){
+    this.clear();
+    this.scene=scene;
+
+    const {data}=await sceneState(scene);
+    const graph=window.snakeRuntime?.graph;
+    if(!graph)return;
+
+    for(const rec of data.entities){
+      if(rec.active===false)continue;
+
+      let node=null;
+
+      if(rec.prefabId && window.Prefabs?.instantiateRuntime){
+        try{
+          node=await Prefabs.instantiateRuntime(rec.prefabId,{
+            name:rec.name,
+            x:rec.transform?.x||0,
+            y:rec.transform?.y||0,
+            rotation:rec.transform?.rotation||0,
+            scaleX:rec.transform?.scaleX||1,
+            scaleY:rec.transform?.scaleY||1
+          });
+        }catch(_){}
+      }
+
+      if(!node){
+        node=new SnakeNode(rec.name||"Entity","Sprite");
+        node.transform.x=Number(rec.transform?.x||0);
+        node.transform.y=Number(rec.transform?.y||0);
+        node.transform.rotation=Number(rec.transform?.rotation||0);
+        node.transform.scaleX=Number(rec.transform?.scaleX||1);
+        node.transform.scaleY=Number(rec.transform?.scaleY||1);
+        graph.add(node);
+      }
+
+      node.meta=node.meta||{};
+      node.meta.entityId=rec.id;
+      node.meta.tag=rec.tag||"Untagged";
+      node.meta.prefabId=rec.prefabId||null;
+      node.meta.sceneManagedEntity=true;
+
+      this.map.set(rec.id,node);
+    }
+  },
+
+  clear(){
+    const graph=window.snakeRuntime?.graph;
+    for(const node of this.map.values()){
+      try{node.destroy?.()}catch(_){}
+      try{graph?.remove?.(node)}catch(_){}
+    }
+    this.map.clear();
+  },
+
+  get(idOrName){
+    for(const [id,node] of this.map){
+      if(id===idOrName||node.name===idOrName)return node;
+    }
+    return null;
+  },
+
+  findByTag(tag){
+    return [...this.map.values()].filter(n=>n.meta?.tag===tag);
+  },
+
+  async spawn(prefabOrName,options={}){
+    let node=null;
+
+    if(window.Prefabs?.instantiateRuntime){
+      try{
+        node=await Prefabs.instantiateRuntime(prefabOrName,options);
+      }catch(_){}
+    }
+
+    if(!node){
+      node=new SnakeNode(options.name||String(prefabOrName||"Entity"),"Sprite");
+      node.transform.x=Number(options.x||0);
+      node.transform.y=Number(options.y||0);
+      snakeRuntime?.graph?.add?.(node);
+    }
+
+    const id=uid("runtime_entity");
+    node.meta=node.meta||{};
+    node.meta.entityId=id;
+    node.meta.tag=options.tag||"Untagged";
+    this.map.set(id,node);
+
+    return node;
+  },
+
+  destroy(target){
+    let node=target;
+    if(typeof target==="string")node=this.get(target);
+    if(!node)return false;
+
+    for(const [id,n] of this.map){
+      if(n===node)this.map.delete(id);
+    }
+
+    try{node.destroy?.()}catch(_){}
+    try{snakeRuntime?.graph?.remove?.(node)}catch(_){}
+    return true;
+  }
+};
+
+window.RuntimeEntities=RuntimeEntities;
+SnakeEngine.runtime.Entities=RuntimeEntities;
+
+window.addEventListener("snake:sceneloaded",e=>{
+  const name=e.detail?.scene?.name;
+  if(name)RuntimeEntities.rebuild(name).catch(console.error);
+});
+
+const oldOpenPreviewEnt=window.openPreview;
+if(typeof oldOpenPreviewEnt==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreviewEnt.apply(this,arguments);
+    setTimeout(()=>RuntimeEntities.rebuild(sceneName()).catch(console.error),120);
+    return r;
+  };
+}
+
+const oldClosePreviewEnt=window.closePreview;
+if(typeof oldClosePreviewEnt==="function"){
+  window.closePreview=function(){
+    RuntimeEntities.clear();
+    return oldClosePreviewEnt.apply(this,arguments);
+  };
+}
+
+/* -----------------------------------------------------
+   Script API
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    return Object.freeze({
+      ...api,
+      entity:{
+        spawn(prefabOrName,options){
+          return RuntimeEntities.spawn(prefabOrName,options);
+        },
+        destroy(target){
+          return RuntimeEntities.destroy(target);
+        },
+        get(idOrName){
+          return RuntimeEntities.get(idOrName);
+        },
+        findByTag(tag){
+          return RuntimeEntities.findByTag(tag);
+        }
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("entityManagerV1"))return;
+
+  const ui=document.createElement("section");
+  ui.id="entityManagerV1";
+  ui.className="entity-manager-v1";
+  ui.innerHTML=`
+    <header class="ent-v1-head">
+      <button class="icon-btn" type="button" data-ent-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="ent-v1-head-title">
+        <strong>ENTITIES</strong>
+        <small>World objects, Prefabs and runtime spawning</small>
+      </div>
+      <button class="icon-btn" type="button" data-ent-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2-5.3"/><path d="M20 4v6h-6"/></svg>
+      </button>
+    </header>
+
+    <main class="ent-v1-body">
+      <aside class="ent-v1-sidebar">
+        <div class="ent-v1-section-title">SCENE ENTITIES</div>
+        <div id="entV1EntityList" class="ent-v1-list"></div>
+
+        <div class="ent-v1-section-title">PREFABS</div>
+        <div id="entV1PrefabList" class="ent-v1-list"></div>
+      </aside>
+
+      <section class="ent-v1-center">
+        <div class="ent-v1-toolbar">
+          <button class="ent-v1-tool active" type="button" data-ent-tool="select">SELECT</button>
+          <button class="ent-v1-tool" type="button" data-ent-tool="move">MOVE</button>
+          <button class="ent-v1-tool" type="button" data-ent-create>NEW ENTITY</button>
+          <button class="ent-v1-tool" type="button" data-ent-duplicate>DUPLICATE</button>
+        </div>
+
+        <div class="ent-v1-workspace">
+          <div id="entV1World"></div>
+        </div>
+      </section>
+
+      <aside class="ent-v1-sidebar right">
+        <div class="ent-v1-section-title">INSPECTOR</div>
+
+        <div class="ent-v1-row"><label>Name</label><input id="entV1Name"></div>
+        <div class="ent-v1-row"><label>Tag</label><input id="entV1Tag"></div>
+        <div class="ent-v1-row"><label>X</label><input id="entV1X" type="number"></div>
+        <div class="ent-v1-row"><label>Y</label><input id="entV1Y" type="number"></div>
+        <div class="ent-v1-row"><label>Rotation</label><input id="entV1Rot" type="number"></div>
+        <div class="ent-v1-row"><label>Scale X</label><input id="entV1ScaleX" type="number" step=".1"></div>
+        <div class="ent-v1-row"><label>Scale Y</label><input id="entV1ScaleY" type="number" step=".1"></div>
+        <div class="ent-v1-row"><label>Active</label><input id="entV1Active" type="checkbox"></div>
+
+        <div class="ent-v1-actions">
+          <button class="primary" type="button" data-ent-save>SAVE</button>
+        </div>
+
+        <div id="entV1Summary" class="ent-v1-summary"></div>
+      </aside>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-ent-close]"))return closeManager();
+    if(e.target.closest("[data-ent-refresh]"))return refreshData();
+
+    const tool=e.target.closest("[data-ent-tool]");
+    if(tool){
+      entTool=tool.dataset.entTool;
+      document.querySelectorAll(".ent-v1-tool").forEach(x=>x.classList.remove("active"));
+      tool.classList.add("active");
+      return;
+    }
+
+    if(e.target.closest("[data-ent-create]")){
+      const entity=await createEntity({name:"Entity",x:120,y:90});
+      entSelected=entity.id;
+      await refreshData();
+      return;
+    }
+
+    if(e.target.closest("[data-ent-duplicate]")){
+      if(entSelected){
+        const copy=await duplicateEntity(entSelected);
+        if(copy)entSelected=copy.id;
+        await refreshData();
+      }
+      return;
+    }
+
+    const select=e.target.closest("[data-ent-select]");
+    if(select){
+      entSelected=select.dataset.entSelect;
+      await renderManager();
+      return;
+    }
+
+    const del=e.target.closest("[data-ent-delete]");
+    if(del){
+      await deleteEntity(del.dataset.entDelete);
+      if(entSelected===del.dataset.entDelete)entSelected=null;
+      await refreshData();
+      return;
+    }
+
+    const spawn=e.target.closest("[data-ent-spawn-prefab]");
+    if(spawn){
+      const entity=await createFromPrefab(spawn.dataset.entSpawnPrefab,160,120);
+      if(entity)entSelected=entity.id;
+      await refreshData();
+      return;
+    }
+
+    if(e.target.closest("[data-ent-save]")){
+      await saveInspector();
+      return;
+    }
+  });
+
+  /* Add to clean overflow menu */
+  const menu=document.getElementById("editorMoreMenu");
+  if(menu && !document.getElementById("editorMoreEntities")){
+    const btn=document.createElement("button");
+    btn.id="editorMoreEntities";
+    btn.type="button";
+    btn.className="editor-more-item";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<circle cx="8" cy="8" r="3"/>'+
+        '<circle cx="16" cy="16" r="3"/>'+
+        '<path d="M10 10l4 4"/>'+
+      '</svg>'+
+      '<span>Entities</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("entityManagerV1")?.classList.add("show");
+  await refreshData();
+}
+function closeManager(){
+  document.getElementById("entityManagerV1")?.classList.remove("show");
+}
+
+window.EntityWorld={
+  version:"1.0.0",
+  open:openManager,
+  load:loadState,
+  save:saveState,
+  create:createEntity,
+  update:updateEntity,
+  remove:deleteEntity,
+  duplicate:duplicateEntity,
+  createFromPrefab
+};
+
+const oldOpenProjectEnt=window.openProject;
+if(typeof oldOpenProjectEnt==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProjectEnt.apply(this,arguments);
+    ensureUI();
+    return r;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",ensureUI,{once:true});
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
 </body>
 </html>
