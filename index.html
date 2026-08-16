@@ -25206,5 +25206,214 @@ window.RPGInputBridge={
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   RPG DEMO — CONTROLS VISIBILITY FIX v1
+   Gameplay stays below the native joystick / A-B controls.
+===================================================== */
+#rpgFieldRenderCanvas,
+#rpgCodeCanvas,
+#rpgDemoCanvas{
+  z-index:6 !important;
+  pointer-events:none !important;
+}
+
+#preview .runtime-touch.se-input-touch{
+  z-index:60 !important;
+  pointer-events:none;
+}
+
+#preview .runtime-touch.se-input-touch .se-stick,
+#preview .runtime-touch.se-input-touch .se-actions,
+#preview .runtime-touch.se-input-touch .se-action{
+  position:relative;
+  z-index:61 !important;
+  pointer-events:auto !important;
+}
+
+#preview .ui-runtime-layer{
+  z-index:50 !important;
+}
+</style>
+
+<script>
+/* =====================================================
+   RPG DEMO — A/B BUTTON INPUT BRIDGE v1
+   Native .se-action buttons were updating SnakeInput only.
+   This mirrors them into InputV2 so RPG scripts can attack.
+===================================================== */
+(function(){
+"use strict";
+
+function nativeActionToVirtual(action){
+  if(action==="primary")return "a";
+  if(action==="secondary")return "b";
+  return action;
+}
+
+function nativeAliasesForInputAction(name){
+  const result=new Set([name]);
+
+  try{
+    const cfg=window.InputV2?.action?.(name);
+    for(const v of cfg?.virtual||[]){
+      if(v==="a")result.add("primary");
+      else if(v==="b")result.add("secondary");
+      else result.add(v);
+    }
+  }catch(_){}
+
+  if(name==="attack")result.add("primary");
+  if(name==="primary")result.add("primary");
+  if(name==="secondary")result.add("secondary");
+
+  return [...result];
+}
+
+/*
+  Preserve InputV2 keyboard behavior, while also reading the native
+  runtime-control state that .se-action writes into SnakeInput.
+*/
+if(window.InputV2 && !InputV2.__nativeButtonBridge){
+  InputV2.__nativeButtonBridge=true;
+
+  const oldDown=InputV2.down.bind(InputV2);
+  const oldPressed=InputV2.pressed.bind(InputV2);
+  const oldReleased=InputV2.released.bind(InputV2);
+
+  InputV2.down=function(name){
+    if(oldDown(name))return true;
+
+    try{
+      for(const a of nativeAliasesForInputAction(name)){
+        if(window.SnakeInput?.virtualActions?.get?.(a)===true){
+          return true;
+        }
+      }
+    }catch(_){}
+
+    return false;
+  };
+
+  InputV2.pressed=function(name){
+    if(oldPressed(name))return true;
+
+    try{
+      for(const a of nativeAliasesForInputAction(name)){
+        if(window.SnakeInput?.virtualPressed?.has?.(a)){
+          return true;
+        }
+      }
+    }catch(_){}
+
+    return false;
+  };
+
+  InputV2.released=function(name){
+    if(oldReleased(name))return true;
+
+    try{
+      for(const a of nativeAliasesForInputAction(name)){
+        if(window.SnakeInput?.virtualReleased?.has?.(a)){
+          return true;
+        }
+      }
+    }catch(_){}
+
+    return false;
+  };
+}
+
+/*
+  Direct bridge for the native A/B DOM controls.
+  This is required because SnakeInput.endStep() can clear its own
+  "pressed" set before the RPG project update reads it.
+*/
+function bindNativeActionButtons(){
+  const preview=document.getElementById("preview");
+  if(!preview||!window.InputV2)return;
+
+  preview.querySelectorAll(".se-action[data-se-action]").forEach(btn=>{
+    if(btn.dataset.rpgInputBridge==="1")return;
+    btn.dataset.rpgInputBridge="1";
+
+    const nativeAction=btn.dataset.seAction;
+    const virtual=nativeActionToVirtual(nativeAction);
+
+    const down=e=>{
+      InputV2.setVirtual?.(virtual,true);
+
+      /*
+        Attack is an RPG action alias for the A / primary control.
+        Give it the same edge event directly.
+      */
+      if(nativeAction==="primary"){
+        InputV2.virtualDown?.add?.("attack");
+        InputV2.virtualPressed?.add?.("attack");
+      }
+    };
+
+    const up=e=>{
+      InputV2.setVirtual?.(virtual,false);
+
+      if(nativeAction==="primary"){
+        const was=InputV2.virtualDown?.has?.("attack");
+        InputV2.virtualDown?.delete?.("attack");
+        if(was)InputV2.virtualReleased?.add?.("attack");
+      }
+    };
+
+    btn.addEventListener("pointerdown",down,{passive:true});
+    btn.addEventListener("pointerup",up,{passive:true});
+    btn.addEventListener("pointercancel",up,{passive:true});
+  });
+}
+
+/* Also accept the engine's own native primary-action event. */
+document.addEventListener("snake:input",e=>{
+  if(!window.InputV2)return;
+  if(e.detail?.action!=="primary"||e.detail?.state!=="pressed")return;
+
+  InputV2.virtualPressed?.add?.("a");
+  InputV2.virtualPressed?.add?.("attack");
+});
+
+/*
+  Native controls are recreated/initialized during Runtime startup,
+  so bind after the preview has mounted. No MutationObserver needed.
+*/
+function scheduleBind(){
+  setTimeout(bindNativeActionButtons,60);
+  setTimeout(bindNativeActionButtons,180);
+  setTimeout(bindNativeActionButtons,420);
+}
+
+const oldOpenPreviewControls=window.openPreview;
+if(typeof oldOpenPreviewControls==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreviewControls.apply(this,arguments);
+    scheduleBind();
+    return r;
+  };
+}
+
+const oldRunProjectControls=window.runProject;
+if(typeof oldRunProjectControls==="function"){
+  window.runProject=function(){
+    const r=oldRunProjectControls.apply(this,arguments);
+    scheduleBind();
+    setTimeout(bindNativeActionButtons,900);
+    return r;
+  };
+}
+
+if(document.getElementById("preview")?.classList.contains("show")){
+  scheduleBind();
+}
+
+})();
+</script>
+
 </body>
 </html>
