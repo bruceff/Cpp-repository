@@ -14342,5 +14342,919 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — AUDIO SYSTEM v2
+===================================================== */
+.audio-manager-v2{
+  position:absolute;
+  inset:0;
+  z-index:222;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.audio-manager-v2.show{display:flex}
+
+.audio-v2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.audio-v2-head-title{flex:1;min-width:0}
+.audio-v2-head-title strong{display:block;font-size:13px}
+.audio-v2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.audio-v2-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.audio-v2-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.audio-v2-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.audio-v2-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.audio-v2-panel-body{padding:9px}
+
+.audio-v2-row{
+  display:grid;
+  grid-template-columns:1fr 110px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.audio-v2-row label{
+  color:#89959e;
+  font-size:9px;
+}
+.audio-v2-row input,
+.audio-v2-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.audio-v2-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.audio-v2-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.audio-v2-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.audio-v2-bus{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+  align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid #202831;
+}
+.audio-v2-bus:last-child{border-bottom:0}
+.audio-v2-bus-info strong{
+  display:block;
+  color:#dce2e6;
+  font-size:10px;
+}
+.audio-v2-bus-info small{
+  display:block;
+  margin-top:3px;
+  color:#68747e;
+  font-size:8px;
+}
+.audio-v2-bus-controls{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.audio-v2-bus-controls input{
+  width:76px;
+  height:28px;
+}
+.audio-v2-mini{
+  min-width:34px;
+  height:30px;
+  padding:0 7px;
+  border-radius:6px;
+  border:1px solid #2b353e;
+  background:#161c22;
+  color:#89959e;
+  font-size:8px;
+  font-weight:700;
+}
+.audio-v2-mini.active{
+  color:#f0c978;
+  border-color:#66542b;
+  background:#241d10;
+}
+
+.audio-v2-debug{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  z-index:8;
+  display:none;
+  padding:6px 8px;
+  border:1px solid #34404a;
+  border-radius:6px;
+  background:rgba(8,11,14,.82);
+  color:#7e8b95;
+  font:8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  pointer-events:none;
+}
+.audio-v2-debug.show{display:block}
+
+@media(max-width:700px){
+  .audio-v2-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — AUDIO SYSTEM v2
+   AudioSource · AudioListener · buses · pitch · loop
+   scene binding · runtime API · Snake Demo SFX validation
+===================================================== */
+(function(){
+"use strict";
+
+if(!window.SnakeEngine?.runtime || !window.SnakeEngine?.runtime?.Audio){
+  console.warn("[Audio v2] Base Audio System not found.");
+  return;
+}
+
+const AUDIO_CFG_PREFIX="snake_audio_v2:";
+const DEFAULT_BUSES={
+  master:{volume:1,muted:false},
+  music:{volume:.8,muted:false},
+  sfx:{volume:1,muted:false},
+  ui:{volume:1,muted:false},
+  ambient:{volume:.8,muted:false}
+};
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function key(name){return AUDIO_CFG_PREFIX+name}
+function defaultConfig(){
+  return {
+    version:2,
+    buses:clone(DEFAULT_BUSES),
+    objects:{},
+    listener:null,
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const cfg=JSON.parse(raw);
+      if(cfg?.version===2)return cfg;
+    }
+  }catch(_){}
+  const cfg=defaultConfig();
+  if(name)localStorage.setItem(key(name),JSON.stringify(cfg));
+  return cfg;
+}
+
+async function loadConfig(name=project()){
+  if(!name)return defaultConfig();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("preferences","audio:"+projectId);
+      if(row?.value?.version===2){
+        localStorage.setItem(key(name),JSON.stringify(row.value));
+        return clone(row.value);
+      }
+    }catch(e){console.warn("Audio v2 config load",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveConfig(cfg,name=project()){
+  if(!name)return;
+  cfg.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(cfg));
+
+  if(window.SnakeDB){
+    try{
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("preferences",{
+        key:"audio:"+projectId,
+        value:clone(cfg),
+        updatedAt:cfg.updatedAt
+      });
+    }catch(e){console.warn("Audio v2 config save",e)}
+  }
+}
+
+class SnakeAudioSource2D extends SnakeComponent{
+  constructor(options={}){
+    super();
+    this.asset=options.asset||options.assetId||null;
+    this.bus=options.bus||"sfx";
+    this.volume=Math.max(0,Math.min(2,Number(options.volume==null?1:options.volume)));
+    this.pitch=Math.max(.05,Math.min(4,Number(options.pitch||1)));
+    this.loop=!!options.loop;
+    this.autoplay=!!options.autoplay;
+    this.playOnAwake=options.playOnAwake==null?this.autoplay:!!options.playOnAwake;
+    this.handle=null;
+  }
+
+  async play(overrides={}){
+    if(!this.asset)return null;
+
+    this.handle=await AudioSystem.play(this.asset,{
+      bus:overrides.bus||this.bus,
+      volume:overrides.volume==null?this.volume:overrides.volume,
+      loop:overrides.loop==null?this.loop:overrides.loop,
+      playbackRate:overrides.pitch||overrides.playbackRate||this.pitch
+    });
+
+    return this.handle;
+  }
+
+  stop(){if(this.handle)AudioSystem.stop(this.handle)}
+  pause(){this.handle?.pause?.()}
+  async resume(){
+    if(this.handle && SnakeEngine.runtime.Audio?.resumeHandle){
+      return SnakeEngine.runtime.Audio.resumeHandle(this.handle);
+    }
+  }
+
+  setVolume(v){
+    this.volume=Math.max(0,Math.min(2,Number(v)||0));
+    this.handle?.setVolume?.(this.volume);
+  }
+
+  setPitch(v){
+    this.pitch=Math.max(.05,Math.min(4,Number(v)||1));
+    this.handle?.setRate?.(this.pitch);
+  }
+
+  onStart(){
+    if(this.playOnAwake)this.play();
+  }
+
+  onDestroy(){this.stop()}
+}
+
+class SnakeAudioListener2D extends SnakeComponent{
+  constructor(options={}){
+    super();
+    this.primary=options.primary!==false;
+  }
+}
+
+SnakeEngine.runtime.AudioSource2D=SnakeAudioSource2D;
+SnakeEngine.runtime.AudioListener2D=SnakeAudioListener2D;
+
+/* -----------------------------------------------------
+   Apply bus configuration
+----------------------------------------------------- */
+async function applyBusConfig(){
+  const cfg=await loadConfig();
+
+  const master=cfg.buses?.master||DEFAULT_BUSES.master;
+  AudioSystem.master(master.volume);
+  AudioSystem.mute(master.muted);
+
+  for(const name of ["music","sfx","ui","ambient"]){
+    const bus=cfg.buses?.[name]||DEFAULT_BUSES[name];
+    AudioSystem.bus(name,bus.volume);
+    AudioSystem.muteBus(name,bus.muted);
+  }
+}
+
+/* -----------------------------------------------------
+   Object settings
+----------------------------------------------------- */
+function sceneObjectId(el){
+  if(!el)return null;
+  if(!el.dataset.audioObjectId){
+    el.dataset.audioObjectId=
+      el.dataset.sceneNodeId||
+      el.dataset.physicsObjectId||
+      ("audioobj_"+Date.now()+"_"+Math.random().toString(36).slice(2,7));
+  }
+  return el.dataset.audioObjectId;
+}
+
+async function readSelectedAudio(){
+  const el=document.querySelector(".scene-object.selected");
+  const id=sceneObjectId(el);
+  const cfg=await loadConfig();
+  return {el,id,cfg,obj:id?cfg.objects[id]||null:null};
+}
+
+function audioDefaults(){
+  return {
+    source:{
+      enabled:true,
+      asset:null,
+      bus:"sfx",
+      volume:1,
+      pitch:1,
+      loop:false,
+      playOnAwake:false
+    },
+    listener:false
+  };
+}
+
+function availableAudioAssets(){
+  try{
+    return (typeof assets2!=="undefined"?assets2:[])
+      .filter(a=>String(a.type||"").startsWith("audio/"));
+  }catch{return []}
+}
+
+async function loadSelectedIntoUI(){
+  const {obj}=await readSelectedAudio();
+  const d=audioDefaults();
+  const p=obj||d;
+
+  const assets=availableAudioAssets();
+  const assetSelect=document.getElementById("audioV2Asset");
+  if(assetSelect){
+    assetSelect.innerHTML=
+      '<option value="">None</option>'+
+      assets.map(a=>`<option value="${a.id}">${escapeHTML?.(a.name)||a.name}</option>`).join("");
+  }
+
+  const set=(id,v)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.type==="checkbox")el.checked=!!v;
+    else el.value=v??"";
+  };
+
+  set("audioV2Asset",p.source?.asset??d.source.asset);
+  set("audioV2Bus",p.source?.bus??d.source.bus);
+  set("audioV2Volume",p.source?.volume??d.source.volume);
+  set("audioV2Pitch",p.source?.pitch??d.source.pitch);
+  set("audioV2Loop",p.source?.loop??d.source.loop);
+  set("audioV2PlayAwake",p.source?.playOnAwake??d.source.playOnAwake);
+  set("audioV2Listener",p.listener??d.listener);
+}
+
+async function applySelectedFromUI(){
+  const {el,id,cfg}=await readSelectedAudio();
+
+  if(!el||!id){
+    showToast?.("Selecione um objeto da cena");
+    return;
+  }
+
+  cfg.objects[id]={
+    source:{
+      enabled:true,
+      asset:document.getElementById("audioV2Asset")?.value||null,
+      bus:document.getElementById("audioV2Bus")?.value||"sfx",
+      volume:Number(document.getElementById("audioV2Volume")?.value||1),
+      pitch:Number(document.getElementById("audioV2Pitch")?.value||1),
+      loop:!!document.getElementById("audioV2Loop")?.checked,
+      playOnAwake:!!document.getElementById("audioV2PlayAwake")?.checked
+    },
+    listener:!!document.getElementById("audioV2Listener")?.checked
+  };
+
+  if(cfg.objects[id].listener)cfg.listener=id;
+  else if(cfg.listener===id)cfg.listener=null;
+
+  await saveConfig(cfg);
+  el.dataset.audioConfig=JSON.stringify(cfg.objects[id]);
+  showToast?.("Audio aplicado");
+}
+
+async function removeSelectedAudio(){
+  const {el,id,cfg}=await readSelectedAudio();
+  if(!el||!id)return;
+
+  delete cfg.objects[id];
+  if(cfg.listener===id)cfg.listener=null;
+  await saveConfig(cfg);
+
+  delete el.dataset.audioConfig;
+  showToast?.("Audio removido");
+}
+
+/* -----------------------------------------------------
+   Runtime binding
+----------------------------------------------------- */
+async function applyAudioConfigToGraph(){
+  const cfg=await loadConfig();
+  await applyBusConfig();
+
+  const graph=window.snakeRuntime?.graph;
+  if(!graph)return;
+
+  let listenerNode=null;
+
+  graph.traverse?.(node=>{
+    if(node===graph.root)return;
+
+    const sourceId=
+      node.meta?.sceneNodeId||
+      node.meta?.physicsObjectId||
+      node.id;
+
+    const settings=cfg.objects[sourceId]||node.meta?.audio;
+    if(!settings)return;
+
+    if(settings.source?.enabled!==false && settings.source?.asset){
+      if(!node.getComponent?.(SnakeAudioSource2D)){
+        node.addComponent(new SnakeAudioSource2D(settings.source));
+      }
+    }
+
+    if(settings.listener){
+      if(!node.getComponent?.(SnakeAudioListener2D)){
+        node.addComponent(new SnakeAudioListener2D({primary:true}));
+      }
+      listenerNode=node;
+    }
+  });
+
+  /* If the project has no explicit listener, the runtime player becomes one. */
+  if(!listenerNode && snakeRuntime?.playerNode){
+    if(!snakeRuntime.playerNode.getComponent?.(SnakeAudioListener2D)){
+      snakeRuntime.playerNode.addComponent(new SnakeAudioListener2D({primary:true}));
+    }
+  }
+}
+
+/* -----------------------------------------------------
+   Bus manager UI
+----------------------------------------------------- */
+async function renderBuses(){
+  const cfg=await loadConfig();
+  const root=document.getElementById("audioV2BusList");
+  if(!root)return;
+
+  root.innerHTML=Object.entries(cfg.buses||DEFAULT_BUSES).map(([name,b])=>`
+    <div class="audio-v2-bus">
+      <div class="audio-v2-bus-info">
+        <strong>${name.toUpperCase()}</strong>
+        <small>${Math.round(Number(b.volume||0)*100)}%</small>
+      </div>
+      <div class="audio-v2-bus-controls">
+        <input type="range" min="0" max="2" step="0.01"
+          value="${Number(b.volume||0)}"
+          data-audio-v2-bus-volume="${name}">
+        <button type="button"
+          class="audio-v2-mini ${b.muted?"active":""}"
+          data-audio-v2-bus-mute="${name}">
+          ${b.muted?"MUTED":"MUTE"}
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function saveBusVolume(name,value){
+  const cfg=await loadConfig();
+  if(!cfg.buses[name])return;
+  cfg.buses[name].volume=Math.max(0,Math.min(2,Number(value)||0));
+  await saveConfig(cfg);
+  await applyBusConfig();
+}
+
+async function toggleBusMute(name){
+  const cfg=await loadConfig();
+  if(!cfg.buses[name])return;
+  cfg.buses[name].muted=!cfg.buses[name].muted;
+  await saveConfig(cfg);
+  await applyBusConfig();
+  renderBuses();
+}
+
+/* -----------------------------------------------------
+   UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("audioManagerV2"))return;
+
+  const ui=document.createElement("section");
+  ui.id="audioManagerV2";
+  ui.className="audio-manager-v2";
+  ui.innerHTML=`
+    <header class="audio-v2-head">
+      <button class="icon-btn" type="button" data-audio-v2-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="audio-v2-head-title">
+        <strong>AUDIO</strong>
+        <small>AudioSource, Listener and Mixer Buses</small>
+      </div>
+      <button class="icon-btn" type="button" data-audio-v2-debug>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M5 9v6h4l5 4V5L9 9z"/>
+          <path d="M17 9a4 4 0 0 1 0 6M19.5 6.5a7.5 7.5 0 0 1 0 11"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="audio-v2-body">
+      <div class="audio-v2-actions">
+        <button type="button" class="primary" data-audio-v2-apply>APPLY TO SELECTED</button>
+        <button type="button" data-audio-v2-remove>REMOVE</button>
+      </div>
+
+      <div class="audio-v2-grid">
+        <section class="audio-v2-panel">
+          <h3>AUDIO SOURCE 2D</h3>
+          <div class="audio-v2-panel-body">
+            <div class="audio-v2-row"><label>Asset</label><select id="audioV2Asset"></select></div>
+            <div class="audio-v2-row">
+              <label>Bus</label>
+              <select id="audioV2Bus">
+                <option value="music">Music</option>
+                <option value="sfx" selected>SFX</option>
+                <option value="ui">UI</option>
+                <option value="ambient">Ambient</option>
+              </select>
+            </div>
+            <div class="audio-v2-row"><label>Volume</label><input id="audioV2Volume" type="number" min="0" max="2" step="0.05" value="1"></div>
+            <div class="audio-v2-row"><label>Pitch</label><input id="audioV2Pitch" type="number" min="0.05" max="4" step="0.05" value="1"></div>
+            <div class="audio-v2-row"><label>Loop</label><input id="audioV2Loop" type="checkbox"></div>
+            <div class="audio-v2-row"><label>Play On Awake</label><input id="audioV2PlayAwake" type="checkbox"></div>
+            <div class="audio-v2-row"><label>Audio Listener</label><input id="audioV2Listener" type="checkbox"></div>
+          </div>
+        </section>
+
+        <section class="audio-v2-panel">
+          <h3>MIXER BUSES</h3>
+          <div class="audio-v2-panel-body">
+            <div id="audioV2BusList"></div>
+          </div>
+        </section>
+
+        <section class="audio-v2-panel">
+          <h3>PREVIEW</h3>
+          <div class="audio-v2-panel-body">
+            <button class="prefab-primary" style="width:100%;margin-bottom:7px" type="button" data-audio-v2-preview>
+              PLAY SELECTED AUDIO
+            </button>
+            <button class="prefab-secondary" style="width:100%" type="button" data-audio-v2-stop-preview>
+              STOP PREVIEW
+            </button>
+          </div>
+        </section>
+
+        <section class="audio-v2-panel">
+          <h3>RUNTIME</h3>
+          <div class="audio-v2-panel-body">
+            <div class="tool-muted">
+              Master, Music, SFX, UI and Ambient buses are applied automatically when Play Mode starts.
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  const header=document.querySelector("#editor .editor-header");
+  const physicsBtn=document.getElementById("physicsHeaderBtn");
+
+  if(header&&!document.getElementById("audioV2HeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="audioV2HeaderBtn";
+    btn.className="icon-btn";
+    btn.type="button";
+    btn.setAttribute("aria-label","Audio");
+    btn.innerHTML=`
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <path d="M5 9v6h4l5 4V5L9 9z"/>
+        <path d="M17 9a4 4 0 0 1 0 6"/>
+      </svg>`;
+    btn.addEventListener("click",openManager);
+
+    if(physicsBtn)physicsBtn.insertAdjacentElement("afterend",btn);
+    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-audio-v2-close]"))return closeManager();
+    if(e.target.closest("[data-audio-v2-apply]"))return applySelectedFromUI();
+    if(e.target.closest("[data-audio-v2-remove]"))return removeSelectedAudio();
+
+    if(e.target.closest("[data-audio-v2-debug]")){
+      audioV2Debug=!audioV2Debug;
+      updateDebugBadge();
+      showToast?.(audioV2Debug?"Audio Debug ON":"Audio Debug OFF");
+      return;
+    }
+
+    if(e.target.closest("[data-audio-v2-preview]")){
+      const asset=document.getElementById("audioV2Asset")?.value;
+      if(!asset){showToast?.("Selecione um áudio");return}
+      await AudioSystem.play(asset,{
+        bus:document.getElementById("audioV2Bus")?.value||"sfx",
+        volume:Number(document.getElementById("audioV2Volume")?.value||1),
+        playbackRate:Number(document.getElementById("audioV2Pitch")?.value||1),
+        loop:!!document.getElementById("audioV2Loop")?.checked
+      });
+      return;
+    }
+
+    if(e.target.closest("[data-audio-v2-stop-preview]")){
+      AudioSystem.stopAll();
+      return;
+    }
+
+    const mute=e.target.closest("[data-audio-v2-bus-mute]");
+    if(mute){
+      await toggleBusMute(mute.dataset.audioV2BusMute);
+      return;
+    }
+  });
+
+  ui.addEventListener("input",e=>{
+    const slider=e.target.closest("[data-audio-v2-bus-volume]");
+    if(!slider)return;
+    saveBusVolume(slider.dataset.audioV2BusVolume,slider.value);
+  });
+}
+
+let audioV2Debug=false;
+
+function updateDebugBadge(){
+  const host=document.querySelector("#preview .game-screen");
+  if(!host)return;
+
+  let badge=document.getElementById("audioV2DebugBadge");
+  if(!badge){
+    badge=document.createElement("div");
+    badge.id="audioV2DebugBadge";
+    badge.className="audio-v2-debug";
+    host.appendChild(badge);
+  }
+
+  badge.classList.toggle("show",audioV2Debug);
+
+  if(audioV2Debug){
+    const stats=AudioSystem.stats?.()||{};
+    badge.textContent=`AUDIO · ACTIVE ${stats.active||0} · DECODED ${stats.decoded||0}`;
+  }
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("audioManagerV2")?.classList.add("show");
+  await loadSelectedIntoUI();
+  await renderBuses();
+}
+
+function closeManager(){
+  document.getElementById("audioManagerV2")?.classList.remove("show");
+}
+
+/* -----------------------------------------------------
+   Runtime integration
+----------------------------------------------------- */
+const oldRuntimeBuildScene=window.runtimeBuildScene;
+if(typeof oldRuntimeBuildScene==="function"){
+  window.runtimeBuildScene=function(){
+    const r=oldRuntimeBuildScene.apply(this,arguments);
+    Promise.resolve().then(applyAudioConfigToGraph).catch(console.error);
+    return r;
+  };
+}
+
+const oldRuntimeRender=window.runtimeRender;
+if(typeof oldRuntimeRender==="function"){
+  window.runtimeRender=function(){
+    const r=oldRuntimeRender.apply(this,arguments);
+    updateDebugBadge();
+    return r;
+  };
+}
+
+/* -----------------------------------------------------
+   Script API extension
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    return Object.freeze({
+      ...api,
+      audio:{
+        ...(api.audio||{}),
+        get source(){return node?.getComponent?.(SnakeAudioSource2D)||null},
+        play(ref,options){return AudioSystem.play(ref,options)},
+        sfx(ref,options){return AudioSystem.playSfx(ref,options)},
+        music(ref,options){return AudioSystem.playMusic(ref,options)},
+        crossfade(ref,duration,options){return AudioSystem.crossfadeMusic(ref,duration,options)},
+        stop(ref){return AudioSystem.stop(ref)},
+        master(v){return AudioSystem.master(v)},
+        bus(name,v){return AudioSystem.bus(name,v)},
+        muteBus(name,m=true){return AudioSystem.muteBus(name,m)}
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   Snake Demo SFX generation and validation
+----------------------------------------------------- */
+async function ensureSnakeDemoSounds(){
+  if(project()!=="Snake Demo")return;
+
+  if(typeof assets2==="undefined")return;
+
+  async function makeToneAsset(id,name,frequency,duration=.08){
+    if(assets2.find(a=>a.id===id))return;
+
+    const sampleRate=22050;
+    const length=Math.floor(sampleRate*duration);
+    const buffer=new ArrayBuffer(44+length*2);
+    const view=new DataView(buffer);
+
+    function writeStr(off,s){
+      for(let i=0;i<s.length;i++)view.setUint8(off+i,s.charCodeAt(i));
+    }
+
+    writeStr(0,"RIFF");
+    view.setUint32(4,36+length*2,true);
+    writeStr(8,"WAVE");
+    writeStr(12,"fmt ");
+    view.setUint32(16,16,true);
+    view.setUint16(20,1,true);
+    view.setUint16(22,1,true);
+    view.setUint32(24,sampleRate,true);
+    view.setUint32(28,sampleRate*2,true);
+    view.setUint16(32,2,true);
+    view.setUint16(34,16,true);
+    writeStr(36,"data");
+    view.setUint32(40,length*2,true);
+
+    for(let i=0;i<length;i++){
+      const t=i/sampleRate;
+      const env=Math.max(0,1-i/length);
+      const sample=Math.sin(2*Math.PI*frequency*t)*env*.35;
+      view.setInt16(44+i*2,Math.max(-1,Math.min(1,sample))*32767,true);
+    }
+
+    const blob=new Blob([buffer],{type:"audio/wav"});
+    const reader=new FileReader();
+
+    await new Promise((resolve,reject)=>{
+      reader.onload=()=>{
+        assets2.push({
+          id,
+          name,
+          type:"audio/wav",
+          data:reader.result,
+          folder:"audio",
+          source:"snake-demo",
+          meta:{audioType:"sfx",bus:"sfx"}
+        });
+        resolve();
+      };
+      reader.onerror=reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  await makeToneAsset("snake-eat.wav","snake-eat.wav",780,.07);
+  await makeToneAsset("snake-gameover.wav","snake-gameover.wav",160,.16);
+
+  await Promise.resolve(saveAssets2?.());
+  renderAssets2?.();
+  renderAudio2?.();
+}
+
+/* Hook Snake Demo food and game-over events with real assets. */
+function patchSnakeDemoAudio(){
+  if(!window.SnakeDemo||SnakeDemo.__audioV2Patched)return;
+
+  SnakeDemo.__audioV2Patched=true;
+
+  const oldStep=SnakeDemo.step?.bind(SnakeDemo);
+  if(oldStep){
+    SnakeDemo.step=function(){
+      const before=this.score;
+      const result=oldStep();
+      if(this.score>before){
+        try{AudioSystem.playSfx("snake-eat.wav",{volume:.45})}catch(_){}
+      }
+      return result;
+    };
+  }
+
+  const oldOver=SnakeDemo.goOver?.bind(SnakeDemo);
+  if(oldOver){
+    SnakeDemo.goOver=async function(){
+      try{AudioSystem.playSfx("snake-gameover.wav",{volume:.5})}catch(_){}
+      return oldOver();
+    };
+  }
+}
+
+/* -----------------------------------------------------
+   Public API
+----------------------------------------------------- */
+window.AudioManagerV2={
+  version:"2.0.0",
+  load:loadConfig,
+  save:saveConfig,
+  open:openManager,
+  applyToSelected:applySelectedFromUI,
+  removeFromSelected:removeSelectedAudio,
+  applyBuses:applyBusConfig,
+  debug(value){
+    audioV2Debug=value==null?!audioV2Debug:!!value;
+    updateDebugBadge();
+    return audioV2Debug;
+  }
+};
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProject.apply(this,arguments);
+    ensureUI();
+    await applyBusConfig();
+    try{
+      await ensureSnakeDemoSounds();
+      patchSnakeDemoAudio();
+    }catch(e){console.warn(e)}
+    return r;
+  };
+}
+
+document.addEventListener("click",e=>{
+  if(e.target.closest?.(".scene-object")){
+    setTimeout(()=>loadSelectedIntoUI(),0);
+  }
+});
+
+Promise.resolve(window.SnakeDB?.ready).then(()=>{
+  ensureUI();
+  applyBusConfig();
+  patchSnakeDemoAudio();
+}).catch(()=>{
+  ensureUI();
+  patchSnakeDemoAudio();
+});
+
+})();
+</script>
+
 </body>
 </html>
