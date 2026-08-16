@@ -13285,5 +13285,1062 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — PHYSICS SYSTEM v2
+===================================================== */
+.physics-manager{
+  position:absolute;
+  inset:0;
+  z-index:220;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.physics-manager.show{display:flex}
+
+.physics-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.physics-head-title{flex:1;min-width:0}
+.physics-head-title strong{display:block;font-size:13px}
+.physics-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.physics-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.physics-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.physics-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.physics-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.physics-panel-body{padding:9px}
+
+.physics-row{
+  display:grid;
+  grid-template-columns:1fr 110px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.physics-row label{
+  color:#89959e;
+  font-size:9px;
+}
+.physics-row input,
+.physics-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.physics-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.physics-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.physics-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.physics-layer-list{
+  display:grid;
+  gap:6px;
+}
+.physics-layer{
+  min-height:42px;
+  padding:8px 9px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid #2a343d;
+  border-radius:8px;
+  background:#12181e;
+}
+.physics-layer span{
+  flex:1;
+  color:#dce2e6;
+  font-size:10px;
+}
+.physics-layer small{
+  color:#68747e;
+  font-size:8px;
+}
+.physics-debug-badge{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  z-index:7;
+  padding:5px 7px;
+  border:1px solid #34404a;
+  border-radius:5px;
+  background:rgba(8,11,14,.8);
+  color:#7e8b95;
+  font:8px ui-monospace,SFMono-Regular,Menlo,monospace;
+  pointer-events:none;
+}
+
+.physics-collider-box{
+  position:absolute;
+  border:1px dashed #91e864;
+  pointer-events:none;
+  z-index:5;
+}
+.physics-collider-circle{
+  position:absolute;
+  border:1px dashed #91e864;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:5;
+}
+
+@media(max-width:700px){
+  .physics-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — PHYSICS SYSTEM v2
+   Rigidbody2D · Collider2D · layers/masks · triggers
+   collision enter/stay/exit · inspector binding
+===================================================== */
+(function(){
+"use strict";
+
+if(!window.SnakeEngine?.runtime){
+  console.warn("[Physics v2] Runtime unavailable.");
+  return;
+}
+
+const PHYSICS_CFG_PREFIX="snake_physics_v2:";
+const DEFAULT_LAYERS=[
+  {id:0,name:"Default"},
+  {id:1,name:"Player"},
+  {id:2,name:"Enemy"},
+  {id:3,name:"World"},
+  {id:4,name:"Pickup"},
+  {id:5,name:"Trigger"}
+];
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function key(name){return PHYSICS_CFG_PREFIX+name}
+function defaultConfig(){
+  return {
+    version:2,
+    gravity:{x:0,y:0},
+    layers:clone(DEFAULT_LAYERS),
+    objects:{},
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const cfg=JSON.parse(raw);
+      if(cfg?.version===2)return cfg;
+    }
+  }catch(_){}
+  const cfg=defaultConfig();
+  if(name)localStorage.setItem(key(name),JSON.stringify(cfg));
+  return cfg;
+}
+
+async function loadConfig(name=project()){
+  if(!name)return defaultConfig();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("preferences","physics:"+projectId);
+      if(row?.value?.version===2){
+        localStorage.setItem(key(name),JSON.stringify(row.value));
+        return clone(row.value);
+      }
+    }catch(e){console.warn("Physics config load",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveConfig(cfg,name=project()){
+  if(!name)return;
+  cfg.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(cfg));
+
+  if(window.SnakeDB){
+    try{
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("preferences",{
+        key:"physics:"+projectId,
+        value:clone(cfg),
+        updatedAt:cfg.updatedAt
+      });
+    }catch(e){console.warn("Physics config save",e)}
+  }
+}
+
+/* -----------------------------------------------------
+   Runtime components
+----------------------------------------------------- */
+class SnakeRigidbody2D extends SnakeComponent{
+  constructor(options={}){
+    super();
+    this.bodyType=options.bodyType||"dynamic"; // static | dynamic | kinematic
+    this.mass=Math.max(.0001,Number(options.mass||1));
+    this.gravityScale=Number(options.gravityScale==null?1:options.gravityScale);
+    this.linearDamping=Math.max(0,Number(options.linearDamping||0));
+    this.velocity={x:Number(options.vx||0),y:Number(options.vy||0)};
+    this.force={x:0,y:0};
+    this.freezeX=!!options.freezeX;
+    this.freezeY=!!options.freezeY;
+    this.freezeRotation=!!options.freezeRotation;
+  }
+
+  setVelocity(x,y){
+    this.velocity.x=Number(x)||0;
+    this.velocity.y=Number(y)||0;
+  }
+
+  addForce(x,y){
+    if(this.bodyType!=="dynamic")return;
+    this.force.x+=Number(x)||0;
+    this.force.y+=Number(y)||0;
+  }
+
+  addImpulse(x,y){
+    if(this.bodyType!=="dynamic")return;
+    this.velocity.x+=(Number(x)||0)/this.mass;
+    this.velocity.y+=(Number(y)||0)/this.mass;
+  }
+
+  onUpdate(dt){
+    if(!this.enabled||!this.node)return;
+    if(this.bodyType==="static")return;
+
+    if(this.bodyType==="dynamic"){
+      const g=Physics2D.gravity;
+      this.velocity.x+=((this.force.x/this.mass)+g.x*this.gravityScale)*dt;
+      this.velocity.y+=((this.force.y/this.mass)+g.y*this.gravityScale)*dt;
+
+      const damp=Math.max(0,1-this.linearDamping*dt);
+      this.velocity.x*=damp;
+      this.velocity.y*=damp;
+
+      this.force.x=0;
+      this.force.y=0;
+    }
+
+    if(!this.freezeX)this.node.transform.x+=this.velocity.x*dt;
+    if(!this.freezeY)this.node.transform.y+=this.velocity.y*dt;
+  }
+}
+
+class SnakeBoxCollider2D extends SnakeComponent{
+  constructor(options={}){
+    super();
+    this.shape="box";
+    this.width=Math.max(1,Number(options.width||32));
+    this.height=Math.max(1,Number(options.height||32));
+    this.offsetX=Number(options.offsetX||0);
+    this.offsetY=Number(options.offsetY||0);
+    this.isTrigger=!!options.isTrigger;
+    this.layer=Number(options.layer||0);
+    this.mask=Number(options.mask==null?0xFFFFFFFF:options.mask)>>>0;
+    this.restitution=Math.max(0,Math.min(1,Number(options.restitution||0)));
+    this.friction=Math.max(0,Math.min(1,Number(options.friction==null?.2:options.friction)));
+  }
+}
+
+class SnakeCircleCollider2D extends SnakeComponent{
+  constructor(options={}){
+    super();
+    this.shape="circle";
+    this.radius=Math.max(.5,Number(options.radius||16));
+    this.offsetX=Number(options.offsetX||0);
+    this.offsetY=Number(options.offsetY||0);
+    this.isTrigger=!!options.isTrigger;
+    this.layer=Number(options.layer||0);
+    this.mask=Number(options.mask==null?0xFFFFFFFF:options.mask)>>>0;
+    this.restitution=Math.max(0,Math.min(1,Number(options.restitution||0)));
+    this.friction=Math.max(0,Math.min(1,Number(options.friction==null?.2:options.friction)));
+  }
+}
+
+const Physics2D={
+  gravity:{x:0,y:0},
+  contacts:new Map(),
+  debug:false,
+  stats:{pairs:0,contacts:0,triggers:0},
+
+  nodeBody(node){return node?.getComponent?.(SnakeRigidbody2D)||null},
+  nodeCollider(node){
+    return node?.getComponent?.(SnakeBoxCollider2D) ||
+           node?.getComponent?.(SnakeCircleCollider2D) || null;
+  },
+
+  bounds(node,col){
+    const x=(node.transform?.x||0)+(col.offsetX||0);
+    const y=(node.transform?.y||0)+(col.offsetY||0);
+
+    if(col.shape==="circle"){
+      return {
+        type:"circle",
+        x,y,r:col.radius,
+        minX:x-col.radius,maxX:x+col.radius,
+        minY:y-col.radius,maxY:y+col.radius
+      };
+    }
+
+    const hw=col.width/2,hh=col.height/2;
+    return {
+      type:"box",
+      x,y,hw,hh,
+      minX:x-hw,maxX:x+hw,
+      minY:y-hh,maxY:y+hh
+    };
+  },
+
+  layerPass(a,b){
+    const bitA=(1<<Math.max(0,Math.min(31,b.layer)))>>>0;
+    const bitB=(1<<Math.max(0,Math.min(31,a.layer)))>>>0;
+    return !!(a.mask & bitA) && !!(b.mask & bitB);
+  },
+
+  test(A,B){
+    if(A.type==="circle"&&B.type==="circle"){
+      const dx=B.x-A.x,dy=B.y-A.y;
+      const rr=A.r+B.r;
+      if(dx*dx+dy*dy>rr*rr)return null;
+      const d=Math.max(.0001,Math.hypot(dx,dy));
+      return {nx:dx/d,ny:dy/d,depth:rr-d};
+    }
+
+    if(A.type==="box"&&B.type==="box"){
+      const ox=Math.min(A.maxX,B.maxX)-Math.max(A.minX,B.minX);
+      const oy=Math.min(A.maxY,B.maxY)-Math.max(A.minY,B.minY);
+      if(ox<=0||oy<=0)return null;
+      if(ox<oy){
+        return {nx:A.x<B.x?1:-1,ny:0,depth:ox};
+      }
+      return {nx:0,ny:A.y<B.y?1:-1,depth:oy};
+    }
+
+    const C=A.type==="circle"?A:B;
+    const R=A.type==="box"?A:B;
+    const px=Math.max(R.minX,Math.min(C.x,R.maxX));
+    const py=Math.max(R.minY,Math.min(C.y,R.maxY));
+    const dx=C.x-px,dy=C.y-py;
+    const d2=dx*dx+dy*dy;
+    if(d2>C.r*C.r)return null;
+
+    const d=Math.max(.0001,Math.sqrt(d2));
+    let nx=dx/d,ny=dy/d;
+    if(A.type==="box"){nx=-nx;ny=-ny}
+    return {nx,ny,depth:C.r-d};
+  },
+
+  resolve(aNode,bNode,aCol,bCol,contact){
+    if(aCol.isTrigger||bCol.isTrigger)return;
+
+    const aBody=this.nodeBody(aNode);
+    const bBody=this.nodeBody(bNode);
+
+    const aMovable=aBody && aBody.bodyType!=="static";
+    const bMovable=bBody && bBody.bodyType!=="static";
+
+    if(!aMovable&&!bMovable)return;
+
+    const total=(aMovable?1:0)+(bMovable?1:0);
+    const moveA=aMovable?contact.depth/total:0;
+    const moveB=bMovable?contact.depth/total:0;
+
+    if(aMovable){
+      aNode.transform.x-=contact.nx*moveA;
+      aNode.transform.y-=contact.ny*moveA;
+      const vn=aBody.velocity.x*contact.nx+aBody.velocity.y*contact.ny;
+      if(vn>0){
+        const e=Math.max(aCol.restitution,bCol.restitution);
+        aBody.velocity.x-=(1+e)*vn*contact.nx;
+        aBody.velocity.y-=(1+e)*vn*contact.ny;
+      }
+    }
+
+    if(bMovable){
+      bNode.transform.x+=contact.nx*moveB;
+      bNode.transform.y+=contact.ny*moveB;
+      const vn=bBody.velocity.x*contact.nx+bBody.velocity.y*contact.ny;
+      if(vn<0){
+        const e=Math.max(aCol.restitution,bCol.restitution);
+        bBody.velocity.x-=(1+e)*vn*contact.nx;
+        bBody.velocity.y-=(1+e)*vn*contact.ny;
+      }
+    }
+  },
+
+  emit(type,a,b,contact,trigger=false){
+    const detail={a,b,contact,trigger};
+
+    document.dispatchEvent(new CustomEvent("snake:"+type,{detail}));
+
+    const hookMap={
+      collisionenter:"onCollisionEnter",
+      collisionstay:"onCollisionStay",
+      collisionexit:"onCollisionExit",
+      triggerenter:"onTriggerEnter",
+      triggerstay:"onTriggerStay",
+      triggerexit:"onTriggerExit"
+    };
+
+    const hook=hookMap[type];
+    if(!hook)return;
+
+    for(const node of [a,b]){
+      try{
+        for(const comp of node.components||[]){
+          const fn=comp?.[hook];
+          if(typeof fn==="function"){
+            fn.call(comp,node===a?b:a,detail);
+          }
+        }
+      }catch(_){}
+    }
+  },
+
+  update(){
+    const graph=window.snakeRuntime?.graph;
+    if(!graph)return;
+
+    const nodes=[];
+    graph.traverse?.(n=>{
+      if(n===graph.root||!n.active)return;
+      const c=this.nodeCollider(n);
+      if(c&&c.enabled!==false)nodes.push({node:n,col:c,bounds:this.bounds(n,c)});
+    });
+
+    const next=new Map();
+    this.stats.pairs=0;
+    this.stats.contacts=0;
+    this.stats.triggers=0;
+
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const A=nodes[i],B=nodes[j];
+        this.stats.pairs++;
+
+        if(!this.layerPass(A.col,B.col))continue;
+
+        const c=this.test(A.bounds,B.bounds);
+        if(!c)continue;
+
+        const trigger=A.col.isTrigger||B.col.isTrigger;
+        if(trigger)this.stats.triggers++;
+        else this.stats.contacts++;
+
+        const key=[A.node.id,B.node.id].sort().join("|");
+        next.set(key,{a:A.node,b:B.node,contact:c,trigger});
+
+        const old=this.contacts.get(key);
+
+        if(!old){
+          this.emit(trigger?"triggerenter":"collisionenter",A.node,B.node,c,trigger);
+        }else{
+          this.emit(trigger?"triggerstay":"collisionstay",A.node,B.node,c,trigger);
+        }
+
+        this.resolve(A.node,B.node,A.col,B.col,c);
+      }
+    }
+
+    for(const [key,old] of this.contacts){
+      if(next.has(key))continue;
+      this.emit(old.trigger?"triggerexit":"collisionexit",old.a,old.b,old.contact,old.trigger);
+    }
+
+    this.contacts=next;
+  },
+
+  point(x,y,mask=0xFFFFFFFF){
+    const graph=window.snakeRuntime?.graph;
+    const hits=[];
+    graph?.traverse?.(n=>{
+      if(n===graph.root)return;
+      const c=this.nodeCollider(n);if(!c)return;
+      const bit=(1<<Math.max(0,Math.min(31,c.layer)))>>>0;
+      if(!(mask&bit))return;
+      const b=this.bounds(n,c);
+      const inside=b.type==="circle"
+        ?Math.hypot(x-b.x,y-b.y)<=b.r
+        :x>=b.minX&&x<=b.maxX&&y>=b.minY&&y<=b.maxY;
+      if(inside)hits.push(n);
+    });
+    return hits;
+  },
+
+  statsNow(){
+    return {
+      pairs:this.stats.pairs,
+      contacts:this.stats.contacts,
+      triggers:this.stats.triggers
+    };
+  }
+};
+
+SnakeEngine.runtime.Rigidbody2D=SnakeRigidbody2D;
+SnakeEngine.runtime.BoxCollider2D=SnakeBoxCollider2D;
+SnakeEngine.runtime.CircleCollider2D=SnakeCircleCollider2D;
+SnakeEngine.runtime.Physics2D=Physics2D;
+
+window.Physics2D=Physics2D;
+
+/* Compatibility facade */
+window.Physics={
+  ...(window.Physics||{}),
+  setGravity(x,y){
+    Physics2D.gravity.x=Number(x)||0;
+    Physics2D.gravity.y=Number(y)||0;
+  },
+  point:(x,y,mask)=>Physics2D.point(x,y,mask),
+  stats:()=>Physics2D.statsNow()
+};
+
+/* -----------------------------------------------------
+   Persist per-object physics settings
+----------------------------------------------------- */
+function sceneObjectId(el){
+  if(!el)return null;
+  if(!el.dataset.physicsObjectId){
+    el.dataset.physicsObjectId=el.dataset.sceneNodeId||("physobj_"+Date.now()+"_"+Math.random().toString(36).slice(2,7));
+  }
+  return el.dataset.physicsObjectId;
+}
+
+async function readSelectedPhysics(){
+  const el=document.querySelector(".scene-object.selected");
+  const id=sceneObjectId(el);
+  const cfg=await loadConfig();
+  return {el,id,cfg,obj:id?cfg.objects[id]||null:null};
+}
+
+async function saveSelectedPhysics(settings){
+  const {el,id,cfg}=await readSelectedPhysics();
+  if(!el||!id){
+    showToast?.("Selecione um objeto da cena");
+    return false;
+  }
+
+  cfg.objects[id]={
+    ...(cfg.objects[id]||{}),
+    ...clone(settings)
+  };
+
+  await saveConfig(cfg);
+  el.dataset.physicsConfig=JSON.stringify(cfg.objects[id]);
+  showToast?.("Physics aplicado");
+  return true;
+}
+
+function selectedPhysicsDefaults(){
+  return {
+    rigidbody:{
+      enabled:true,
+      bodyType:"dynamic",
+      mass:1,
+      gravityScale:1,
+      linearDamping:0
+    },
+    collider:{
+      enabled:true,
+      shape:"box",
+      width:32,
+      height:32,
+      radius:16,
+      offsetX:0,
+      offsetY:0,
+      isTrigger:false,
+      layer:0,
+      mask:0xFFFFFFFF,
+      restitution:0,
+      friction:.2
+    }
+  };
+}
+
+async function loadSelectedIntoUI(){
+  const {obj}=await readSelectedPhysics();
+  const d=selectedPhysicsDefaults();
+  const p=obj||d;
+
+  const set=(id,v)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.type==="checkbox")el.checked=!!v;
+    else el.value=v;
+  };
+
+  set("physBodyType",p.rigidbody?.bodyType??d.rigidbody.bodyType);
+  set("physMass",p.rigidbody?.mass??d.rigidbody.mass);
+  set("physGravityScale",p.rigidbody?.gravityScale??d.rigidbody.gravityScale);
+  set("physDamping",p.rigidbody?.linearDamping??d.rigidbody.linearDamping);
+  set("physShape",p.collider?.shape??d.collider.shape);
+  set("physWidth",p.collider?.width??d.collider.width);
+  set("physHeight",p.collider?.height??d.collider.height);
+  set("physRadius",p.collider?.radius??d.collider.radius);
+  set("physTrigger",p.collider?.isTrigger??d.collider.isTrigger);
+  set("physLayer",p.collider?.layer??d.collider.layer);
+  set("physMask",p.collider?.mask??d.collider.mask);
+  set("physRestitution",p.collider?.restitution??d.collider.restitution);
+  set("physFriction",p.collider?.friction??d.collider.friction);
+}
+
+async function applyPhysicsFromUI(){
+  const settings=selectedPhysicsDefaults();
+
+  settings.rigidbody.bodyType=document.getElementById("physBodyType")?.value||"dynamic";
+  settings.rigidbody.mass=Number(document.getElementById("physMass")?.value||1);
+  settings.rigidbody.gravityScale=Number(document.getElementById("physGravityScale")?.value||1);
+  settings.rigidbody.linearDamping=Number(document.getElementById("physDamping")?.value||0);
+
+  settings.collider.shape=document.getElementById("physShape")?.value||"box";
+  settings.collider.width=Number(document.getElementById("physWidth")?.value||32);
+  settings.collider.height=Number(document.getElementById("physHeight")?.value||32);
+  settings.collider.radius=Number(document.getElementById("physRadius")?.value||16);
+  settings.collider.isTrigger=!!document.getElementById("physTrigger")?.checked;
+  settings.collider.layer=Number(document.getElementById("physLayer")?.value||0);
+  settings.collider.mask=Number(document.getElementById("physMask")?.value||0xFFFFFFFF)>>>0;
+  settings.collider.restitution=Number(document.getElementById("physRestitution")?.value||0);
+  settings.collider.friction=Number(document.getElementById("physFriction")?.value||.2);
+
+  await saveSelectedPhysics(settings);
+  drawEditorCollider();
+}
+
+async function removeSelectedPhysics(){
+  const {el,id,cfg}=await readSelectedPhysics();
+  if(!el||!id)return;
+  delete cfg.objects[id];
+  await saveConfig(cfg);
+  delete el.dataset.physicsConfig;
+  drawEditorCollider();
+  showToast?.("Physics removido");
+}
+
+function drawEditorCollider(){
+  document.querySelectorAll(".physics-collider-box,.physics-collider-circle").forEach(x=>x.remove());
+
+  if(!Physics2D.debug)return;
+
+  const el=document.querySelector(".scene-object.selected");
+  if(!el)return;
+
+  let cfg;
+  try{cfg=JSON.parse(el.dataset.physicsConfig||"null")}catch(_){}
+  if(!cfg?.collider)return;
+
+  const c=cfg.collider;
+  const marker=document.createElement("div");
+  marker.className=c.shape==="circle"?"physics-collider-circle":"physics-collider-box";
+
+  if(c.shape==="circle"){
+    marker.style.width=(c.radius*2)+"px";
+    marker.style.height=(c.radius*2)+"px";
+    marker.style.left=(-c.radius)+"px";
+    marker.style.top=(-c.radius)+"px";
+  }else{
+    marker.style.width=c.width+"px";
+    marker.style.height=c.height+"px";
+    marker.style.left=(-c.width/2)+"px";
+    marker.style.top=(-c.height/2)+"px";
+  }
+
+  el.appendChild(marker);
+}
+
+/* -----------------------------------------------------
+   Runtime config application
+----------------------------------------------------- */
+async function applyPhysicsConfigToGraph(){
+  const cfg=await loadConfig();
+  Physics2D.gravity=clone(cfg.gravity||{x:0,y:0});
+
+  const graph=window.snakeRuntime?.graph;
+  if(!graph)return;
+
+  graph.traverse?.(node=>{
+    if(node===graph.root)return;
+
+    const sourceId=node.meta?.sceneNodeId || node.id;
+    const settings=cfg.objects[sourceId] || node.meta?.physics;
+    if(!settings)return;
+
+    if(settings.rigidbody?.enabled!==false){
+      if(!node.getComponent?.(SnakeRigidbody2D)){
+        node.addComponent(new SnakeRigidbody2D(settings.rigidbody));
+      }
+    }
+
+    if(settings.collider?.enabled!==false){
+      const shape=settings.collider.shape||"box";
+      const existing=Physics2D.nodeCollider(node);
+
+      if(!existing){
+        node.addComponent(
+          shape==="circle"
+            ?new SnakeCircleCollider2D(settings.collider)
+            :new SnakeBoxCollider2D(settings.collider)
+        );
+      }
+    }
+  });
+}
+
+/* -----------------------------------------------------
+   UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("physicsManager"))return;
+
+  const ui=document.createElement("section");
+  ui.id="physicsManager";
+  ui.className="physics-manager";
+  ui.innerHTML=`
+    <header class="physics-head">
+      <button class="icon-btn" type="button" data-phys-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="physics-head-title">
+        <strong>PHYSICS 2D</strong>
+        <small>Rigidbody, Collider, Trigger and Layers</small>
+      </div>
+      <button class="icon-btn" type="button" data-phys-debug>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M4 12h16M12 4v16"/>
+          <circle cx="12" cy="12" r="7"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="physics-body">
+      <div class="physics-actions">
+        <button type="button" class="primary" data-phys-apply>APPLY TO SELECTED</button>
+        <button type="button" data-phys-remove>REMOVE</button>
+      </div>
+
+      <div class="physics-grid">
+        <section class="physics-panel">
+          <h3>RIGIDBODY 2D</h3>
+          <div class="physics-panel-body">
+            <div class="physics-row">
+              <label>Body Type</label>
+              <select id="physBodyType">
+                <option value="static">Static</option>
+                <option value="dynamic" selected>Dynamic</option>
+                <option value="kinematic">Kinematic</option>
+              </select>
+            </div>
+            <div class="physics-row"><label>Mass</label><input id="physMass" type="number" step="0.1" value="1"></div>
+            <div class="physics-row"><label>Gravity Scale</label><input id="physGravityScale" type="number" step="0.1" value="1"></div>
+            <div class="physics-row"><label>Linear Damping</label><input id="physDamping" type="number" step="0.1" value="0"></div>
+          </div>
+        </section>
+
+        <section class="physics-panel">
+          <h3>COLLIDER 2D</h3>
+          <div class="physics-panel-body">
+            <div class="physics-row">
+              <label>Shape</label>
+              <select id="physShape">
+                <option value="box">Box</option>
+                <option value="circle">Circle</option>
+              </select>
+            </div>
+            <div class="physics-row"><label>Width</label><input id="physWidth" type="number" value="32"></div>
+            <div class="physics-row"><label>Height</label><input id="physHeight" type="number" value="32"></div>
+            <div class="physics-row"><label>Radius</label><input id="physRadius" type="number" value="16"></div>
+            <div class="physics-row"><label>Trigger</label><input id="physTrigger" type="checkbox"></div>
+            <div class="physics-row"><label>Layer</label><input id="physLayer" type="number" min="0" max="31" value="0"></div>
+            <div class="physics-row"><label>Mask</label><input id="physMask" type="number" value="4294967295"></div>
+            <div class="physics-row"><label>Restitution</label><input id="physRestitution" type="number" step="0.1" min="0" max="1" value="0"></div>
+            <div class="physics-row"><label>Friction</label><input id="physFriction" type="number" step="0.1" min="0" max="1" value="0.2"></div>
+          </div>
+        </section>
+
+        <section class="physics-panel">
+          <h3>PROJECT GRAVITY</h3>
+          <div class="physics-panel-body">
+            <div class="physics-row"><label>Gravity X</label><input id="physGravityX" type="number" step="10" value="0"></div>
+            <div class="physics-row"><label>Gravity Y</label><input id="physGravityY" type="number" step="10" value="0"></div>
+            <button class="prefab-primary" style="width:100%" type="button" data-phys-save-world>SAVE WORLD SETTINGS</button>
+          </div>
+        </section>
+
+        <section class="physics-panel">
+          <h3>COLLISION LAYERS</h3>
+          <div class="physics-panel-body">
+            <div id="physLayerList" class="physics-layer-list"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  const header=document.querySelector("#editor .editor-header");
+  const animatorBtn=document.getElementById("animatorHeaderBtn");
+
+  if(header&&!document.getElementById("physicsHeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="physicsHeaderBtn";
+    btn.className="icon-btn";
+    btn.type="button";
+    btn.setAttribute("aria-label","Physics 2D");
+    btn.innerHTML=`
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <circle cx="8" cy="12" r="3"/>
+        <circle cx="16" cy="12" r="3"/>
+        <path d="M11 12h2M8 9V5M16 9V5"/>
+      </svg>`;
+    btn.addEventListener("click",openManager);
+
+    if(animatorBtn)animatorBtn.insertAdjacentElement("afterend",btn);
+    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-phys-close]"))return closeManager();
+    if(e.target.closest("[data-phys-apply]"))return applyPhysicsFromUI();
+    if(e.target.closest("[data-phys-remove]"))return removeSelectedPhysics();
+
+    if(e.target.closest("[data-phys-debug]")){
+      Physics2D.debug=!Physics2D.debug;
+      drawEditorCollider();
+      showToast?.(Physics2D.debug?"Physics Debug ON":"Physics Debug OFF");
+      return;
+    }
+
+    if(e.target.closest("[data-phys-save-world]")){
+      const cfg=await loadConfig();
+      cfg.gravity.x=Number(document.getElementById("physGravityX")?.value||0);
+      cfg.gravity.y=Number(document.getElementById("physGravityY")?.value||0);
+      await saveConfig(cfg);
+      Physics2D.gravity=clone(cfg.gravity);
+      showToast?.("Physics World salvo");
+      return;
+    }
+  });
+}
+
+async function renderLayers(){
+  const cfg=await loadConfig();
+  const list=document.getElementById("physLayerList");
+  if(!list)return;
+
+  list.innerHTML=(cfg.layers||DEFAULT_LAYERS).map(l=>`
+    <div class="physics-layer">
+      <span>${escapeHTML?.(l.name)||l.name}</span>
+      <small>Layer ${l.id}</small>
+    </div>
+  `).join("");
+
+  document.getElementById("physGravityX").value=cfg.gravity?.x||0;
+  document.getElementById("physGravityY").value=cfg.gravity?.y||0;
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("physicsManager")?.classList.add("show");
+  await loadSelectedIntoUI();
+  await renderLayers();
+  drawEditorCollider();
+}
+function closeManager(){
+  document.getElementById("physicsManager")?.classList.remove("show");
+  document.querySelectorAll(".physics-collider-box,.physics-collider-circle").forEach(x=>x.remove());
+}
+
+/* -----------------------------------------------------
+   Scene selection hook
+----------------------------------------------------- */
+document.addEventListener("click",e=>{
+  const obj=e.target.closest?.(".scene-object");
+  if(!obj)return;
+  setTimeout(()=>{
+    loadSelectedIntoUI();
+    drawEditorCollider();
+  },0);
+});
+
+/* -----------------------------------------------------
+   Runtime integration
+----------------------------------------------------- */
+const oldRuntimeBuildScene=window.runtimeBuildScene;
+if(typeof oldRuntimeBuildScene==="function"){
+  window.runtimeBuildScene=function(){
+    const r=oldRuntimeBuildScene.apply(this,arguments);
+    Promise.resolve().then(applyPhysicsConfigToGraph).catch(console.error);
+    return r;
+  };
+}
+
+const oldRuntimeUpdate=window.runtimeUpdate;
+if(typeof oldRuntimeUpdate==="function"){
+  window.runtimeUpdate=function(dt){
+    const r=oldRuntimeUpdate.apply(this,arguments);
+    try{Physics2D.update(dt)}catch(e){console.error("Physics2D update",e)}
+    return r;
+  };
+}
+
+const oldRuntimeRender=window.runtimeRender;
+if(typeof oldRuntimeRender==="function"){
+  window.runtimeRender=function(){
+    const r=oldRuntimeRender.apply(this,arguments);
+
+    if(Physics2D.debug){
+      const host=document.querySelector("#preview .game-screen");
+      if(host){
+        let badge=document.getElementById("physicsDebugBadge");
+        if(!badge){
+          badge=document.createElement("div");
+          badge.id="physicsDebugBadge";
+          badge.className="physics-debug-badge";
+          host.appendChild(badge);
+        }
+        const s=Physics2D.statsNow();
+        badge.textContent=`PHYSICS · CONTACTS ${s.contacts} · TRIGGERS ${s.triggers}`;
+      }
+    }else{
+      document.getElementById("physicsDebugBadge")?.remove();
+    }
+
+    return r;
+  };
+}
+
+/* -----------------------------------------------------
+   Script API extension
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    return Object.freeze({
+      ...api,
+      physics:{
+        ...(api.physics||{}),
+        get body(){return node?.getComponent?.(SnakeRigidbody2D)||null},
+        get collider(){return Physics2D.nodeCollider(node)},
+        velocity(x,y){node?.getComponent?.(SnakeRigidbody2D)?.setVelocity(x,y)},
+        force(x,y){node?.getComponent?.(SnakeRigidbody2D)?.addForce(x,y)},
+        impulse(x,y){node?.getComponent?.(SnakeRigidbody2D)?.addImpulse(x,y)},
+        point(x,y,mask){return Physics2D.point(x,y,mask)},
+        stats(){return Physics2D.statsNow()}
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   Snake Demo validation setup
+----------------------------------------------------- */
+async function ensureSnakeDemoPhysics(){
+  if(project()!=="Snake Demo")return;
+
+  const cfg=await loadConfig();
+
+  cfg.gravity={x:0,y:0};
+
+  if(!cfg.demoPreset){
+    cfg.demoPreset=true;
+    cfg.updatedAt=new Date().toISOString();
+  }
+
+  await saveConfig(cfg);
+}
+
+/* -----------------------------------------------------
+   Public API
+----------------------------------------------------- */
+window.PhysicsManager={
+  version:"2.0.0",
+  load:loadConfig,
+  save:saveConfig,
+  applyToSelected:applyPhysicsFromUI,
+  removeFromSelected:removeSelectedPhysics,
+  open:openManager,
+  debug(value){
+    Physics2D.debug=value==null?!Physics2D.debug:!!value;
+    return Physics2D.debug;
+  }
+};
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProject.apply(this,arguments);
+    ensureUI();
+    try{await ensureSnakeDemoPhysics()}catch(e){console.warn(e)}
+    return r;
+  };
+}
+
+Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
+
+})();
+</script>
+
 </body>
 </html>
