@@ -6666,5 +6666,168 @@ window.addEventListener("unhandledrejection",e=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — PROJECT DELETE MOBILE FIX
+===================================================== */
+#projectsScreen #projectsList,
+#projectsScreen .project-card,
+#projectsScreen .project-row{
+  pointer-events:auto !important;
+}
+
+#projectsScreen .project-row{
+  position:relative !important;
+}
+
+#projectsScreen .project-open{
+  position:relative;
+  z-index:1;
+  pointer-events:auto !important;
+}
+
+#projectsScreen .project-delete{
+  position:relative !important;
+  z-index:20 !important;
+  flex:0 0 52px !important;
+  width:52px !important;
+  height:52px !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+#projectsScreen .project-delete svg,
+#projectsScreen .project-delete .ui-icon{
+  pointer-events:none !important;
+}
+
+#projectsScreen .project-delete:active{
+  transform:scale(.96);
+  background:#421c20 !important;
+  border-color:#74343a !important;
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — ROBUST PROJECT DELETE HANDLER
+   Uses event delegation so buttons keep working after
+   renderProjects() rebuilds the project list.
+===================================================== */
+(function(){
+  "use strict";
+
+  const list = document.getElementById("projectsList");
+  if(!list) return;
+
+  let deleting = false;
+  let lastPointerDelete = 0;
+
+  function projectById(id){
+    return (typeof getProjects==="function" ? getProjects() : [])
+      .find(p=>String(p.id)===String(id));
+  }
+
+  function performDelete(id){
+    if(deleting) return;
+    deleting = true;
+
+    try{
+      const projects = typeof getProjects==="function" ? getProjects() : [];
+      const project = projects.find(p=>String(p.id)===String(id));
+
+      if(!project){
+        if(typeof showToast==="function") showToast("Projeto não encontrado");
+        return;
+      }
+
+      const ok = window.confirm(
+        `Excluir o projeto "${project.name}"?\n\nEsta ação remove também os arquivos salvos do projeto.`
+      );
+
+      if(!ok) return;
+
+      if(typeof saveProjects==="function"){
+        saveProjects(projects.filter(p=>String(p.id)!==String(id)));
+      }
+
+      try{
+        if(typeof FILES_KEY!=="undefined"){
+          localStorage.removeItem(FILES_KEY+"_"+project.name);
+        }
+      }catch(_){}
+
+      try{
+        const workspaceKeys = [
+          "snake_project_"+project.name,
+          "myengine_project_"+project.name,
+          "snakeEngineProject_"+project.name
+        ];
+        workspaceKeys.forEach(k=>localStorage.removeItem(k));
+      }catch(_){}
+
+      if(typeof currentProject!=="undefined" && currentProject===project.name){
+        currentProject=null;
+      }
+
+      if(typeof renderProjects==="function") renderProjects();
+      if(typeof showToast==="function") showToast("Projeto excluído");
+    }finally{
+      setTimeout(()=>{ deleting=false; },180);
+    }
+  }
+
+  function findDeleteButton(target){
+    return target?.closest?.("[data-delete-project], .project-delete") || null;
+  }
+
+  /* Touch/pointer path — important for iPhone browsers. */
+  list.addEventListener("pointerup", function(e){
+    const btn=findDeleteButton(e.target);
+    if(!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const id=btn.dataset.deleteProject ||
+      btn.closest("[data-project-id]")?.dataset.projectId;
+
+    if(!id) return;
+
+    lastPointerDelete=Date.now();
+    performDelete(id);
+  }, true);
+
+  /* Keyboard/mouse + fallback click.
+     Ignore the synthetic click emitted just after pointerup. */
+  list.addEventListener("click", function(e){
+    const btn=findDeleteButton(e.target);
+    if(!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(Date.now()-lastPointerDelete < 500) return;
+
+    const id=btn.dataset.deleteProject ||
+      btn.closest("[data-project-id]")?.dataset.projectId;
+
+    if(id) performDelete(id);
+  }, true);
+
+  /* Prevent the project-open button from stealing the delete gesture. */
+  list.addEventListener("pointerdown", function(e){
+    const btn=findDeleteButton(e.target);
+    if(!btn) return;
+    e.stopPropagation();
+  }, true);
+
+  window.SnakeDeleteProject = performDelete;
+})();
+</script>
+
 </body>
 </html>
