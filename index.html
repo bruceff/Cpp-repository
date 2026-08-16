@@ -15256,5 +15256,986 @@ Promise.resolve(window.SnakeDB?.ready).then(()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — UI SYSTEM v2
+===================================================== */
+.ui-manager-v2{
+  position:absolute;
+  inset:0;
+  z-index:224;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.ui-manager-v2.show{display:flex}
+
+.ui-v2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.ui-v2-head-title{flex:1;min-width:0}
+.ui-v2-head-title strong{display:block;font-size:13px}
+.ui-v2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.ui-v2-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.ui-v2-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.ui-v2-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.ui-v2-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.ui-v2-panel-body{padding:9px}
+
+.ui-v2-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.ui-v2-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.ui-v2-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.ui-v2-element{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 9px;
+  border:1px solid #2a343d;
+  border-radius:8px;
+  background:#12181e;
+  margin-bottom:6px;
+}
+.ui-v2-element-info{flex:1;min-width:0}
+.ui-v2-element-name{
+  color:#dce2e6;
+  font-size:10px;
+  font-weight:750;
+}
+.ui-v2-element-meta{
+  margin-top:3px;
+  color:#68747e;
+  font-size:8px;
+}
+.ui-v2-mini{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:6px;
+  background:#171d22;
+  color:#7f8a93;
+  font-size:9px;
+}
+.ui-v2-mini.danger{color:#e67d84}
+
+.ui-v2-row{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.ui-v2-row label{
+  color:#89959e;
+  font-size:9px;
+}
+.ui-v2-row input,
+.ui-v2-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.ui-runtime-layer{
+  position:absolute;
+  inset:0;
+  z-index:18;
+  pointer-events:none;
+  overflow:hidden;
+}
+.ui-runtime-element{
+  position:absolute;
+  box-sizing:border-box;
+  pointer-events:auto;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.ui-runtime-text{
+  color:#e8edf1;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  white-space:nowrap;
+}
+.ui-runtime-panel{
+  background:rgba(13,18,23,.88);
+  border:1px solid #2d3942;
+  border-radius:8px;
+}
+.ui-runtime-button{
+  min-width:110px;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 14px;
+  border-radius:8px;
+  border:1px solid #91e864;
+  background:#91e864;
+  color:#091006;
+  font-size:12px;
+  font-weight:750;
+  touch-action:manipulation;
+}
+.ui-runtime-progress{
+  width:180px;
+  height:14px;
+  overflow:hidden;
+  border:1px solid #33404a;
+  border-radius:999px;
+  background:#0a0f13;
+}
+.ui-runtime-progress-fill{
+  height:100%;
+  width:50%;
+  background:#91e864;
+}
+.ui-runtime-image{
+  object-fit:contain;
+  image-rendering:pixelated;
+}
+.ui-runtime-hidden{display:none !important}
+
+@media(max-width:700px){
+  .ui-v2-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — UI SYSTEM v2
+   Runtime Canvas/UI Layer · Text · Button · Image · Panel
+   Progress Bar · anchors · responsive layout · events
+===================================================== */
+(function(){
+"use strict";
+
+const UI_CFG_PREFIX="snake_ui_v2:";
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function uid(prefix="ui"){
+  return prefix+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)
+}
+function key(name){return UI_CFG_PREFIX+name}
+
+function defaultConfig(){
+  return {
+    version:2,
+    screens:{
+      Menu:[],
+      Game:[],
+      GameOver:[]
+    },
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const cfg=JSON.parse(raw);
+      if(cfg?.version===2)return cfg;
+    }
+  }catch(_){}
+  const cfg=defaultConfig();
+  if(name)localStorage.setItem(key(name),JSON.stringify(cfg));
+  return cfg;
+}
+
+async function loadConfig(name=project()){
+  if(!name)return defaultConfig();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("preferences","ui:"+projectId);
+      if(row?.value?.version===2){
+        localStorage.setItem(key(name),JSON.stringify(row.value));
+        return clone(row.value);
+      }
+    }catch(e){console.warn("UI config load",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveConfig(cfg,name=project()){
+  if(!name)return;
+  cfg.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(cfg));
+
+  if(window.SnakeDB){
+    try{
+      const projectId=await SnakeDB.projectIdForName(name);
+      await SnakeDB.put("preferences",{
+        key:"ui:"+projectId,
+        value:clone(cfg),
+        updatedAt:cfg.updatedAt
+      });
+    }catch(e){console.warn("UI config save",e)}
+  }
+}
+
+function makeElement(type,name){
+  return {
+    id:uid("uie"),
+    type,
+    name:name||type,
+    anchor:"top-left",
+    x:16,
+    y:16,
+    width:type==="button"?140:type==="progress"?180:type==="panel"?220:0,
+    height:type==="button"?44:type==="progress"?14:type==="panel"?120:0,
+    text:type==="text"?"Text":type==="button"?"Button":"",
+    fontSize:type==="text"?18:12,
+    value:type==="progress"?0.5:0,
+    visible:true,
+    asset:null,
+    action:null,
+    style:{}
+  };
+}
+
+function currentSceneName(){
+  try{
+    return window.RuntimeScenes?.current?.name ||
+      document.querySelector(".world-label")?.textContent?.replace("WORLD / ","").trim() ||
+      "Game";
+  }catch{return "Game"}
+}
+
+function ensureRuntimeLayer(){
+  const host=document.querySelector("#preview .game-screen") ||
+             document.querySelector("#preview .runtime-stage");
+  if(!host)return null;
+
+  if(getComputedStyle(host).position==="static")host.style.position="relative";
+
+  let layer=document.getElementById("uiRuntimeLayer");
+  if(!layer){
+    layer=document.createElement("div");
+    layer.id="uiRuntimeLayer";
+    layer.className="ui-runtime-layer";
+    host.appendChild(layer);
+  }
+
+  return layer;
+}
+
+function anchorPosition(el,hostRect){
+  const x=Number(el.x||0);
+  const y=Number(el.y||0);
+
+  switch(el.anchor){
+    case "top-right": return {left:null,right:x,top:y,bottom:null};
+    case "bottom-left": return {left:x,right:null,top:null,bottom:y};
+    case "bottom-right": return {left:null,right:x,top:null,bottom:y};
+    case "center": return {
+      left:hostRect.width/2+x,
+      right:null,
+      top:hostRect.height/2+y,
+      bottom:null,
+      transform:"translate(-50%,-50%)"
+    };
+    case "top-center": return {
+      left:hostRect.width/2+x,right:null,top:y,bottom:null,
+      transform:"translateX(-50%)"
+    };
+    case "bottom-center": return {
+      left:hostRect.width/2+x,right:null,top:null,bottom:y,
+      transform:"translateX(-50%)"
+    };
+    default:return {left:x,right:null,top:y,bottom:null};
+  }
+}
+
+function findAsset(id){
+  try{
+    return (typeof assets2!=="undefined"?assets2:[]).find(a=>a.id===id||a.name===id)||null;
+  }catch{return null}
+}
+
+function buildRuntimeElement(data){
+  const node=document.createElement(data.type==="image"?"img":"div");
+  node.className="ui-runtime-element ui-runtime-"+data.type;
+  node.dataset.uiId=data.id;
+
+  if(data.type==="text"){
+    node.textContent=data.text||"Text";
+    node.style.fontSize=(Number(data.fontSize)||18)+"px";
+  }else if(data.type==="button"){
+    node.textContent=data.text||"Button";
+  }else if(data.type==="panel"){
+    if(data.width)node.style.width=data.width+"px";
+    if(data.height)node.style.height=data.height+"px";
+  }else if(data.type==="progress"){
+    node.innerHTML='<div class="ui-runtime-progress-fill"></div>';
+    node.querySelector(".ui-runtime-progress-fill").style.width=
+      Math.max(0,Math.min(1,Number(data.value)||0))*100+"%";
+    if(data.width)node.style.width=data.width+"px";
+    if(data.height)node.style.height=data.height+"px";
+  }else if(data.type==="image"){
+    const asset=findAsset(data.asset);
+    if(asset?.data)node.src=asset.data;
+    if(data.width)node.style.width=data.width+"px";
+    if(data.height)node.style.height=data.height+"px";
+  }
+
+  if(data.type==="button" && data.action){
+    node.addEventListener("click",()=>{
+      UIRuntime.dispatch(data.action,data);
+    });
+  }
+
+  if(data.visible===false)node.classList.add("ui-runtime-hidden");
+
+  return node;
+}
+
+const UIRuntime={
+  currentScreen:null,
+  elements:new Map(),
+  actions:new Map(),
+
+  registerAction(name,fn){
+    if(name&&typeof fn==="function")this.actions.set(name,fn);
+  },
+
+  dispatch(name,payload){
+    const fn=this.actions.get(name);
+    if(typeof fn==="function"){
+      try{return fn(payload)}catch(e){console.error("UI action:",e)}
+    }
+
+    window.dispatchEvent(new CustomEvent("snake:uiaction",{
+      detail:{name,payload}
+    }));
+  },
+
+  async render(screenName){
+    const cfg=await loadConfig();
+    const list=cfg.screens?.[screenName]||[];
+    const layer=ensureRuntimeLayer();
+    if(!layer)return;
+
+    this.currentScreen=screenName;
+    this.elements.clear();
+    layer.innerHTML="";
+
+    const rect=layer.getBoundingClientRect();
+
+    for(const data of list){
+      const node=buildRuntimeElement(data);
+      const p=anchorPosition(data,rect);
+
+      if(p.left!=null)node.style.left=p.left+"px";
+      if(p.right!=null)node.style.right=p.right+"px";
+      if(p.top!=null)node.style.top=p.top+"px";
+      if(p.bottom!=null)node.style.bottom=p.bottom+"px";
+      if(p.transform)node.style.transform=p.transform;
+
+      layer.appendChild(node);
+      this.elements.set(data.id,{data,node});
+    }
+  },
+
+  async show(screenName){
+    return this.render(screenName);
+  },
+
+  hideAll(){
+    const layer=document.getElementById("uiRuntimeLayer");
+    if(layer)layer.innerHTML="";
+    this.elements.clear();
+    this.currentScreen=null;
+  },
+
+  setText(idOrName,text){
+    for(const item of this.elements.values()){
+      if(item.data.id===idOrName||item.data.name===idOrName){
+        item.node.textContent=String(text);
+        return true;
+      }
+    }
+    return false;
+  },
+
+  setProgress(idOrName,value){
+    for(const item of this.elements.values()){
+      if(item.data.id===idOrName||item.data.name===idOrName){
+        const fill=item.node.querySelector(".ui-runtime-progress-fill");
+        if(fill)fill.style.width=Math.max(0,Math.min(1,Number(value)||0))*100+"%";
+        return true;
+      }
+    }
+    return false;
+  },
+
+  setVisible(idOrName,visible){
+    for(const item of this.elements.values()){
+      if(item.data.id===idOrName||item.data.name===idOrName){
+        item.node.classList.toggle("ui-runtime-hidden",!visible);
+        return true;
+      }
+    }
+    return false;
+  },
+
+  get(idOrName){
+    for(const item of this.elements.values()){
+      if(item.data.id===idOrName||item.data.name===idOrName)return item;
+    }
+    return null;
+  }
+};
+
+window.UIRuntime=UIRuntime;
+SnakeEngine.runtime.UI=UIRuntime;
+
+/* -----------------------------------------------------
+   Editor UI manager
+----------------------------------------------------- */
+let uiSelectedScreen="Game";
+let uiSelectedElement=null;
+
+async function addUIElement(type){
+  const cfg=await loadConfig();
+  cfg.screens[uiSelectedScreen]=cfg.screens[uiSelectedScreen]||[];
+
+  const el=makeElement(type,type[0].toUpperCase()+type.slice(1));
+  cfg.screens[uiSelectedScreen].push(el);
+
+  await saveConfig(cfg);
+  uiSelectedElement=el.id;
+  await renderManager();
+  showToast?.("UI element criado");
+}
+
+async function removeUIElement(id){
+  const cfg=await loadConfig();
+  cfg.screens[uiSelectedScreen]=(cfg.screens[uiSelectedScreen]||[]).filter(x=>x.id!==id);
+  await saveConfig(cfg);
+
+  if(uiSelectedElement===id)uiSelectedElement=null;
+  await renderManager();
+}
+
+async function updateSelectedFromInspector(){
+  if(!uiSelectedElement)return;
+  const cfg=await loadConfig();
+  const list=cfg.screens[uiSelectedScreen]||[];
+  const el=list.find(x=>x.id===uiSelectedElement);
+  if(!el)return;
+
+  el.name=document.getElementById("uiV2Name")?.value||el.name;
+  el.text=document.getElementById("uiV2Text")?.value??el.text;
+  el.anchor=document.getElementById("uiV2Anchor")?.value||el.anchor;
+  el.x=Number(document.getElementById("uiV2X")?.value||0);
+  el.y=Number(document.getElementById("uiV2Y")?.value||0);
+  el.width=Number(document.getElementById("uiV2Width")?.value||0);
+  el.height=Number(document.getElementById("uiV2Height")?.value||0);
+  el.fontSize=Number(document.getElementById("uiV2FontSize")?.value||12);
+  el.action=document.getElementById("uiV2Action")?.value||null;
+
+  await saveConfig(cfg);
+  await renderManager();
+  showToast?.("UI atualizado");
+}
+
+async function loadInspector(){
+  const cfg=await loadConfig();
+  const el=(cfg.screens[uiSelectedScreen]||[]).find(x=>x.id===uiSelectedElement);
+
+  const set=(id,v)=>{
+    const input=document.getElementById(id);
+    if(!input)return;
+    input.value=v??"";
+  };
+
+  if(!el){
+    ["uiV2Name","uiV2Text","uiV2X","uiV2Y","uiV2Width","uiV2Height","uiV2FontSize","uiV2Action"]
+      .forEach(id=>set(id,""));
+    return;
+  }
+
+  set("uiV2Name",el.name);
+  set("uiV2Text",el.text);
+  set("uiV2Anchor",el.anchor);
+  set("uiV2X",el.x);
+  set("uiV2Y",el.y);
+  set("uiV2Width",el.width);
+  set("uiV2Height",el.height);
+  set("uiV2FontSize",el.fontSize);
+  set("uiV2Action",el.action);
+}
+
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("uiManagerV2"))return;
+
+  const ui=document.createElement("section");
+  ui.id="uiManagerV2";
+  ui.className="ui-manager-v2";
+  ui.innerHTML=`
+    <header class="ui-v2-head">
+      <button class="icon-btn" type="button" data-ui-v2-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="ui-v2-head-title">
+        <strong>UI SYSTEM</strong>
+        <small>Game HUD, menus and responsive controls</small>
+      </div>
+      <button class="icon-btn" type="button" data-ui-v2-preview>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M3 12s3-5 9-5 9 5 9 5-3 5-9 5-9-5-9-5z"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="ui-v2-body">
+      <div class="ui-v2-actions">
+        <button type="button" class="primary" data-ui-v2-add="text">TEXT</button>
+        <button type="button" data-ui-v2-add="button">BUTTON</button>
+        <button type="button" data-ui-v2-add="image">IMAGE</button>
+        <button type="button" data-ui-v2-add="panel">PANEL</button>
+        <button type="button" data-ui-v2-add="progress">PROGRESS</button>
+      </div>
+
+      <div class="ui-v2-grid">
+        <section class="ui-v2-panel">
+          <h3>SCREEN</h3>
+          <div class="ui-v2-panel-body">
+            <div class="ui-v2-row">
+              <label>Scene</label>
+              <select id="uiV2Screen">
+                <option value="Menu">Menu</option>
+                <option value="Game" selected>Game</option>
+                <option value="GameOver">GameOver</option>
+              </select>
+            </div>
+            <div id="uiV2ElementList"></div>
+          </div>
+        </section>
+
+        <section class="ui-v2-panel">
+          <h3>SELECTED ELEMENT</h3>
+          <div class="ui-v2-panel-body">
+            <div class="ui-v2-row"><label>Name</label><input id="uiV2Name"></div>
+            <div class="ui-v2-row"><label>Text</label><input id="uiV2Text"></div>
+            <div class="ui-v2-row">
+              <label>Anchor</label>
+              <select id="uiV2Anchor">
+                <option value="top-left">Top Left</option>
+                <option value="top-right">Top Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="top-center">Top Center</option>
+                <option value="bottom-center">Bottom Center</option>
+                <option value="center">Center</option>
+              </select>
+            </div>
+            <div class="ui-v2-row"><label>X</label><input id="uiV2X" type="number"></div>
+            <div class="ui-v2-row"><label>Y</label><input id="uiV2Y" type="number"></div>
+            <div class="ui-v2-row"><label>Width</label><input id="uiV2Width" type="number"></div>
+            <div class="ui-v2-row"><label>Height</label><input id="uiV2Height" type="number"></div>
+            <div class="ui-v2-row"><label>Font Size</label><input id="uiV2FontSize" type="number"></div>
+            <div class="ui-v2-row"><label>Action</label><input id="uiV2Action" placeholder="ex: snake.play"></div>
+            <button class="prefab-primary" style="width:100%" type="button" data-ui-v2-save>APPLY CHANGES</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+  editor.appendChild(ui);
+
+  const header=document.querySelector("#editor .editor-header");
+  const audioBtn=document.getElementById("audioV2HeaderBtn");
+
+  if(header&&!document.getElementById("uiV2HeaderBtn")){
+    const btn=document.createElement("button");
+    btn.id="uiV2HeaderBtn";
+    btn.className="icon-btn";
+    btn.type="button";
+    btn.setAttribute("aria-label","UI System");
+    btn.innerHTML=`
+      <svg viewBox="0 0 24 24" stroke-width="1.8">
+        <rect x="4" y="5" width="16" height="14" rx="2"/>
+        <path d="M7 9h10M7 13h6"/>
+      </svg>`;
+    btn.addEventListener("click",openManager);
+
+    if(audioBtn)audioBtn.insertAdjacentElement("afterend",btn);
+    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+  }
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-ui-v2-close]"))return closeManager();
+
+    const add=e.target.closest("[data-ui-v2-add]");
+    if(add)return addUIElement(add.dataset.uiV2Add);
+
+    const sel=e.target.closest("[data-ui-v2-select]");
+    if(sel){
+      uiSelectedElement=sel.dataset.uiV2Select;
+      await renderManager();
+      return;
+    }
+
+    const del=e.target.closest("[data-ui-v2-delete]");
+    if(del)return removeUIElement(del.dataset.uiV2Delete);
+
+    if(e.target.closest("[data-ui-v2-save]"))return updateSelectedFromInspector();
+
+    if(e.target.closest("[data-ui-v2-preview]")){
+      await UIRuntime.show(uiSelectedScreen);
+      openPreview?.();
+      return;
+    }
+  });
+
+  document.getElementById("uiV2Screen")?.addEventListener("change",async e=>{
+    uiSelectedScreen=e.target.value;
+    uiSelectedElement=null;
+    await renderManager();
+  });
+}
+
+async function renderManager(){
+  ensureUI();
+  const cfg=await loadConfig();
+  const list=cfg.screens[uiSelectedScreen]||[];
+  const root=document.getElementById("uiV2ElementList");
+  if(!root)return;
+
+  document.getElementById("uiV2Screen").value=uiSelectedScreen;
+
+  root.innerHTML=list.length?list.map(el=>`
+    <div class="ui-v2-element">
+      <button type="button" class="ui-v2-mini" data-ui-v2-select="${el.id}">●</button>
+      <div class="ui-v2-element-info">
+        <div class="ui-v2-element-name">${escapeHTML?.(el.name)||el.name}</div>
+        <div class="ui-v2-element-meta">${el.type} · ${el.anchor}</div>
+      </div>
+      <button type="button" class="ui-v2-mini danger" data-ui-v2-delete="${el.id}">×</button>
+    </div>
+  `).join(""):'<div class="animator-empty">No UI elements in this scene.</div>';
+
+  await loadInspector();
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("uiManagerV2")?.classList.add("show");
+  await renderManager();
+}
+function closeManager(){
+  document.getElementById("uiManagerV2")?.classList.remove("show");
+}
+
+/* -----------------------------------------------------
+   Script API
+----------------------------------------------------- */
+if(window.Scripts?.buildAPI){
+  const oldBuildAPI=Scripts.buildAPI.bind(Scripts);
+
+  Scripts.buildAPI=function(node){
+    const api=oldBuildAPI(node);
+
+    return Object.freeze({
+      ...api,
+      ui:{
+        show(screen){return UIRuntime.show(screen)},
+        hide(){return UIRuntime.hideAll()},
+        text(id,value){return UIRuntime.setText(id,value)},
+        progress(id,value){return UIRuntime.setProgress(id,value)},
+        visible(id,value){return UIRuntime.setVisible(id,value)},
+        get(id){return UIRuntime.get(id)},
+        on(action,fn){return UIRuntime.registerAction(action,fn)}
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   Runtime scene hooks
+----------------------------------------------------- */
+window.addEventListener("snake:sceneloaded",e=>{
+  const name=e.detail?.scene?.name;
+  if(name)UIRuntime.show(name);
+});
+
+/* -----------------------------------------------------
+   Snake Demo UI validation
+----------------------------------------------------- */
+async function ensureSnakeDemoUI(){
+  if(project()!=="Snake Demo")return;
+
+  const cfg=await loadConfig();
+
+  if(cfg.snakeDemoPreset)return;
+
+  cfg.snakeDemoPreset=true;
+
+  cfg.screens.Menu=[
+    {
+      ...makeElement("text","Title"),
+      id:"snake-ui-title",
+      anchor:"top-center",
+      x:0,y:70,
+      text:"SNAKE",
+      fontSize:30
+    },
+    {
+      ...makeElement("button","PlayButton"),
+      id:"snake-ui-play",
+      anchor:"center",
+      x:0,y:40,
+      width:180,height:46,
+      text:"PLAY",
+      action:"snake.play"
+    }
+  ];
+
+  cfg.screens.Game=[
+    {
+      ...makeElement("text","ScoreText"),
+      id:"snake-ui-score",
+      anchor:"top-left",
+      x:12,y:12,
+      text:"SCORE 000",
+      fontSize:12
+    },
+    {
+      ...makeElement("text","BestText"),
+      id:"snake-ui-best",
+      anchor:"top-right",
+      x:12,y:12,
+      text:"BEST 000",
+      fontSize:12
+    },
+    {
+      ...makeElement("button","PauseButton"),
+      id:"snake-ui-pause",
+      anchor:"bottom-right",
+      x:12,y:12,
+      width:96,height:40,
+      text:"PAUSE",
+      action:"snake.pause"
+    }
+  ];
+
+  cfg.screens.GameOver=[
+    {
+      ...makeElement("text","GameOverTitle"),
+      id:"snake-ui-gameover",
+      anchor:"top-center",
+      x:0,y:90,
+      text:"GAME OVER",
+      fontSize:26
+    },
+    {
+      ...makeElement("text","FinalScore"),
+      id:"snake-ui-final-score",
+      anchor:"center",
+      x:0,y:-10,
+      text:"SCORE 000",
+      fontSize:16
+    },
+    {
+      ...makeElement("button","RestartButton"),
+      id:"snake-ui-restart",
+      anchor:"center",
+      x:0,y:55,
+      width:190,height:44,
+      text:"PLAY AGAIN",
+      action:"snake.restart"
+    },
+    {
+      ...makeElement("button","MenuButton"),
+      id:"snake-ui-menu",
+      anchor:"center",
+      x:0,y:110,
+      width:190,height:40,
+      text:"MENU",
+      action:"snake.menu"
+    }
+  ];
+
+  await saveConfig(cfg);
+}
+
+function bindSnakeDemoUI(){
+  if(!window.SnakeDemo||SnakeDemo.__uiV2Bound)return;
+  SnakeDemo.__uiV2Bound=true;
+
+  UIRuntime.registerAction("snake.play",()=>SnakeDemo.goGame());
+  UIRuntime.registerAction("snake.restart",()=>SnakeDemo.goGame());
+  UIRuntime.registerAction("snake.menu",()=>SnakeDemo.goMenu());
+
+  UIRuntime.registerAction("snake.pause",()=>{
+    try{
+      if(window.SnakePlayDebug?.state==="paused"){
+        SnakePlayDebug.resume();
+        UIRuntime.setText("PauseButton","PAUSE");
+      }else{
+        SnakePlayDebug?.pause?.();
+        UIRuntime.setText("PauseButton","RESUME");
+      }
+    }catch(_){}
+  });
+
+  const oldHudUpdate=SnakeDemo.hudUpdate?.bind(SnakeDemo);
+  if(oldHudUpdate){
+    SnakeDemo.hudUpdate=function(){
+      const r=oldHudUpdate();
+      UIRuntime.setText("ScoreText","SCORE "+String(this.score).padStart(3,"0"));
+      UIRuntime.setText("BestText","BEST "+String(this.best).padStart(3,"0"));
+      return r;
+    };
+  }
+
+  const oldGoOver=SnakeDemo.goOver?.bind(SnakeDemo);
+  if(oldGoOver){
+    SnakeDemo.goOver=async function(){
+      const r=await oldGoOver();
+      UIRuntime.setText("FinalScore","SCORE "+String(this.score).padStart(3,"0"));
+      return r;
+    };
+  }
+
+  /* Hide legacy demo HUD because UI System v2 now owns the HUD. */
+  document.getElementById("snakeDemoHud")?.classList.remove("show");
+}
+
+/* -----------------------------------------------------
+   Runtime open/close integration
+----------------------------------------------------- */
+const oldOpenPreview=window.openPreview;
+if(typeof oldOpenPreview==="function"){
+  window.openPreview=function(){
+    const r=oldOpenPreview.apply(this,arguments);
+
+    Promise.resolve().then(async()=>{
+      if(project()==="Snake Demo"){
+        bindSnakeDemoUI();
+        const scene=window.RuntimeScenes?.current?.name||"Menu";
+        await UIRuntime.show(scene);
+      }
+    });
+
+    return r;
+  };
+}
+
+const oldClosePreview=window.closePreview;
+if(typeof oldClosePreview==="function"){
+  window.closePreview=function(){
+    UIRuntime.hideAll();
+    return oldClosePreview.apply(this,arguments);
+  };
+}
+
+/* -----------------------------------------------------
+   Public API
+----------------------------------------------------- */
+window.UIManagerV2={
+  version:"2.0.0",
+  load:loadConfig,
+  save:saveConfig,
+  open:openManager,
+  runtime:UIRuntime,
+  add:addUIElement
+};
+
+const oldOpenProject=window.openProject;
+if(typeof oldOpenProject==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProject.apply(this,arguments);
+    ensureUI();
+
+    try{
+      await ensureSnakeDemoUI();
+      bindSnakeDemoUI();
+    }catch(e){console.warn(e)}
+
+    return r;
+  };
+}
+
+window.addEventListener("resize",()=>{
+  if(UIRuntime.currentScreen){
+    UIRuntime.render(UIRuntime.currentScreen);
+  }
+});
+
+Promise.resolve(window.SnakeDB?.ready).then(()=>{
+  ensureUI();
+  bindSnakeDemoUI();
+}).catch(()=>{
+  ensureUI();
+  bindSnakeDemoUI();
+});
+
+})();
+</script>
+
 </body>
 </html>
