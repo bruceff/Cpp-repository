@@ -19708,5 +19708,220 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   OUTPUT HOTBAR — PROJECT SETTINGS + BUILD / EXPORT
+   Removes floating buttons from editor and places actions
+   inside the OUTPUT panel header.
+===================================================== */
+#buildAccessFab,
+#projectSettingsAccessBtn{
+  display:none !important;
+}
+
+.output-action-bar{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding-right:6px;
+  flex-shrink:0;
+}
+
+.output-action-btn{
+  height:31px;
+  min-width:34px;
+  padding:0 8px;
+  border:1px solid #2a333b;
+  border-radius:7px;
+  background:#151b20;
+  color:#8d98a1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  font-size:8px;
+  font-weight:750;
+  white-space:nowrap;
+  touch-action:manipulation;
+}
+
+.output-action-btn:active{
+  background:#1d252b;
+  transform:scale(.97);
+}
+
+.output-action-btn.primary{
+  color:#aef08f;
+  border-color:#365438;
+  background:#162019;
+}
+
+.output-action-btn svg{
+  width:14px;
+  height:14px;
+  flex:0 0 14px;
+}
+
+@media(max-width:700px){
+  .panel-tabs{
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-width:none;
+  }
+
+  .panel-tabs::-webkit-scrollbar{display:none}
+
+  .output-action-bar{
+    padding-right:4px;
+  }
+
+  .output-action-btn{
+    min-width:32px;
+    padding:0 7px;
+  }
+
+  .output-action-btn .output-action-label{
+    display:none;
+  }
+}
+</style>
+
+<script>
+(function(){
+"use strict";
+
+function openBuildFromOutput(){
+  try{
+    if(window.BuildExport?.open){
+      BuildExport.open();
+      return;
+    }
+  }catch(e){
+    console.error("Build & Export:",e);
+  }
+
+  const manager=document.getElementById("buildManagerV1");
+  if(manager){
+    manager.classList.add("show");
+    try{refreshManager?.()}catch(_){}
+  }else{
+    showToast?.("Build & Export indisponível");
+  }
+}
+
+function openProjectSettingsFromOutput(){
+  try{
+    if(window.ProjectSettings?.open){
+      ProjectSettings.open();
+      return;
+    }
+  }catch(e){
+    console.error("Project Settings:",e);
+  }
+
+  const manager=document.getElementById("projectSettingsV1");
+  if(manager){
+    manager.classList.add("show");
+  }else{
+    showToast?.("Project Settings indisponível");
+  }
+}
+
+function ensureOutputActions(){
+  const tabs=document.querySelector("#bottomPanel .panel-tabs");
+  if(!tabs || document.getElementById("outputActionBar"))return;
+
+  const bar=document.createElement("div");
+  bar.id="outputActionBar";
+  bar.className="output-action-bar";
+  bar.innerHTML=
+    '<button id="outputProjectSettingsBtn" class="output-action-btn" type="button" aria-label="Project Settings" title="Project Settings">'+
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<circle cx="12" cy="12" r="3"/>'+
+        '<path d="M19 15a2 2 0 0 0 .4 2l-2.3 2.3a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8H10a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1V10a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2L6.9 4.6a2 2 0 0 0 2 .4A2 2 0 0 0 10 3.2h4A2 2 0 0 0 15.1 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1v3.8A2 2 0 0 0 19 15z"/>'+
+      '</svg>'+
+      '<span class="output-action-label">PROJECT</span>'+
+    '</button>'+
+    '<button id="outputBuildExportBtn" class="output-action-btn primary" type="button" aria-label="Build & Export" title="Build & Export">'+
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<path d="M12 3v12"/>'+
+        '<path d="m7 10 5 5 5-5"/>'+
+        '<path d="M5 20h14"/>'+
+      '</svg>'+
+      '<span class="output-action-label">BUILD</span>'+
+    '</button>';
+
+  tabs.appendChild(bar);
+
+  document.getElementById("outputProjectSettingsBtn")
+    ?.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openProjectSettingsFromOutput();
+    });
+
+  document.getElementById("outputBuildExportBtn")
+    ?.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openBuildFromOutput();
+    });
+}
+
+/* Permanently neutralize the old floating-button visibility logic. */
+function hideOldFloatingButtons(){
+  const build=document.getElementById("buildAccessFab");
+  const settings=document.getElementById("projectSettingsAccessBtn");
+
+  if(build){
+    build.classList.remove("show");
+    build.style.display="none";
+  }
+  if(settings){
+    settings.classList.remove("show");
+    settings.style.display="none";
+  }
+}
+
+const observer=new MutationObserver(()=>{
+  hideOldFloatingButtons();
+  ensureOutputActions();
+});
+
+function start(){
+  hideOldFloatingButtons();
+  ensureOutputActions();
+
+  const editor=document.getElementById("editor");
+  if(editor){
+    observer.observe(editor,{
+      childList:true,
+      subtree:true,
+      attributes:true,
+      attributeFilter:["class","style"]
+    });
+  }
+}
+
+const oldOpenProjectOutputActions=window.openProject;
+if(typeof oldOpenProjectOutputActions==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectOutputActions.apply(this,arguments);
+    requestAnimationFrame(()=>{
+      hideOldFloatingButtons();
+      ensureOutputActions();
+    });
+    return result;
+  };
+}
+
+requestAnimationFrame(start);
+setTimeout(start,250);
+
+})();
+</script>
+
 </body>
 </html>
