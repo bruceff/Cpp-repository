@@ -10022,5 +10022,383 @@ requestAnimationFrame(()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — STABILIZATION v2
+   Project integrity + recovery + autosave
+===================================================== */
+.snake-recovery-card{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid #29333c;
+  border-radius:10px;
+  background:#10161b;
+}
+.snake-recovery-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:8px;
+  color:#7f8b95;
+  font-size:10px;
+}
+.snake-recovery-row strong{color:#d8dfe4}
+.snake-recovery-actions{
+  display:flex;
+  gap:7px;
+  margin-top:11px;
+}
+.snake-recovery-actions button{
+  flex:1;
+  min-height:39px;
+  border:1px solid #303a43;
+  border-radius:8px;
+  background:#171d23;
+  color:#9ba6ae;
+  font-size:10px;
+  font-weight:700;
+}
+.snake-recovery-actions button.primary{
+  background:#91e864;
+  border-color:#91e864;
+  color:#091006;
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — STABILIZATION v2
+   Autosave, snapshots, project repair and recovery.
+===================================================== */
+(function(){
+"use strict";
+
+const RECOVERY_PREFIX="snake_recovery_v2:";
+const AUTOSAVE_MS=12000;
+
+const Recovery={
+  timer:null,
+  saving:false,
+  lastSaveAt:0,
+
+  projectName(){
+    try{return typeof currentProject!=="undefined" ? currentProject : null}
+    catch{return null}
+  },
+
+  files(){
+    try{return typeof getFiles==="function" ? getFiles() : {}}
+    catch{return {}}
+  },
+
+  async snapshot(reason="autosave"){
+    const name=this.projectName();
+    if(!name || this.saving)return false;
+
+    this.saving=true;
+    try{
+      try{saveCurrentFile?.()}catch(_){}
+
+      const files=this.files();
+      const data={
+        version:2,
+        projectName:name,
+        reason,
+        at:new Date().toISOString(),
+        currentFile:typeof currentFile!=="undefined"?currentFile:null,
+        files
+      };
+
+      /* Small emergency copy. IndexedDB remains authoritative. */
+      try{
+        const raw=JSON.stringify(data);
+        if(raw.length<900000){
+          localStorage.setItem(RECOVERY_PREFIX+name,raw);
+        }
+      }catch(_){}
+
+      if(window.SnakeDB){
+        const projectId=await SnakeDB.projectIdForName(name);
+        await SnakeDB.put("snapshots",{
+          id:"recovery:"+projectId,
+          projectId,
+          projectName:name,
+          reason,
+          data,
+          updatedAt:data.at
+        });
+        await SnakeDB.saveProjectFiles(name,files);
+      }
+
+      this.lastSaveAt=Date.now();
+      this.updateUI();
+      return true;
+    }catch(e){
+      console.error("Recovery snapshot:",e);
+      return false;
+    }finally{
+      this.saving=false;
+    }
+  },
+
+  async findSnapshot(name){
+    if(!name)return null;
+
+    if(window.SnakeDB){
+      try{
+        const projectId=await SnakeDB.projectIdForName(name);
+        const row=await SnakeDB.get("snapshots","recovery:"+projectId);
+        if(row?.data)return row.data;
+      }catch(_){}
+    }
+
+    try{
+      const raw=localStorage.getItem(RECOVERY_PREFIX+name);
+      return raw?JSON.parse(raw):null;
+    }catch{return null}
+  },
+
+  async restore(){
+    const name=this.projectName();
+    const snap=await this.findSnapshot(name);
+    if(!snap?.files){
+      showToast?.("Nenhum snapshot disponível");
+      return false;
+    }
+
+    try{
+      if(window.SnakeDB){
+        await SnakeDB.saveProjectFiles(name,snap.files);
+      }
+
+      try{
+        const key=(typeof FILES_KEY!=="undefined"?FILES_KEY:"snakeForgeFiles")+"_"+name;
+        localStorage.setItem(key,JSON.stringify(snap.files));
+      }catch(_){}
+
+      if(window.SnakeDB?.fileCache){
+        SnakeDB.fileCache.set(name,structuredClone(snap.files));
+      }
+
+      const target=snap.currentFile && snap.files[snap.currentFile]!=null
+        ? snap.currentFile
+        : Object.keys(snap.files)[0];
+
+      if(target){
+        currentFile=target;
+        loadFile?.(target);
+      }
+
+      showToast?.("Snapshot restaurado");
+      this.updateUI();
+      return true;
+    }catch(e){
+      console.error(e);
+      showToast?.("Falha ao restaurar snapshot");
+      return false;
+    }
+  },
+
+  async repair(){
+    const name=this.projectName();
+    if(!name){
+      showToast?.("Abra um projeto primeiro");
+      return;
+    }
+
+    let files=this.files();
+
+    if(!files || typeof files!=="object" || Array.isArray(files)){
+      files={};
+    }
+
+    /* Ensure a project can always reopen into at least one editable file. */
+    if(!Object.keys(files).length){
+      files["main.js"]=`// Recovered by Snake Engine
+function start(){
+  log("Project recovered");
+}
+
+function update(dt){
+
+}
+`;
+    }
+
+    for(const [path,value] of Object.entries(files)){
+      if(typeof value!=="string"){
+        try{files[path]=JSON.stringify(value,null,2)}
+        catch{files[path]=String(value??"")}
+      }
+    }
+
+    if(window.SnakeDB){
+      await SnakeDB.saveProjectFiles(name,files);
+    }
+
+    try{
+      const projects=getProjects?.()||[];
+      const p=projects.find(x=>x.name===name);
+      if(p){
+        p.updatedAt=new Date().toISOString();
+        saveProjects?.(projects);
+      }
+    }catch(_){}
+
+    await this.snapshot("repair");
+    showToast?.("Integridade do projeto verificada");
+    this.updateUI();
+  },
+
+  start(){
+    clearInterval(this.timer);
+    this.timer=setInterval(()=>{
+      const editor=document.getElementById("editor");
+      if(editor?.classList.contains("active")){
+        this.snapshot("autosave");
+      }
+    },AUTOSAVE_MS);
+  },
+
+  updateUI(){
+    const el=document.getElementById("snakeRecoveryLastSave");
+    if(el){
+      el.textContent=this.lastSaveAt
+        ?new Date(this.lastSaveAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"})
+        :"—";
+    }
+  }
+};
+
+window.SnakeRecovery=Recovery;
+
+/* -----------------------------------------------------
+   Add recovery controls to Settings
+----------------------------------------------------- */
+function installRecoveryUI(){
+  const main=document.querySelector("#settingsScreen .dashboard-content");
+  if(!main || document.getElementById("snakeRecoveryCard"))return;
+
+  const section=document.createElement("section");
+  section.className="section";
+  section.innerHTML=`
+    <div class="section-head">
+      <span>PROJECT INTEGRITY</span>
+    </div>
+    <div id="snakeRecoveryCard" class="snake-recovery-card">
+      <div class="tool-muted">
+        Autosave e snapshots de recuperação protegem o projeto contra fechamento inesperado ou estado inconsistente.
+      </div>
+      <div class="snake-recovery-row">
+        <span>Autosave</span><strong>12 s</strong>
+      </div>
+      <div class="snake-recovery-row">
+        <span>Último snapshot</span><strong id="snakeRecoveryLastSave">—</strong>
+      </div>
+      <div class="snake-recovery-actions">
+        <button type="button" id="snakeRecoverySave" class="primary">SALVAR SNAPSHOT</button>
+        <button type="button" id="snakeRecoveryRestore">RESTAURAR</button>
+        <button type="button" id="snakeRecoveryRepair">VERIFICAR</button>
+      </div>
+    </div>
+  `;
+  main.appendChild(section);
+
+  document.getElementById("snakeRecoverySave")?.addEventListener("click",async()=>{
+    const ok=await Recovery.snapshot("manual");
+    showToast?.(ok?"Snapshot salvo":"Abra um projeto primeiro");
+  });
+
+  document.getElementById("snakeRecoveryRestore")?.addEventListener("click",()=>{
+    Recovery.restore();
+  });
+
+  document.getElementById("snakeRecoveryRepair")?.addEventListener("click",()=>{
+    Recovery.repair();
+  });
+}
+
+/* -----------------------------------------------------
+   Snapshot at meaningful boundaries
+----------------------------------------------------- */
+const oldRunProject=window.runProject;
+if(typeof oldRunProject==="function"){
+  window.runProject=function(){
+    Recovery.snapshot("before-run");
+    return oldRunProject.apply(this,arguments);
+  };
+}
+
+const oldBackDashboardV2=window.backToDashboard;
+if(typeof oldBackDashboardV2==="function"){
+  window.backToDashboard=function(){
+    Recovery.snapshot("leave-editor");
+    return oldBackDashboardV2.apply(this,arguments);
+  };
+}
+
+const oldCreateProjectV2=window.createProject;
+if(typeof oldCreateProjectV2==="function"){
+  window.createProject=function(){
+    const result=oldCreateProjectV2.apply(this,arguments);
+    setTimeout(()=>Recovery.snapshot("project-created"),250);
+    return result;
+  };
+}
+
+/* -----------------------------------------------------
+   Recover stale current-file pointers automatically
+----------------------------------------------------- */
+const oldLoadFileV2=window.loadFile;
+if(typeof oldLoadFileV2==="function"){
+  window.loadFile=function(file){
+    const files=Recovery.files();
+    if(files && files[file]==null){
+      const fallback=Object.keys(files)[0];
+      if(fallback)file=fallback;
+    }
+    return oldLoadFileV2.call(this,file);
+  };
+}
+
+const oldOpenFileV2=window.openFile;
+if(typeof oldOpenFileV2==="function"){
+  window.openFile=function(file){
+    const files=Recovery.files();
+    if(files && files[file]==null){
+      showToast?.("Arquivo não encontrado");
+      return;
+    }
+    return oldOpenFileV2.call(this,file);
+  };
+}
+
+/* -----------------------------------------------------
+   Emergency persistence
+----------------------------------------------------- */
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="hidden")Recovery.snapshot("background");
+});
+
+window.addEventListener("pagehide",()=>{
+  Recovery.snapshot("pagehide");
+});
+
+Promise.resolve(window.SnakeDB?.ready).then(()=>{
+  installRecoveryUI();
+  Recovery.start();
+  Recovery.updateUI();
+}).catch(()=>{
+  installRecoveryUI();
+  Recovery.start();
+});
+
+setTimeout(installRecoveryUI,0);
+
+})();
+</script>
+
 </body>
 </html>
