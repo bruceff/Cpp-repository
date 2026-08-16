@@ -6136,29 +6136,6 @@ window.addEventListener("unhandledrejection",e=>{
     left:auto !important;
   }
 
-  /* Make the lower controls a guaranteed interaction layer.
-     This also prevents an oversized editor child from intercepting taps. */
-  #editor #bottomPanel{
-    position:relative !important;
-    z-index:40 !important;
-    flex:0 0 auto !important;
-    pointer-events:auto !important;
-  }
-
-  #editor .tool-dock{
-    position:relative !important;
-    z-index:60 !important;
-    flex:0 0 auto !important;
-    pointer-events:auto !important;
-    isolation:isolate;
-  }
-
-  #editor .tool-dock .tool{
-    position:relative !important;
-    z-index:2 !important;
-    pointer-events:auto !important;
-    touch-action:manipulation !important;
-  }
 }
 
 /* iPhone text editing */
@@ -6186,7 +6163,6 @@ window.addEventListener("unhandledrejection",e=>{
 
   const code = document.getElementById("code");
   const codeArea = document.getElementById("codeArea");
-  const dock = document.querySelector("#editor .tool-dock");
 
   if(code){
     code.readOnly = false;
@@ -6208,41 +6184,6 @@ window.addEventListener("unhandledrejection",e=>{
         try{ this.focus({preventScroll:true}); }
         catch(_){ this.focus(); }
       }
-    });
-  }
-
-  /* Rebind the mobile dock explicitly. This is intentionally idempotent and
-     does not rely only on inline onclick attributes. */
-  if(dock && !dock.dataset.snakeInteractionBound){
-    dock.dataset.snakeInteractionBound="1";
-    const buttons=[...dock.querySelectorAll(".tool")];
-
-    const actions=[
-      ()=>window.showCode?.(),
-      ()=>window.showScene?.(),
-      ()=>window.openPreview?.(),
-      ()=>window.togglePanel?.(),
-      ()=>window.toggleInspector?.()
-    ];
-
-    buttons.forEach((btn,index)=>{
-      btn.style.pointerEvents="auto";
-
-      btn.addEventListener("pointerup", e=>{
-        if(e.pointerType==="touch"){
-          /* click normally follows pointerup; only use fallback if a browser
-             suppresses click after the touch sequence. */
-          const action=actions[index];
-          setTimeout(()=>{
-            if(!btn.dataset.snakeClickSeen && typeof action==="function") action();
-            btn.dataset.snakeClickSeen="";
-          },0);
-        }
-      }, {passive:true});
-
-      btn.addEventListener("click", ()=>{
-        btn.dataset.snakeClickSeen="1";
-      });
     });
   }
 
@@ -6290,6 +6231,17 @@ window.addEventListener("unhandledrejection",e=>{
   }, {passive:true});
 })();
 </script>
+
+
+<style>
+/* HOTBAR ANTERIOR RESTAURADA — aparência e ações originais */
+@media(max-width:900px){
+  #editor .tool-dock{
+    flex:0 0 47px !important;
+    min-height:47px !important;
+  }
+}
+</style>
 
 </body>
 </html>
