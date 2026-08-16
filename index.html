@@ -19708,5 +19708,226 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   CLEAN ACCESS v1
+   Keep code editor uncluttered. Project Settings and Build
+   live inside a compact overflow menu in the editor header.
+===================================================== */
+#buildAccessFab,
+#projectSettingsAccessBtn{
+  display:none !important;
+  pointer-events:none !important;
+}
+
+.editor-more-menu-wrap{
+  position:relative;
+  flex:0 0 auto;
+}
+
+.editor-more-btn{
+  width:40px;
+  height:40px;
+  border-radius:9px;
+  background:none;
+  color:#9ca4ac;
+  display:grid;
+  place-items:center;
+  touch-action:manipulation;
+}
+
+.editor-more-btn:active{
+  background:#191e23;
+}
+
+.editor-more-btn svg{
+  width:20px;
+  height:20px;
+}
+
+.editor-more-menu{
+  position:absolute;
+  top:46px;
+  right:0;
+  z-index:260;
+  min-width:190px;
+  display:none;
+  padding:6px;
+  border:1px solid #2b343c;
+  border-radius:10px;
+  background:#11161b;
+  box-shadow:0 12px 30px rgba(0,0,0,.32);
+}
+
+.editor-more-menu.show{
+  display:grid;
+  gap:4px;
+}
+
+.editor-more-item{
+  width:100%;
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:0 10px;
+  border-radius:7px;
+  background:none;
+  color:#a4adb5;
+  text-align:left;
+  font-size:10px;
+  font-weight:700;
+  touch-action:manipulation;
+}
+
+.editor-more-item:active{
+  background:#1a2026;
+}
+
+.editor-more-item.primary{
+  color:#aef08f;
+}
+
+.editor-more-item svg{
+  width:16px;
+  height:16px;
+  flex:0 0 16px;
+}
+
+@media(max-width:700px){
+  .editor-more-menu{
+    min-width:176px;
+    right:-2px;
+  }
+}
+</style>
+
+
+<script>
+(function(){
+"use strict";
+
+function openProjectSettingsClean(){
+  try{
+    if(window.ProjectSettings && typeof window.ProjectSettings.open==="function"){
+      window.ProjectSettings.open();
+      return;
+    }
+  }catch(e){
+    console.error("Project Settings:",e);
+  }
+
+  const panel=document.getElementById("projectSettingsV1");
+  if(panel)panel.classList.add("show");
+  else window.showToast?.("Project Settings indisponível");
+}
+
+function openBuildClean(){
+  try{
+    if(window.BuildExport && typeof window.BuildExport.open==="function"){
+      window.BuildExport.open();
+      return;
+    }
+  }catch(e){
+    console.error("Build & Export:",e);
+  }
+
+  const panel=document.getElementById("buildManagerV1");
+  if(panel)panel.classList.add("show");
+  else window.showToast?.("Build & Export indisponível");
+}
+
+function ensureCleanAccess(){
+  const header=document.querySelector("#editor .editor-header");
+  if(!header || document.getElementById("editorMoreMenuWrap"))return;
+
+  const wrap=document.createElement("div");
+  wrap.id="editorMoreMenuWrap";
+  wrap.className="editor-more-menu-wrap";
+
+  const btn=document.createElement("button");
+  btn.id="editorMoreBtn";
+  btn.type="button";
+  btn.className="editor-more-btn";
+  btn.setAttribute("aria-label","More editor actions");
+  btn.innerHTML=
+    '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+      '<circle cx="12" cy="5" r="1.2"/>'+
+      '<circle cx="12" cy="12" r="1.2"/>'+
+      '<circle cx="12" cy="19" r="1.2"/>'+
+    '</svg>';
+
+  const menu=document.createElement("div");
+  menu.id="editorMoreMenu";
+  menu.className="editor-more-menu";
+  menu.innerHTML=
+    '<button id="editorMoreProjectSettings" class="editor-more-item" type="button">'+
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<circle cx="12" cy="12" r="3"/>'+
+        '<path d="M19 15a2 2 0 0 0 .4 2l-2.3 2.3a2 2 0 0 0-2-.4 2 2 0 0 0-1.1 1.8H10a2 2 0 0 0-1.1-1.8 2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.8-1.1V10a2 2 0 0 0 1.8-1.1 2 2 0 0 0-.4-2L6.9 4.6a2 2 0 0 0 2 .4A2 2 0 0 0 10 3.2h4A2 2 0 0 0 15.1 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.8 1.1v3.8A2 2 0 0 0 19 15z"/>'+
+      '</svg>'+
+      '<span>Project Settings</span>'+
+    '</button>'+
+    '<button id="editorMoreBuild" class="editor-more-item primary" type="button">'+
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<path d="M12 3v12"/>'+
+        '<path d="m7 10 5 5 5-5"/>'+
+        '<path d="M5 20h14"/>'+
+      '</svg>'+
+      '<span>Build / Export</span>'+
+    '</button>';
+
+  wrap.append(btn,menu);
+
+  const runBtn=header.querySelector(".run-btn");
+  if(runBtn)runBtn.insertAdjacentElement("beforebegin",wrap);
+  else header.appendChild(wrap);
+
+  btn.addEventListener("click",function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    menu.classList.toggle("show");
+  });
+
+  document.getElementById("editorMoreProjectSettings")?.addEventListener("click",function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    menu.classList.remove("show");
+    openProjectSettingsClean();
+  });
+
+  document.getElementById("editorMoreBuild")?.addEventListener("click",function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    menu.classList.remove("show");
+    openBuildClean();
+  });
+
+  document.addEventListener("click",function(e){
+    if(!wrap.contains(e.target))menu.classList.remove("show");
+  });
+
+  window.addEventListener("blur",()=>menu.classList.remove("show"));
+}
+
+const oldOpenProjectClean=window.openProject;
+if(typeof oldOpenProjectClean==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectClean.apply(this,arguments);
+    ensureCleanAccess();
+    return result;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",ensureCleanAccess,{once:true});
+}else{
+  ensureCleanAccess();
+}
+
+})();
+</script>
+
 </body>
 </html>
