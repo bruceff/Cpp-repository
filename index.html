@@ -933,6 +933,23 @@ svg{
 .art-studio{display:grid;grid-template-columns:1fr 250px;gap:10px;min-height:0}.art-main{min-width:0}.art-stage{position:relative;height:62vh;min-height:420px;background:#080b0f;border:1px solid #2b333c;border-radius:14px;overflow:hidden;touch-action:none;box-shadow:inset 0 0 0 1px #000}.art-stage canvas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;touch-action:none;box-shadow:0 0 0 1px #333}.art-stage .art-overlay{position:absolute;inset:0;pointer-events:none}.art-topbar{display:flex;gap:6px;align-items:center;overflow:auto;padding:7px 0}.art-toolstrip{display:flex;gap:5px;overflow:auto;padding:7px;background:#0f1419;border:1px solid #252d35;border-radius:11px}.art-toolstrip button,.art-mini-btn{flex:0 0 auto;height:38px;min-width:40px;padding:0 9px;border-radius:8px;background:#1b2229;border:1px solid #303943;color:#dfe6ed}.art-toolstrip button.active{background:#2878ff;border-color:#2878ff;color:#fff}.art-stagebar{position:absolute;left:8px;right:8px;top:8px;display:flex;justify-content:space-between;pointer-events:none;z-index:5}.art-stagebar>div{display:flex;gap:5px;pointer-events:auto}.art-badge{padding:6px 8px;border-radius:7px;background:#090d12e8;border:1px solid #303841;font:10px monospace;color:#aeb7c0}.art-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.art-panel{background:#11161c;border:1px solid #252d35;border-radius:11px;padding:9px}.art-panel-title{font-size:10px;font-weight:900;color:#9aa4ae;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}.art-side{min-width:0;max-height:calc(62vh + 104px);overflow:auto}.art-side .art-panel{margin-bottom:8px}.art-color-row{display:flex;gap:7px;align-items:center}.art-color-row input[type=color]{width:48px;height:40px;padding:2px;border-radius:8px;background:#0b0e11;border:1px solid #303841}.art-color-row input[type=text]{flex:1}.art-palette{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.art-swatch{aspect-ratio:1;border-radius:6px;border:1px solid #3b434c;padding:0}.art-swatch.active{outline:2px solid #fff;outline-offset:1px}.art-layers,.art-frames{display:grid;gap:5px}.art-layer,.art-frame{display:flex;align-items:center;gap:6px;min-height:35px;padding:5px 7px;border-radius:7px;background:#171d23;border:1px solid #2a323a;font-size:10px}.art-layer.active,.art-frame.active{background:#2878ff;color:#fff;border-color:#2878ff}.art-layer span,.art-frame span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.art-layer button,.art-frame button{width:26px;height:26px;border-radius:5px;background:#252d35}.art-range{width:100%}.art-stat{font:10px monospace;color:#7f8993}.art-hint{font-size:10px;line-height:1.45;color:#717b85}.art-file{display:grid;gap:6px}.art-file input{height:35px}.art-select-box{position:absolute;border:1px dashed #fff;box-shadow:0 0 0 1px #000;pointer-events:none;z-index:4}.art-onion{opacity:.35;pointer-events:none}.art-ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;pointer-events:none}.art-checker{background-color:#d7d7d7;background-image:linear-gradient(45deg,#c0c0c0 25%,transparent 25%),linear-gradient(-45deg,#c0c0c0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#c0c0c0 75%),linear-gradient(-45deg,transparent 75%,#c0c0c0 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}.art-kbd{display:inline-block;padding:1px 4px;border:1px solid #444;border-radius:4px;background:#191d22;font:9px monospace;color:#aaa}
 @media(max-width:900px){.art-studio{grid-template-columns:1fr}.art-side{max-height:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.art-side .art-panel{margin:0}.art-stage{height:55vh;min-height:360px}.art-bottom{grid-template-columns:1fr 1fr}.art-bottom .art-panel:last-child{grid-column:1/-1}}
 @media(max-width:560px){.art-side{grid-template-columns:1fr}.art-stage{height:52vh;min-height:330px}.art-bottom{grid-template-columns:1fr}.art-bottom .art-panel:last-child{grid-column:auto}.art-toolstrip button{min-width:38px;padding:0 7px}.art-stagebar{top:6px;left:6px;right:6px}}
+
+/* ARTE WORKFLOW v4 */
+.art-work-bg-row{display:grid;grid-template-columns:1fr 48px;gap:6px;margin-top:6px}
+.art-work-bg-row select{height:35px;border:1px solid #303841;border-radius:7px;background:#0b0e11;color:#dfe6ed;padding:0 7px;font-size:9px}
+.art-work-bg-row input[type=color]{width:48px;height:35px;padding:2px;border:1px solid #303841;border-radius:7px;background:#0b0e11}
+.art-finish-new{width:100%;min-height:40px;margin-top:8px;border:1px solid #42643c;border-radius:8px;background:#172219;color:#a7eb97;font-size:9px;font-weight:900;touch-action:manipulation}
+.art-selection-actions-v4{display:none;gap:6px;padding:6px 0}.art-selection-actions-v4.show{display:flex}
+.art-selection-actions-v4 button{flex:1;min-height:36px;border:1px solid #303943;border-radius:7px;background:#1b2229;color:#dfe6ed;font-size:8px;font-weight:850;touch-action:manipulation}
+.art-select-box-v4{position:absolute;z-index:9;display:none;border:2px dashed #fff;box-shadow:0 0 0 1px #000;background:rgba(255,255,255,.06);pointer-events:none}
+.art-select-box-v4.show{display:block}
+.art-frame-v4{display:flex;align-items:center;gap:5px;min-height:40px;padding:5px 6px;border-radius:7px;background:#171d23;border:1px solid #2a323a;font-size:10px}
+.art-frame-v4.active{background:#2878ff;color:#fff;border-color:#2878ff}
+.art-frame-v4 .frame-num{width:22px;min-width:22px;height:22px;border:1px solid #3a4650;border-radius:5px;background:#0e1419;color:#87939c;display:grid;place-items:center;font:8px ui-monospace,monospace}
+.art-frame-v4.active .frame-num{color:#fff;border-color:#ffffff80}
+.art-frame-v4 .frame-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.art-frame-v4 button{width:29px;height:29px;border-radius:6px;background:#252d35;color:#d7dfe5;border:1px solid #34404a;touch-action:manipulation}.art-frame-v4 button:disabled{opacity:.3}
+
 /* integrated scene */
 .scene-editor{position:relative;height:62vh;min-height:380px;background:#080c10;border:1px solid #242a31;border-radius:11px;overflow:hidden;touch-action:none}.scene-editor canvas{width:100%;height:100%;display:block;touch-action:none}.scene-panel{position:absolute;top:8px;left:8px;width:180px;max-height:calc(100% - 16px);overflow:auto;background:#0e1217ee;border:1px solid #303841;border-radius:9px;padding:8px}.scene-panel.right{left:auto;right:8px;width:200px}.scene-panel h4{margin:0 0 7px;font-size:10px;color:#8c949d}.scene-node{width:100%;text-align:left;background:#171c21;color:#aeb6bf;border-radius:6px;padding:8px;margin-bottom:4px;font-size:10px}.scene-node.selected{background:#2878ff;color:#fff}.scene-fab{position:absolute;right:215px;bottom:12px;width:46px;height:46px;border-radius:50%;background:#2878ff;font-size:20px}.scene-toolbar2{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;background:#0e1217ee;border:1px solid #303841;padding:5px;border-radius:9px;z-index:4}.scene-toolbar2 button{width:36px;height:32px;border-radius:6px;background:#20262d}.scene-toolbar2 button.active{background:#2878ff}
 /* TILEMAP STUDIO — PROFESSIONAL */
@@ -2493,13 +2510,13 @@ function engineRunCode(){engineTranslate();document.getElementById('engineTermin
 function engineCodeSave(){localStorage.setItem('myengine_code',document.getElementById('engineCode').value);document.getElementById('engineTerminal').textContent='Código salvo localmente.'}
 /* ART — PROFESSIONAL SPRITE STUDIO */
 let artCtx2;
-let art2={w:32,h:32,tool:'pencil',color:'#111111',size:1,zoom:12,grid:true,onion:false,frame:0,layer:0,layers:[],frames:[],history:[],future:[],drawing:false,last:null,pan:null,playing:false,fps:8};
+let art2={w:32,h:32,tool:'pencil',color:'#111111',size:1,zoom:12,grid:true,onion:false,frame:0,layer:0,layers:[],frames:[],history:[],future:[],drawing:false,last:null,pan:null,playing:false,fps:8,selection:null,selectionDraft:null,selectStart:null,selectionMove:null,workBackground:'light'};
 const ART_TOOLS=['pencil','eraser','fill','line','rect','circle','picker','select','move'];
 function artBlank(w=32,h=32){return {name:'Frame 1',layers:[{name:'Layer 1',visible:true,locked:false,opacity:1,data:new ImageData(w,h)}]}}
 function artInit2(){
   const c=document.getElementById('artCanvas2'); if(!c)return; artCtx2=c.getContext('2d',{willReadFrequently:true}); artCtx2.imageSmoothingEnabled=false;
   if(!art2.layers.length){art2.frames=[artBlank(32,32)];art2.layers=art2.frames[0].layers}
-  artBindCanvas2(); artRender2(); artResize2();
+  artBindCanvas2(); artRender2(); artResize2(); artApplyWorkBackground4();
 }
 function artBindCanvas2(){const c=document.getElementById('artCanvas2');if(c.dataset.bound)return;c.dataset.bound='1';
   c.addEventListener('pointerdown',artPointerDown2);c.addEventListener('pointermove',artPointerMove2);['pointerup','pointercancel','pointerleave'].forEach(t=>c.addEventListener(t,artPointerUp2));
@@ -2519,12 +2536,97 @@ function artHex2(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(x=>x+x
 function artLine2(x0,y0,x1,y1,fn){let dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,err=dx+dy;while(true){fn(x0,y0);if(x0===x1&&y0===y1)break;let e2=2*err;if(e2>=dy){err+=dy;x0+=sx}if(e2<=dx){err+=dx;y0+=sy}}}
 function artFlood2(x,y){const l=artActiveLayer2();if(!l||l.locked)return;const d=l.data.data,i=(y*art2.w+x)*4,target=[d[i],d[i+1],d[i+2],d[i+3]],fill=art2.tool==='eraser'?[0,0,0,0]:[...artHex2(art2.color),255];if(target.every((v,j)=>v===fill[j]))return;const q=[[x,y]],seen=new Uint8Array(art2.w*art2.h);while(q.length){const [X,Y]=q.pop();if(X<0||Y<0||X>=art2.w||Y>=art2.h)continue;const k=Y*art2.w+X;if(seen[k])continue;const j=k*4;if(d[j]!==target[0]||d[j+1]!==target[1]||d[j+2]!==target[2]||d[j+3]!==target[3])continue;seen[k]=1;d.set(fill,j);q.push([X+1,Y],[X-1,Y],[X,Y+1],[X,Y-1])}}
 function artShape2(a,b){const l=artActiveLayer2();if(!l||l.locked)return;const [x0,y0]=[Math.min(a.x,b.x),Math.min(a.y,b.y)],[x1,y1]=[Math.max(a.x,b.x),Math.max(a.y,b.y)];if(art2.tool==='line')artLine2(a.x,a.y,b.x,b.y,(x,y)=>artPaintPixel2(x,y));else if(art2.tool==='rect'){for(let x=x0;x<=x1;x++){artPaintPixel2(x,y0);artPaintPixel2(x,y1)}for(let y=y0;y<=y1;y++){artPaintPixel2(x0,y);artPaintPixel2(x1,y)}}else if(art2.tool==='circle'){const cx=(a.x+b.x)/2,cy=(a.y+b.y)/2,rx=Math.abs(b.x-a.x)/2,ry=Math.abs(b.y-a.y)/2;for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++)for(let x=Math.floor(cx-rx);x<=Math.ceil(cx+rx);x++){const v=((x-cx)**2/(rx||1)**2)+((y-cy)**2/(ry||1)**2);if(v>=.75&&v<=1.25)artPaintPixel2(x,y)}}}
-function artPointerDown2(e){e.preventDefault();const p=artPos2(e);art2.drawing=true;art2.last=p;artSaveState2();if(art2.tool==='picker'){const l=artActiveLayer2(),i=(p.y*art2.w+p.x)*4;art2.color='#'+[0,1,2].map(k=>l.data.data[i+k].toString(16).padStart(2,'0')).join('');artSyncUI2();artRender2();return}if(art2.tool==='fill')artFlood2(p.x,p.y);else if(['line','rect','circle'].includes(art2.tool)){}else if(art2.tool==='select'||art2.tool==='move'){art2.selectStart=p}else artPaintPixel2(p.x,p.y);artRender2()}
-function artPointerMove2(e){if(!art2.drawing)return;const p=artPos2(e);document.getElementById('artInfo2').textContent=`${p.x}, ${p.y}`;if(['line','rect','circle'].includes(art2.tool)){artRender2(p);return}if(art2.tool==='select'||art2.tool==='move')return;artLine2(art2.last.x,art2.last.y,p.x,p.y,(x,y)=>artPaintPixel2(x,y));art2.last=p;artRender2()}
-function artPointerUp2(e){if(!art2.drawing)return;const p=artPos2(e);if(['line','rect','circle'].includes(art2.tool))artShape2(art2.last,p);art2.drawing=false;art2.last=null;artRender2();}
+
+function artNormRect4(a,b){return{x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),w:Math.abs(b.x-a.x)+1,h:Math.abs(b.y-a.y)+1}}
+function artPointInRect4(p,r){return !!r&&p.x>=r.x&&p.y>=r.y&&p.x<r.x+r.w&&p.y<r.y+r.h}
+function artClearSelection4(){art2.selection=null;art2.selectionDraft=null;art2.selectStart=null;art2.selectionMove=null;artRenderSelection4()}
+function artRenderSelection4(){
+  const box=document.getElementById('artSelectionBoxV4'),c=document.getElementById('artCanvas2'),stage=document.getElementById('artStage2'),actions=document.getElementById('artSelectionActionsV4'),r=art2.selectionDraft||art2.selection;
+  if(!box||!c||!stage||!r){box?.classList.remove('show');actions?.classList.remove('show');return}
+  const cr=c.getBoundingClientRect(),sr=stage.getBoundingClientRect(),px=cr.width/art2.w,py=cr.height/art2.h;
+  box.style.left=(cr.left-sr.left+r.x*px)+'px';box.style.top=(cr.top-sr.top+r.y*py)+'px';box.style.width=(r.w*px)+'px';box.style.height=(r.h*py)+'px';box.classList.add('show');actions?.classList.toggle('show',!!art2.selection)
+}
+function artDeleteSelection4(){
+  const r=art2.selection,l=artActiveLayer2();if(!r||!l||l.locked)return;artSaveState2();
+  for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++){if(x<0||y<0||x>=art2.w||y>=art2.h)continue;const i=(y*art2.w+x)*4;l.data.data[i]=l.data.data[i+1]=l.data.data[i+2]=l.data.data[i+3]=0}
+  artClearSelection4();artRender2()
+}
+function artCopyRegion4(r,l){
+  const out=new Uint8ClampedArray(r.w*r.h*4);
+  for(let y=0;y<r.h;y++)for(let x=0;x<r.w;x++){const sx=r.x+x,sy=r.y+y;if(sx<0||sy<0||sx>=art2.w||sy>=art2.h)continue;const si=(sy*art2.w+sx)*4,di=(y*r.w+x)*4;out.set(l.data.data.slice(si,si+4),di)}
+  return out
+}
+function artApplyMove4(from,to){
+  const l=artActiveLayer2();if(!l||l.locked)return;const px=artCopyRegion4(from,l);
+  for(let y=from.y;y<from.y+from.h;y++)for(let x=from.x;x<from.x+from.w;x++){if(x<0||y<0||x>=art2.w||y>=art2.h)continue;const i=(y*art2.w+x)*4;l.data.data[i]=l.data.data[i+1]=l.data.data[i+2]=l.data.data[i+3]=0}
+  for(let y=0;y<from.h;y++)for(let x=0;x<from.w;x++){const tx=to.x+x,ty=to.y+y;if(tx<0||ty<0||tx>=art2.w||ty>=art2.h)continue;const si=(y*from.w+x)*4,di=(ty*art2.w+tx)*4;l.data.data.set(px.slice(si,si+4),di)}
+}
+
+function artPointerDown2(e){
+  e.preventDefault();const p=artPos2(e);
+  if(art2.tool==='select'){art2.drawing=true;art2.selectStart=p;art2.selectionDraft={x:p.x,y:p.y,w:1,h:1};artRenderSelection4();return}
+  if(art2.tool==='move'){
+    if(art2.selection&&artPointInRect4(p,art2.selection)){art2.drawing=true;art2.selectionMove={start:p,original:{...art2.selection}}}else art2.drawing=false;
+    return
+  }
+  art2.drawing=true;art2.last=p;artSaveState2();
+  if(art2.tool==='picker'){const l=artActiveLayer2(),i=(p.y*art2.w+p.x)*4;art2.color='#'+[0,1,2].map(k=>l.data.data[i+k].toString(16).padStart(2,'0')).join('');artSyncUI2();artRender2();return}
+  if(art2.tool==='fill')artFlood2(p.x,p.y);else if(['line','rect','circle'].includes(art2.tool)){}else artPaintPixel2(p.x,p.y);artRender2()
+}
+function artPointerMove2(e){
+  const p=artPos2(e);document.getElementById('artInfo2').textContent=`${p.x}, ${p.y}`;
+  if(!art2.drawing)return;
+  if(art2.tool==='select'){art2.selectionDraft=artNormRect4(art2.selectStart,p);artRenderSelection4();return}
+  if(art2.tool==='move'&&art2.selectionMove){
+    const m=art2.selectionMove,dx=p.x-m.start.x,dy=p.y-m.start.y,o=m.original;
+    art2.selection={x:Math.max(0,Math.min(art2.w-o.w,o.x+dx)),y:Math.max(0,Math.min(art2.h-o.h,o.y+dy)),w:o.w,h:o.h};artRenderSelection4();return
+  }
+  if(['line','rect','circle'].includes(art2.tool)){artRender2(p);return}
+  artLine2(art2.last.x,art2.last.y,p.x,p.y,(x,y)=>artPaintPixel2(x,y));art2.last=p;artRender2()
+}
+function artPointerUp2(e){
+  if(!art2.drawing)return;const p=artPos2(e);
+  if(art2.tool==='select'){art2.selection=artNormRect4(art2.selectStart,p);art2.selectionDraft=null;art2.selectStart=null;art2.drawing=false;artRender2();artRenderSelection4();return}
+  if(art2.tool==='move'&&art2.selectionMove){
+    const from=art2.selectionMove.original,to={...art2.selection};if(from.x!==to.x||from.y!==to.y){artSaveState2();artApplyMove4(from,to)}art2.selectionMove=null;art2.drawing=false;artRender2();artRenderSelection4();return
+  }
+  if(['line','rect','circle'].includes(art2.tool))artShape2(art2.last,p);art2.drawing=false;art2.last=null;artRender2()
+}
 function artResize2(){const stage=document.getElementById('artStage2'),c=document.getElementById('artCanvas2');if(!stage||!c)return;const size=Math.max(2,Math.floor(Math.min(stage.clientWidth-28,stage.clientHeight-28)/Math.max(1,art2.w)*Math.max(1,art2.zoom)));c.style.width=(art2.w*size/art2.zoom)+'px';c.style.height=(art2.h*size/art2.zoom)+'px';artRender2()}
-function artRender2(previewPoint=null){const c=document.getElementById('artCanvas2');if(!c||!artCtx2)return;c.width=art2.w;c.height=art2.h;artCtx2.clearRect(0,0,c.width,c.height);artCtx2.imageSmoothingEnabled=false;if(art2.onion&&art2.frames.length>1){const prev=(art2.frame-1+art2.frames.length)%art2.frames.length;artCtx2.save();artCtx2.globalAlpha=.28;artCtx2.putImageData(artComposite2(prev).getContext('2d').getImageData(0,0,art2.w,art2.h),0,0);artCtx2.restore()}artCtx2.putImageData(artComposite2().getContext('2d').getImageData(0,0,art2.w,art2.h),0,0);document.getElementById('artSize2').textContent=`${art2.w} × ${art2.h} • F${art2.frame+1}/${art2.frames.length}`;document.getElementById('artInfo2').textContent=`${art2.w}×${art2.h} • ${Math.round(art2.zoom*100/12)}%`;if(art2.grid&&art2.zoom>=6){artCtx2.save();artCtx2.strokeStyle='rgba(80,90,100,.28)';artCtx2.lineWidth=1/art2.zoom;for(let x=0;x<=art2.w;x++){artCtx2.beginPath();artCtx2.moveTo(x,0);artCtx2.lineTo(x,art2.h);artCtx2.stroke()}for(let y=0;y<=art2.h;y++){artCtx2.beginPath();artCtx2.moveTo(0,y);artCtx2.lineTo(art2.w,y);artCtx2.stroke()}artCtx2.restore()}artRenderLists2()}
-function artRenderLists2(){const L=document.getElementById('artLayers2'),F=document.getElementById('artFrames2');if(L)L.innerHTML=art2.frames[art2.frame].layers.map((l,i)=>`<div class="art-layer ${i===art2.layer?'active':''}"><button onclick="event.stopPropagation();artToggleLayer2(${i})">${l.visible?'VIEW':'NONE'}</button><span onclick="artSelectLayer2(${i})">${l.name}</span><button onclick="artRenameLayer2(${i})">✎</button></div>`).join('');if(F)F.innerHTML=art2.frames.map((f,i)=>`<div class="art-frame ${i===art2.frame?'active':''}" onclick="artSelectFrame2(${i})"><span>${i+1}. ${f.name}</span><button onclick="event.stopPropagation();artDuplicateFrame2(${i})">⧉</button></div>`).join('');const s=document.getElementById('artLayerOpacity2');if(s)s.value=Math.round((artActiveLayer2()?.opacity||1)*100);const on=document.getElementById('artOnionBtn2');if(on)on.classList.toggle('active',art2.onion);}
+function artApplyWorkBackground4(){
+  const stage=document.getElementById('artStage2');if(!stage)return;
+  let v=localStorage.getItem('snake_art_work_background_v4')||art2.workBackground||'light';art2.workBackground=v;
+  stage.classList.remove('art-checker');stage.style.backgroundImage='none';
+  if(v==='checker'){stage.classList.add('art-checker');stage.style.backgroundColor=''}
+  else if(v==='dark')stage.style.backgroundColor='#1b2026';
+  else if(v==='light')stage.style.backgroundColor='#d8dde2';
+  else stage.style.backgroundColor=v;
+  const s=document.getElementById('artWorkBg4'),c=document.getElementById('artWorkBgColor4');if(s)s.value=v.startsWith('#')?'custom':v;if(c&&v.startsWith('#'))c.value=v
+}
+function artSetWorkBackground4(v){
+  if(v==='custom')v=document.getElementById('artWorkBgColor4')?.value||'#7d8791';
+  art2.workBackground=v;localStorage.setItem('snake_art_work_background_v4',v);artApplyWorkBackground4();showToast('Fundo de trabalho alterado')
+}
+function artSetWorkBackgroundColor4(v){
+  art2.workBackground=v;localStorage.setItem('snake_art_work_background_v4',v);const s=document.getElementById('artWorkBg4');if(s)s.value='custom';artApplyWorkBackground4()
+}
+function artRender2(previewPoint=null){
+  const c=document.getElementById('artCanvas2');if(!c||!artCtx2)return;c.width=art2.w;c.height=art2.h;artCtx2.clearRect(0,0,c.width,c.height);artCtx2.imageSmoothingEnabled=false;
+  if(art2.onion&&art2.frames.length>1){const prev=(art2.frame-1+art2.frames.length)%art2.frames.length;artCtx2.save();artCtx2.globalAlpha=.28;artCtx2.putImageData(artComposite2(prev).getContext('2d').getImageData(0,0,art2.w,art2.h),0,0);artCtx2.restore()}
+  artCtx2.putImageData(artComposite2().getContext('2d').getImageData(0,0,art2.w,art2.h),0,0);
+  document.getElementById('artSize2').textContent=`${art2.w} × ${art2.h} • F${art2.frame+1}/${art2.frames.length}`;document.getElementById('artInfo2').textContent=`${art2.w}×${art2.h} • ${Math.round(art2.zoom*100/12)}%`;
+  if(art2.grid&&art2.zoom>=6){artCtx2.save();artCtx2.strokeStyle='rgba(80,90,100,.28)';artCtx2.lineWidth=1/art2.zoom;for(let x=0;x<=art2.w;x++){artCtx2.beginPath();artCtx2.moveTo(x,0);artCtx2.lineTo(x,art2.h);artCtx2.stroke()}for(let y=0;y<=art2.h;y++){artCtx2.beginPath();artCtx2.moveTo(0,y);artCtx2.lineTo(art2.w,y);artCtx2.stroke()}artCtx2.restore()}
+  artRenderLists2();artApplyWorkBackground4();requestAnimationFrame(artRenderSelection4)
+}
+function artMoveFrame4(i,delta){
+  const to=i+delta;if(i<0||to<0||i>=art2.frames.length||to>=art2.frames.length)return;artSaveState2();const active=art2.frames[art2.frame],[f]=art2.frames.splice(i,1);art2.frames.splice(to,0,f);art2.frame=art2.frames.indexOf(active);art2.layers=art2.frames[art2.frame].layers;artRender2()
+}
+function artRenderLists2(){
+  const L=document.getElementById('artLayers2'),F=document.getElementById('artFrames2');
+  if(L)L.innerHTML=art2.frames[art2.frame].layers.map((l,i)=>`<div class="art-layer ${i===art2.layer?'active':''}"><button onclick="event.stopPropagation();artToggleLayer2(${i})">${l.visible?'VIEW':'NONE'}</button><span onclick="artSelectLayer2(${i})">${l.name}</span><button onclick="artRenameLayer2(${i})">✎</button></div>`).join('');
+  if(F)F.innerHTML=art2.frames.map((f,i)=>`<div class="art-frame-v4 ${i===art2.frame?'active':''}" onclick="artSelectFrame2(${i})"><span class="frame-num">${i+1}</span><span class="frame-name">${f.name}</span><button ${i===0?'disabled':''} onclick="event.stopPropagation();artMoveFrame4(${i},-1)">↑</button><button ${i===art2.frames.length-1?'disabled':''} onclick="event.stopPropagation();artMoveFrame4(${i},1)">↓</button><button onclick="event.stopPropagation();artDuplicateFrame2(${i})">⧉</button></div>`).join('');
+  const s=document.getElementById('artLayerOpacity2');if(s)s.value=Math.round((artActiveLayer2()?.opacity||1)*100);const on=document.getElementById('artOnionBtn2');if(on)on.classList.toggle('active',art2.onion)
+}
 function artSyncUI2(){document.getElementById('artColor2').value=art2.color;if(document.getElementById('artHex2'))document.getElementById('artHex2').value=art2.color;document.getElementById('artSizeRange2').value=art2.size;document.getElementById('artSizeValue2').textContent=art2.size;document.querySelectorAll('[data-art-tool]').forEach(b=>b.classList.toggle('active',b.dataset.artTool===art2.tool));document.getElementById('artGridBtn2')?.classList.toggle('active',art2.grid)}
 function setArtToolUI(){artSyncUI2()}
 function artSelectLayer2(i){artSaveState2();art2.layer=i;artRender2()}
@@ -2536,7 +2638,23 @@ function artSelectFrame2(i){art2.frame=i;art2.layer=Math.min(art2.layer,art2.fra
 function artAddFrame2(){artSaveState2();const f=artBlank(art2.w,art2.h);f.name=`Frame ${art2.frames.length+1}`;art2.frames.push(f);art2.frame=art2.frames.length-1;art2.layer=0;artRender2()}
 function artDuplicateFrame2(i=art2.frame){artSaveState2();const src=art2.frames[i];const f={name:`Frame ${art2.frames.length+1}`,layers:src.layers.map(l=>({name:l.name,visible:l.visible,locked:l.locked,opacity:l.opacity,data:new ImageData(new Uint8ClampedArray(l.data.data),art2.w,art2.h)}))};art2.frames.splice(i+1,0,f);art2.frame=i+1;art2.layer=0;artRender2()}
 function artDeleteFrame2(){if(art2.frames.length<=1)return;artSaveState2();art2.frames.splice(art2.frame,1);art2.frame=Math.max(0,art2.frame-1);art2.layer=0;artRender2()}
-function artNewDoc2(){const w=+prompt('Largura do sprite','32'),h=+prompt('Altura do sprite',String(w));if(!w||!h||w>512||h>512)return;artSaveState2();art2.w=w;art2.h=h;art2.frame=0;art2.layer=0;art2.frames=[artBlank(w,h)];artRender2();artResize2()}
+function artResetBlank4(w,h){
+  art2.playing=false;art2.w=w;art2.h=h;art2.frame=0;art2.layer=0;art2.frames=[artBlank(w,h)];art2.layers=art2.frames[0].layers;art2.history=[];art2.future=[];artClearSelection4();artRender2();artResize2()
+}
+function artNewDoc2(){
+  const w=+prompt('Largura do sprite',String(art2.w||32)),h=+prompt('Altura do sprite',String(art2.h||w));if(!w||!h||w>512||h>512)return;artResetBlank4(w,h);showToast('Novo sprite vazio criado')
+}
+function artSaveNamedAsset4(name){
+  const o=artComposite2(),data=o.toDataURL('image/png');assets2.push({id:Date.now()+Math.random(),name:/\.png$/i.test(name)?name:name+'.png',type:'image/png',data,folder:'root',source:'art-studio'});saveAssets2();renderAssets2()
+}
+function artFinishAndNew4(){
+  const name=prompt('Nome do sprite','Sprite');if(!name)return;
+  artSaveNamedAsset4(name);
+  const keep=confirm('Sprite salvo nos Assets.\\n\\nOK = novo sprite com o mesmo tamanho.\\nCancelar = escolher outro tamanho.');
+  if(keep){artResetBlank4(art2.w,art2.h)}
+  else{const w=+prompt('Largura do novo sprite',String(art2.w)),h=+prompt('Altura do novo sprite',String(art2.h));if(!w||!h||w>512||h>512)return;artResetBlank4(w,h)}
+  showToast('Sprite salvo e novo canvas criado')
+}
 function artClear2(){artSaveState2();art2.frames[art2.frame].layers.forEach(l=>l.data=new ImageData(art2.w,art2.h));artRender2()}
 function artSetZoom2(v){art2.zoom=Math.max(2,Math.min(48,+v));document.getElementById('artZoom2').textContent=Math.round(art2.zoom*100/12)+'%';artResize2()}
 function artExportPNG2(){const o=artComposite2();const a=document.createElement('a');a.href=o.toDataURL('image/png');a.download='sprite.png';a.click()}
@@ -2846,30 +2964,27 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
             <button data-art-tool="move" onclick="art2.tool='move';artSyncUI2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 11V5a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-4a1.5 1.5 0 0 1 3 0v7c0 5-3 8-7 8-3 0-5-2-6-5l-2-4a1.5 1.5 0 0 1 3-1Z"/></svg><small>Move</small></button>
             <button onclick="artUndo2()">↶<small>Undo</small></button><button onclick="artRedo2()">↷<small>Redo</small></button>
           </div>
-          <div id="artSelectionActionsV3" class="art-selection-actions-v3">
+          <div id="artSelectionActionsV4" class="art-selection-actions-v4">
             <button onclick="art2.tool='move';artSyncUI2()">MOVER SELEÇÃO</button>
-            <button onclick="artDeleteSelectionV3()">APAGAR SELEÇÃO</button>
-            <button onclick="artClearSelectionV3()">CANCELAR</button>
+            <button onclick="artDeleteSelection4()">APAGAR SELEÇÃO</button>
+            <button onclick="artClearSelection4()">CANCELAR</button>
           </div>
           <div class="art-stage art-checker" id="artStage2">
-            <div id="artSelectionBoxV3" class="art-select-box-v3"></div>
             <canvas id="artCanvas2" width="32" height="32"></canvas>
+            <div id="artSelectionBoxV4" class="art-select-box-v4"></div>
             <div class="art-stagebar"><div><span class="art-badge" id="artInfo2">0, 0</span></div><div><button class="art-mini-btn" id="artGridBtn2" onclick="art2.grid=!art2.grid;artSyncUI2();artRender2()">▦</button><button class="art-mini-btn" id="artOnionBtn2" onclick="art2.onion=!art2.onion;artRender2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4c4 0 7 3 7 7 0 6-3 9-7 9s-7-3-7-9c0-4 3-7 7-7Z"/><path d="M9 9c1-2 5-2 6 0M8 13c2-2 6-2 8 0"/></svg></button></div></div>
           </div>
           <div class="art-bottom">
             <div class="art-panel"><div class="art-panel-title">Brush</div><div class="art-color-row"><input id="artColor2" type="color" value="#111111" onchange="artSetColor2(this.value)"><input id="artHex2" class="tool-input" value="#111111" onchange="artSetColor2(this.value)"></div><input id="artSizeRange2" class="art-range" type="range" min="1" max="32" value="1" oninput="art2.size=+this.value;document.getElementById('artSizeValue2').textContent=this.value"><div class="art-stat">Size: <span id="artSizeValue2">1</span> px</div></div>
             <div class="art-panel"><div class="art-panel-title">View</div><input class="art-range" type="range" min="2" max="48" value="12" oninput="artSetZoom2(this.value)"><div class="art-stat">Zoom <span id="artZoom2">100%</span></div><div class="tool-row"><button class="tool-btn" onclick="art2.grid=!art2.grid;artRender2()">Grid</button><button class="tool-btn" onclick="artClear2()">Limpar</button></div>
-<div class="art-stat" style="margin-top:9px">Fundo de trabalho</div>
+<div class="art-stat" style="margin-top:9px">Fundo da área de trabalho</div>
 <div class="art-work-bg-row">
-  <select id="artWorkBgV3" onchange="artSetWorkBackgroundV3(this.value)">
-    <option value="light">Claro</option>
-    <option value="dark">Escuro</option>
-    <option value="checker">Xadrez</option>
-    <option value="custom">Cor personalizada</option>
-  </select>
-  <input id="artWorkBgColorV3" type="color" value="#7d8791" onchange="artSetWorkBackgroundColorV3(this.value)">
+<select id="artWorkBg4" onchange="artSetWorkBackground4(this.value)">
+<option value="light">Claro</option><option value="dark">Escuro</option><option value="checker">Xadrez</option><option value="custom">Cor personalizada</option>
+</select>
+<input id="artWorkBgColor4" type="color" value="#7d8791" oninput="artSetWorkBackgroundColor4(this.value)">
 </div>
-<div class="art-hint" style="margin-top:5px">O fundo é apenas visual e não é exportado no PNG.</div>
+<div class="art-hint" style="margin-top:5px">Apenas visual. Não altera nem é exportado junto com o sprite.</div>
 </div>
             <div class="art-panel"><div class="art-panel-title">Export / Import</div><div class="tool-row"><button class="tool-btn primary" onclick="artExportPNG2()">PNG</button><button class="tool-btn" onclick="artExportSheet2()">Spritesheet</button><label class="tool-btn" style="display:grid;place-items:center;cursor:pointer">Importar<input type="file" accept="image/*" hidden onchange="artImportImage2(this)"></label></div></div>
           </div>
@@ -2878,11 +2993,7 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
           <div class="art-panel"><div class="art-panel-title">Paleta</div><div id="artPalette2" class="art-palette"></div><button class="tool-btn" style="width:100%;margin-top:7px" onclick="artAddPalette2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nova cor</button></div>
           <div class="art-panel"><div class="art-panel-title">Layers</div><div id="artLayers2" class="art-layers"></div><div class="tool-row"><button class="tool-btn primary" onclick="artAddLayer2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Layer</button><button class="tool-btn" onclick="artDeleteLayer2()">Excluir</button></div><label class="tool-muted">Opacidade <input id="artLayerOpacity2" class="art-range" type="range" min="0" max="100" value="100" oninput="artSetOpacity2(this.value)"></label></div>
           <div class="art-panel"><div class="art-panel-title">Animation</div><div class="tool-row"><button class="tool-btn primary" id="artPlay2" onclick="artPlay2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg></button><button class="tool-btn" onclick="artAddFrame2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Frame</button><button class="tool-btn" onclick="artDuplicateFrame2()">⧉</button><button class="tool-btn" onclick="artDeleteFrame2()">−</button></div><input class="art-range" type="range" min="1" max="30" value="8" oninput="art2.fps=+this.value;document.getElementById('artFps2').textContent=this.value"><div class="art-stat">FPS: <span id="artFps2">8</span></div><div id="artFrames2" class="art-frames" style="margin-top:7px"></div></div>
-          <div class="art-panel"><div class="art-panel-title">Workflow</div>
-<div class="art-hint">Use <b>Select</b> para marcar uma área. Depois use <b>Move</b> para mover somente os pixels selecionados. Nos frames, use ↑ e ↓ para alterar a ordem da animação.</div>
-<div class="tool-row"><button class="tool-btn" onclick="artNewDoc2()">Novo sprite</button><button class="tool-btn green" onclick="artSave2()">Salvar recurso</button></div>
-<button class="art-finish-new" onclick="artFinishAndNewV3()">SALVAR SPRITE + COMEÇAR NOVO</button>
-</div>
+          <div class="art-panel"><div class="art-panel-title">Workflow</div><div class="art-hint">Use Select para marcar uma área e Move para deslocá-la. Use ↑ e ↓ nos frames para reorganizar a animação.</div><div class="tool-row"><button class="tool-btn" onclick="artNewDoc2()">Novo sprite</button><button class="tool-btn green" onclick="artSave2()">Salvar recurso</button></div><button class="art-finish-new" onclick="artFinishAndNew4()">SALVAR SPRITE + COMEÇAR NOVO</button></div>
         </aside>
       </div>
     </main>
@@ -33286,454 +33397,6 @@ window.SnakeGuideV1=api;
 if(document.readyState==="loading"){
  document.addEventListener("DOMContentLoaded",updateHome,{once:true});
 }else updateHome();
-})();
-</script>
-
-
-<style>
-/* SNAKE ENGINE — ARTE WORKFLOW v3 */
-.art-work-bg-row{display:grid;grid-template-columns:1fr 48px;gap:6px;margin-top:6px}
-.art-work-bg-row select{height:35px;border:1px solid #303841;border-radius:7px;background:#0b0e11;color:#dfe6ed;padding:0 7px;font-size:9px}
-.art-work-bg-row input[type=color]{width:48px;height:35px;padding:2px;border:1px solid #303841;border-radius:7px;background:#0b0e11}
-.art-finish-new{width:100%;min-height:40px;margin-top:8px;border:1px solid #42643c;border-radius:8px;background:#172219;color:#a7eb97;font-size:9px;font-weight:900;touch-action:manipulation}
-
-.art-selection-actions-v3{display:none;gap:6px;padding:6px 0}
-.art-selection-actions-v3.show{display:flex}
-.art-selection-actions-v3 button{flex:1;min-height:36px;border:1px solid #303943;border-radius:7px;background:#1b2229;color:#dfe6ed;font-size:8px;font-weight:850;touch-action:manipulation}
-
-.art-select-box-v3{position:absolute;z-index:9;display:none;border:2px dashed #fff;box-shadow:0 0 0 1px #000;background:rgba(255,255,255,.06);pointer-events:none}
-.art-select-box-v3.show{display:block}
-
-.art-frame-v3{display:flex;align-items:center;gap:5px;min-height:40px;padding:5px 6px;border-radius:7px;background:#171d23;border:1px solid #2a323a;font-size:10px}
-.art-frame-v3.active{background:#2878ff;color:#fff;border-color:#2878ff}
-.art-frame-v3 .frame-num{width:22px;min-width:22px;height:22px;border:1px solid #3a4650;border-radius:5px;background:#0e1419;color:#87939c;display:grid;place-items:center;font:8px ui-monospace,monospace}
-.art-frame-v3.active .frame-num{color:#fff;border-color:#ffffff80}
-.art-frame-v3 .frame-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.art-frame-v3 button{width:29px;height:29px;border-radius:6px;background:#252d35;color:#d7dfe5;border:1px solid #34404a;touch-action:manipulation}
-.art-frame-v3 button:disabled{opacity:.3}
-</style>
-
-<script>
-/* =====================================================
-   SNAKE ENGINE — ARTE WORKFLOW v3
-===================================================== */
-(function(){
-"use strict";
-
-const ART_BG_KEY_V3="snake_art_work_background_v3";
-
-art2.selection=null;
-art2.selectionDraft=null;
-art2.selectionMove=null;
-art2.workBackground=localStorage.getItem(ART_BG_KEY_V3)||"light";
-
-function artNormRectV3(a,b){
-  return {
-    x:Math.min(a.x,b.x),
-    y:Math.min(a.y,b.y),
-    w:Math.abs(b.x-a.x)+1,
-    h:Math.abs(b.y-a.y)+1
-  };
-}
-function artPointInRectV3(p,r){
-  return !!r&&p.x>=r.x&&p.y>=r.y&&p.x<r.x+r.w&&p.y<r.y+r.h;
-}
-function artSelectionRectV3(){
-  return art2.selectionDraft||art2.selection;
-}
-
-function artRenderSelectionV3(){
-  const box=document.getElementById("artSelectionBoxV3");
-  const canvas=document.getElementById("artCanvas2");
-  const stage=document.getElementById("artStage2");
-  const actions=document.getElementById("artSelectionActionsV3");
-  const r=artSelectionRectV3();
-
-  if(!box||!canvas||!stage||!r){
-    box?.classList.remove("show");
-    actions?.classList.remove("show");
-    return;
-  }
-
-  const cr=canvas.getBoundingClientRect();
-  const sr=stage.getBoundingClientRect();
-  const px=cr.width/art2.w;
-  const py=cr.height/art2.h;
-
-  box.style.left=(cr.left-sr.left+r.x*px)+"px";
-  box.style.top=(cr.top-sr.top+r.y*py)+"px";
-  box.style.width=(r.w*px)+"px";
-  box.style.height=(r.h*py)+"px";
-  box.classList.add("show");
-  actions?.classList.toggle("show",!!art2.selection);
-}
-
-window.artClearSelectionV3=function(){
-  art2.selection=null;
-  art2.selectionDraft=null;
-  art2.selectionMove=null;
-  artRenderSelectionV3();
-};
-
-window.artDeleteSelectionV3=function(){
-  const r=art2.selection;
-  const layer=artActiveLayer2();
-  if(!r||!layer||layer.locked)return;
-
-  artSaveState2();
-  for(let y=r.y;y<r.y+r.h;y++){
-    for(let x=r.x;x<r.x+r.w;x++){
-      if(x<0||y<0||x>=art2.w||y>=art2.h)continue;
-      const i=(y*art2.w+x)*4;
-      layer.data.data[i]=0;
-      layer.data.data[i+1]=0;
-      layer.data.data[i+2]=0;
-      layer.data.data[i+3]=0;
-    }
-  }
-  artClearSelectionV3();
-  artRender2();
-};
-
-function artCopyRegionV3(r,layer){
-  const pixels=new Uint8ClampedArray(r.w*r.h*4);
-  for(let y=0;y<r.h;y++){
-    for(let x=0;x<r.w;x++){
-      const sx=r.x+x,sy=r.y+y;
-      if(sx<0||sy<0||sx>=art2.w||sy>=art2.h)continue;
-      const si=(sy*art2.w+sx)*4;
-      const di=(y*r.w+x)*4;
-      for(let k=0;k<4;k++)pixels[di+k]=layer.data.data[si+k];
-    }
-  }
-  return pixels;
-}
-
-function artApplyMoveV3(from,to){
-  const layer=artActiveLayer2();
-  if(!layer||layer.locked)return;
-  const pixels=artCopyRegionV3(from,layer);
-
-  for(let y=from.y;y<from.y+from.h;y++){
-    for(let x=from.x;x<from.x+from.w;x++){
-      if(x<0||y<0||x>=art2.w||y>=art2.h)continue;
-      const i=(y*art2.w+x)*4;
-      layer.data.data[i]=0;
-      layer.data.data[i+1]=0;
-      layer.data.data[i+2]=0;
-      layer.data.data[i+3]=0;
-    }
-  }
-
-  for(let y=0;y<from.h;y++){
-    for(let x=0;x<from.w;x++){
-      const tx=to.x+x,ty=to.y+y;
-      if(tx<0||ty<0||tx>=art2.w||ty>=art2.h)continue;
-      const si=(y*from.w+x)*4;
-      const di=(ty*art2.w+tx)*4;
-      for(let k=0;k<4;k++)layer.data.data[di+k]=pixels[si+k];
-    }
-  }
-}
-
-/* Guarda funções originais antes de substituir. */
-const artPointerDownOriginalV3=artPointerDown2;
-const artPointerMoveOriginalV3=artPointerMove2;
-const artPointerUpOriginalV3=artPointerUp2;
-
-artPointerDown2=function(e){
-  if(art2.tool!=="select"&&art2.tool!=="move"){
-    return artPointerDownOriginalV3(e);
-  }
-
-  e.preventDefault();
-  const p=artPos2(e);
-
-  if(art2.tool==="select"){
-    art2.drawing=true;
-    art2.selectStart=p;
-    art2.selectionDraft={x:p.x,y:p.y,w:1,h:1};
-    artRenderSelectionV3();
-    return;
-  }
-
-  if(art2.tool==="move"&&art2.selection&&artPointInRectV3(p,art2.selection)){
-    art2.drawing=true;
-    art2.selectionMove={start:p,original:{...art2.selection}};
-    return;
-  }
-
-  art2.drawing=false;
-};
-
-artPointerMove2=function(e){
-  if(art2.tool!=="select"&&art2.tool!=="move"){
-    return artPointerMoveOriginalV3(e);
-  }
-
-  const p=artPos2(e);
-  const info=document.getElementById("artInfo2");
-  if(info)info.textContent=`${p.x}, ${p.y}`;
-
-  if(!art2.drawing)return;
-
-  if(art2.tool==="select"){
-    art2.selectionDraft=artNormRectV3(art2.selectStart,p);
-    artRenderSelectionV3();
-    return;
-  }
-
-  if(art2.tool==="move"&&art2.selectionMove){
-    const m=art2.selectionMove;
-    const dx=p.x-m.start.x;
-    const dy=p.y-m.start.y;
-    const o=m.original;
-
-    art2.selection={
-      x:Math.max(0,Math.min(art2.w-o.w,o.x+dx)),
-      y:Math.max(0,Math.min(art2.h-o.h,o.y+dy)),
-      w:o.w,h:o.h
-    };
-    artRenderSelectionV3();
-  }
-};
-
-artPointerUp2=function(e){
-  if(art2.tool!=="select"&&art2.tool!=="move"){
-    return artPointerUpOriginalV3(e);
-  }
-  if(!art2.drawing)return;
-
-  const p=artPos2(e);
-
-  if(art2.tool==="select"){
-    art2.selection=artNormRectV3(art2.selectStart,p);
-    art2.selectionDraft=null;
-    art2.selectStart=null;
-  }else if(art2.tool==="move"&&art2.selectionMove){
-    const original=art2.selectionMove.original;
-    const target={...art2.selection};
-
-    if(original.x!==target.x||original.y!==target.y){
-      artSaveState2();
-      artApplyMoveV3(original,target);
-    }
-    art2.selectionMove=null;
-  }
-
-  art2.drawing=false;
-  artRender2();
-  artRenderSelectionV3();
-};
-
-function artRebindCanvasV3(){
-  const c=document.getElementById("artCanvas2");
-  if(!c||c.dataset.workflowV3==="1")return;
-
-  c.removeEventListener("pointerdown",artPointerDownOriginalV3);
-  c.removeEventListener("pointermove",artPointerMoveOriginalV3);
-  c.removeEventListener("pointerup",artPointerUpOriginalV3);
-  c.removeEventListener("pointercancel",artPointerUpOriginalV3);
-  c.removeEventListener("pointerleave",artPointerUpOriginalV3);
-
-  c.addEventListener("pointerdown",artPointerDown2);
-  c.addEventListener("pointermove",artPointerMove2);
-  c.addEventListener("pointerup",artPointerUp2);
-  c.addEventListener("pointercancel",artPointerUp2);
-  c.addEventListener("pointerleave",artPointerUp2);
-
-  c.dataset.workflowV3="1";
-}
-
-/* FRAME ORDER */
-window.artMoveFrameV3=function(index,delta){
-  const target=index+delta;
-  if(index<0||target<0||index>=art2.frames.length||target>=art2.frames.length)return;
-
-  artSaveState2();
-  const selectedFrame=art2.frames[art2.frame];
-  const [moving]=art2.frames.splice(index,1);
-  art2.frames.splice(target,0,moving);
-
-  art2.frame=art2.frames.indexOf(selectedFrame);
-  art2.layers=art2.frames[art2.frame].layers;
-  artRender2();
-};
-
-const artRenderListsOriginalV3=artRenderLists2;
-artRenderLists2=function(){
-  artRenderListsOriginalV3();
-
-  const F=document.getElementById("artFrames2");
-  if(F){
-    F.innerHTML=art2.frames.map((f,i)=>`
-      <div class="art-frame-v3 ${i===art2.frame?"active":""}" onclick="artSelectFrame2(${i})">
-        <span class="frame-num">${i+1}</span>
-        <span class="frame-name">${f.name}</span>
-        <button ${i===0?"disabled":""} onclick="event.stopPropagation();artMoveFrameV3(${i},-1)">↑</button>
-        <button ${i===art2.frames.length-1?"disabled":""} onclick="event.stopPropagation();artMoveFrameV3(${i},1)">↓</button>
-        <button onclick="event.stopPropagation();artDuplicateFrame2(${i})">⧉</button>
-      </div>
-    `).join("");
-  }
-};
-
-/* FUNDO */
-function artApplyWorkBackgroundV3(){
-  const stage=document.getElementById("artStage2");
-  if(!stage)return;
-
-  const value=art2.workBackground||"light";
-  stage.classList.remove("art-checker");
-  stage.style.backgroundImage="none";
-
-  if(value==="checker"){
-    stage.classList.add("art-checker");
-    stage.style.backgroundColor="";
-  }else if(value==="light"){
-    stage.style.backgroundColor="#d8dde2";
-  }else if(value==="dark"){
-    stage.style.backgroundColor="#1b2026";
-  }else{
-    stage.style.backgroundColor=value;
-  }
-
-  const sel=document.getElementById("artWorkBgV3");
-  const color=document.getElementById("artWorkBgColorV3");
-
-  if(sel)sel.value=value.startsWith("#")?"custom":value;
-  if(color&&value.startsWith("#"))color.value=value;
-}
-window.artSetWorkBackgroundV3=function(value){
-  if(value==="custom"){
-    value=document.getElementById("artWorkBgColorV3")?.value||"#7d8791";
-  }
-  art2.workBackground=value;
-  localStorage.setItem(ART_BG_KEY_V3,value);
-  artApplyWorkBackgroundV3();
-};
-window.artSetWorkBackgroundColorV3=function(value){
-  art2.workBackground=value;
-  localStorage.setItem(ART_BG_KEY_V3,value);
-  const sel=document.getElementById("artWorkBgV3");
-  if(sel)sel.value="custom";
-  artApplyWorkBackgroundV3();
-};
-
-/* NOVO SPRITE */
-function artResetBlankV3(w,h){
-  art2.playing=false;
-  art2.w=w;art2.h=h;
-  art2.frame=0;art2.layer=0;
-  art2.frames=[artBlank(w,h)];
-  art2.layers=art2.frames[0].layers;
-  art2.history=[];
-  art2.future=[];
-  artClearSelectionV3();
-  artRender2();
-  artResize2();
-}
-
-artNewDoc2=function(){
-  const w=Number(prompt("Largura do novo sprite",String(art2.w||32)));
-  if(!w||w<1||w>512)return;
-  const h=Number(prompt("Altura do novo sprite",String(art2.h||w)));
-  if(!h||h<1||h>512)return;
-
-  if(!confirm("Criar um sprite vazio agora?"))return;
-  artResetBlankV3(w,h);
-  showToast?.("Novo sprite vazio");
-};
-
-function artSaveNamedAssetV3(name){
-  const o=artComposite2();
-  const data=o.toDataURL("image/png");
-  assets2=assets2||[];
-
-  assets2.push({
-    id:"art-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),
-    name:/\.png$/i.test(name)?name:name+".png",
-    type:"image/png",
-    data,
-    folder:"root",
-    source:"art-studio"
-  });
-
-  saveAssets2?.();
-  renderAssets2?.();
-}
-window.artFinishAndNewV3=function(){
-  const name=prompt("Nome do sprite","Sprite");
-  if(!name)return;
-
-  artSaveNamedAssetV3(name);
-
-  const same=confirm("Sprite salvo nos Assets.\n\nOK: novo sprite com o mesmo tamanho.\nCancelar: escolher outro tamanho.");
-
-  if(same){
-    artResetBlankV3(art2.w,art2.h);
-  }else{
-    const w=Number(prompt("Nova largura",String(art2.w)));
-    if(!w||w<1||w>512)return;
-    const h=Number(prompt("Nova altura",String(art2.h)));
-    if(!h||h<1||h>512)return;
-    artResetBlankV3(w,h);
-  }
-
-  showToast?.("Sprite salvo · novo canvas pronto");
-};
-
-/* Sincronização */
-const artRenderOriginalV3=artRender2;
-artRender2=function(){
-  const result=artRenderOriginalV3.apply(this,arguments);
-  requestAnimationFrame(()=>{
-    artRenderSelectionV3();
-    artApplyWorkBackgroundV3();
-  });
-  return result;
-};
-
-const artResizeOriginalV3=artResize2;
-artResize2=function(){
-  const r=artResizeOriginalV3.apply(this,arguments);
-  requestAnimationFrame(artRenderSelectionV3);
-  return r;
-};
-
-const artSelectFrameOriginalV3=artSelectFrame2;
-artSelectFrame2=function(i){
-  artClearSelectionV3();
-  return artSelectFrameOriginalV3(i);
-};
-
-const artInitOriginalV3=artInit2;
-artInit2=function(){
-  const r=artInitOriginalV3.apply(this,arguments);
-  artRebindCanvasV3();
-  artApplyWorkBackgroundV3();
-  artRender2();
-  return r;
-};
-
-function artWorkflowInitV3(){
-  artRebindCanvasV3();
-  artApplyWorkBackgroundV3();
-  artRender2();
-}
-
-if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded",artWorkflowInitV3,{once:true});
-}else{
-  artWorkflowInitV3();
-}
-
-window.SnakeArtWorkflowV3={
-  clearSelection:artClearSelectionV3,
-  renderSelection:artRenderSelectionV3,
-  applyBackground:artApplyWorkBackgroundV3
-};
-
 })();
 </script>
 
