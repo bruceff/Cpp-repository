@@ -33267,5 +33267,701 @@ if(document.readyState==="loading"){
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — ARTE WORKFLOW v2
+   Selection + frame order + new sprite + work background
+===================================================== */
+.art-select-box-v2{
+  position:absolute;
+  z-index:7;
+  display:none;
+  border:1px dashed #f7f7f7;
+  box-shadow:0 0 0 1px rgba(0,0,0,.9),inset 0 0 0 1px rgba(0,0,0,.35);
+  background:rgba(255,255,255,.045);
+  pointer-events:none;
+}
+.art-select-box-v2.show{display:block}
+
+.art-frame-order{
+  width:29px!important;
+  height:29px!important;
+  flex:0 0 29px;
+  display:grid;
+  place-items:center;
+  border:1px solid #33404a!important;
+  background:#202830!important;
+  color:#a9b5be!important;
+  font-size:11px!important;
+  touch-action:manipulation;
+}
+.art-frame-order:disabled{opacity:.3}
+.art-frame-index{
+  width:22px;
+  min-width:22px;
+  height:22px;
+  display:grid;
+  place-items:center;
+  border:1px solid #3a4650;
+  border-radius:5px;
+  background:#0e1419;
+  color:#81909a;
+  font:8px ui-monospace,monospace;
+}
+.art-frame.active .art-frame-index{
+  border-color:#fff8;
+  color:#fff;
+}
+
+.art-work-bg-row{
+  display:grid;
+  grid-template-columns:1fr 48px;
+  gap:6px;
+  margin-top:8px;
+}
+.art-work-bg-row select{
+  min-width:0;
+  height:34px;
+  border:1px solid #303841;
+  border-radius:7px;
+  background:#0b0e11;
+  color:#dfe6ed;
+  padding:0 7px;
+  font-size:9px;
+}
+.art-work-bg-row input[type=color]{
+  width:48px;
+  height:34px;
+  padding:2px;
+  border:1px solid #303841;
+  border-radius:7px;
+  background:#0b0e11;
+}
+
+.art-finish-new{
+  width:100%;
+  margin-top:7px;
+  min-height:39px;
+  border-radius:8px;
+  border:1px solid #3c5838;
+  background:#172219;
+  color:#a6ea95;
+  font-size:9px;
+  font-weight:800;
+  touch-action:manipulation;
+}
+.art-selection-actions{
+  display:none;
+  gap:6px;
+  margin-top:7px;
+}
+.art-selection-actions.show{display:flex}
+.art-selection-actions button{
+  flex:1;
+  min-height:34px;
+  border:1px solid #303943;
+  border-radius:7px;
+  background:#1b2229;
+  color:#dfe6ed;
+  font-size:8px;
+  font-weight:800;
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — ARTE WORKFLOW v2
+===================================================== */
+(function(){
+"use strict";
+
+if(typeof window.art2==="undefined"){
+  console.warn("Arte Workflow v2: art2 não encontrado.");
+  return;
+}
+
+const BG_KEY="snake_art_work_background_v2";
+
+art2.selection=art2.selection||null;
+art2.selectionDraft=null;
+art2.selectionMove=null;
+art2.workBackground=localStorage.getItem(BG_KEY)||"light";
+
+function normRect(a,b){
+  const x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);
+  return {
+    x,
+    y,
+    w:Math.abs(b.x-a.x)+1,
+    h:Math.abs(b.y-a.y)+1
+  };
+}
+
+function pointInRect(p,r){
+  return !!r &&
+    p.x>=r.x && p.y>=r.y &&
+    p.x<r.x+r.w && p.y<r.y+r.h;
+}
+
+function selectionRect(){
+  return art2.selectionDraft||art2.selection;
+}
+
+function ensureSelectionBox(){
+  const stage=document.getElementById("artStage2");
+  if(!stage)return null;
+
+  let box=document.getElementById("artSelectionBoxV2");
+  if(!box){
+    box=document.createElement("div");
+    box.id="artSelectionBoxV2";
+    box.className="art-select-box-v2";
+    stage.appendChild(box);
+  }
+  return box;
+}
+
+function renderSelection(){
+  const box=ensureSelectionBox();
+  const canvas=document.getElementById("artCanvas2");
+  const stage=document.getElementById("artStage2");
+  const r=selectionRect();
+
+  if(!box||!canvas||!stage||!r||r.w<=0||r.h<=0){
+    box?.classList.remove("show");
+    document.getElementById("artSelectionActionsV2")?.classList.remove("show");
+    return;
+  }
+
+  const cr=canvas.getBoundingClientRect();
+  const sr=stage.getBoundingClientRect();
+
+  const px=cr.width/Math.max(1,art2.w);
+  const py=cr.height/Math.max(1,art2.h);
+
+  box.style.left=(cr.left-sr.left+r.x*px)+"px";
+  box.style.top=(cr.top-sr.top+r.y*py)+"px";
+  box.style.width=(r.w*px)+"px";
+  box.style.height=(r.h*py)+"px";
+  box.classList.add("show");
+
+  document.getElementById("artSelectionActionsV2")?.classList.toggle(
+    "show",
+    !!art2.selection
+  );
+}
+
+function clearSelection(){
+  art2.selection=null;
+  art2.selectionDraft=null;
+  art2.selectionMove=null;
+  renderSelection();
+}
+
+function deleteSelection(){
+  const r=art2.selection;
+  const layer=artActiveLayer2();
+  if(!r||!layer||layer.locked)return;
+
+  artSaveState2();
+
+  const d=layer.data.data;
+  for(let y=r.y;y<r.y+r.h;y++){
+    for(let x=r.x;x<r.x+r.w;x++){
+      if(x<0||y<0||x>=art2.w||y>=art2.h)continue;
+      const i=(y*art2.w+x)*4;
+      d[i]=0;d[i+1]=0;d[i+2]=0;d[i+3]=0;
+    }
+  }
+
+  clearSelection();
+  artRender2();
+}
+
+function copySelectionPixels(r,layer){
+  const out=new Uint8ClampedArray(r.w*r.h*4);
+  for(let y=0;y<r.h;y++){
+    for(let x=0;x<r.w;x++){
+      const sx=r.x+x,sy=r.y+y;
+      if(sx<0||sy<0||sx>=art2.w||sy>=art2.h)continue;
+      const si=(sy*art2.w+sx)*4;
+      const di=(y*r.w+x)*4;
+      out[di]=layer.data.data[si];
+      out[di+1]=layer.data.data[si+1];
+      out[di+2]=layer.data.data[si+2];
+      out[di+3]=layer.data.data[si+3];
+    }
+  }
+  return out;
+}
+
+function moveSelectionPixels(from,to){
+  const layer=artActiveLayer2();
+  if(!layer||layer.locked)return;
+
+  const pixels=copySelectionPixels(from,layer);
+  const d=layer.data.data;
+
+  // limpa a área original
+  for(let y=from.y;y<from.y+from.h;y++){
+    for(let x=from.x;x<from.x+from.w;x++){
+      if(x<0||y<0||x>=art2.w||y>=art2.h)continue;
+      const i=(y*art2.w+x)*4;
+      d[i]=0;d[i+1]=0;d[i+2]=0;d[i+3]=0;
+    }
+  }
+
+  // cola na nova posição
+  for(let y=0;y<from.h;y++){
+    for(let x=0;x<from.w;x++){
+      const tx=to.x+x,ty=to.y+y;
+      if(tx<0||ty<0||tx>=art2.w||ty>=art2.h)continue;
+      const si=(y*from.w+x)*4;
+      const di=(ty*art2.w+tx)*4;
+      d[di]=pixels[si];
+      d[di+1]=pixels[si+1];
+      d[di+2]=pixels[si+2];
+      d[di+3]=pixels[si+3];
+    }
+  }
+}
+
+/* -----------------------------
+   Corrige Select + Move
+----------------------------- */
+const oldDown=window.artPointerDown2;
+const oldMove=window.artPointerMove2;
+const oldUp=window.artPointerUp2;
+
+window.artPointerDown2=function(e){
+  if(art2.tool!=="select" && art2.tool!=="move"){
+    return oldDown(e);
+  }
+
+  e.preventDefault();
+  const p=artPos2(e);
+
+  if(art2.tool==="select"){
+    art2.drawing=true;
+    art2.selectStart=p;
+    art2.selectionDraft={x:p.x,y:p.y,w:1,h:1};
+    renderSelection();
+    return;
+  }
+
+  // Move só começa quando há uma seleção e o toque está dentro dela.
+  if(art2.tool==="move" && art2.selection && pointInRect(p,art2.selection)){
+    art2.drawing=true;
+    art2.selectionMove={
+      pointerStart:p,
+      original:{...art2.selection}
+    };
+    return;
+  }
+
+  // Se não há seleção, Move não altera pixels por acidente.
+  art2.drawing=false;
+};
+
+window.artPointerMove2=function(e){
+  if(art2.tool!=="select" && art2.tool!=="move"){
+    return oldMove(e);
+  }
+
+  const p=artPos2(e);
+  const info=document.getElementById("artInfo2");
+  if(info)info.textContent=`${p.x}, ${p.y}`;
+
+  if(!art2.drawing)return;
+
+  if(art2.tool==="select"){
+    art2.selectionDraft=normRect(art2.selectStart,p);
+    renderSelection();
+    return;
+  }
+
+  if(art2.tool==="move" && art2.selectionMove){
+    const m=art2.selectionMove;
+    const dx=p.x-m.pointerStart.x;
+    const dy=p.y-m.pointerStart.y;
+    const o=m.original;
+
+    art2.selection={
+      x:Math.max(0,Math.min(art2.w-o.w,o.x+dx)),
+      y:Math.max(0,Math.min(art2.h-o.h,o.y+dy)),
+      w:o.w,
+      h:o.h
+    };
+    renderSelection();
+  }
+};
+
+window.artPointerUp2=function(e){
+  if(art2.tool!=="select" && art2.tool!=="move"){
+    return oldUp(e);
+  }
+
+  if(!art2.drawing)return;
+  const p=artPos2(e);
+
+  if(art2.tool==="select"){
+    art2.selection=normRect(art2.selectStart,p);
+    art2.selectionDraft=null;
+    art2.selectStart=null;
+  }else if(art2.tool==="move" && art2.selectionMove){
+    const original=art2.selectionMove.original;
+    const target={...art2.selection};
+
+    if(original.x!==target.x || original.y!==target.y){
+      artSaveState2();
+      moveSelectionPixels(original,target);
+    }
+
+    art2.selectionMove=null;
+  }
+
+  art2.drawing=false;
+  artRender2();
+  renderSelection();
+};
+
+/*
+  Os listeners antigos apontam para as funções originais.
+  Rebind do canvas para que a correção passe a ser a autoridade.
+*/
+function rebindCanvas(){
+  const c=document.getElementById("artCanvas2");
+  if(!c||c.dataset.artWorkflowV2==="1")return;
+
+  c.removeEventListener("pointerdown",oldDown);
+  c.removeEventListener("pointermove",oldMove);
+  c.removeEventListener("pointerup",oldUp);
+  c.removeEventListener("pointercancel",oldUp);
+  c.removeEventListener("pointerleave",oldUp);
+
+  c.addEventListener("pointerdown",window.artPointerDown2);
+  c.addEventListener("pointermove",window.artPointerMove2);
+  c.addEventListener("pointerup",window.artPointerUp2);
+  c.addEventListener("pointercancel",window.artPointerUp2);
+  c.addEventListener("pointerleave",window.artPointerUp2);
+
+  c.dataset.artWorkflowV2="1";
+}
+
+/* -----------------------------
+   Frame order
+----------------------------- */
+window.artMoveFrame2=function(index,delta){
+  const to=index+delta;
+  if(index<0||to<0||index>=art2.frames.length||to>=art2.frames.length)return;
+
+  artSaveState2();
+
+  const current=art2.frames[art2.frame];
+  const [item]=art2.frames.splice(index,1);
+  art2.frames.splice(to,0,item);
+  art2.frame=art2.frames.indexOf(current);
+  art2.layers=art2.frames[art2.frame].layers;
+
+  artRender2();
+  showToast?.(`Frame movido para ${to+1}`);
+};
+
+const oldRenderLists=window.artRenderLists2;
+window.artRenderLists2=function(){
+  oldRenderLists();
+
+  const F=document.getElementById("artFrames2");
+  if(!F)return;
+
+  F.innerHTML=art2.frames.map((f,i)=>`
+    <div class="art-frame ${i===art2.frame?"active":""}" onclick="artSelectFrame2(${i})">
+      <span class="art-frame-index">${i+1}</span>
+      <span>${f.name}</span>
+      <button class="art-frame-order" ${i===0?"disabled":""}
+        onclick="event.stopPropagation();artMoveFrame2(${i},-1)" title="Mover frame para cima">↑</button>
+      <button class="art-frame-order" ${i===art2.frames.length-1?"disabled":""}
+        onclick="event.stopPropagation();artMoveFrame2(${i},1)" title="Mover frame para baixo">↓</button>
+      <button onclick="event.stopPropagation();artDuplicateFrame2(${i})" title="Duplicar">⧉</button>
+    </div>
+  `).join("");
+};
+
+/* -----------------------------
+   Fundo de trabalho
+----------------------------- */
+function applyWorkBackground(){
+  const stage=document.getElementById("artStage2");
+  if(!stage)return;
+
+  const mode=art2.workBackground||"light";
+  stage.classList.remove("art-checker");
+  stage.style.backgroundImage="none";
+
+  if(mode==="checker"){
+    stage.classList.add("art-checker");
+    stage.style.backgroundColor="";
+  }else if(mode==="light"){
+    stage.style.backgroundColor="#d8dde2";
+  }else if(mode==="dark"){
+    stage.style.backgroundColor="#20262d";
+  }else if(mode.startsWith("#")){
+    stage.style.backgroundColor=mode;
+  }else{
+    stage.style.backgroundColor="#d8dde2";
+  }
+
+  const select=document.getElementById("artWorkBgV2");
+  const custom=document.getElementById("artWorkBgColorV2");
+
+  if(select){
+    select.value=mode.startsWith("#")?"custom":mode;
+  }
+  if(custom && mode.startsWith("#")){
+    custom.value=mode;
+  }
+}
+
+window.artSetWorkBackgroundV2=function(value){
+  if(value==="custom"){
+    const c=document.getElementById("artWorkBgColorV2")?.value||"#7d8791";
+    art2.workBackground=c;
+  }else{
+    art2.workBackground=value;
+  }
+
+  localStorage.setItem(BG_KEY,art2.workBackground);
+  applyWorkBackground();
+};
+
+window.artSetWorkBackgroundColorV2=function(value){
+  if(!/^#[0-9a-f]{6}$/i.test(value))return;
+  art2.workBackground=value;
+  localStorage.setItem(BG_KEY,value);
+
+  const select=document.getElementById("artWorkBgV2");
+  if(select)select.value="custom";
+
+  applyWorkBackground();
+};
+
+/* -----------------------------
+   Novo sprite e Concluir + Novo
+----------------------------- */
+function resetBlankSprite(w=art2.w,h=art2.h){
+  art2.playing=false;
+  art2.w=w;
+  art2.h=h;
+  art2.frame=0;
+  art2.layer=0;
+  art2.frames=[artBlank(w,h)];
+  art2.layers=art2.frames[0].layers;
+  art2.history=[];
+  art2.future=[];
+  clearSelection();
+  artRender2();
+  artResize2();
+}
+
+window.artNewDoc2=function(){
+  const w=Number(prompt("Largura do novo sprite",String(art2.w||32)));
+  if(!w||w<1||w>512)return;
+
+  const h=Number(prompt("Altura do novo sprite",String(art2.h||w)));
+  if(!h||h<1||h>512)return;
+
+  if(!confirm("Criar um sprite vazio? O desenho atual não será apagado dos Assets se já tiver sido salvo."))return;
+
+  resetBlankSprite(w,h);
+  showToast?.("Novo sprite vazio criado");
+};
+
+function saveNamedArtAsset(name){
+  const o=artComposite2();
+  const data=o.toDataURL("image/png");
+
+  assets2=assets2||[];
+
+  const safe=String(name||"Sprite").trim()||"Sprite";
+  const id="art-"+Date.now()+"-"+Math.random().toString(36).slice(2,7);
+
+  assets2.push({
+    id,
+    name:safe.toLowerCase().endsWith(".png")?safe:safe+".png",
+    type:"image/png",
+    data,
+    folder:"root",
+    source:"art-studio"
+  });
+
+  saveAssets2?.();
+  renderAssets2?.();
+
+  return id;
+}
+
+window.artFinishAndNewV2=function(){
+  const defaultName="Sprite "+new Date().toLocaleTimeString([],{
+    hour:"2-digit",minute:"2-digit"
+  }).replace(":","-");
+
+  const name=prompt("Nome do sprite que será salvo",defaultName);
+  if(!name)return;
+
+  saveNamedArtAsset(name);
+
+  const keepSize=confirm(
+    "Sprite salvo nos Assets.\n\nOK = iniciar outro sprite com o mesmo tamanho.\nCancelar = escolher outro tamanho."
+  );
+
+  if(keepSize){
+    resetBlankSprite(art2.w,art2.h);
+  }else{
+    const w=Number(prompt("Largura do novo sprite",String(art2.w||32)));
+    if(!w||w<1||w>512)return;
+    const h=Number(prompt("Altura do novo sprite",String(art2.h||w)));
+    if(!h||h<1||h>512)return;
+    resetBlankSprite(w,h);
+  }
+
+  showToast?.("Sprite salvo · canvas pronto para o próximo");
+};
+
+/* -----------------------------
+   Mantém selection overlay sincronizado
+----------------------------- */
+const oldRender=window.artRender2;
+window.artRender2=function(){
+  const result=oldRender.apply(this,arguments);
+  requestAnimationFrame(()=>{
+    renderSelection();
+    applyWorkBackground();
+  });
+  return result;
+};
+
+const oldResize=window.artResize2;
+window.artResize2=function(){
+  const result=oldResize.apply(this,arguments);
+  requestAnimationFrame(renderSelection);
+  return result;
+};
+
+const oldSelectFrame=window.artSelectFrame2;
+window.artSelectFrame2=function(i){
+  clearSelection();
+  return oldSelectFrame(i);
+};
+
+const oldClear=window.artClear2;
+window.artClear2=function(){
+  clearSelection();
+  return oldClear();
+};
+
+/* -----------------------------
+   UI
+----------------------------- */
+function installUI(){
+  const art=document.getElementById("tool-art");
+  if(!art||art.dataset.workflowV2==="1")return;
+  art.dataset.workflowV2="1";
+
+  ensureSelectionBox();
+
+  // Ações da seleção, logo após a toolstrip.
+  const tools=document.getElementById("artTools2");
+  if(tools){
+    const actions=document.createElement("div");
+    actions.id="artSelectionActionsV2";
+    actions.className="art-selection-actions";
+    actions.innerHTML=`
+      <button type="button" onclick="art2.tool='move';artSyncUI2()">MOVER SELEÇÃO</button>
+      <button type="button" onclick="SnakeArtWorkflowV2.deleteSelection()">APAGAR SELEÇÃO</button>
+      <button type="button" onclick="SnakeArtWorkflowV2.clearSelection()">CANCELAR</button>
+    `;
+    tools.insertAdjacentElement("afterend",actions);
+  }
+
+  // Fundo de trabalho no painel View.
+  const viewPanel=[...art.querySelectorAll(".art-panel")]
+    .find(p=>p.querySelector(".art-panel-title")?.textContent.trim()==="View");
+
+  if(viewPanel){
+    const bg=document.createElement("div");
+    bg.innerHTML=`
+      <div class="art-stat" style="margin-top:8px">Fundo de trabalho</div>
+      <div class="art-work-bg-row">
+        <select id="artWorkBgV2" onchange="artSetWorkBackgroundV2(this.value)">
+          <option value="light">Claro</option>
+          <option value="dark">Escuro</option>
+          <option value="checker">Xadrez</option>
+          <option value="custom">Cor personalizada</option>
+        </select>
+        <input id="artWorkBgColorV2" type="color" value="#7d8791"
+          onchange="artSetWorkBackgroundColorV2(this.value)">
+      </div>
+      <div class="art-hint" style="margin-top:5px">
+        O fundo serve apenas para visualizar. Ele não entra no PNG.
+      </div>
+    `;
+    viewPanel.appendChild(bg);
+  }
+
+  // Workflow mais claro.
+  const workflow=[...art.querySelectorAll(".art-panel")]
+    .find(p=>p.querySelector(".art-panel-title")?.textContent.trim()==="Workflow");
+
+  if(workflow){
+    const btn=document.createElement("button");
+    btn.className="art-finish-new";
+    btn.type="button";
+    btn.textContent="SALVAR SPRITE + COMEÇAR NOVO";
+    btn.onclick=window.artFinishAndNewV2;
+    workflow.appendChild(btn);
+
+    const hint=workflow.querySelector(".art-hint");
+    if(hint){
+      hint.innerHTML=
+        'Selecione uma área com <b>Select</b> e use <b>Move</b> para deslocá-la. '+
+        'Nos frames, use ↑/↓ para alterar a ordem da animação.';
+    }
+  }
+
+  rebindCanvas();
+  applyWorkBackground();
+  artRender2();
+}
+
+window.SnakeArtWorkflowV2={
+  version:"2.0.0",
+  clearSelection,
+  deleteSelection,
+  renderSelection,
+  applyWorkBackground,
+  resetBlankSprite
+};
+
+const oldArtInit=window.artInit2;
+window.artInit2=function(){
+  const result=oldArtInit.apply(this,arguments);
+  installUI();
+  rebindCanvas();
+  applyWorkBackground();
+  return result;
+};
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",()=>{
+    installUI();
+  },{once:true});
+}else{
+  installUI();
+}
+
+})();
+</script>
+
 </body>
 </html>
