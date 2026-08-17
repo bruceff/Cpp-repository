@@ -28252,5 +28252,1041 @@ if(document.readyState==="loading"){
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — PHYSICS INTEGRATION v2
+===================================================== */
+.physics-integration-v2{
+  position:absolute;
+  inset:0;
+  z-index:246;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.physics-integration-v2.show{display:flex}
+
+.phys-v2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.phys-v2-head-title{flex:1;min-width:0}
+.phys-v2-head-title strong{display:block;font-size:13px}
+.phys-v2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.phys-v2-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.phys-v2-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.phys-v2-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.phys-v2-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.phys-v2-panel-body{padding:9px}
+
+.phys-v2-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.phys-v2-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.phys-v2-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.phys-v2-list{
+  display:grid;
+  gap:6px;
+}
+.phys-v2-item{
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#12181d;
+}
+.phys-v2-item strong{
+  flex:1;
+  color:#dce2e6;
+  font-size:10px;
+}
+.phys-v2-item small{
+  color:#68747e;
+  font-size:8px;
+}
+.phys-v2-pill{
+  padding:3px 6px;
+  border:1px solid #365438;
+  border-radius:999px;
+  background:#172019;
+  color:#aef08f;
+  font-size:7px;
+  font-weight:800;
+}
+
+.phys-v2-console{
+  min-height:180px;
+  max-height:300px;
+  overflow:auto;
+  padding:9px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0b1014;
+  color:#7f8b94;
+  font:8px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+
+@media(max-width:700px){
+  .phys-v2-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — PHYSICS INTEGRATION v2
+   Central Rigidbody + Collider simulation for entities.
+   Supports:
+   - box/circle colliders
+   - triggers
+   - layer/mask filtering
+   - enter/stay/exit callbacks
+   - simple resolution
+   - raycast
+   - debug diagnostics
+===================================================== */
+(function(){
+"use strict";
+
+const PhysicsV2={
+  version:"2.0.0",
+  bodies:new Map(),
+  pairs:new Map(),
+  debug:false,
+  paused:false,
+  stats:{
+    bodies:0,
+    checks:0,
+    collisions:0,
+    triggers:0,
+    resolved:0,
+    frames:0
+  },
+
+  layerBits:new Map([["Default",1]]),
+
+  bitForLayer(name){
+    name=String(name||"Default");
+    if(!this.layerBits.has(name)){
+      const next=1 << Math.min(30,this.layerBits.size);
+      this.layerBits.set(name,next);
+    }
+    return this.layerBits.get(name);
+  },
+
+  maskFor(value){
+    if(value==null || value==="*" || value==="All")return 0x7fffffff;
+    if(typeof value==="number")return value;
+
+    if(Array.isArray(value)){
+      return value.reduce((m,n)=>m|this.bitForLayer(n),0);
+    }
+
+    return String(value)
+      .split(",")
+      .map(x=>x.trim())
+      .filter(Boolean)
+      .reduce((m,n)=>m|this.bitForLayer(n),0);
+  },
+
+  register(node,options={}){
+    if(!node)return null;
+
+    const id=node.meta?.entityId || node.id || ("phys_"+Date.now()+"_"+Math.random().toString(36).slice(2,7));
+
+    const existing=this.bodies.get(id);
+
+    const collider=options.collider || node.meta?.collider || {};
+    const rb=options.rigidbody || node.meta?.rigidbody || {};
+
+    const body=existing || {
+      id,
+      node,
+      velocity:{x:0,y:0},
+      previous:{x:0,y:0},
+      enabled:true,
+      grounded:false
+    };
+
+    body.node=node;
+    body.enabled=options.enabled!==false;
+    body.collider={
+      shape:collider.shape||"box",
+      width:Number(collider.width||24),
+      height:Number(collider.height||24),
+      radius:Number(collider.radius||12),
+      offsetX:Number(collider.offsetX||0),
+      offsetY:Number(collider.offsetY||0),
+      isTrigger:!!collider.isTrigger,
+      layer:collider.layer||"Default",
+      mask:collider.mask??"All"
+    };
+
+    body.rigidbody={
+      bodyType:rb.bodyType||"dynamic",
+      mass:Math.max(.0001,Number(rb.mass||1)),
+      gravityScale:Number(rb.gravityScale==null?1:rb.gravityScale),
+      drag:Math.max(0,Number(rb.drag||0)),
+      freezeX:!!rb.freezeX,
+      freezeY:!!rb.freezeY
+    };
+
+    body.velocity.x=Number(node.meta?.velocity?.x ?? rb.velocityX ?? body.velocity.x ?? 0);
+    body.velocity.y=Number(node.meta?.velocity?.y ?? rb.velocityY ?? body.velocity.y ?? 0);
+
+    this.bodies.set(id,body);
+    this.stats.bodies=this.bodies.size;
+    return body;
+  },
+
+  unregister(nodeOrId){
+    const id=typeof nodeOrId==="string"
+      ?nodeOrId
+      :nodeOrId?.meta?.entityId || nodeOrId?.id;
+
+    if(!id)return false;
+
+    this.bodies.delete(id);
+
+    for(const key of [...this.pairs.keys()]){
+      if(key.includes(id+"|") || key.includes("|"+id)){
+        this.pairs.delete(key);
+      }
+    }
+
+    this.stats.bodies=this.bodies.size;
+    return true;
+  },
+
+  syncFromRuntime(){
+    const map=window.RuntimeEntities?.map;
+    if(!(map instanceof Map))return;
+
+    for(const node of map.values()){
+      if(node?.meta?.collider || node?.meta?.rigidbody){
+        this.register(node);
+      }
+    }
+  },
+
+  worldShape(body){
+    const n=body.node;
+    const c=body.collider;
+    const x=Number(n.transform?.x||0)+c.offsetX;
+    const y=Number(n.transform?.y||0)+c.offsetY;
+
+    if(c.shape==="circle"){
+      return {type:"circle",x,y,r:c.radius};
+    }
+
+    return {
+      type:"box",
+      x:x-c.width/2,
+      y:y-c.height/2,
+      w:c.width,
+      h:c.height,
+      cx:x,
+      cy:y
+    };
+  },
+
+  canCollide(a,b){
+    if(!a.enabled||!b.enabled)return false;
+
+    const aLayer=this.bitForLayer(a.collider.layer);
+    const bLayer=this.bitForLayer(b.collider.layer);
+    const aMask=this.maskFor(a.collider.mask);
+    const bMask=this.maskFor(b.collider.mask);
+
+    return !!((aMask & bLayer) && (bMask & aLayer));
+  },
+
+  overlap(a,b){
+    const A=this.worldShape(a);
+    const B=this.worldShape(b);
+
+    if(A.type==="circle" && B.type==="circle"){
+      const dx=A.x-B.x,dy=A.y-B.y;
+      return dx*dx+dy*dy <= (A.r+B.r)*(A.r+B.r);
+    }
+
+    if(A.type==="box" && B.type==="box"){
+      return !(
+        A.x+A.w < B.x ||
+        B.x+B.w < A.x ||
+        A.y+A.h < B.y ||
+        B.y+B.h < A.y
+      );
+    }
+
+    const C=A.type==="circle"?A:B;
+    const R=A.type==="box"?A:B;
+
+    const nx=Math.max(R.x,Math.min(C.x,R.x+R.w));
+    const ny=Math.max(R.y,Math.min(C.y,R.y+R.h));
+    const dx=C.x-nx,dy=C.y-ny;
+
+    return dx*dx+dy*dy <= C.r*C.r;
+  },
+
+  pairKey(a,b){
+    return a.id < b.id ? a.id+"|"+b.id : b.id+"|"+a.id;
+  },
+
+  dispatch(node,method,other){
+    try{
+      const comps=node?.components||node?._components||[];
+
+      for(const c of comps){
+        if(typeof c?.[method]==="function"){
+          try{
+            c[method](other?.node||other);
+          }catch(e){
+            console.error(`[PhysicsV2] ${method}:`,e);
+          }
+        }
+      }
+
+      const script=node?.meta?.scriptInstance;
+      if(typeof script?.[method]==="function"){
+        script[method](other?.node||other);
+      }
+    }catch(_){}
+  },
+
+  resolvePair(a,b){
+    const ta=a.rigidbody.bodyType;
+    const tb=b.rigidbody.bodyType;
+
+    if(ta==="static" && tb==="static")return;
+
+    const A=this.worldShape(a);
+    const B=this.worldShape(b);
+
+    if(A.type!=="box" || B.type!=="box")return;
+
+    const overlapX=Math.min(A.x+A.w,B.x+B.w)-Math.max(A.x,B.x);
+    const overlapY=Math.min(A.y+A.h,B.y+B.h)-Math.max(A.y,B.y);
+
+    if(overlapX<=0||overlapY<=0)return;
+
+    let ax=0,ay=0,bx=0,by=0;
+
+    const aDynamic=ta!=="static";
+    const bDynamic=tb!=="static";
+
+    if(overlapX<overlapY){
+      const dir=A.cx < B.cx ? -1 : 1;
+      const amount=overlapX;
+
+      if(aDynamic&&bDynamic){
+        ax=dir*amount/2;
+        bx=-dir*amount/2;
+      }else if(aDynamic){
+        ax=dir*amount;
+      }else if(bDynamic){
+        bx=-dir*amount;
+      }
+
+      if(aDynamic)a.velocity.x=0;
+      if(bDynamic)b.velocity.x=0;
+    }else{
+      const dir=A.cy < B.cy ? -1 : 1;
+      const amount=overlapY;
+
+      if(aDynamic&&bDynamic){
+        ay=dir*amount/2;
+        by=-dir*amount/2;
+      }else if(aDynamic){
+        ay=dir*amount;
+      }else if(bDynamic){
+        by=-dir*amount;
+      }
+
+      if(aDynamic)a.velocity.y=0;
+      if(bDynamic)b.velocity.y=0;
+    }
+
+    if(aDynamic){
+      a.node.transform.x+=ax;
+      a.node.transform.y+=ay;
+    }
+
+    if(bDynamic){
+      b.node.transform.x+=bx;
+      b.node.transform.y+=by;
+    }
+
+    this.stats.resolved++;
+  },
+
+  integrate(body,dt){
+    if(!body.enabled)return;
+
+    const rb=body.rigidbody;
+
+    if(rb.bodyType==="static")return;
+
+    body.previous.x=body.node.transform.x;
+    body.previous.y=body.node.transform.y;
+
+    const gravity=window.Physics2D?.gravity || {x:0,y:0};
+
+    if(rb.bodyType==="dynamic"){
+      body.velocity.x += Number(gravity.x||0) * rb.gravityScale * dt;
+      body.velocity.y += Number(gravity.y||0) * rb.gravityScale * dt;
+    }
+
+    const drag=Math.max(0,1-rb.drag*dt);
+    body.velocity.x*=drag;
+    body.velocity.y*=drag;
+
+    if(!rb.freezeX){
+      body.node.transform.x += body.velocity.x*dt;
+    }
+
+    if(!rb.freezeY){
+      body.node.transform.y += body.velocity.y*dt;
+    }
+
+    body.node.meta=body.node.meta||{};
+    body.node.meta.velocity={
+      x:body.velocity.x,
+      y:body.velocity.y
+    };
+  },
+
+  step(dt){
+    if(this.paused)return;
+
+    this.syncFromRuntime();
+
+    for(const b of this.bodies.values()){
+      this.integrate(b,dt);
+    }
+
+    this.stats.checks=0;
+    this.stats.collisions=0;
+    this.stats.triggers=0;
+
+    const list=[...this.bodies.values()];
+    const seen=new Set();
+
+    for(let i=0;i<list.length;i++){
+      for(let j=i+1;j<list.length;j++){
+        const a=list[i],b=list[j];
+
+        if(!this.canCollide(a,b))continue;
+
+        this.stats.checks++;
+
+        const key=this.pairKey(a,b);
+        const hit=this.overlap(a,b);
+        const was=this.pairs.get(key)?.active===true;
+
+        if(hit){
+          seen.add(key);
+
+          const trigger=a.collider.isTrigger||b.collider.isTrigger;
+
+          if(trigger)this.stats.triggers++;
+          else this.stats.collisions++;
+
+          if(!was){
+            if(trigger){
+              this.dispatch(a.node,"onTriggerEnter",b);
+              this.dispatch(b.node,"onTriggerEnter",a);
+            }else{
+              this.dispatch(a.node,"onCollisionEnter",b);
+              this.dispatch(b.node,"onCollisionEnter",a);
+            }
+          }else{
+            if(trigger){
+              this.dispatch(a.node,"onTriggerStay",b);
+              this.dispatch(b.node,"onTriggerStay",a);
+            }else{
+              this.dispatch(a.node,"onCollisionStay",b);
+              this.dispatch(b.node,"onCollisionStay",a);
+            }
+          }
+
+          if(!trigger){
+            this.resolvePair(a,b);
+          }
+
+          this.pairs.set(key,{active:true,a:a.id,b:b.id,trigger});
+        }
+      }
+    }
+
+    for(const [key,pair] of [...this.pairs.entries()]){
+      if(!pair.active||seen.has(key))continue;
+
+      const a=this.bodies.get(pair.a);
+      const b=this.bodies.get(pair.b);
+
+      if(a&&b){
+        if(pair.trigger){
+          this.dispatch(a.node,"onTriggerExit",b);
+          this.dispatch(b.node,"onTriggerExit",a);
+        }else{
+          this.dispatch(a.node,"onCollisionExit",b);
+          this.dispatch(b.node,"onCollisionExit",a);
+        }
+      }
+
+      this.pairs.delete(key);
+    }
+
+    this.stats.frames++;
+    this.stats.bodies=this.bodies.size;
+  },
+
+  raycast(origin,direction,distance=1000,mask="All"){
+    const ox=Number(origin?.x||0);
+    const oy=Number(origin?.y||0);
+    let dx=Number(direction?.x||0);
+    let dy=Number(direction?.y||0);
+
+    const len=Math.hypot(dx,dy)||1;
+    dx/=len;dy/=len;
+
+    const max=Number(distance||0);
+    const maskBits=this.maskFor(mask);
+
+    let best=null;
+
+    for(const body of this.bodies.values()){
+      const layer=this.bitForLayer(body.collider.layer);
+      if(!(maskBits & layer))continue;
+
+      const s=this.worldShape(body);
+      let t=null;
+
+      if(s.type==="circle"){
+        const vx=s.x-ox,vy=s.y-oy;
+        const proj=vx*dx+vy*dy;
+        if(proj<0||proj>max)continue;
+
+        const px=ox+dx*proj,py=oy+dy*proj;
+        if(Math.hypot(px-s.x,py-s.y)<=s.r)t=proj;
+      }else{
+        const steps=Math.max(1,Math.ceil(max/8));
+        for(let i=0;i<=steps;i++){
+          const tt=max*(i/steps);
+          const x=ox+dx*tt,y=oy+dy*tt;
+
+          if(x>=s.x&&x<=s.x+s.w&&y>=s.y&&y<=s.y+s.h){
+            t=tt;
+            break;
+          }
+        }
+      }
+
+      if(t!=null && (!best || t<best.distance)){
+        best={
+          body,
+          node:body.node,
+          distance:t,
+          point:{x:ox+dx*t,y:oy+dy*t}
+        };
+      }
+    }
+
+    return best;
+  },
+
+  body(nodeOrId){
+    const id=typeof nodeOrId==="string"
+      ?nodeOrId
+      :nodeOrId?.meta?.entityId || nodeOrId?.id;
+
+    return id?this.bodies.get(id)||null:null;
+  },
+
+  setVelocity(nodeOrId,x,y){
+    const b=this.body(nodeOrId);
+    if(!b)return false;
+    b.velocity.x=Number(x)||0;
+    b.velocity.y=Number(y)||0;
+    return true;
+  },
+
+  snapshot(){
+    return [...this.bodies.values()].map(b=>({
+      id:b.id,
+      node:b.node?.name||"Node",
+      type:b.rigidbody.bodyType,
+      shape:b.collider.shape,
+      trigger:b.collider.isTrigger,
+      layer:b.collider.layer,
+      velocity:{...b.velocity}
+    }));
+  },
+
+  reset(){
+    this.bodies.clear();
+    this.pairs.clear();
+    this.stats.bodies=0;
+  }
+};
+
+window.PhysicsIntegrationV2=PhysicsV2;
+SnakeEngine.runtime.PhysicsIntegrationV2=PhysicsV2;
+
+/* -----------------------------------------------------
+   Component lifecycle collision hooks
+----------------------------------------------------- */
+if(window.SnakeComponent){
+  for(const name of [
+    "onCollisionEnter","onCollisionStay","onCollisionExit",
+    "onTriggerEnter","onTriggerStay","onTriggerExit"
+  ]){
+    if(typeof SnakeComponent.prototype[name]!=="function"){
+      SnakeComponent.prototype[name]=function(other){};
+    }
+  }
+}
+
+/* -----------------------------------------------------
+   Register when runtime entities are rebuilt
+----------------------------------------------------- */
+const oldRebuild=window.RuntimeEntities?.rebuild?.bind(window.RuntimeEntities);
+
+if(window.RuntimeEntities && oldRebuild){
+  RuntimeEntities.rebuild=async function(){
+    const result=await oldRebuild.apply(this,arguments);
+
+    setTimeout(()=>{
+      PhysicsV2.syncFromRuntime();
+    },0);
+
+    return result;
+  };
+}
+
+const oldDestroyEntity=window.RuntimeEntities?.destroy?.bind(window.RuntimeEntities);
+
+if(window.RuntimeEntities && oldDestroyEntity){
+  RuntimeEntities.destroy=function(target){
+    try{
+      PhysicsV2.unregister(
+        typeof target==="string"
+          ?target
+          :target?.meta?.entityId || target?.id
+      );
+    }catch(_){}
+
+    return oldDestroyEntity(target);
+  };
+}
+
+/* -----------------------------------------------------
+   Physics loop
+----------------------------------------------------- */
+const oldRuntimeUpdatePhysicsV2=window.runtimeUpdate;
+
+if(typeof oldRuntimeUpdatePhysicsV2==="function"){
+  window.runtimeUpdate=function(dt){
+    const delta=Number(dt)||0;
+
+    PhysicsV2.step(delta);
+
+    return oldRuntimeUpdatePhysicsV2.apply(this,arguments);
+  };
+}
+
+const oldClosePreviewPhysicsV2=window.closePreview;
+
+if(typeof oldClosePreviewPhysicsV2==="function"){
+  window.closePreview=function(){
+    PhysicsV2.reset();
+
+    return oldClosePreviewPhysicsV2.apply(this,arguments);
+  };
+}
+
+/* -----------------------------------------------------
+   Script API extension
+----------------------------------------------------- */
+if(window.ScriptRuntimeV2?.createAPI){
+  const oldCreateAPI=ScriptRuntimeV2.createAPI.bind(ScriptRuntimeV2);
+
+  ScriptRuntimeV2.createAPI=function(){
+    const api=oldCreateAPI();
+
+    const extended={
+      ...api,
+      physics:{
+        body:node=>PhysicsV2.body(node),
+        velocity:(node,x,y)=>PhysicsV2.setVelocity(node,x,y),
+        raycast:(origin,direction,distance,mask)=>
+          PhysicsV2.raycast(origin,direction,distance,mask),
+        pause:()=>{PhysicsV2.paused=true},
+        resume:()=>{PhysicsV2.paused=false}
+      }
+    };
+
+    return Object.freeze(extended);
+  };
+}
+
+/* -----------------------------------------------------
+   Component System runtime synchronization
+----------------------------------------------------- */
+const oldApplyScenePhysics=
+  window.ComponentSystem?.applyScene?.bind(window.ComponentSystem);
+
+if(window.ComponentSystem && oldApplyScenePhysics){
+  ComponentSystem.applyScene=async function(){
+    const result=await oldApplyScenePhysics();
+
+    setTimeout(()=>{
+      PhysicsV2.syncFromRuntime();
+    },0);
+
+    return result;
+  };
+}
+
+/* -----------------------------------------------------
+   RPG certification:
+   runtime player/enemies get actual physics metadata.
+----------------------------------------------------- */
+function certifyRPGPhysics(){
+  try{
+    if(currentProject!=="RPG Demo")return;
+
+    const player=
+      RuntimeEntities?.findByTag?.("Player")?.[0]||
+      RuntimeEntities?.get?.("Player");
+
+    if(player){
+      player.meta=player.meta||{};
+      player.meta.collider={
+        shape:"box",
+        width:20,
+        height:20,
+        isTrigger:false,
+        layer:"Player",
+        mask:["World","Enemy"]
+      };
+      player.meta.rigidbody={
+        bodyType:"kinematic",
+        mass:1,
+        gravityScale:0,
+        drag:0
+      };
+      PhysicsV2.register(player);
+    }
+
+    for(const enemy of RuntimeEntities?.findByTag?.("Enemy")||[]){
+      enemy.meta=enemy.meta||{};
+      enemy.meta.collider={
+        shape:"box",
+        width:20,
+        height:20,
+        isTrigger:false,
+        layer:"Enemy",
+        mask:["World","Player","Enemy"]
+      };
+      enemy.meta.rigidbody={
+        bodyType:"kinematic",
+        mass:1,
+        gravityScale:0,
+        drag:0
+      };
+      PhysicsV2.register(enemy);
+    }
+  }catch(e){
+    console.warn("RPG physics certification:",e);
+  }
+}
+
+window.addEventListener("snake:sceneloaded",()=>{
+  setTimeout(certifyRPGPhysics,320);
+});
+
+/* -----------------------------------------------------
+   Manager UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+
+  if(!editor||document.getElementById("physicsIntegrationV2"))return;
+
+  const ui=document.createElement("section");
+  ui.id="physicsIntegrationV2";
+  ui.className="physics-integration-v2";
+
+  ui.innerHTML=`
+    <header class="phys-v2-head">
+      <button class="icon-btn" type="button" data-phys-v2-close>
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="phys-v2-head-title">
+        <strong>PHYSICS INTEGRATION v2</strong>
+        <small>Rigidbody · Collider · Trigger · Layers · Raycast</small>
+      </div>
+
+      <button class="icon-btn" type="button" data-phys-v2-debug>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <circle cx="12" cy="12" r="7"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="phys-v2-body">
+      <div class="phys-v2-actions">
+        <button type="button" class="primary" data-phys-v2-resume>RESUME</button>
+        <button type="button" data-phys-v2-pause>PAUSE</button>
+        <button type="button" data-phys-v2-sync>SYNC ENTITIES</button>
+      </div>
+
+      <div class="phys-v2-grid">
+        <section class="phys-v2-panel">
+          <h3>PHYSICS BODIES</h3>
+          <div class="phys-v2-panel-body">
+            <div id="physV2Bodies" class="phys-v2-list"></div>
+          </div>
+        </section>
+
+        <section class="phys-v2-panel">
+          <h3>STATS</h3>
+          <div class="phys-v2-panel-body">
+            <div id="physV2Stats" class="phys-v2-console"></div>
+          </div>
+        </section>
+
+        <section class="phys-v2-panel">
+          <h3>LAYERS</h3>
+          <div class="phys-v2-panel-body">
+            <div id="physV2Layers" class="phys-v2-console"></div>
+          </div>
+        </section>
+
+        <section class="phys-v2-panel">
+          <h3>API</h3>
+          <div class="phys-v2-panel-body">
+            <div class="phys-v2-console">physics.velocity(player, 120, 0);
+
+const hit = physics.raycast(
+  {x: 0, y: 0},
+  {x: 1, y: 0},
+  500,
+  ["Enemy"]
+);
+
+onCollisionEnter(other)
+onCollisionStay(other)
+onCollisionExit(other)
+
+onTriggerEnter(other)
+onTriggerStay(other)
+onTriggerExit(other)</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",e=>{
+    if(e.target.closest("[data-phys-v2-close]")){
+      return closeManager();
+    }
+
+    if(e.target.closest("[data-phys-v2-pause]")){
+      PhysicsV2.paused=true;
+      showToast?.("Physics paused");
+      return renderManager();
+    }
+
+    if(e.target.closest("[data-phys-v2-resume]")){
+      PhysicsV2.paused=false;
+      showToast?.("Physics resumed");
+      return renderManager();
+    }
+
+    if(e.target.closest("[data-phys-v2-sync]")){
+      PhysicsV2.syncFromRuntime();
+      showToast?.("Physics synchronized");
+      return renderManager();
+    }
+
+    if(e.target.closest("[data-phys-v2-debug]")){
+      PhysicsV2.debug=!PhysicsV2.debug;
+      showToast?.(
+        PhysicsV2.debug
+          ?"Physics Debug ON"
+          :"Physics Debug OFF"
+      );
+      return renderManager();
+    }
+  });
+
+  const menu=document.getElementById("editorMoreMenu");
+
+  if(menu && !document.getElementById("editorMorePhysicsV2")){
+    const btn=document.createElement("button");
+    btn.id="editorMorePhysicsV2";
+    btn.type="button";
+    btn.className="editor-more-item";
+
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<circle cx="8" cy="12" r="3"/>'+
+        '<circle cx="16" cy="12" r="3"/>'+
+        '<path d="M11 12h2"/>'+
+      '</svg>'+
+      '<span>Physics Integration v2</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+}
+
+function renderManager(){
+  ensureUI();
+
+  const bodies=document.getElementById("physV2Bodies");
+  const stats=document.getElementById("physV2Stats");
+  const layers=document.getElementById("physV2Layers");
+
+  const snapshot=PhysicsV2.snapshot();
+
+  if(bodies){
+    bodies.innerHTML=snapshot.length
+      ?snapshot.map(b=>`
+        <div class="phys-v2-item">
+          <strong>${b.node}</strong>
+          <small>${b.type} · ${b.shape}</small>
+          <span class="phys-v2-pill">
+            ${b.trigger?"TRIGGER":b.layer}
+          </span>
+        </div>
+      `).join("")
+      :'<div class="phys-v2-console">No physics bodies registered.</div>';
+  }
+
+  if(stats){
+    stats.textContent=
+`Bodies: ${PhysicsV2.stats.bodies}
+Checks/frame: ${PhysicsV2.stats.checks}
+Collisions/frame: ${PhysicsV2.stats.collisions}
+Triggers/frame: ${PhysicsV2.stats.triggers}
+Resolved total: ${PhysicsV2.stats.resolved}
+Frames: ${PhysicsV2.stats.frames}
+Paused: ${PhysicsV2.paused?"YES":"NO"}
+Debug: ${PhysicsV2.debug?"ON":"OFF"}`;
+  }
+
+  if(layers){
+    layers.textContent=[...PhysicsV2.layerBits.entries()]
+      .map(([name,bit])=>`${name}: ${bit}`)
+      .join("\n") || "Default: 1";
+  }
+}
+
+function openManager(){
+  ensureUI();
+  PhysicsV2.syncFromRuntime();
+  document.getElementById("physicsIntegrationV2")?.classList.add("show");
+  renderManager();
+}
+
+function closeManager(){
+  document.getElementById("physicsIntegrationV2")?.classList.remove("show");
+}
+
+window.PhysicsIntegrationManagerV2={
+  version:"2.0.0",
+  open:openManager,
+  runtime:PhysicsV2
+};
+
+const oldOpenProjectPhysicsManager=window.openProject;
+
+if(typeof oldOpenProjectPhysicsManager==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectPhysicsManager.apply(this,arguments);
+
+    ensureUI();
+
+    return result;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    ensureUI,
+    {once:true}
+  );
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
 </body>
 </html>
