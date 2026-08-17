@@ -1050,6 +1050,11 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 <main class="dashboard-content">
 <div class="welcome"><h1>Crie seus recursos</h1><p>Arte, tilemaps, sons, assets e cenários ficam disponíveis para importar em qualquer projeto.</p></div>
 <div class="resource-grid">
+<button class="resource-card wide guide-home-card" onclick="SnakeGuideV1.open()">
+  <b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5v-16Z"/></svg></b>
+  <strong>Guia Snake Engine</strong>
+  <span id="snakeGuideHomeStatus">Aprenda a engine e programação do zero</span>
+</button>
 <button class="resource-card" onclick="openResource('art')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 0 16h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h2a6 6 0 0 0 0-12Z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="11" cy="7.5" r=".8"/><circle cx="16" cy="8" r=".8"/></svg></b><strong>Arte</strong><span>Sprite Studio profissional</span></button>
 <button class="resource-card" onclick="openResource('tilemap')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 5.5 12 2l9 3.5-9 3-9-3Z"/><path d="M3 5.5v13L12 22V8.5M21 5.5v13L12 22"/><path d="M7.5 4l9 3"/></svg></b><strong>Tilemap</strong><span>Crie mapas e tiles reutilizáveis</span></button>
 <button class="resource-card" onclick="openResource('audio')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="3"/><circle cx="16.5" cy="16" r="3"/></svg></b><strong>Sound</strong><span>Biblioteca e recursos de áudio</span></button>
@@ -32824,6 +32829,441 @@ if(document.readyState==="loading"){
   ensureUI();
 }
 
+})();
+</script>
+
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — GUIA v1
+===================================================== */
+.guide-home-card{
+  border-color:#31452f!important;
+  background:linear-gradient(135deg,#121b13,#11171c)!important;
+}
+.guide-screen{
+  position:fixed;inset:0;z-index:900;display:none;flex-direction:column;
+  background:#090d11;color:#dce4e9;
+}
+.guide-screen.show{display:flex}
+.guide-top{
+  height:54px;min-height:54px;display:flex;align-items:center;gap:9px;padding:0 10px;
+  border-bottom:1px solid #232c34;background:#0d1217;
+}
+.guide-back{
+  width:36px;height:36px;border:1px solid #29343d;border-radius:8px;
+  background:#131a20;color:#98a5ae;display:grid;place-items:center;
+}
+.guide-back svg{width:17px;height:17px;fill:none;stroke:currentColor}
+.guide-title{flex:1;min-width:0}
+.guide-title strong{display:block;font-size:12px}
+.guide-title span{display:block;color:#64717b;font-size:8px;margin-top:2px}
+.guide-progress-pill{
+  min-width:54px;padding:6px 8px;border:1px solid #315038;border-radius:7px;
+  background:#132017;color:#91e864;font:8px ui-monospace,monospace;text-align:center;
+}
+.guide-progressbar{height:3px;background:#151c22}
+.guide-progressbar i{display:block;height:100%;width:0;background:#91e864;transition:width .2s}
+
+.guide-layout{flex:1;min-height:0;display:grid;grid-template-columns:260px minmax(0,1fr)}
+.guide-index{min-height:0;overflow:auto;border-right:1px solid #232c34;background:#0d1217;padding:10px}
+.guide-intro{
+  padding:10px;border:1px solid #28343d;border-radius:9px;background:#11181e;margin-bottom:10px;
+}
+.guide-intro strong{font-size:11px}.guide-intro p{margin:5px 0 0;color:#75838d;font-size:8px;line-height:1.55}
+.guide-chapter{margin:11px 2px 6px;color:#63717c;font-size:8px;font-weight:900;letter-spacing:.1em}
+.guide-lesson-btn{
+  width:100%;min-height:44px;margin:0 0 5px;padding:7px 8px;border:1px solid #26313a;
+  border-radius:7px;background:#11171c;color:#8d9aa4;text-align:left;display:flex;align-items:center;gap:8px;
+}
+.guide-lesson-btn.active{border-color:#3d5a3c;background:#152018;color:#dce8dc}
+.guide-lesson-btn.done .guide-dot{background:#91e864;color:#071006}
+.guide-dot{
+  width:23px;height:23px;min-width:23px;border:1px solid #34414a;border-radius:50%;
+  display:grid;place-items:center;color:#697680;font-size:8px;font-weight:900;
+}
+.guide-lesson-btn div{min-width:0}
+.guide-lesson-btn strong{display:block;font-size:9px;color:inherit}
+.guide-lesson-btn small{display:block;margin-top:2px;color:#5e6b75;font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.guide-content{min-height:0;overflow:auto;padding:18px max(16px,calc((100% - 760px)/2));padding-bottom:90px}
+.guide-kicker{color:#91e864;font-size:8px;font-weight:900;letter-spacing:.12em}
+.guide-content h1{font-size:22px;margin:7px 0 7px}
+.guide-lead{color:#8a98a2;font-size:11px;line-height:1.65;margin:0 0 18px}
+.guide-block{
+  margin:0 0 12px;padding:13px;border:1px solid #27323b;border-radius:9px;background:#10161b;
+}
+.guide-block h3{margin:0 0 7px;font-size:11px;color:#dce4e9}
+.guide-block p,.guide-block li{color:#89969f;font-size:10px;line-height:1.65}
+.guide-block ul{margin:6px 0 0;padding-left:18px}
+.guide-code{
+  overflow:auto;margin:9px 0 0;padding:11px;border:1px solid #26333b;border-radius:7px;
+  background:#080c10;color:#b8d8ae;font:9px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre;
+}
+.guide-flow{
+  display:flex;gap:6px;align-items:center;overflow:auto;margin-top:9px;padding-bottom:2px
+}
+.guide-flow span{
+  flex:0 0 auto;padding:8px;border:1px solid #2d3a42;border-radius:7px;background:#0c1216;
+  color:#93a0a9;font-size:8px;font-weight:800;
+}
+.guide-flow b{color:#52616c;font-size:10px}
+.guide-task{border-color:#3b5039;background:#121b13}
+.guide-task h3{color:#a5e497}
+.guide-actions{
+  position:fixed;left:260px;right:0;bottom:0;z-index:3;height:62px;padding:8px 14px;
+  display:flex;align-items:center;justify-content:center;gap:7px;border-top:1px solid #242d35;
+  background:rgba(12,17,22,.96);backdrop-filter:blur(8px);
+}
+.guide-actions button{
+  min-height:40px;padding:0 14px;border:1px solid #2b3740;border-radius:8px;
+  background:#151c22;color:#8e9ba5;font-size:8px;font-weight:900;
+}
+.guide-actions .primary{background:#91e864;border-color:#91e864;color:#081006}
+.guide-actions button:disabled{opacity:.35}
+
+@media(max-width:720px){
+  .guide-layout{display:block;position:relative}
+  .guide-index,.guide-content{position:absolute;inset:0;border:0}
+  .guide-index{display:none;padding-bottom:80px}
+  .guide-index.mobile-show{display:block}
+  .guide-content{padding:15px 13px 90px}
+  .guide-actions{left:0}
+  .guide-top .guide-title span{display:none}
+}
+</style>
+
+<section id="snakeGuideV1" class="guide-screen" aria-label="Guia Snake Engine">
+  <header class="guide-top">
+    <button class="guide-back" type="button" onclick="SnakeGuideV1.close()">
+      <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <div class="guide-title">
+      <strong>GUIA SNAKE ENGINE</strong>
+      <span>Aprenda a criar jogos e programar dentro da engine</span>
+    </div>
+    <button class="guide-back" type="button" onclick="SnakeGuideV1.toggleIndex()" aria-label="Capítulos">
+      <svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h14"/></svg>
+    </button>
+    <div id="snakeGuideProgressPill" class="guide-progress-pill">0%</div>
+  </header>
+  <div class="guide-progressbar"><i id="snakeGuideProgressBar"></i></div>
+
+  <div class="guide-layout">
+    <aside id="snakeGuideIndex" class="guide-index"></aside>
+    <article id="snakeGuideContent" class="guide-content"></article>
+  </div>
+
+  <footer class="guide-actions">
+    <button id="snakeGuidePrev" type="button" onclick="SnakeGuideV1.prev()">ANTERIOR</button>
+    <button id="snakeGuideComplete" class="primary" type="button" onclick="SnakeGuideV1.complete()">CONCLUIR LIÇÃO</button>
+    <button id="snakeGuideNext" type="button" onclick="SnakeGuideV1.next()">PRÓXIMA</button>
+  </footer>
+</section>
+
+<script>
+(function(){
+"use strict";
+
+const KEY="snake_engine_guide_v1_progress";
+
+const lessons=[
+{
+ id:"welcome",chapter:"01 · PRIMEIROS PASSOS",title:"Bem-vindo à Snake Engine",subtitle:"Como pensar antes de começar",
+ lead:"A Snake Engine organiza um jogo em recursos, projetos, cenas, entidades, componentes e scripts. Nesta lição você entende o caminho completo.",
+ blocks:[
+  ["O fluxo da engine","Você cria recursos na Home, cria ou abre um projeto, monta a cena, adiciona comportamento e então executa o jogo na Runtime."],
+  ["A ideia principal","Um jogo é um estado que muda ao longo do tempo. O jogador toca no controle, seu código interpreta essa entrada, altera entidades e a engine mostra o novo estado."],
+  ["flow",["INPUT","→","LÓGICA","→","ENTIDADES","→","RUNTIME"]],
+  ["task","Seu primeiro objetivo","Explore a Home. Arte, Tilemap, Sound, Assets e Cenário são recursos reutilizáveis. Depois volte ao Guia."]
+ ]
+},
+{
+ id:"project",chapter:"01 · PRIMEIROS PASSOS",title:"Projetos e Runtime",subtitle:"Criar, editar e executar",
+ lead:"O projeto reúne tudo que pertence a um jogo. A Runtime é onde o resultado executável é testado.",
+ blocks:[
+  ["Projeto","Use Projects para criar ou continuar um jogo. O editor concentra arquivos, cena, código, inspector e ferramentas do projeto."],
+  ["Runtime","Executar não é apenas mostrar uma imagem: a Runtime inicia os sistemas do projeto e passa a atualizar o jogo continuamente."],
+  ["task","Exercício","Crie um projeto de teste, abra-o e identifique onde ficam Code, Scene, Preview/Runtime, Console e Inspector."]
+ ]
+},
+{
+ id:"game-loop",chapter:"02 · COMO UM JOGO FUNCIONA",title:"O loop do jogo",subtitle:"Start, Update e frames",
+ lead:"Jogos não executam uma ação uma única vez. Eles repetem um ciclo de atualização muitas vezes por segundo.",
+ blocks:[
+  ["Start","Use a inicialização para preparar valores e referências que precisam existir quando a cena começa."],
+  ["Update","A atualização é onde entram movimento, IA, timers e outras regras que precisam ser verificadas continuamente."],
+  ["flow",["START","→","UPDATE","→","RENDER","↻"]],
+  ["code","Modelo mental",`start() {
+  // preparar o jogo
+}
+
+update(dt) {
+  // ler entrada
+  // mudar o estado
+  // repetir no próximo frame
+}`],
+  ["O que é dt?","dt representa o tempo transcorrido entre atualizações. Ele permite que movimentos sejam baseados em tempo, e não na velocidade do aparelho."]
+ ]
+},
+{
+ id:"variables",chapter:"03 · PROGRAMAÇÃO DO ZERO",title:"Variáveis e valores",subtitle:"Guardar informações do jogo",
+ lead:"Programar começa por guardar informações. Vida, velocidade, moedas e pontuação são exemplos de estado.",
+ blocks:[
+  ["code","Exemplo",`let vida = 100;
+let velocidade = 120;
+let moedas = 0;
+let nome = "Player";`],
+  ["Como ler","A variável recebe um nome e guarda um valor. Quando o jogo muda, você altera esse valor."],
+  ["code","Mudando o estado",`vida = vida - 20;
+moedas = moedas + 1;`],
+  ["task","Exercício","Imagine um jogador com 3 vidas e 0 pontos. Quais duas variáveis você criaria?"]
+ ]
+},
+{
+ id:"conditions",chapter:"03 · PROGRAMAÇÃO DO ZERO",title:"Condições",subtitle:"Fazer o jogo tomar decisões",
+ lead:"Uma condição permite executar algo somente quando uma regra for verdadeira.",
+ blocks:[
+  ["code","If",`if (vida <= 0) {
+  // jogador foi derrotado
+}`],
+  ["Lógica","Leia como: SE a vida for menor ou igual a zero, ENTÃO execute o bloco."],
+  ["code","Outra decisão",`if (moedas >= 10) {
+  // liberar recompensa
+}`],
+  ["task","Exercício","Pense na condição necessária para abrir uma porta somente quando o jogador possuir uma chave."]
+ ]
+},
+{
+ id:"functions",chapter:"03 · PROGRAMAÇÃO DO ZERO",title:"Funções",subtitle:"Transformar ações em comandos",
+ lead:"Funções agrupam uma ação para que ela possa ser chamada sempre que necessário.",
+ blocks:[
+  ["code","Exemplo",`function receberDano(valor) {
+  vida = vida - valor;
+}
+
+receberDano(20);`],
+  ["Por que usar","Sem funções, a mesma lógica acaba espalhada pelo projeto. Com funções, cada comportamento ganha um nome e pode ser reutilizado."],
+  ["task","Exercício","Crie mentalmente uma função chamada curar que receba um valor e aumente a vida."]
+ ]
+},
+{
+ id:"entities",chapter:"04 · CONSTRUINDO O JOGO",title:"Cenas e Entidades",subtitle:"Os objetos que existem no mundo",
+ lead:"A cena é um espaço do jogo. Entidades representam coisas que existem nela: jogador, inimigo, porta, item ou câmera.",
+ blocks:[
+  ["Entidade","Cada entidade possui identidade e Transform. O Transform descreve posição, rotação e escala."],
+  ["Hierarchy","A Hierarchy organiza relações entre entidades. Um objeto filho pode acompanhar a transformação de seu pai."],
+  ["flow",["SCENE","→","ENTITY","→","TRANSFORM / COMPONENTS"]],
+  ["task","Exercício","Crie uma entidade Player e observe X e Y no Inspector. Alterar esses valores deve mudar sua posição."]
+ ]
+},
+{
+ id:"components",chapter:"04 · CONSTRUINDO O JOGO",title:"Componentes e Lifecycle",subtitle:"Dar capacidades às entidades",
+ lead:"Componentes adicionam capacidades a uma entidade sem transformar tudo em um único script gigante.",
+ blocks:[
+  ["Composição","Em vez de criar um tipo especial para cada objeto, combine componentes. Uma entidade pode receber física, renderização, comportamento e outros recursos."],
+  ["Lifecycle","O lifecycle controla quando comportamentos são inicializados, atualizados e encerrados."],
+  ["task","Exercício","Selecione uma entidade e identifique quais dados pertencem ao Transform e quais pertencem a outros componentes."]
+ ]
+},
+{
+ id:"input",chapter:"05 · INTERAÇÃO",title:"Input e controles mobile",subtitle:"Transformar toque em ação",
+ lead:"Input é a ponte entre o jogador e a lógica. Em mobile, controles visuais precisam alimentar o mesmo estado que o jogo lê.",
+ blocks:[
+  ["Fluxo correto","O analógico ou botão gera entrada. O script lê essa entrada durante a atualização e modifica o jogador."],
+  ["flow",["TOQUE","→","INPUT","→","UPDATE","→","MOVIMENTO"]],
+  ["code","Modelo de movimento",`update(dt) {
+  const move = input.vector();
+
+  player.x += move.x * velocidade * dt;
+  player.y += move.y * velocidade * dt;
+}`],
+  ["task","Exercício","Teste movimento em quatro direções e confirme que soltar o analógico interrompe o movimento."]
+ ]
+},
+{
+ id:"assets",chapter:"06 · MUNDO E RECURSOS",title:"Arte, Assets e Tilemaps",subtitle:"Construir o visual do jogo",
+ lead:"A Home contém ferramentas globais para produzir recursos que depois podem ser importados nos projetos.",
+ blocks:[
+  ["Arte e Assets","Arte cria conteúdo visual; Assets funciona como biblioteca global de recursos reutilizáveis."],
+  ["Tilemap","Tilemaps constroem mapas a partir de peças reutilizáveis. Isso evita tratar cada bloco do cenário como uma imagem isolada."],
+  ["Cenário","Recursos de cenário podem ser preparados para reutilização em diferentes projetos."],
+  ["task","Exercício","Crie ou escolha um recurso na Home e depois procure a opção de importá-lo dentro de um projeto."]
+ ]
+},
+{
+ id:"physics",chapter:"07 · SISTEMAS",title:"Física e colisões",subtitle:"Quando objetos interagem",
+ lead:"A integração de física permite que regras de movimento e colisão façam parte do estado real das entidades.",
+ blocks:[
+  ["Colisão","Colidir não significa automaticamente causar dano. A colisão informa que objetos interagiram; a lógica do jogo decide a consequência."],
+  ["flow",["COLISÃO","→","EVENTO","→","REGRA","→","RESULTADO"]],
+  ["task","Exercício","Pense em duas consequências diferentes para a mesma colisão: bater em uma parede e tocar em um inimigo."]
+ ]
+},
+{
+ id:"prefabs",chapter:"07 · SISTEMAS",title:"Prefabs",subtitle:"Reutilizar entidades prontas",
+ lead:"Prefab é um modelo reutilizável de uma entidade configurada. Ele evita reconstruir o mesmo tipo de objeto várias vezes.",
+ blocks:[
+  ["Quando usar","Inimigos repetidos, itens, projéteis e props são bons candidatos a Prefabs."],
+  ["Instância","Uma instância nasce a partir do modelo do Prefab e pode ser colocada na cena conforme a necessidade do jogo."],
+  ["task","Exercício","Crie uma entidade configurada, transforme-a em Prefab e gere mais de uma instância para entender o fluxo."]
+ ]
+},
+{
+ id:"debug",chapter:"08 · FINALIZAÇÃO",title:"Debug e boas práticas",subtitle:"Encontrar problemas sem adivinhar",
+ lead:"Programar também é investigar. Um bom fluxo de debug verifica cada etapa da cadeia em vez de alterar várias coisas ao mesmo tempo.",
+ blocks:[
+  ["Método","Se o personagem não se move: confirme primeiro o toque, depois o Input, depois o Update, depois a alteração do Transform e por último a renderização."],
+  ["flow",["ENTRADA?","→","CÓDIGO?","→","ESTADO?","→","VISUAL?"]],
+  ["Boas práticas","Dê nomes claros a entidades e funções, mantenha responsabilidades pequenas e teste uma mudança antes de adicionar a próxima."],
+  ["task","Exercício","Abra o Console e acostume-se a usá-lo como parte do processo de desenvolvimento."]
+ ]
+},
+{
+ id:"final-project",chapter:"09 · PROJETO GUIADO",title:"Seu primeiro RPG",subtitle:"Juntar tudo em um jogo pequeno",
+ lead:"O objetivo final do guia é combinar as mecânicas em um projeto completo: mover, atacar, vencer inimigos e avançar.",
+ blocks:[
+  ["Etapa 1","Monte uma cena com mapa, Player e pelo menos um Enemy."],
+  ["Etapa 2","Faça o Player responder ao Input mobile e mantenha movimento baseado em dt."],
+  ["Etapa 3","Adicione vida, ataque, colisão e uma condição de derrota do inimigo."],
+  ["Etapa 4","Quando todos os inimigos forem derrotados, libere a progressão para a próxima área."],
+  ["task","Desafio","Não copie tudo de uma vez. Implemente uma regra, execute, confirme que funciona e só então siga para a próxima."]
+ ]
+}
+];
+
+function load(){
+ try{
+   const p=JSON.parse(localStorage.getItem(KEY)||"{}");
+   return {done:Array.isArray(p.done)?p.done:[],current:p.current||lessons[0].id};
+ }catch{return {done:[],current:lessons[0].id}}
+}
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(state));
+ updateHome();
+}
+let state=load();
+
+function currentIndex(){
+ const i=lessons.findIndex(x=>x.id===state.current);
+ return i<0?0:i;
+}
+function pct(){
+ return Math.round((state.done.length/lessons.length)*100);
+}
+function esc(s){
+ return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+function blockHTML(b){
+ const kind=b[0], title=b[1], body=b[2];
+ if(kind==="flow"){
+   return '<div class="guide-block"><h3>Fluxo</h3><div class="guide-flow">'+
+     title.map(x=>x==="→"||x==="↻"?'<b>'+x+'</b>':'<span>'+esc(x)+'</span>').join("")+
+   '</div></div>';
+ }
+ if(kind==="code"){
+   return '<section class="guide-block"><h3>'+esc(title)+'</h3><pre class="guide-code">'+esc(body)+'</pre></section>';
+ }
+ if(kind==="task"){
+   return '<section class="guide-block guide-task"><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p></section>';
+ }
+ return '<section class="guide-block"><h3>'+esc(kind)+'</h3><p>'+esc(title)+'</p></section>';
+}
+function renderIndex(){
+ const root=document.getElementById("snakeGuideIndex");
+ if(!root)return;
+ let chapter="";
+ let html='<div class="guide-intro"><strong>Do zero ao primeiro jogo</strong><p>As lições ensinam programação junto com as ferramentas da Snake Engine. Seu progresso fica salvo neste aparelho.</p></div>';
+ lessons.forEach((l,i)=>{
+   if(l.chapter!==chapter){
+     chapter=l.chapter;
+     html+='<div class="guide-chapter">'+esc(chapter)+'</div>';
+   }
+   html+=`<button class="guide-lesson-btn ${l.id===state.current?"active":""} ${state.done.includes(l.id)?"done":""}" data-guide-id="${l.id}">
+     <span class="guide-dot">${state.done.includes(l.id)?"✓":i+1}</span>
+     <div><strong>${esc(l.title)}</strong><small>${esc(l.subtitle)}</small></div>
+   </button>`;
+ });
+ root.innerHTML=html;
+ root.querySelectorAll("[data-guide-id]").forEach(btn=>{
+   btn.onclick=()=>api.go(btn.dataset.guideId);
+ });
+}
+function renderLesson(){
+ const l=lessons[currentIndex()];
+ state.current=l.id;
+ save();
+ const root=document.getElementById("snakeGuideContent");
+ root.innerHTML=
+   '<div class="guide-kicker">'+esc(l.chapter)+'</div>'+
+   '<h1>'+esc(l.title)+'</h1>'+
+   '<p class="guide-lead">'+esc(l.lead)+'</p>'+
+   l.blocks.map(blockHTML).join("");
+ root.scrollTop=0;
+
+ const done=state.done.includes(l.id);
+ const complete=document.getElementById("snakeGuideComplete");
+ complete.textContent=done?"LIÇÃO CONCLUÍDA ✓":"CONCLUIR LIÇÃO";
+ complete.classList.toggle("primary",!done);
+
+ document.getElementById("snakeGuidePrev").disabled=currentIndex()===0;
+ document.getElementById("snakeGuideNext").disabled=currentIndex()===lessons.length-1;
+
+ const p=pct();
+ document.getElementById("snakeGuideProgressPill").textContent=p+"%";
+ document.getElementById("snakeGuideProgressBar").style.width=p+"%";
+ renderIndex();
+}
+function updateHome(){
+ const el=document.getElementById("snakeGuideHomeStatus");
+ if(!el)return;
+ const p=pct();
+ el.textContent=p
+   ?`${p}% concluído · Continue de onde parou`
+   :"Aprenda a engine e programação do zero";
+}
+const api={
+ open(){
+   document.getElementById("snakeGuideV1")?.classList.add("show");
+   renderLesson();
+ },
+ close(){
+   document.getElementById("snakeGuideV1")?.classList.remove("show");
+   document.getElementById("snakeGuideIndex")?.classList.remove("mobile-show");
+   updateHome();
+ },
+ toggleIndex(){
+   document.getElementById("snakeGuideIndex")?.classList.toggle("mobile-show");
+ },
+ go(id){
+   if(!lessons.some(x=>x.id===id))return;
+   state.current=id;save();renderLesson();
+   document.getElementById("snakeGuideIndex")?.classList.remove("mobile-show");
+ },
+ complete(){
+   const id=lessons[currentIndex()].id;
+   if(!state.done.includes(id))state.done.push(id);
+   save();renderLesson();
+ },
+ prev(){
+   const i=currentIndex();
+   if(i>0)api.go(lessons[i-1].id);
+ },
+ next(){
+   const i=currentIndex();
+   if(i<lessons.length-1)api.go(lessons[i+1].id);
+ },
+ reset(){
+   state={done:[],current:lessons[0].id};save();renderLesson();
+ },
+ getProgress(){return {completed:state.done.length,total:lessons.length,percent:pct()}}
+};
+window.SnakeGuideV1=api;
+
+if(document.readyState==="loading"){
+ document.addEventListener("DOMContentLoaded",updateHome,{once:true});
+}else updateHome();
 })();
 </script>
 
