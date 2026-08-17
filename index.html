@@ -27144,5 +27144,1113 @@ if(document.readyState==="loading"){
 })();
 </script>
 
+
+<style>
+/* =====================================================
+   SNAKE ENGINE — SCRIPTING RUNTIME v2
+===================================================== */
+.scripting-manager-v2{
+  position:absolute;
+  inset:0;
+  z-index:244;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.scripting-manager-v2.show{display:flex}
+
+.script-v2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.script-v2-head-title{flex:1;min-width:0}
+.script-v2-head-title strong{display:block;font-size:13px}
+.script-v2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.script-v2-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.script-v2-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.script-v2-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.script-v2-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.script-v2-panel-body{padding:9px}
+
+.script-v2-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.script-v2-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.script-v2-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.script-v2-list{
+  display:grid;
+  gap:6px;
+}
+.script-v2-item{
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#12181d;
+}
+.script-v2-item strong{
+  flex:1;
+  min-width:0;
+  color:#dce2e6;
+  font-size:10px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.script-v2-item small{
+  color:#68747e;
+  font-size:8px;
+}
+.script-v2-pill{
+  padding:3px 6px;
+  border:1px solid #365438;
+  border-radius:999px;
+  background:#172019;
+  color:#aef08f;
+  font-size:7px;
+  font-weight:800;
+}
+.script-v2-pill.error{
+  color:#ef9297;
+  background:#211315;
+  border-color:#5b3437;
+}
+
+.script-v2-console{
+  min-height:180px;
+  max-height:290px;
+  overflow:auto;
+  padding:9px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0b1014;
+  color:#7f8b94;
+  font:8px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+
+.script-v2-row{
+  display:grid;
+  grid-template-columns:1fr 110px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.script-v2-row label{
+  color:#89959e;
+  font-size:9px;
+}
+.script-v2-row input{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+@media(max-width:700px){
+  .script-v2-grid{grid-template-columns:1fr}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — SCRIPTING RUNTIME v2
+   General project scripting:
+   - deterministic multi-file modules
+   - require()/exports/module.exports
+   - engine lifecycle hooks
+   - component script lifecycle
+   - per-file error isolation
+   - file/line diagnostics
+   - hot reload
+   - one API for every project
+===================================================== */
+(function(){
+"use strict";
+
+const ScriptRuntimeV2={
+  version:"2.0.0",
+  modules:new Map(),
+  cache:new Map(),
+  errors:[],
+  running:false,
+  hotReloadCount:0,
+  projectName:null,
+  updateHooks:[],
+  lateUpdateHooks:[],
+  startHooks:[],
+  destroyHooks:[],
+  api:null,
+
+  clearRuntimeState(){
+    this.cache.clear();
+    this.updateHooks=[];
+    this.lateUpdateHooks=[];
+    this.startHooks=[];
+    this.destroyHooks=[];
+    this.errors=[];
+    this.running=false;
+  },
+
+  normalizePath(path){
+    path=String(path||"").replace(/\\/g,"/");
+
+    const parts=[];
+    for(const part of path.split("/")){
+      if(!part||part===".")continue;
+      if(part==="..")parts.pop();
+      else parts.push(part);
+    }
+
+    return parts.join("/");
+  },
+
+  dirname(path){
+    path=this.normalizePath(path);
+    const i=path.lastIndexOf("/");
+    return i>=0?path.slice(0,i):"";
+  },
+
+  resolve(request,fromFile=""){
+    request=String(request||"");
+
+    if(request.startsWith("./")||request.startsWith("../")){
+      const base=this.dirname(fromFile);
+      request=this.normalizePath(base+"/"+request);
+    }else{
+      request=this.normalizePath(request);
+    }
+
+    const candidates=[
+      request,
+      request+".js",
+      request+".snake",
+      request+"/index.js"
+    ];
+
+    for(const c of candidates){
+      if(this.modules.has(c))return c;
+    }
+
+    return null;
+  },
+
+  loadProjectFiles(){
+    let files={};
+
+    try{
+      files=getFiles?.()||{};
+    }catch(_){}
+
+    this.modules.clear();
+
+    for(const [name,source] of Object.entries(files)){
+      if(!/\.(js|snake)$/i.test(name))continue;
+
+      this.modules.set(
+        this.normalizePath(name),
+        {
+          name:this.normalizePath(name),
+          source:String(source||""),
+          loaded:false,
+          lastError:null
+        }
+      );
+    }
+
+    return this.modules;
+  },
+
+  formatError(file,error){
+    const stack=String(error?.stack||error||"");
+    let line=null;
+    let column=null;
+
+    const escaped=file.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    const match=stack.match(new RegExp(escaped+":(\\d+):(\\d+)"));
+
+    if(match){
+      line=Number(match[1]);
+      column=Number(match[2]);
+    }
+
+    return {
+      at:new Date().toISOString(),
+      file,
+      line,
+      column,
+      message:error?.message||String(error),
+      stack
+    };
+  },
+
+  reportError(file,error){
+    const item=this.formatError(file,error);
+    this.errors.push(item);
+
+    if(this.errors.length>100){
+      this.errors.shift();
+    }
+
+    const pos=item.line
+      ?`${file}:${item.line}${item.column?":"+item.column:""}`
+      :file;
+
+    try{
+      addOutput?.(
+        `Script error — ${pos} — ${item.message}`,
+        "error"
+      );
+    }catch(_){}
+
+    console.error("[ScriptRuntimeV2]",file,error);
+    return item;
+  },
+
+  createAPI(){
+    const runtime=this;
+
+    const api={
+      input:{
+        down:name=>InputV2?.down?.(name)||false,
+        pressed:name=>InputV2?.pressed?.(name)||false,
+        released:name=>InputV2?.released?.(name)||false,
+        value:name=>InputV2?.value?.(name)||0,
+        vector:()=>InputV2?.vector?.()||{x:0,y:0}
+      },
+
+      ui:{
+        show:name=>UIRuntime?.show?.(name),
+        hide:()=>UIRuntime?.hide?.(),
+        text:(id,text)=>UIRuntime?.setText?.(id,text),
+        progress:(id,value)=>UIRuntime?.setProgress?.(id,value),
+        visible:(id,value)=>UIRuntime?.setVisible?.(id,value),
+        on:(action,fn)=>UIRuntime?.registerAction?.(action,fn)
+      },
+
+      scene:{
+        load:name=>RuntimeScenes?.load?.(name,{fade:true}),
+        current:()=>RuntimeScenes?.current?.name||null
+      },
+
+      entity:{
+        spawn:(prefab,options)=>RuntimeEntities?.spawn?.(prefab,options),
+        destroy:target=>RuntimeEntities?.destroy?.(target),
+        get:id=>RuntimeEntities?.get?.(id),
+        findByTag:tag=>RuntimeEntities?.findByTag?.(tag)||[]
+      },
+
+      camera:{
+        follow:target=>Camera2D?.setTarget?.(target),
+        position:(x,y)=>Camera2D?.setPosition?.(x,y),
+        zoom:value=>Camera2D?.setZoom?.(value),
+        worldToScreen:(x,y)=>Camera2D?.worldToScreen?.(x,y),
+        screenToWorld:(x,y)=>Camera2D?.screenToWorld?.(x,y)
+      },
+
+      tilemap:{
+        blocked:(x,y)=>!!SnakeTileMapRuntime?.isBlocked?.(x,y),
+        world:()=>cloneRuntimeValue(SnakeTileMapRuntime?.world||null),
+        scene:()=>SnakeTileMapRuntime?.scene||null
+      },
+
+      save:{
+        get:(path,fallback)=>SaveGame?.get?.(path,fallback),
+        set:(path,value)=>SaveGame?.set?.(path,value),
+        delete:path=>SaveGame?.delete?.(path),
+        commit:slot=>SaveGame?.commit?.(slot),
+        load:slot=>SaveGame?.load?.(slot),
+        checkpoint:(name,extra)=>SaveGame?.checkpoint?.(name,extra)
+      },
+
+      audio:{
+        sfx:(ref,opts)=>AudioSystem?.playSfx?.(ref,opts),
+        music:(ref,opts)=>AudioSystem?.playMusic?.(ref,opts),
+        stopMusic:()=>AudioSystem?.stopMusic?.()
+      },
+
+      lifecycle:{
+        enable:(component,value=true)=>ComponentLifecycle?.setEnabled?.(component,value),
+        disable:component=>ComponentLifecycle?.setEnabled?.(component,false)
+      },
+
+      components:{
+        get(node,type){
+          if(!node)return null;
+
+          try{
+            if(typeof type==="function"){
+              return node.getComponent?.(type)||null;
+            }
+
+            const list=node.components||node._components||[];
+            return list.find(c=>c?.constructor?.name===type)||null;
+          }catch{
+            return null;
+          }
+        }
+      },
+
+      runtime:{
+        onUpdate(fn){
+          if(typeof fn==="function")runtime.updateHooks.push(fn);
+          return fn;
+        },
+        onLateUpdate(fn){
+          if(typeof fn==="function")runtime.lateUpdateHooks.push(fn);
+          return fn;
+        },
+        onStart(fn){
+          if(typeof fn==="function")runtime.startHooks.push(fn);
+          return fn;
+        },
+        onDestroy(fn){
+          if(typeof fn==="function")runtime.destroyHooks.push(fn);
+          return fn;
+        }
+      },
+
+      log:(...args)=>{
+        console.log("[SnakeScript]",...args);
+        try{addOutput?.(args.map(String).join(" "))}catch(_){}
+      }
+    };
+
+    return Object.freeze(api);
+  },
+
+  executeModule(file){
+    file=this.normalizePath(file);
+
+    if(this.cache.has(file)){
+      return this.cache.get(file).exports;
+    }
+
+    const record=this.modules.get(file);
+
+    if(!record){
+      throw new Error(`Module not found: ${file}`);
+    }
+
+    const module={exports:{}};
+    this.cache.set(file,module);
+
+    const require=(request)=>{
+      const resolved=this.resolve(request,file);
+
+      if(!resolved){
+        throw new Error(
+          `Cannot resolve module "${request}" from "${file}"`
+        );
+      }
+
+      return this.executeModule(resolved);
+    };
+
+    const engine={
+      onStart:fn=>this.api.runtime.onStart(fn),
+      onUpdate:fn=>this.api.runtime.onUpdate(fn),
+      onLateUpdate:fn=>this.api.runtime.onLateUpdate(fn),
+      onDestroy:fn=>this.api.runtime.onDestroy(fn),
+      api:this.api
+    };
+
+    try{
+      const wrapped=
+`"use strict";
+${record.source}
+//# sourceURL=${file}`;
+
+      const fn=new Function(
+        "module",
+        "exports",
+        "require",
+        "engine",
+        "input",
+        "ui",
+        "scene",
+        "entity",
+        "camera",
+        "tilemap",
+        "save",
+        "audio",
+        "lifecycle",
+        "components",
+        "log",
+        wrapped
+      );
+
+      fn(
+        module,
+        module.exports,
+        require,
+        engine,
+        this.api.input,
+        this.api.ui,
+        this.api.scene,
+        this.api.entity,
+        this.api.camera,
+        this.api.tilemap,
+        this.api.save,
+        this.api.audio,
+        this.api.lifecycle,
+        this.api.components,
+        this.api.log
+      );
+
+      record.loaded=true;
+      record.lastError=null;
+
+      return module.exports;
+
+    }catch(error){
+      record.loaded=false;
+      record.lastError=this.reportError(file,error);
+
+      /*
+        Keep one broken module isolated. The runtime continues,
+        but requiring this module yields the exports object that
+        existed before the failure.
+      */
+      return module.exports;
+    }
+  },
+
+  entryFiles(){
+    const preferred=[
+      "main.js",
+      "index.js",
+      "game.js"
+    ];
+
+    const entries=[];
+
+    for(const name of preferred){
+      if(this.modules.has(name)){
+        entries.push(name);
+        break;
+      }
+    }
+
+    if(!entries.length){
+      for(const name of this.modules.keys()){
+        if(!name.includes("/")){
+          entries.push(name);
+        }
+      }
+    }
+
+    return entries;
+  },
+
+  async start(){
+    this.clearRuntimeState();
+    this.loadProjectFiles();
+
+    this.api=this.createAPI();
+    this.projectName=projectSafe();
+
+    const entries=this.entryFiles();
+
+    if(!entries.length){
+      try{addOutput?.("No project scripts to execute.")}catch(_){}
+      return false;
+    }
+
+    for(const file of entries){
+      this.executeModule(file);
+    }
+
+    for(const fn of [...this.startHooks]){
+      try{
+        await fn();
+      }catch(error){
+        this.reportError("<start>",error);
+      }
+    }
+
+    this.running=true;
+
+    try{
+      addOutput?.(
+        `Scripting Runtime v2 started — ${this.modules.size} module(s).`,
+        "success"
+      );
+    }catch(_){}
+
+    return true;
+  },
+
+  update(dt){
+    if(!this.running)return;
+
+    for(const fn of [...this.updateHooks]){
+      try{
+        fn(dt);
+      }catch(error){
+        this.reportError("<update>",error);
+      }
+    }
+  },
+
+  lateUpdate(dt){
+    if(!this.running)return;
+
+    for(const fn of [...this.lateUpdateHooks]){
+      try{
+        fn(dt);
+      }catch(error){
+        this.reportError("<lateUpdate>",error);
+      }
+    }
+  },
+
+  async stop(){
+    if(!this.running){
+      this.clearRuntimeState();
+      return;
+    }
+
+    for(const fn of [...this.destroyHooks]){
+      try{
+        await fn();
+      }catch(error){
+        this.reportError("<destroy>",error);
+      }
+    }
+
+    this.clearRuntimeState();
+  },
+
+  async hotReload(){
+    this.hotReloadCount++;
+
+    await this.stop();
+    await this.start();
+
+    try{
+      addOutput?.(
+        `Scripts hot reloaded (#${this.hotReloadCount}).`,
+        "success"
+      );
+    }catch(_){}
+
+    return true;
+  },
+
+  snapshot(){
+    return [...this.modules.values()].map(m=>({
+      name:m.name,
+      loaded:m.loaded,
+      error:m.lastError?.message||null
+    }));
+  }
+};
+
+function projectSafe(){
+  try{return currentProject||null}catch{return null}
+}
+
+function cloneRuntimeValue(value){
+  try{return structuredClone(value)}
+  catch{
+    try{return JSON.parse(JSON.stringify(value))}
+    catch{return value}
+  }
+}
+
+window.ScriptRuntimeV2=ScriptRuntimeV2;
+SnakeEngine.runtime.ScriptRuntimeV2=ScriptRuntimeV2;
+
+/* -----------------------------------------------------
+   Script lifecycle component helper
+----------------------------------------------------- */
+class ProjectScriptComponentV2 extends SnakeComponent{
+  constructor(file,options={}){
+    super();
+
+    this.file=file;
+    this.options=options;
+    this.instance=null;
+  }
+
+  getModule(){
+    const exports=ScriptRuntimeV2.executeModule(this.file);
+
+    if(typeof exports==="function"){
+      return new exports(this.node,this.options,ScriptRuntimeV2.api);
+    }
+
+    if(exports?.default && typeof exports.default==="function"){
+      return new exports.default(
+        this.node,
+        this.options,
+        ScriptRuntimeV2.api
+      );
+    }
+
+    return exports||{};
+  }
+
+  awake(){
+    this.instance=this.getModule();
+    this.instance?.awake?.call(this.instance,this.node);
+  }
+
+  start(){
+    this.instance?.start?.call(this.instance,this.node);
+  }
+
+  update(dt){
+    this.instance?.update?.call(this.instance,dt,this.node);
+  }
+
+  lateUpdate(dt){
+    this.instance?.lateUpdate?.call(this.instance,dt,this.node);
+  }
+
+  onEnable(){
+    this.instance?.onEnable?.call(this.instance,this.node);
+  }
+
+  onDisable(){
+    this.instance?.onDisable?.call(this.instance,this.node);
+  }
+
+  destroy(){
+    this.instance?.destroy?.call(this.instance,this.node);
+    this.instance=null;
+  }
+}
+
+window.ProjectScriptComponentV2=ProjectScriptComponentV2;
+SnakeEngine.runtime.ProjectScriptComponentV2=ProjectScriptComponentV2;
+
+/* -----------------------------------------------------
+   Component System Script adapter
+----------------------------------------------------- */
+const oldApplySceneComponentsV2=
+  window.ComponentSystem?.applyScene?.bind(window.ComponentSystem);
+
+if(window.ComponentSystem && oldApplySceneComponentsV2){
+  ComponentSystem.applyScene=async function(){
+    const result=await oldApplySceneComponentsV2();
+
+    try{
+      const state=await ComponentSystem.load();
+      const scene=RuntimeScenes?.current?.name||"Main";
+      const records=state.scenes?.[scene]||{};
+
+      for(const [entityId,components] of Object.entries(records)){
+        const script=components?.Script;
+
+        if(!script||script.enabled===false||!script.file)continue;
+
+        const node=RuntimeEntities?.get?.(entityId);
+        if(!node)continue;
+
+        const existing=(node.components||node._components||[])
+          .find(c=>c instanceof ProjectScriptComponentV2 && c.file===script.file);
+
+        if(!existing){
+          node.addComponent?.(
+            new ProjectScriptComponentV2(
+              script.file,
+              script.options||{}
+            )
+          );
+        }
+      }
+    }catch(error){
+      ScriptRuntimeV2.reportError(
+        "<component-script-binding>",
+        error
+      );
+    }
+
+    return result;
+  };
+}
+
+/* -----------------------------------------------------
+   Runtime integration
+----------------------------------------------------- */
+const oldRuntimeUpdateScriptV2=window.runtimeUpdate;
+
+if(typeof oldRuntimeUpdateScriptV2==="function"){
+  window.runtimeUpdate=function(dt){
+    const delta=Number(dt)||0;
+
+    ScriptRuntimeV2.update(delta);
+
+    const result=oldRuntimeUpdateScriptV2.apply(this,arguments);
+
+    ScriptRuntimeV2.lateUpdate(delta);
+
+    return result;
+  };
+}
+
+const oldOpenPreviewScriptV2=window.openPreview;
+
+if(typeof oldOpenPreviewScriptV2==="function"){
+  window.openPreview=function(){
+    const result=oldOpenPreviewScriptV2.apply(this,arguments);
+
+    setTimeout(async()=>{
+      /*
+        RPG currently still has its certification bridge.
+        The v2 runtime does not replace it during this step;
+        it starts only when project files exist and can coexist.
+      */
+      await ScriptRuntimeV2.start();
+
+      try{
+        await ComponentSystem?.applyScene?.();
+      }catch(_){}
+    },260);
+
+    return result;
+  };
+}
+
+const oldClosePreviewScriptV2=window.closePreview;
+
+if(typeof oldClosePreviewScriptV2==="function"){
+  window.closePreview=function(){
+    ScriptRuntimeV2.stop().catch(console.error);
+
+    return oldClosePreviewScriptV2.apply(this,arguments);
+  };
+}
+
+window.addEventListener("snake:sceneloaded",()=>{
+  setTimeout(()=>{
+    ComponentSystem?.applyScene?.().catch?.(console.error);
+  },180);
+});
+
+/* -----------------------------------------------------
+   Avoid double execution for RPG project:
+   RPG's existing certified flow remains authoritative until
+   the next migration step, while ScriptRuntime v2 is tested
+   on ordinary project scripts and component scripts.
+----------------------------------------------------- */
+const originalStart=ScriptRuntimeV2.start.bind(ScriptRuntimeV2);
+
+ScriptRuntimeV2.start=async function(){
+  if(projectSafe()==="RPG Demo"){
+    this.clearRuntimeState();
+    this.loadProjectFiles();
+    this.api=this.createAPI();
+
+    /*
+      Load modules so diagnostics and require() are testable,
+      but do not execute RPG main.js as a second game loop.
+    */
+    try{
+      for(const file of this.modules.keys()){
+        if(file==="main.js")continue;
+        this.executeModule(file);
+      }
+    }catch(_){}
+
+    this.running=true;
+
+    try{
+      addOutput?.(
+        `Scripting Runtime v2 attached to RPG Demo — ${this.modules.size} module(s).`,
+        "success"
+      );
+    }catch(_){}
+
+    return true;
+  }
+
+  return originalStart();
+};
+
+/* -----------------------------------------------------
+   Manager UI
+----------------------------------------------------- */
+function ensureUI(){
+  const editor=document.getElementById("editor");
+
+  if(!editor||document.getElementById("scriptingManagerV2"))return;
+
+  const ui=document.createElement("section");
+  ui.id="scriptingManagerV2";
+  ui.className="scripting-manager-v2";
+
+  ui.innerHTML=`
+    <header class="script-v2-head">
+      <button class="icon-btn" type="button" data-script-v2-close>
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="script-v2-head-title">
+        <strong>SCRIPTING RUNTIME v2</strong>
+        <small>Modules · lifecycle · diagnostics · hot reload</small>
+      </div>
+
+      <button class="icon-btn" type="button" data-script-v2-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M20 12a8 8 0 1 1-2-5.3"/>
+          <path d="M20 4v6h-6"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="script-v2-body">
+      <div class="script-v2-actions">
+        <button type="button" class="primary" data-script-v2-hot>HOT RELOAD</button>
+        <button type="button" data-script-v2-run>START RUNTIME</button>
+        <button type="button" data-script-v2-stop>STOP</button>
+      </div>
+
+      <div class="script-v2-grid">
+        <section class="script-v2-panel">
+          <h3>MODULES</h3>
+          <div class="script-v2-panel-body">
+            <div id="scriptV2Modules" class="script-v2-list"></div>
+          </div>
+        </section>
+
+        <section class="script-v2-panel">
+          <h3>RUNTIME</h3>
+          <div class="script-v2-panel-body">
+            <div id="scriptV2Runtime" class="script-v2-console"></div>
+          </div>
+        </section>
+
+        <section class="script-v2-panel">
+          <h3>ERRORS</h3>
+          <div class="script-v2-panel-body">
+            <div id="scriptV2Errors" class="script-v2-console"></div>
+          </div>
+        </section>
+
+        <section class="script-v2-panel">
+          <h3>MODULE EXAMPLE</h3>
+          <div class="script-v2-panel-body">
+            <div class="script-v2-console">const Enemy = require("./enemy");
+
+module.exports = {
+  start(){
+    log("Game started");
+  }
+};
+
+engine.onUpdate((dt) => {
+  // project update
+});</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-script-v2-close]")){
+      return closeManager();
+    }
+
+    if(e.target.closest("[data-script-v2-refresh]")){
+      ScriptRuntimeV2.loadProjectFiles();
+      return renderManager();
+    }
+
+    if(e.target.closest("[data-script-v2-hot]")){
+      await ScriptRuntimeV2.hotReload();
+      showToast?.("Scripts hot reloaded");
+      return renderManager();
+    }
+
+    if(e.target.closest("[data-script-v2-run]")){
+      await ScriptRuntimeV2.start();
+      showToast?.("Scripting Runtime started");
+      return renderManager();
+    }
+
+    if(e.target.closest("[data-script-v2-stop]")){
+      await ScriptRuntimeV2.stop();
+      showToast?.("Scripting Runtime stopped");
+      return renderManager();
+    }
+  });
+
+  const menu=document.getElementById("editorMoreMenu");
+
+  if(menu && !document.getElementById("editorMoreScriptingV2")){
+    const btn=document.createElement("button");
+    btn.id="editorMoreScriptingV2";
+    btn.type="button";
+    btn.className="editor-more-item";
+
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<path d="m8 8-4 4 4 4"/>'+
+        '<path d="m16 8 4 4-4 4"/>'+
+        '<path d="m14 5-4 14"/>'+
+      '</svg>'+
+      '<span>Scripting Runtime v2</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+}
+
+function renderManager(){
+  ensureUI();
+
+  const modules=document.getElementById("scriptV2Modules");
+  const runtime=document.getElementById("scriptV2Runtime");
+  const errors=document.getElementById("scriptV2Errors");
+
+  const snapshot=ScriptRuntimeV2.snapshot();
+
+  if(modules){
+    modules.innerHTML=snapshot.length
+      ?snapshot.map(m=>`
+        <div class="script-v2-item">
+          <strong>${m.name}</strong>
+          <small>${m.loaded?"loaded":"idle"}</small>
+          <span class="script-v2-pill ${m.error?"error":""}">
+            ${m.error?"ERROR":m.loaded?"OK":"READY"}
+          </span>
+        </div>
+      `).join("")
+      :'<div class="script-v2-console">No JavaScript modules found.</div>';
+  }
+
+  if(runtime){
+    runtime.textContent=
+`Project: ${projectSafe()||"—"}
+Running: ${ScriptRuntimeV2.running?"YES":"NO"}
+Modules: ${ScriptRuntimeV2.modules.size}
+Cached: ${ScriptRuntimeV2.cache.size}
+Start hooks: ${ScriptRuntimeV2.startHooks.length}
+Update hooks: ${ScriptRuntimeV2.updateHooks.length}
+LateUpdate hooks: ${ScriptRuntimeV2.lateUpdateHooks.length}
+Destroy hooks: ${ScriptRuntimeV2.destroyHooks.length}
+Hot reloads: ${ScriptRuntimeV2.hotReloadCount}`;
+  }
+
+  if(errors){
+    errors.textContent=ScriptRuntimeV2.errors.length
+      ?ScriptRuntimeV2.errors.map(e=>{
+        const pos=e.line
+          ?`${e.file}:${e.line}${e.column?":"+e.column:""}`
+          :e.file;
+
+        return `[${e.at}] ${pos}\n${e.message}`;
+      }).join("\n\n")
+      :"No script errors.";
+  }
+}
+
+function openManager(){
+  ensureUI();
+  ScriptRuntimeV2.loadProjectFiles();
+  document.getElementById("scriptingManagerV2")?.classList.add("show");
+  renderManager();
+}
+
+function closeManager(){
+  document.getElementById("scriptingManagerV2")?.classList.remove("show");
+}
+
+window.ScriptingRuntimeManagerV2={
+  version:"2.0.0",
+  open:openManager,
+  runtime:ScriptRuntimeV2
+};
+
+const oldOpenProjectScriptManager=window.openProject;
+
+if(typeof oldOpenProjectScriptManager==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectScriptManager.apply(this,arguments);
+
+    ensureUI();
+    ScriptRuntimeV2.loadProjectFiles();
+
+    return result;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    ensureUI,
+    {once:true}
+  );
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
 </body>
 </html>
