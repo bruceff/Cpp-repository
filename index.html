@@ -1022,6 +1022,42 @@ svg{
   border-color:#35553c;color:#91e864;background:#111a13;
 }
 
+
+/* TILEMAP AUTOTILE + BRUSHES v4 */
+.tm-stamp-list{display:grid;gap:5px;padding:0 10px 10px}
+.tm-stamp-row{min-height:38px;display:grid;grid-template-columns:1fr 30px;gap:5px;align-items:center;padding:5px 6px;border:1px solid #28323d;border-radius:6px;background:#10171f}
+.tm-stamp-row.active{border-color:#4c9cce;background:#152a3b}
+.tm-stamp-row button{height:28px;border:1px solid #29333e;border-radius:5px;background:#111820;color:#94a1ad;font-size:8px}
+.tm-stamp-row .tm-stamp-main{text-align:left;padding:0 7px}.tm-stamp-row strong{display:block;font-size:8px;color:#aeb9c1}.tm-stamp-row small{display:block;margin-top:2px;font-size:7px;color:#60707b}
+.tm-autotile-dialog{position:fixed;inset:0;z-index:1250;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);padding:14px}
+.tm-autotile-dialog.show{display:flex}
+.tm-autotile-sheet{width:min(620px,100%);max-height:82vh;overflow:auto;border:1px solid #303b44;border-radius:14px;background:#0e1419;box-shadow:0 18px 55px rgba(0,0,0,.5)}
+.tm-autotile-head{min-height:58px;padding:9px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #28323b;background:#11181e}.tm-autotile-head>div{flex:1}.tm-autotile-head strong{display:block;font-size:10px}.tm-autotile-head small{display:block;margin-top:3px;color:#64727c;font-size:8px}.tm-autotile-head button{width:36px;height:36px;border:1px solid #303b44;border-radius:8px;background:#171e24;color:#89969f;font-size:18px}
+.tm-autotile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px}.tm-autotile-grid label{color:#6f7d87;font-size:8px}.tm-autotile-grid select{width:100%;height:34px;margin-top:4px;border:1px solid #2b3740;border-radius:7px;background:#0b1014;color:#dce4e9;padding:0 7px;font-size:8px}
+.tm-autotile-actions{display:flex;gap:7px;padding:10px;border-top:1px solid #28323b}.tm-autotile-actions button{flex:1;height:38px;border:1px solid #303b44;border-radius:7px;background:#171e24;color:#8f9ca5;font-size:8px;font-weight:850}.tm-autotile-actions .primary{background:#91e864;border-color:#91e864;color:#071006}
+@media(max-width:700px){.tm-autotile-dialog{padding:0}.tm-autotile-sheet{width:100%;border-radius:14px 14px 0 0;border-bottom:0}.tm-autotile-grid{grid-template-columns:1fr 1fr}}
+
+
+/* TILEMAP TEMPLATES + RUNTIME v5 */
+.tm-template-dialog{position:fixed;inset:0;z-index:1260;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);padding:14px}
+.tm-template-dialog.show{display:flex}
+.tm-template-sheet{width:min(720px,100%);max-height:82vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid #303b44;border-radius:14px;background:#0e1419;box-shadow:0 18px 55px rgba(0,0,0,.5)}
+.tm-template-head{min-height:58px;padding:9px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #28323b;background:#11181e}
+.tm-template-head>div{flex:1;min-width:0}.tm-template-head strong{display:block;font-size:10px}.tm-template-head small{display:block;margin-top:3px;color:#64727c;font-size:8px}
+.tm-template-head button{width:36px;height:36px;border:1px solid #303b44;border-radius:8px;background:#171e24;color:#89969f;font-size:18px}
+.tm-template-grid{flex:1;min-height:0;overflow:auto;padding:9px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.tm-template-card{min-width:0;padding:9px;border:1px solid #29343d;border-radius:9px;background:#11171c;color:#8f9ca5;text-align:left}
+.tm-template-card:active{border-color:#56734d;background:#162018}
+.tm-template-card strong{display:block;color:#b6c0c7;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm-template-card small{display:block;margin-top:4px;color:#5f6c76;font-size:7px;line-height:1.45}
+.tm-template-card .tm-template-buttons{display:grid;grid-template-columns:1fr 30px;gap:5px;margin-top:8px}
+.tm-template-card button{height:30px;border:1px solid #303b44;border-radius:6px;background:#171e24;color:#8f9ca5;font-size:7px}
+.tm-template-card button.primary{background:#152018;border-color:#416044;color:#9ee690}
+.tm-template-empty{grid-column:1/-1;padding:28px 12px;text-align:center;color:#62707a;font-size:9px;line-height:1.55}
+.tm-template-actions{padding:9px;border-top:1px solid #28323b;background:#11181e}
+.tm-template-actions button{width:100%;height:36px;border:1px solid #303b44;border-radius:7px;background:#171e24;color:#8f9ca5;font-size:8px;font-weight:850}
+@media(max-width:700px){.tm-template-dialog{padding:0}.tm-template-sheet{width:100%;border-radius:14px 14px 0 0;border-bottom:0}.tm-template-grid{grid-template-columns:1fr 1fr}}
+
 /* assets */
 .asset-toolbar{display:flex;gap:7px;overflow:auto;margin:8px 0}.asset-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.asset-item{position:relative;min-height:110px;background:#11151a;border:1px solid #242a31;border-radius:10px;overflow:hidden}.asset-preview2{height:75px;display:grid;place-items:center;background:#0b0e11;font-size:35px}.asset-preview2 img{width:100%;height:100%;object-fit:contain}.asset-meta{padding:6px;font-size:10px}.asset-del{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:6px;background:#8f2525}.folder-row{display:flex;gap:7px;overflow:auto;margin-bottom:8px}.folder-chip{padding:7px 10px;border-radius:7px;background:#171c21;color:#aeb6bf;font-size:10px}.folder-chip.active{background:#2878ff;color:#fff}
 /* dictionary/project/audio */
@@ -2569,7 +2605,7 @@ function closeEngineTools(){
     document.getElementById('editor').classList.add('active');
   }
 }
-function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));const page=document.getElementById('tool-'+name);if(!page)return;page.classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap'){tmResize();tmRenderLayers();tmRenderTiles();tmRender();tmClipboardStatus();tmCollisionStats();}if(name==='assets')renderAssets2();if(name==='audio'){sndRenderSequencer1();sndRenderPiano1();sndRenderMixer1();renderAudio2()}if(name==='dictionary')renderDict2()}
+function enginePage(name){document.querySelectorAll('.engine-page').forEach(x=>x.classList.remove('active'));const page=document.getElementById('tool-'+name);if(!page)return;page.classList.add('active');document.querySelectorAll('.engine-nav button').forEach(x=>x.classList.toggle('active',x.dataset.tool===name));if(name==='art')artResize2();if(name==='scene')sceneResize2();if(name==='tilemap'){tmResize();tmRenderLayers();tmRenderTiles();tmRender();tmClipboardStatus();tmCollisionStats();tmAutotileStatus();tmRenderStamps();tmSetBrushSize2(tm.brush||1);tmTemplateStatus();tmRuntimeStatus(tm.lastSceneSync?'Previously synced':'Not synced',!!tm.lastSceneSync);}if(name==='assets')renderAssets2();if(name==='audio'){sndRenderSequencer1();sndRenderPiano1();sndRenderMixer1();renderAudio2()}if(name==='dictionary')renderDict2()}
 function engineSaveAll(){engineCodeSave();saveArt2();saveScene2();tmSaveResource();saveAssets2();saveProject2();showToast('Snake Engine salvo')}
 const DICT2=[['mostrar','Exibe texto na saída'],['esperar','Aguarda em milissegundos'],['mover','Move um objeto'],['girar','Rotaciona um objeto'],['criar_sprite','Cria um sprite'],['tocar_audio','Executa um áudio'],['parar_audio','Para um áudio'],['colidir','Verifica colisão'],['se','Condição'],['enquanto','Laço de repetição'],['variavel','Declara variável'],['cena','Acessa a cena'],['tile','Acessa um tile'],['salvar','Salva o projeto']];
 function renderDict2(){const q=(document.getElementById('dictSearch2')?.value||'').toLowerCase();document.getElementById('dictList2').innerHTML=DICT2.filter(x=>(x[0]+' '+x[1]).toLowerCase().includes(q)).map(x=>`<div class="dict-item"><span class="dict-command">${x[0]}</span><span class="dict-name">${x[1]}</span></div>`).join('')}
@@ -2902,7 +2938,7 @@ function loadScene2(){
 }
 function sceneRenderAssetAfterInit(){sceneRenderAssets2()}
 /* TILEMAP STUDIO — immersive touch-first editor */
-let tm={w:40,h:25,size:32,zoom:1,grid:true,tool:'paint',mode:'edit',tile:0,tiles:[],layers:[],layer:0,history:[],future:[],drawing:false,start:null,last:null,pan:{x:0,y:0},panning:false,panStart:null,brush:1,pointers:new Map(),pinch:null,selection:null,clipboard:null,binded:false,collisionPreview:'overlay'};
+let tm={w:40,h:25,size:32,zoom:1,grid:true,tool:'paint',mode:'edit',tile:0,tiles:[],layers:[],layer:0,history:[],future:[],drawing:false,start:null,last:null,pan:{x:0,y:0},panning:false,panStart:null,brush:1,pointers:new Map(),pinch:null,selection:null,clipboard:null,binded:false,collisionPreview:'overlay',autotile:false,autotileMap:null,stamps:[],activeStamp:null,stampMode:false,templates:[],activeTemplate:null,lastSceneSync:null};
 const tmColors=['#405a3c','#6f513b','#3f6f9f','#b08a3e','#6a4f7d','#273038','#a9b0b5','#8d4c4c','#b96e38','#668c54','#65707a','#356f8c'];
 function tmMakeTiles(){if(tm.tiles.length)return;tm.tiles=tmColors.map((color,i)=>({id:i,name:'Tile '+String(i+1).padStart(2,'0'),color}));tmRenderTiles()}
 function tmInit(){const c=document.getElementById('tmCanvas');if(!c)return;tmMakeTiles();if(!tm.layers.length)tm.layers=[{name:'Ground',visible:true,locked:false,opacity:1,cells:{},collision:{},navigation:{}}];tm.layers=tm.layers.map(L=>({...L,collision:L.collision||{},navigation:L.navigation||{}}));tmBind();tmResize();tmRenderLayers();tmRenderTiles();tmRender();}
@@ -2942,6 +2978,7 @@ function tmPointerDown(e){
     tmRender();tmCollisionStats();return
   }
 
+  if(tm.stampMode&&tm.tool==='paint'&&tm.mode==='edit'){tmSnapshot();tmPlaceStamp(p.x,p.y);tmRender();return}
   if(tm.tool==='fill'){tmSnapshot();tmFlood(p.x,p.y);tmRender();return}
   if(tm.tool==='picker'){const v=tm.layers[tm.layer].cells[p.x+','+p.y];if(v!=null){tm.tile=v;tmRenderTiles()}tmSetTool('paint');return}
   tmSnapshot();tm.drawing=true;tm.start=p;tm.last=p;
@@ -2969,6 +3006,7 @@ function tmPointerMove(e){
   }
 
   if(tm.tool==='select'){tm.selection.x2=p.x;tm.selection.y2=p.y;tmRender();return}
+  if(tm.stampMode&&tm.tool==='paint')return;
   if(p.x===tm.last?.x&&p.y===tm.last?.y)return;
   tm.last=p;
   if(tm.tool==='paint'||tm.tool==='erase')tmLine(tm.start,p),tm.start=p;
@@ -2979,7 +3017,12 @@ function tmPointerLeave(){document.getElementById('tmBrushPreview')?.style.setPr
 function tmUpdateBrushCursor(e){const b=document.getElementById('tmBrushPreview');if(!b)return;if(tm.tool==='paint'||tm.tool==='erase'){const r=document.getElementById('tmCanvas').getBoundingClientRect(),v=tmView(),s=v.s;const p=tmCell(e);b.style.display='block';b.style.left=(v.x+p.x*s)+'px';b.style.top=(v.y+p.y*s)+'px';b.style.width=(s*tm.brush)+'px';b.style.height=(s*tm.brush)+'px'}else b.style.display='none'}
 function tmRenderBrush(){tmRender()}
 function tmLine(a,b){let x0=a.x,y0=a.y,x1=b.x,y1=b.y,dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,err=dx+dy;while(true){tmPaintBrush(x0,y0);if(x0===x1&&y0===y1)break;let e2=2*err;if(e2>=dy){err+=dy;x0+=sx}if(e2<=dx){err+=dx;y0+=sy}}}
-function tmPaintBrush(x,y){const r=Math.floor(tm.brush/2);for(let oy=-r;oy<tm.brush-r;oy++)for(let ox=-r;ox<tm.brush-r;ox++)tmPaintCell(x+ox,y+oy)}
+function tmPaintBrush(x,y){
+  if(tm.stampMode&&tm.tool==='paint'&&tm.mode==='edit'){tmPlaceStamp(x,y);return}
+  if(tm.autotile&&tm.mode==='edit'&&(tm.tool==='paint'||tm.tool==='erase')){tmApplyAutotilePaint(x,y,tm.tool==='erase');return}
+  const r=Math.floor(tm.brush/2);
+  for(let oy=-r;oy<tm.brush-r;oy++)for(let ox=-r;ox<tm.brush-r;ox++)tmPaintCell(x+ox,y+oy)
+}
 function tmPaintCell(x,y){if(x<0||y<0||x>=tm.w||y>=tm.h)return;const L=tm.layers[tm.layer];if(!L||L.locked)return;const k=x+','+y;if(tm.mode==='collision'){L.collision=L.collision||{};if(tm.tool==='erase')delete L.collision[k];else L.collision[k]=1;return}if(tm.mode==='navigation'){L.navigation=L.navigation||{};if(tm.tool==='erase')delete L.navigation[k];else L.navigation[k]=1;return}if(tm.tool==='erase')delete L.cells[k];else if(tm.tool==='paint')L.cells[k]=tm.tile}
 function tmDrawRect(a,b){const x0=Math.min(a.x,b.x),x1=Math.max(a.x,b.x),y0=Math.min(a.y,b.y),y1=Math.max(a.y,b.y);for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)tmPaintCell(x,y)}
 function tmFlood(x,y){const L=tm.layers[tm.layer],k=x+','+y,old=L.cells[k]??null;if(old===tm.tile)return;const q=[[x,y]],seen=new Set();while(q.length){const [a,b]=q.pop(),key=a+','+b;if(seen.has(key)||a<0||b<0||a>=tm.w||b>=tm.h)continue;seen.add(key);if((L.cells[key]??null)!==old)continue;L.cells[key]=tm.tile;q.push([a+1,b],[a-1,b],[a,b+1],[a,b-1])}}
@@ -3151,6 +3194,164 @@ function tmSelectionAction(action){
   }
 }
 
+
+
+function tmTemplateSnapshot(name){
+  return {
+    id:Date.now()+Math.random(),
+    name:name||'Map Template',
+    w:tm.w,h:tm.h,size:tm.size,
+    grid:tm.grid,
+    mode:tm.mode,
+    layers:JSON.parse(JSON.stringify(tm.layers)),
+    autotile:tm.autotile,
+    autotileMap:tm.autotileMap?JSON.parse(JSON.stringify(tm.autotileMap)):null,
+    stamps:JSON.parse(JSON.stringify(tm.stamps||[])),
+    tiles:tm.tiles.map(t=>({id:t.id,name:t.name,color:t.color,data:t.canvas?t.canvas.toDataURL('image/png'):null}))
+  }
+}
+function tmSaveTemplate(){
+  const name=prompt('Template name',document.getElementById('tmMapName')?.value||`Template ${tm.templates.length+1}`);
+  if(!name)return;
+  const t=tmTemplateSnapshot(name);
+  tm.templates.push(t);
+  tm.activeTemplate=t.id;
+  tmTemplateStatus();
+  showToast('Map template saved')
+}
+function tmTemplateStatus(){
+  const e=document.getElementById('tmTemplateStatus');if(!e)return;
+  const t=tm.templates.find(x=>String(x.id)===String(tm.activeTemplate));
+  if(!t){e.textContent=`${tm.templates.length} templates saved`;e.classList.toggle('ready',tm.templates.length>0);return}
+  e.textContent=`Selected: ${t.name} · ${t.w}×${t.h}`;
+  e.classList.add('ready')
+}
+function tmOpenTemplateLibrary(){
+  tmRenderTemplateLibrary();
+  document.getElementById('tmTemplateDialog')?.classList.add('show')
+}
+function tmCloseTemplateLibrary(){document.getElementById('tmTemplateDialog')?.classList.remove('show')}
+document.addEventListener('click',e=>{const d=document.getElementById('tmTemplateDialog');if(d&&e.target===d)tmCloseTemplateLibrary()});
+function tmRenderTemplateLibrary(){
+  const r=document.getElementById('tmTemplateGrid');if(!r)return;
+  r.innerHTML=tm.templates.length?tm.templates.map(t=>`
+    <div class="tm-template-card">
+      <strong>${escapeHTML(t.name)}</strong>
+      <small>${t.w} × ${t.h} · ${t.size}px tiles<br>${t.layers?.length||0} layers</small>
+      <div class="tm-template-buttons">
+        <button class="primary" onclick="tmLoadTemplate('${t.id}')">LOAD</button>
+        <button onclick="tmDeleteTemplate('${t.id}')">×</button>
+      </div>
+    </div>
+  `).join(''):'<div class="tm-template-empty">No templates saved yet.<br>Build a reusable map and tap SAVE TEMPLATE.</div>'
+}
+function tmDeleteTemplate(id){
+  tm.templates=tm.templates.filter(t=>String(t.id)!==String(id));
+  if(String(tm.activeTemplate)===String(id))tm.activeTemplate=null;
+  tmRenderTemplateLibrary();tmTemplateStatus()
+}
+async function tmHydrateTemplateTiles(list){
+  const result=[];
+  for(const t of list||[]){
+    let canvas=null;
+    if(t.data){
+      const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=t.data});
+      canvas=document.createElement('canvas');canvas.width=tm.size;canvas.height=tm.size;
+      const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(img,0,0,canvas.width,canvas.height)
+    }
+    result.push({id:t.id,name:t.name,color:t.color,canvas})
+  }
+  return result
+}
+async function tmLoadTemplate(id){
+  const t=tm.templates.find(x=>String(x.id)===String(id));if(!t)return;
+  if(!confirm(`Load template "${t.name}"? Current unsaved map changes will be replaced.`))return;
+  tmSnapshot();
+  tm.w=t.w;tm.h=t.h;tm.size=t.size;tm.layers=JSON.parse(JSON.stringify(t.layers||[]));tm.layer=0;
+  tm.autotile=!!t.autotile;tm.autotileMap=t.autotileMap?JSON.parse(JSON.stringify(t.autotileMap)):null;
+  tm.stamps=JSON.parse(JSON.stringify(t.stamps||[]));tm.activeStamp=tm.stamps[0]?.id||null;tm.stampMode=false;
+  tm.tiles=await tmHydrateTemplateTiles(t.tiles||[]);
+  document.getElementById('tmMapW').value=tm.w;document.getElementById('tmMapH').value=tm.h;document.getElementById('tmTileSize').value=tm.size;
+  tm.activeTemplate=t.id;
+  tmResize();tmRenderTiles();tmRenderLayers();tmRender();tmRenderStamps();tmAutotileStatus();tmCollisionStats();tmTemplateStatus();
+  tmCloseTemplateLibrary();showToast('Template loaded')
+}
+function tmRuntimePayload(){
+  return {
+    version:1,
+    name:document.getElementById('tmMapName')?.value||'TileMap',
+    w:tm.w,h:tm.h,size:tm.size,
+    layers:JSON.parse(JSON.stringify(tm.layers)),
+    tiles:tm.tiles.map(t=>({id:t.id,name:t.name,color:t.color,data:t.canvas?t.canvas.toDataURL('image/png'):null})),
+    collision:tm.layers.map((L,i)=>({layer:i,cells:Object.keys(L.collision||{})})),
+    navigation:tm.layers.map((L,i)=>({layer:i,cells:Object.keys(L.navigation||{})}))
+  }
+}
+function tmRuntimeStatus(msg,ok=true){
+  const e=document.getElementById('tmRuntimeStatus');if(!e)return;
+  e.textContent=msg;e.classList.toggle('ready',ok)
+}
+function tmPushToScene(){
+  const payload=tmRuntimePayload();
+  localStorage.setItem('snake_tilemap_scene_runtime_v1',JSON.stringify(payload));
+  tm.lastSceneSync=new Date().toISOString();
+  tmRuntimeStatus(`Scene synced · ${payload.layers.length} layers`);
+  try{
+    if(window.RuntimeTileMapV1?.load)window.RuntimeTileMapV1.load(payload)
+  }catch(e){console.warn(e)}
+  showToast('TileMap sent to Scene / Runtime')
+}
+function tmSyncCollisionRuntime(){
+  const payload=tmRuntimePayload();
+  localStorage.setItem('snake_tilemap_collision_runtime_v1',JSON.stringify(payload.collision));
+  tmRuntimeStatus(`Collision synced · ${payload.collision.reduce((n,l)=>n+l.cells.length,0)} cells`);
+  showToast('Collision synced')
+}
+function tmSyncNavigationRuntime(){
+  const payload=tmRuntimePayload();
+  localStorage.setItem('snake_tilemap_navigation_runtime_v1',JSON.stringify(payload.navigation));
+  tmRuntimeStatus(`Navigation synced · ${payload.navigation.reduce((n,l)=>n+l.cells.length,0)} cells`);
+  showToast('Navigation synced')
+}
+function tmPreviewRuntime(){
+  tmPushToScene();
+  const payload=tmRuntimePayload();
+  const w=window.open('','snakeTilePreview');
+  if(!w)return showToast('Browser blocked preview window');
+  const layers=payload.layers,tiles=payload.tiles;
+  const tileMap={};tiles.forEach(t=>tileMap[t.id]=t);
+  let cells='';
+  layers.forEach((L,li)=>{
+    if(L.visible===false)return;
+    for(const [key,id] of Object.entries(L.cells||{})){
+      const [x,y]=key.split(',').map(Number),t=tileMap[id];
+      if(!t)continue;
+      if(t.data)cells+=`<img src="${t.data}" style="position:absolute;left:${x*payload.size}px;top:${y*payload.size}px;width:${payload.size}px;height:${payload.size}px;image-rendering:pixelated;opacity:${L.opacity??1}">`;
+      else if(t.color)cells+=`<div style="position:absolute;left:${x*payload.size}px;top:${y*payload.size}px;width:${payload.size}px;height:${payload.size}px;background:${t.color};opacity:${L.opacity??1}"></div>`;
+    }
+  });
+  w.document.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${payload.name}</title><style>html,body{margin:0;background:#111;color:#fff;font-family:system-ui}#wrap{padding:16px;overflow:auto}.map{position:relative;width:${payload.w*payload.size}px;height:${payload.h*payload.size}px;background:#0d1115;box-shadow:0 0 0 1px #333}</style></head><body><div id="wrap"><div class="map">${cells}</div></div></body></html>`);
+  w.document.close()
+}
+
+function tmSetBrushSize2(v){tm.brush=Math.max(1,Math.min(5,+v||1));const e=document.getElementById('tmBrushSize2');if(e)e.value=tm.brush}
+function tmAutotileStatus(){const e=document.getElementById('tmAutotileStatus');if(!e)return;if(!tm.autotile){e.textContent='Autotile off';e.classList.remove('ready');return}const n=Object.values(tm.autotileMap||{}).filter(v=>Number.isInteger(v)&&v>=0).length;e.textContent=`Autotile on · ${n}/9 slots`;e.classList.add('ready')}
+function tmToggleAutotile(){tm.autotile=!tm.autotile;tm.stampMode=false;tmAutotileStatus();showToast(tm.autotile?'Autotile enabled':'Autotile disabled')}
+function tmAutotileOptions(){return '<option value="-1">— None —</option>'+tm.tiles.map((t,i)=>`<option value="${i}">${i+1} · ${escapeHTML(t.name||('Tile '+(i+1)))}</option>`).join('')}
+function tmOpenAutotileSetup(){const d=document.getElementById('tmAutotileDialog');if(!d)return;const ids=['tmAutoCenter','tmAutoTop','tmAutoRight','tmAutoBottom','tmAutoLeft','tmAutoTL','tmAutoTR','tmAutoBR','tmAutoBL'],keys=['center','top','right','bottom','left','tl','tr','br','bl'],opts=tmAutotileOptions(),m=tm.autotileMap||{};ids.forEach((id,i)=>{const e=document.getElementById(id);e.innerHTML=opts;e.value=Number.isInteger(m[keys[i]])?m[keys[i]]:-1});d.classList.add('show')}
+function tmCloseAutotileSetup(){document.getElementById('tmAutotileDialog')?.classList.remove('show')}
+document.addEventListener('click',e=>{const d=document.getElementById('tmAutotileDialog');if(d&&e.target===d)tmCloseAutotileSetup()});
+function tmSaveAutotileSetup(){const g=id=>+document.getElementById(id).value;tm.autotileMap={center:g('tmAutoCenter'),top:g('tmAutoTop'),right:g('tmAutoRight'),bottom:g('tmAutoBottom'),left:g('tmAutoLeft'),tl:g('tmAutoTL'),tr:g('tmAutoTR'),br:g('tmAutoBR'),bl:g('tmAutoBL')};tm.autotile=true;tm.stampMode=false;tmCloseAutotileSetup();tmAutotileStatus();showToast('Autotile setup saved')}
+function tmAutotileBaseId(){const ids=Object.values(tm.autotileMap||{}).filter(v=>Number.isInteger(v)&&v>=0);return ids.length?ids[0]:tm.tile}
+function tmAutotileChoose(x,y,L){const m=tm.autotileMap||{},f=(xx,yy)=>L.cells[xx+','+yy]!=null,u=f(x,y-1),r=f(x+1,y),d=f(x,y+1),l=f(x-1,y);if(!u&&!l&&m.tl>=0)return m.tl;if(!u&&!r&&m.tr>=0)return m.tr;if(!d&&!r&&m.br>=0)return m.br;if(!d&&!l&&m.bl>=0)return m.bl;if(!u&&m.top>=0)return m.top;if(!r&&m.right>=0)return m.right;if(!d&&m.bottom>=0)return m.bottom;if(!l&&m.left>=0)return m.left;if(m.center>=0)return m.center;return tm.tile}
+function tmAutotileRefreshAround(x,y){if(!tm.autotile||!tm.autotileMap)return;const L=tm.layers[tm.layer];for(let yy=y-1;yy<=y+1;yy++)for(let xx=x-1;xx<=x+1;xx++){if(xx<0||yy<0||xx>=tm.w||yy>=tm.h)continue;const k=xx+','+yy;if(L.cells[k]!=null)L.cells[k]=tmAutotileChoose(xx,yy,L)}}
+function tmApplyAutotilePaint(x,y,erase=false){const L=tm.layers[tm.layer],h=Math.floor((tm.brush-1)/2),a=[];for(let yy=y-h;yy<y-h+tm.brush;yy++)for(let xx=x-h;xx<x-h+tm.brush;xx++){if(xx<0||yy<0||xx>=tm.w||yy>=tm.h)continue;const k=xx+','+yy;if(erase)delete L.cells[k];else L.cells[k]=tmAutotileBaseId();a.push([xx,yy])}a.forEach(([xx,yy])=>tmAutotileRefreshAround(xx,yy))}
+function tmCreateStampFromSelection(){const a=tmNormalizedSelection();if(!a)return showToast('Select an area first');const L=tm.layers[tm.layer],data=[];for(let y=a.y;y<=a.y2;y++)for(let x=a.x;x<=a.x2;x++)data.push({x:x-a.x,y:y-a.y,id:L.cells[x+','+y]??null});const s={id:Date.now()+Math.random(),name:`Stamp ${tm.stamps.length+1}`,w:a.x2-a.x+1,h:a.y2-a.y+1,data};tm.stamps.push(s);tm.activeStamp=s.id;tm.stampMode=true;tm.autotile=false;tmRenderStamps();tmAutotileStatus();showToast('Stamp saved')}
+function tmRenderStamps(){const r=document.getElementById('tmStampList');if(!r)return;r.innerHTML=tm.stamps.length?tm.stamps.map(s=>`<div class="tm-stamp-row ${String(s.id)===String(tm.activeStamp)?'active':''}"><button class="tm-stamp-main" onclick="tm.activeStamp='${s.id}';tm.stampMode=true;tm.autotile=false;tmRenderStamps();tmAutotileStatus()"><strong>${escapeHTML(s.name)}</strong><small>${s.w} × ${s.h}</small></button><button onclick="tmDeleteStamp('${s.id}')">×</button></div>`).join(''):'<div class="tm-clipboard-status">No stamps saved</div>'}
+function tmDeleteStamp(id){tm.stamps=tm.stamps.filter(s=>String(s.id)!==String(id));if(String(tm.activeStamp)===String(id))tm.activeStamp=tm.stamps[0]?.id||null;if(!tm.activeStamp)tm.stampMode=false;tmRenderStamps()}
+function tmStampMode(){if(!tm.stamps.length)return showToast('Save a selection as stamp first');tm.stampMode=true;tm.autotile=false;if(!tm.activeStamp)tm.activeStamp=tm.stamps[0].id;tmRenderStamps();tmAutotileStatus();showToast('Stamp mode enabled')}
+function tmPlaceStamp(x,y){const s=tm.stamps.find(v=>String(v.id)===String(tm.activeStamp)),L=tm.layers[tm.layer];if(!s||!L)return;for(const d of s.data){const tx=x+d.x,ty=y+d.y;if(tx<0||ty<0||tx>=tm.w||ty>=tm.h)continue;const k=tx+','+ty;if(d.id==null)delete L.cells[k];else L.cells[k]=d.id}}
+
 function tmCollisionMap(){
   const L=tm.layers[tm.layer];
   if(!L)return {};
@@ -3231,7 +3432,7 @@ function tmCollisionLine(a,b,erase=false){
 
 function tmSaveResource(){const name=(document.getElementById('tmMapName').value||'New Tilemap').trim();const resources=JSON.parse(localStorage.getItem('snake_global_tilemaps')||'[]');const data={id:Date.now(),name,w:tm.w,h:tm.h,size:tm.size,mode:tm.mode,layers:tm.layers,tiles:tm.tiles.map(t=>({id:t.id,name:t.name,color:t.color,data:t.canvas?t.canvas.toDataURL('image/png'):null}))};const i=resources.findIndex(x=>x.name===name);if(i>=0)resources[i]=data;else resources.push(data);localStorage.setItem('snake_global_tilemaps',JSON.stringify(resources));localStorage.setItem('myengine_tilemap',JSON.stringify(tm));showToast('Tilemap saved to global library')}
 function tmExportJSON(){const d={name:document.getElementById('tmMapName').value,w:tm.w,h:tm.h,size:tm.size,mode:tm.mode,layers:tm.layers,tiles:tm.tiles.map(t=>({id:t.id,name:t.name,color:t.color,data:t.canvas?t.canvas.toDataURL('image/png'):null}))};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download=(d.name||'tilemap')+'.tilemap.json';a.click()}
-function loadTile2(){try{const d=JSON.parse(localStorage.getItem('myengine_tilemap')||'null');if(d?.layers){tm=Object.assign(tm,d,{binded:true,pointers:new Map(),history:[],future:[],drawing:false,panning:false,collisionPreview:d.collisionPreview||'overlay'});tm.layers=(tm.layers||[]).map(L=>({...L,collision:L.collision||{},navigation:L.navigation||{}}));tm.tiles=(d.tiles||[]).map(t=>{if(t.data){const cv=document.createElement('canvas');cv.width=d.size||32;cv.height=d.size||32;const im=new Image();im.onload=()=>{cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);tmRenderTiles();tmRender()};im.src=t.data;return {...t,canvas:cv}}return t});document.getElementById('tmMapName').value=d.name||'New Tilemap';document.getElementById('tmMapW').value=d.w||40;document.getElementById('tmMapH').value=d.h||25}}catch(e){console.warn(e)}}
+function loadTile2(){try{const d=JSON.parse(localStorage.getItem('myengine_tilemap')||'null');if(d?.layers){tm=Object.assign(tm,d,{binded:true,pointers:new Map(),history:[],future:[],drawing:false,panning:false,collisionPreview:d.collisionPreview||'overlay',autotile:!!d.autotile,autotileMap:d.autotileMap||null,stamps:Array.isArray(d.stamps)?d.stamps:[],activeStamp:d.activeStamp||null,stampMode:false,templates:Array.isArray(d.templates)?d.templates:[],activeTemplate:d.activeTemplate||null,lastSceneSync:d.lastSceneSync||null});tm.layers=(tm.layers||[]).map(L=>({...L,collision:L.collision||{},navigation:L.navigation||{}}));tm.tiles=(d.tiles||[]).map(t=>{if(t.data){const cv=document.createElement('canvas');cv.width=d.size||32;cv.height=d.size||32;const im=new Image();im.onload=()=>{cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);tmRenderTiles();tmRender()};im.src=t.data;return {...t,canvas:cv}}return t});document.getElementById('tmMapName').value=d.name||'New Tilemap';document.getElementById('tmMapW').value=d.w||40;document.getElementById('tmMapH').value=d.h||25}}catch(e){console.warn(e)}}
 /* ASSETS */
 let assets2=[],assetFolder2='root';function importAssets2(e){[...e.target.files].forEach(f=>{const reader=new FileReader();reader.onload=()=>{assets2.push({id:Date.now()+Math.random(),name:f.name,type:f.type||'file',data:reader.result,folder:assetFolder2});saveAssets2();renderAssets2();};if(f.type.startsWith('image/')||f.type.startsWith('audio/'))reader.readAsDataURL(f);else reader.readAsText(f)});e.target.value=''}function renderAssets2(){const q=(document.getElementById('assetSearch2')?.value||'').toLowerCase();const a=assets2.filter(x=>(x.folder||'root')===assetFolder2&&x.name.toLowerCase().includes(q));document.getElementById('assetCount2').textContent=assets2.length+' itens';document.getElementById('assetGrid2').innerHTML=a.map(x=>`<div class="asset-item"><div class="asset-preview2">${x.type.startsWith('image/')?`<img src="${x.data}">`:x.type.startsWith('audio/')?'<svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="3"/><circle cx="16.5" cy="16" r="3"/></svg>':'FILE'}</div><div class="asset-meta">${x.name}</div><button class="asset-del" onclick="deleteAsset2(${x.id})">×</button></div>`).join('')||'<div class="tool-muted">Nenhum asset nesta pasta.</div>';document.getElementById('folderRow2').innerHTML='<button class="folder-chip active"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m12 3 8 4.2v9.6L12 21l-8-4.2V7.2L12 3Z"/><path d="m4 7.2 8 4.1 8-4.1M12 11.3V21"/></svg> root</button>'}
 function deleteAsset2(id){assets2=assets2.filter(x=>x.id!==id);saveAssets2();renderAssets2()}function saveAssets2(){localStorage.setItem('myengine_assets2',JSON.stringify(assets2))}function loadAssets2(){assets2=JSON.parse(localStorage.getItem('myengine_assets2')||'[]')}
@@ -3531,6 +3732,85 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
   <button class="tool-btn" onclick="tmMoveLayer(-1)">↑ Layer</button>
   <button class="tool-btn" onclick="tmMoveLayer(1)">↓ Layer</button>
 </div>
+</div>
+<div class="tm-section">
+<div class="tm-panel-title">MAP TEMPLATES</div>
+<div class="tm-control-row" style="padding:0 12px 7px">
+  <button class="tool-btn" onclick="tmSaveTemplate()">SAVE TEMPLATE</button>
+  <button class="tool-btn" onclick="tmOpenTemplateLibrary()">LIBRARY</button>
+</div>
+<div id="tmTemplateStatus" class="tm-clipboard-status">No template selected</div>
+</div>
+
+<div class="tm-section">
+<div class="tm-panel-title">SCENE / RUNTIME</div>
+<div class="tm-control-row" style="padding:0 12px 7px">
+  <button class="tool-btn" onclick="tmPushToScene()">SEND TO SCENE</button>
+  <button class="tool-btn" onclick="tmPreviewRuntime()">PREVIEW</button>
+</div>
+<div class="tm-control-row" style="padding:0 12px 7px">
+  <button class="tool-btn" onclick="tmSyncCollisionRuntime()">SYNC COLLISION</button>
+  <button class="tool-btn" onclick="tmSyncNavigationRuntime()">SYNC NAV</button>
+</div>
+<div id="tmRuntimeStatus" class="tm-clipboard-status">Not synced</div>
+</div>
+
+<div id="tmTemplateDialog" class="tm-template-dialog">
+  <div class="tm-template-sheet">
+    <div class="tm-template-head">
+      <div><strong>MAP TEMPLATE LIBRARY</strong><small>Reuse mapas completos em outros projetos</small></div>
+      <button onclick="tmCloseTemplateLibrary()">×</button>
+    </div>
+    <div id="tmTemplateGrid" class="tm-template-grid"></div>
+    <div class="tm-template-actions">
+      <button onclick="tmCloseTemplateLibrary()">FECHAR</button>
+    </div>
+  </div>
+</div>
+<div class="tm-section">
+<div class="tm-panel-title">AUTOTILE</div>
+<div class="tm-control-row" style="padding:0 12px 7px">
+  <button class="tool-btn" onclick="tmToggleAutotile()">AUTOTILE</button>
+  <button class="tool-btn" onclick="tmOpenAutotileSetup()">SETUP</button>
+</div>
+<div id="tmAutotileStatus" class="tm-clipboard-status">Autotile off</div>
+</div>
+
+<div class="tm-section">
+<div class="tm-panel-title">BRUSHES & STAMPS</div>
+<div class="tm-control">
+  <label>Brush size</label>
+  <input id="tmBrushSize2" class="tm-range" type="range" min="1" max="5" value="1" oninput="tmSetBrushSize2(this.value)">
+</div>
+<div class="tm-control-row" style="padding:0 12px 7px">
+  <button class="tool-btn" onclick="tmCreateStampFromSelection()">SAVE STAMP</button>
+  <button class="tool-btn" onclick="tmStampMode()">STAMP MODE</button>
+</div>
+<div id="tmStampList" class="tm-stamp-list"></div>
+</div>
+
+<div id="tmAutotileDialog" class="tm-autotile-dialog">
+  <div class="tm-autotile-sheet">
+    <div class="tm-autotile-head">
+      <div><strong>AUTOTILE SETUP</strong><small>Escolha os tiles para bordas e cantos</small></div>
+      <button onclick="tmCloseAutotileSetup()">×</button>
+    </div>
+    <div class="tm-autotile-grid">
+      <label>Center<select id="tmAutoCenter"></select></label>
+      <label>Top<select id="tmAutoTop"></select></label>
+      <label>Right<select id="tmAutoRight"></select></label>
+      <label>Bottom<select id="tmAutoBottom"></select></label>
+      <label>Left<select id="tmAutoLeft"></select></label>
+      <label>Corner TL<select id="tmAutoTL"></select></label>
+      <label>Corner TR<select id="tmAutoTR"></select></label>
+      <label>Corner BR<select id="tmAutoBR"></select></label>
+      <label>Corner BL<select id="tmAutoBL"></select></label>
+    </div>
+    <div class="tm-autotile-actions">
+      <button onclick="tmCloseAutotileSetup()">CANCEL</button>
+      <button class="primary" onclick="tmSaveAutotileSetup()">SAVE</button>
+    </div>
+  </div>
 </div>
 <div class="tm-section">
 <div class="tm-panel-title">COLLISION</div>
