@@ -31497,3 +31497,2575 @@ function ensureUI(){
         <div class="pfv2-card">
           <strong>Professional instance workflow</strong>
           <p>
+            Instances remain linked to the Prefab. Local changes become
+            overrides. Apply sends overrides back to the asset; Revert
+            restores the source. Propagate updates every linked instance.
+          </p>
+        </div>
+
+        <div class="pfv2-card">
+          <strong>Nested Prefabs & Variants</strong>
+          <p>
+            Child entities can reference other Prefabs. Variants inherit
+            from a base Prefab while storing only their changed fields.
+          </p>
+        </div>
+      </section>
+
+      <aside class="pfv2-sidebar right">
+        <div id="pfv2Details"></div>
+
+        <div class="pfv2-section-title">STATUS</div>
+        <div id="pfv2Status" class="pfv2-summary"></div>
+      </aside>
+    </main>
+  `;
+
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-pfv2-close]"))return closeManager();
+    if(e.target.closest("[data-pfv2-refresh]"))return refreshManager();
+
+    const ent=e.target.closest("[data-pfv2-entity]");
+    if(ent){
+      selectedEntityId=ent.dataset.pfv2Entity;
+      return refreshManager();
+    }
+
+    const sel=e.target.closest("[data-pfv2-select]");
+    if(sel){
+      selectedPrefabId=sel.dataset.pfv2Select;
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-create]")){
+      const name=document.getElementById("pfv2CreateName")?.value||"Prefab";
+      const created=await createFromEntity(selectedEntityId,name);
+      if(created)selectedPrefabId=created.id;
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-instantiate]")){
+      if(!selectedPrefabId)return;
+      const entity=await instantiateEntity(selectedPrefabId,{x:180,y:120});
+      if(entity)selectedEntityId=entity.id;
+      showToast?.("Prefab instantiated");
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-propagate]")){
+      await propagate(selectedPrefabId);
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-update]")){
+      if(!selectedPrefabId||!selectedEntityId)return;
+      await updateFromEntity(selectedPrefabId,selectedEntityId);
+      showToast?.("Prefab updated from entity");
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-variant]")){
+      if(!selectedPrefabId)return;
+      const base=(await loadState()).prefabs.find(p=>p.id===selectedPrefabId);
+      const variant=await createVariant(
+        selectedPrefabId,
+        (base?.name||"Prefab")+" Variant",
+        {}
+      );
+      if(variant)selectedPrefabId=variant.id;
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-capture]")){
+      if(!selectedEntityId)return;
+      const value=await captureInstanceOverrides(selectedEntityId);
+      showToast?.(
+        value
+          ?"Overrides captured"
+          :"Selected entity is not a tracked Prefab instance"
+      );
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-revert]")){
+      if(!selectedEntityId)return;
+      await revertOverrides(selectedEntityId);
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-apply]")){
+      if(!selectedEntityId)return;
+      await applyOverridesToPrefab(selectedEntityId);
+      return refreshManager();
+    }
+
+    if(e.target.closest("[data-pfv2-delete]")){
+      if(!selectedPrefabId)return;
+      const old=selectedPrefabId;
+      if(await removePrefab(old)){
+        selectedPrefabId=null;
+      }
+      return refreshManager();
+    }
+  });
+
+  const menu=document.getElementById("editorMoreMenu");
+
+  if(menu && !document.getElementById("editorMorePrefabV2")){
+    const btn=document.createElement("button");
+    btn.id="editorMorePrefabV2";
+    btn.type="button";
+    btn.className="editor-more-item";
+
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<rect x="4" y="4" width="7" height="7" rx="1"/>'+
+        '<rect x="13" y="13" width="7" height="7" rx="1"/>'+
+        '<path d="M11 7h3a3 3 0 0 1 3 3v3"/>'+
+      '</svg>'+
+      '<span>Prefab v2</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+}
+
+async function openManager(){
+  ensureUI();
+  await migrateV1();
+  document.getElementById("prefabV2Manager")?.classList.add("show");
+  await refreshManager();
+}
+
+function closeManager(){
+  document.getElementById("prefabV2Manager")?.classList.remove("show");
+}
+
+window.PrefabV2Manager={
+  version:"2.0.0",
+  open:openManager,
+  runtime:API
+};
+
+const oldOpenProjectPrefabV2=window.openProject;
+
+if(typeof oldOpenProjectPrefabV2==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectPrefabV2.apply(this,arguments);
+
+    ensureUI();
+
+    try{
+      await migrateV1();
+    }catch(e){
+      console.warn("Prefab v2 migration:",e);
+    }
+
+    return result;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener(
+    "DOMContentLoaded",
+    ensureUI,
+    {once:true}
+  );
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
+
+<style>
+/* =====================================================
+   SNAKE ENGINE â SCENE EDITOR + UNDO/REDO v1
+===================================================== */
+.scene-editor-v1{
+  position:absolute;
+  inset:0;
+  z-index:252;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.scene-editor-v1.show{display:flex}
+
+.sev1-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.sev1-head-title{flex:1;min-width:0}
+.sev1-head-title strong{display:block;font-size:13px}
+.sev1-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.sev1-body{
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:210px 1fr 240px;
+  background:#090c0f;
+}
+
+.sev1-sidebar{
+  min-height:0;
+  overflow:auto;
+  padding:10px;
+  border-right:1px solid #242b32;
+  background:#0e1318;
+}
+.sev1-sidebar.right{
+  border-right:0;
+  border-left:1px solid #242b32;
+}
+
+.sev1-center{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.sev1-toolbar{
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:0 7px;
+  overflow-x:auto;
+  border-bottom:1px solid #242b32;
+  background:#10151a;
+}
+.sev1-tool{
+  min-width:36px;
+  height:31px;
+  padding:0 8px;
+  border-radius:7px;
+  background:none;
+  color:#74808a;
+  font-size:9px;
+  white-space:nowrap;
+}
+.sev1-tool.active{
+  color:#91e864;
+  background:#182019;
+}
+.sev1-tool:disabled{
+  opacity:.35;
+}
+
+.sev1-workspace{
+  flex:1;
+  min-height:0;
+  position:relative;
+  overflow:auto;
+  background:
+    linear-gradient(#14191e 1px,transparent 1px),
+    linear-gradient(90deg,#14191e 1px,transparent 1px);
+  background-size:24px 24px;
+  touch-action:none;
+}
+
+#sev1World{
+  position:relative;
+  margin:18px auto;
+  min-width:960px;
+  min-height:540px;
+  border:1px solid #323c44;
+  background:#0b1014;
+  transform-origin:top left;
+}
+
+.sev1-object{
+  position:absolute;
+  min-width:28px;
+  min-height:28px;
+  border:1px solid #3a454d;
+  border-radius:5px;
+  background:#151c21;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#91e864;
+  font-size:8px;
+  user-select:none;
+  touch-action:none;
+}
+.sev1-object.selected{
+  outline:2px solid #91e864;
+  outline-offset:2px;
+}
+.sev1-object .label{
+  position:absolute;
+  top:-16px;
+  left:0;
+  color:#91e864;
+  font-size:7px;
+  white-space:nowrap;
+  pointer-events:none;
+}
+
+.sev1-gizmo{
+  position:absolute;
+  display:none;
+  z-index:6;
+  pointer-events:none;
+}
+.sev1-gizmo.show{display:block}
+.sev1-gizmo-axis{
+  position:absolute;
+  width:36px;
+  height:4px;
+  transform-origin:left center;
+}
+.sev1-gizmo-axis.x{
+  left:0;top:-2px;
+  background:#8eb0ff;
+}
+.sev1-gizmo-axis.y{
+  left:0;top:-2px;
+  background:#8ff0a4;
+  transform:rotate(90deg);
+}
+
+.sev1-list{
+  display:grid;
+  gap:5px;
+}
+.sev1-item{
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:0 7px;
+  border:1px solid #28323a;
+  border-radius:7px;
+  background:#12181d;
+}
+.sev1-item.active{
+  border-color:#486547;
+  background:#151f16;
+}
+.sev1-item button{
+  flex:1;
+  min-width:0;
+  background:none;
+  color:#dce2e6;
+  font-size:9px;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.sev1-item small{
+  color:#68747e;
+  font-size:7px;
+}
+
+.sev1-section-title{
+  margin:5px 2px 8px;
+  color:#6e7a84;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.1em;
+}
+
+.sev1-row{
+  display:grid;
+  grid-template-columns:1fr 110px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.sev1-row label{color:#89959e;font-size:9px}
+.sev1-row input,
+.sev1-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.sev1-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.sev1-actions button{
+  flex:1;
+  min-height:36px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.sev1-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.sev1-summary{
+  padding:10px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0c1115;
+  color:#7b8790;
+  font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+
+@media(max-width:820px){
+  .sev1-body{
+    grid-template-columns:135px 1fr;
+  }
+  .sev1-sidebar.right{display:none}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE â SCENE EDITOR + UNDO/REDO v1
+   - select/move/rotate/scale
+   - duplicate/delete
+   - multi-select
+   - snap to grid
+   - undo/redo history
+   - entity/hierarchy aware snapshots
+===================================================== */
+(function(){
+"use strict";
+
+const SceneEditorV1={
+  selected:new Set(),
+  primary:null,
+  tool:"select",
+  snap:true,
+  snapSize:16,
+  dragging:false,
+  dragStart:null,
+  beforeDrag:null,
+  zoom:1,
+  history:[],
+  historyIndex:-1,
+  maxHistory:100,
+
+  async entities(){
+    try{
+      const state=await EntityWorld.load();
+      return state.scenes?.[sceneName()]?.entities||[];
+    }catch{return []}
+  },
+
+  async hierarchy(){
+    try{
+      const state=await HierarchySystemV2.load();
+      return state.scenes?.[sceneName()]||{parentById:{},activeById:{}};
+    }catch{
+      return {parentById:{},activeById:{}};
+    }
+  },
+
+  async components(){
+    try{
+      const state=await ComponentSystem.load();
+      return state.scenes?.[sceneName()]||{};
+    }catch{return {}}
+  },
+
+  async captureState(label="Edit"){
+    const entities=await this.entities();
+    const hierarchy=await this.hierarchy();
+    const components=await this.components();
+
+    return {
+      label,
+      scene:sceneName(),
+      entities:cloneValue(entities),
+      hierarchy:cloneValue(hierarchy),
+      components:cloneValue(components),
+      selected:[...this.selected],
+      primary:this.primary,
+      at:new Date().toISOString()
+    };
+  },
+
+  async pushHistory(label,before,after){
+    if(!before||!after)return;
+
+    if(this.historyIndex < this.history.length-1){
+      this.history=this.history.slice(0,this.historyIndex+1);
+    }
+
+    this.history.push({label,before,after});
+
+    if(this.history.length>this.maxHistory){
+      this.history.shift();
+    }
+
+    this.historyIndex=this.history.length-1;
+    this.updateHistoryButtons();
+  },
+
+  async restoreState(snapshot){
+    if(!snapshot)return false;
+
+    try{
+      const eState=await EntityWorld.load();
+      eState.scenes=eState.scenes||{};
+      eState.scenes[snapshot.scene]={
+        entities:cloneValue(snapshot.entities),
+        updatedAt:new Date().toISOString()
+      };
+      await EntityWorld.save(eState);
+
+      const hState=await HierarchySystemV2.load();
+      hState.scenes=hState.scenes||{};
+      hState.scenes[snapshot.scene]=cloneValue(snapshot.hierarchy);
+      await HierarchySystemV2.save(hState);
+
+      const cState=await ComponentSystem.load();
+      cState.scenes=cState.scenes||{};
+      cState.scenes[snapshot.scene]=cloneValue(snapshot.components);
+      await ComponentSystem.save(cState);
+
+      this.selected=new Set(snapshot.selected||[]);
+      this.primary=snapshot.primary||null;
+
+      await HierarchySystemV2.applyRuntime?.();
+      await ComponentSystem.applyScene?.();
+
+      await refreshManager();
+      return true;
+    }catch(e){
+      console.error("Scene Editor restore:",e);
+      showToast?.("Undo/Redo restore failed");
+      return false;
+    }
+  },
+
+  async undo(){
+    if(this.historyIndex<0)return false;
+
+    const action=this.history[this.historyIndex];
+    const ok=await this.restoreState(action.before);
+
+    if(ok){
+      this.historyIndex--;
+      showToast?.("Undo: "+action.label);
+      this.updateHistoryButtons();
+    }
+
+    return ok;
+  },
+
+  async redo(){
+    if(this.historyIndex>=this.history.length-1)return false;
+
+    const action=this.history[this.historyIndex+1];
+    const ok=await this.restoreState(action.after);
+
+    if(ok){
+      this.historyIndex++;
+      showToast?.("Redo: "+action.label);
+      this.updateHistoryButtons();
+    }
+
+    return ok;
+  },
+
+  updateHistoryButtons(){
+    const undo=document.getElementById("sev1Undo");
+    const redo=document.getElementById("sev1Redo");
+
+    if(undo)undo.disabled=this.historyIndex<0;
+    if(redo)redo.disabled=this.historyIndex>=this.history.length-1;
+  },
+
+  snapValue(v){
+    if(!this.snap)return v;
+    return Math.round(v/this.snapSize)*this.snapSize;
+  }
+};
+
+window.SceneEditorV1=SceneEditorV1;
+
+function sceneName(){
+  try{
+    return window.RuntimeScenes?.current?.name ||
+      document.querySelector(".world-label")?.textContent?.replace("WORLD / ","").trim() ||
+      "Main";
+  }catch{return "Main"}
+}
+
+function cloneValue(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+
+async function worldSize(){
+  try{
+    const w=await TileMapWorld?.world?.(sceneName());
+    if(w){
+      return {
+        width:w.width*w.tileSize,
+        height:w.height*w.tileSize
+      };
+    }
+  }catch(_){}
+
+  return {width:960,height:540};
+}
+
+async function selectedEntities(){
+  const entities=await SceneEditorV1.entities();
+  return entities.filter(e=>SceneEditorV1.selected.has(e.id));
+}
+
+async function setSelection(id,append=false){
+  if(!append){
+    SceneEditorV1.selected.clear();
+  }
+
+  if(id){
+    if(append && SceneEditorV1.selected.has(id)){
+      SceneEditorV1.selected.delete(id);
+    }else{
+      SceneEditorV1.selected.add(id);
+      SceneEditorV1.primary=id;
+    }
+  }
+
+  if(!SceneEditorV1.selected.size){
+    SceneEditorV1.primary=null;
+  }
+
+  await renderScene();
+  await renderEntityList();
+  await renderInspector();
+}
+
+async function renderScene(){
+  const world=document.getElementById("sev1World");
+  if(!world)return;
+
+  const size=await worldSize();
+  world.style.width=size.width+"px";
+  world.style.height=size.height+"px";
+
+  const entities=await SceneEditorV1.entities();
+  world.innerHTML='';
+
+  for(const e of entities){
+    const el=document.createElement("div");
+    el.className="sev1-object"+(SceneEditorV1.selected.has(e.id)?" selected":"");
+    el.dataset.entityId=e.id;
+
+    const t=e.transform||{};
+    el.style.left=Number(t.x||0)+"px";
+    el.style.top=Number(t.y||0)+"px";
+    el.style.transform=
+      `rotate(${Number(t.rotation||0)}deg) scale(${Number(t.scaleX==null?1:t.scaleX)},${Number(t.scaleY==null?1:t.scaleY)})`;
+
+    el.innerHTML=
+      '<span class="label">'+(escapeHTML?.(e.name)||e.name)+'</span>'+
+      '<span>â</span>';
+
+    el.addEventListener("pointerdown",async ev=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      const append=ev.shiftKey||ev.metaKey||ev.ctrlKey;
+      await setSelection(e.id,append);
+
+      if(SceneEditorV1.tool==="move"){
+        SceneEditorV1.dragging=true;
+        SceneEditorV1.dragStart={
+          x:ev.clientX,
+          y:ev.clientY
+        };
+        SceneEditorV1.beforeDrag=await SceneEditorV1.captureState("Move");
+        el.setPointerCapture?.(ev.pointerId);
+      }
+    });
+
+    el.addEventListener("pointermove",async ev=>{
+      if(!SceneEditorV1.dragging||SceneEditorV1.tool!=="move")return;
+      if(!SceneEditorV1.selected.has(e.id))return;
+
+      const dx=(ev.clientX-SceneEditorV1.dragStart.x)/SceneEditorV1.zoom;
+      const dy=(ev.clientY-SceneEditorV1.dragStart.y)/SceneEditorV1.zoom;
+
+      const entities=await SceneEditorV1.entities();
+
+      for(const selected of entities.filter(x=>SceneEditorV1.selected.has(x.id))){
+        const start=SceneEditorV1.beforeDrag.entities.find(x=>x.id===selected.id);
+        if(!start)continue;
+
+        selected.transform=selected.transform||{};
+        selected.transform.x=SceneEditorV1.snapValue(Number(start.transform?.x||0)+dx);
+        selected.transform.y=SceneEditorV1.snapValue(Number(start.transform?.y||0)+dy);
+
+        await EntityWorld.update(selected.id,{transform:selected.transform});
+      }
+
+      await renderScene();
+      await renderInspector();
+    });
+
+    const endDrag=async()=>{
+      if(!SceneEditorV1.dragging)return;
+      SceneEditorV1.dragging=false;
+
+      const before=SceneEditorV1.beforeDrag;
+      const after=await SceneEditorV1.captureState("Move");
+      SceneEditorV1.beforeDrag=null;
+
+      await SceneEditorV1.pushHistory("Move",before,after);
+    };
+
+    el.addEventListener("pointerup",endDrag);
+    el.addEventListener("pointercancel",endDrag);
+
+    world.appendChild(el);
+  }
+}
+
+async function renderEntityList(){
+  const root=document.getElementById("sev1EntityList");
+  if(!root)return;
+
+  const entities=await SceneEditorV1.entities();
+
+  root.innerHTML=entities.length
+    ?entities.map(e=>`
+      <div class="sev1-item ${SceneEditorV1.selected.has(e.id)?"active":""}">
+        <button type="button" data-sev1-select="${e.id}">
+          ${escapeHTML?.(e.name)||e.name}
+        </button>
+        <small>${escapeHTML?.(e.tag)||e.tag||"Untagged"}</small>
+      </div>
+    `).join("")
+    :'<div class="sev1-summary">No entities in scene.</div>';
+}
+
+async function renderInspector(){
+  const root=document.getElementById("sev1Inspector");
+  if(!root)return;
+
+  const entities=await selectedEntities();
+  const e=entities.find(x=>x.id===SceneEditorV1.primary)||entities[0];
+
+  if(!e){
+    root.innerHTML='<div class="sev1-summary">Select an entity.</div>';
+    return;
+  }
+
+  root.innerHTML=`
+    <div class="sev1-section-title">TRANSFORM</div>
+
+    <div class="sev1-row"><label>Name</label><input id="sev1Name" value="${String(e.name||"").replace(/"/g,"&quot;")}"></div>
+    <div class="sev1-row"><label>X</label><input id="sev1X" type="number" value="${Number(e.transform?.x||0)}"></div>
+    <div class="sev1-row"><label>Y</label><input id="sev1Y" type="number" value="${Number(e.transform?.y||0)}"></div>
+    <div class="sev1-row"><label>Rotation</label><input id="sev1Rot" type="number" value="${Number(e.transform?.rotation||0)}"></div>
+    <div class="sev1-row"><label>Scale X</label><input id="sev1ScaleX" type="number" step=".1" value="${Number(e.transform?.scaleX==null?1:e.transform.scaleX)}"></div>
+    <div class="sev1-row"><label>Scale Y</label><input id="sev1ScaleY" type="number" step=".1" value="${Number(e.transform?.scaleY==null?1:e.transform.scaleY)}"></div>
+
+    <div class="sev1-actions">
+      <button class="primary" type="button" data-sev1-apply>APPLY</button>
+    </div>
+
+    <div class="sev1-summary">Selected: ${entities.length}
+Primary: ${e.name}
+ID: ${e.id}
+
+Tool: ${SceneEditorV1.tool}
+Snap: ${SceneEditorV1.snap?"ON":"OFF"}
+Grid: ${SceneEditorV1.snapSize}px</div>
+  `;
+}
+
+async function renderHistory(){
+  const root=document.getElementById("sev1History");
+  if(!root)return;
+
+  root.textContent=SceneEditorV1.history.length
+    ?SceneEditorV1.history.map((h,i)=>{
+      const marker=i===SceneEditorV1.historyIndex?"â ":"  ";
+      return `${marker}${i+1}. ${h.label}`;
+    }).join("\n")
+    :"No edit history yet.";
+}
+
+async function refreshManager(){
+  await renderScene();
+  await renderEntityList();
+  await renderInspector();
+  await renderHistory();
+  SceneEditorV1.updateHistoryButtons();
+}
+
+async function applyInspector(){
+  const entities=await selectedEntities();
+  if(!entities.length)return;
+
+  const before=await SceneEditorV1.captureState("Transform");
+
+  const primary=entities.find(x=>x.id===SceneEditorV1.primary)||entities[0];
+  const oldX=Number(primary.transform?.x||0);
+  const oldY=Number(primary.transform?.y||0);
+
+  const newX=SceneEditorV1.snapValue(Number(document.getElementById("sev1X")?.value||0));
+  const newY=SceneEditorV1.snapValue(Number(document.getElementById("sev1Y")?.value||0));
+  const dx=newX-oldX;
+  const dy=newY-oldY;
+
+  for(const e of entities){
+    const t={...(e.transform||{})};
+
+    if(e.id===primary.id){
+      t.x=newX;
+      t.y=newY;
+      t.rotation=Number(document.getElementById("sev1Rot")?.value||0);
+      t.scaleX=Number(document.getElementById("sev1ScaleX")?.value||1);
+      t.scaleY=Number(document.getElementById("sev1ScaleY")?.value||1);
+
+      await EntityWorld.update(e.id,{
+        name:document.getElementById("sev1Name")?.value||e.name,
+        transform:t
+      });
+    }else{
+      t.x=SceneEditorV1.snapValue(Number(t.x||0)+dx);
+      t.y=SceneEditorV1.snapValue(Number(t.y||0)+dy);
+      await EntityWorld.update(e.id,{transform:t});
+    }
+  }
+
+  const after=await SceneEditorV1.captureState("Transform");
+  await SceneEditorV1.pushHistory("Transform",before,after);
+  await refreshManager();
+}
+
+async function duplicateSelection(){
+  const entities=await selectedEntities();
+  if(!entities.length)return;
+
+  const before=await SceneEditorV1.captureState("Duplicate");
+  const newIds=[];
+
+  for(const e of entities){
+    const copy=await EntityWorld.duplicate(e.id);
+    if(copy)newIds.push(copy.id);
+  }
+
+  SceneEditorV1.selected=new Set(newIds);
+  SceneEditorV1.primary=newIds[0]||null;
+
+  const after=await SceneEditorV1.captureState("Duplicate");
+  await SceneEditorV1.pushHistory("Duplicate",before,after);
+  await refreshManager();
+}
+
+async function deleteSelection(){
+  const entities=await selectedEntities();
+  if(!entities.length)return;
+
+  const before=await SceneEditorV1.captureState("Delete");
+
+  for(const e of entities){
+    await EntityWorld.remove(e.id);
+  }
+
+  SceneEditorV1.selected.clear();
+  SceneEditorV1.primary=null;
+
+  const after=await SceneEditorV1.captureState("Delete");
+  await SceneEditorV1.pushHistory("Delete",before,after);
+  await refreshManager();
+}
+
+async function createEntity(){
+  const before=await SceneEditorV1.captureState("Create Entity");
+  const e=await EntityWorld.create({
+    name:"Entity",
+    tag:"Untagged",
+    x:SceneEditorV1.snapValue(120),
+    y:SceneEditorV1.snapValue(90)
+  });
+
+  SceneEditorV1.selected=new Set([e.id]);
+  SceneEditorV1.primary=e.id;
+
+  const after=await SceneEditorV1.captureState("Create Entity");
+  await SceneEditorV1.pushHistory("Create Entity",before,after);
+  await refreshManager();
+}
+
+function installKeyboardShortcuts(){
+  if(document.documentElement.dataset.sev1Keys==="1")return;
+  document.documentElement.dataset.sev1Keys="1";
+
+  document.addEventListener("keydown",async e=>{
+    const editor=document.getElementById("sceneEditorV1");
+    if(!editor?.classList.contains("show"))return;
+
+    const target=e.target;
+    if(target && /INPUT|TEXTAREA|SELECT/.test(target.tagName))return;
+
+    const cmd=e.ctrlKey||e.metaKey;
+
+    if(cmd && e.key.toLowerCase()==="z"){
+      e.preventDefault();
+      if(e.shiftKey)await SceneEditorV1.redo();
+      else await SceneEditorV1.undo();
+      await renderHistory();
+      return;
+    }
+
+    if(cmd && e.key.toLowerCase()==="y"){
+      e.preventDefault();
+      await SceneEditorV1.redo();
+      await renderHistory();
+      return;
+    }
+
+    if(cmd && e.key.toLowerCase()==="d"){
+      e.preventDefault();
+      await duplicateSelection();
+      return;
+    }
+
+    if(e.key==="Delete"||e.key==="Backspace"){
+      e.preventDefault();
+      await deleteSelection();
+    }
+  });
+}
+
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("sceneEditorV1"))return;
+
+  const ui=document.createElement("section");
+  ui.id="sceneEditorV1";
+  ui.className="scene-editor-v1";
+
+  ui.innerHTML=`
+    <header class="sev1-head">
+      <button class="icon-btn" type="button" data-sev1-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+
+      <div class="sev1-head-title">
+        <strong>SCENE EDITOR</strong>
+        <small>Select Â· move Â· transform Â· multi-select Â· Undo/Redo</small>
+      </div>
+
+      <button class="icon-btn" type="button" data-sev1-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M20 12a8 8 0 1 1-2-5.3"/>
+          <path d="M20 4v6h-6"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="sev1-body">
+      <aside class="sev1-sidebar">
+        <div class="sev1-section-title">ENTITIES</div>
+        <div id="sev1EntityList" class="sev1-list"></div>
+
+        <div class="sev1-section-title">HISTORY</div>
+        <div id="sev1History" class="sev1-summary"></div>
+      </aside>
+
+      <section class="sev1-center">
+        <div class="sev1-toolbar">
+          <button class="sev1-tool active" type="button" data-sev1-tool="select">SELECT</button>
+          <button class="sev1-tool" type="button" data-sev1-tool="move">MOVE</button>
+          <button class="sev1-tool" type="button" data-sev1-create>NEW</button>
+          <button class="sev1-tool" type="button" data-sev1-duplicate>DUPLICATE</button>
+          <button class="sev1-tool" type="button" data-sev1-delete>DELETE</button>
+          <button class="sev1-tool" id="sev1Undo" type="button" data-sev1-undo>UNDO</button>
+          <button class="sev1-tool" id="sev1Redo" type="button" data-sev1-redo>REDO</button>
+          <button class="sev1-tool active" type="button" data-sev1-snap>SNAP 16</button>
+        </div>
+
+        <div class="sev1-workspace">
+          <div id="sev1World"></div>
+        </div>
+      </section>
+
+      <aside class="sev1-sidebar right">
+        <div id="sev1Inspector"></div>
+      </aside>
+    </main>
+  `;
+
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-sev1-close]"))return closeManager();
+    if(e.target.closest("[data-sev1-refresh]"))return refreshManager();
+
+    const tool=e.target.closest("[data-sev1-tool]");
+    if(tool){
+      SceneEditorV1.tool=tool.dataset.sev1Tool;
+      ui.querySelectorAll("[data-sev1-tool]").forEach(x=>x.classList.remove("active"));
+      tool.classList.add("active");
+      return renderInspector();
+    }
+
+    const sel=e.target.closest("[data-sev1-select]");
+    if(sel){
+      return setSelection(sel.dataset.sev1Select,e.shiftKey||e.ctrlKey||e.metaKey);
+    }
+
+    if(e.target.closest("[data-sev1-create]"))return createEntity();
+    if(e.target.closest("[data-sev1-duplicate]"))return duplicateSelection();
+    if(e.target.closest("[data-sev1-delete]"))return deleteSelection();
+
+    if(e.target.closest("[data-sev1-undo]")){
+      await SceneEditorV1.undo();
+      return renderHistory();
+    }
+
+    if(e.target.closest("[data-sev1-redo]")){
+      await SceneEditorV1.redo();
+      return renderHistory();
+    }
+
+    if(e.target.closest("[data-sev1-snap]")){
+      SceneEditorV1.snap=!SceneEditorV1.snap;
+      e.target.closest("[data-sev1-snap]").classList.toggle("active",SceneEditorV1.snap);
+      showToast?.(SceneEditorV1.snap?"Snap ON":"Snap OFF");
+      return renderInspector();
+    }
+
+    if(e.target.closest("[data-sev1-apply]")){
+      return applyInspector();
+    }
+  });
+
+  document.getElementById("sev1World")?.addEventListener("pointerdown",e=>{
+    if(e.target.id==="sev1World"){
+      setSelection(null,false);
+    }
+  });
+
+  const menu=document.getElementById("editorMoreMenu");
+
+  if(menu && !document.getElementById("editorMoreSceneEditorV1")){
+    const btn=document.createElement("button");
+    btn.id="editorMoreSceneEditorV1";
+    btn.type="button";
+    btn.className="editor-more-item";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<rect x="4" y="4" width="16" height="16" rx="2"/>'+
+        '<path d="M8 12h8M12 8v8"/>'+
+      '</svg>'+
+      '<span>Scene Editor</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+
+  installKeyboardShortcuts();
+}
+
+async function openManager(){
+  ensureUI();
+  document.getElementById("sceneEditorV1")?.classList.add("show");
+  await refreshManager();
+}
+
+function closeManager(){
+  document.getElementById("sceneEditorV1")?.classList.remove("show");
+}
+
+window.SceneEditorManagerV1={
+  version:"1.0.0",
+  open:openManager,
+  runtime:SceneEditorV1
+};
+
+const oldOpenProjectSceneEditor=window.openProject;
+if(typeof oldOpenProjectSceneEditor==="function"){
+  window.openProject=async function(){
+    const result=await oldOpenProjectSceneEditor.apply(this,arguments);
+    ensureUI();
+    return result;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",ensureUI,{once:true});
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
+
+<style>
+/* =====================================================
+   SNAKE ENGINE â SCENE EDITOR MOBILE v2
+   Touch-first controls. Desktop shortcuts disabled.
+===================================================== */
+#sceneEditorV1 .sev1-toolbar{
+  position:sticky;
+  top:0;
+  z-index:8;
+  gap:6px;
+  padding:6px 7px;
+  min-height:48px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+#sceneEditorV1 .sev1-tool{
+  min-width:42px;
+  height:36px;
+  padding:0 10px;
+  font-size:9px;
+  touch-action:manipulation;
+}
+
+#sceneEditorV1 .sev1-mobile-primary{
+  min-width:46px;
+  font-weight:800;
+}
+
+#sceneEditorV1 .sev1-workspace{
+  touch-action:none;
+}
+
+#sceneEditorV1 .sev1-object{
+  min-width:34px;
+  min-height:34px;
+  touch-action:none;
+}
+
+#sceneEditorV1 .sev1-touch-sheet{
+  position:sticky;
+  bottom:0;
+  z-index:12;
+  display:none;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  padding:7px;
+  border-top:1px solid #242b32;
+  background:#0f1419;
+}
+
+#sceneEditorV1 .sev1-touch-sheet.show{
+  display:grid;
+}
+
+#sceneEditorV1 .sev1-touch-action{
+  min-height:42px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+  touch-action:manipulation;
+}
+
+#sceneEditorV1 .sev1-touch-action.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+#sceneEditorV1 .sev1-nudge-grid{
+  display:grid;
+  grid-template-columns:repeat(3,42px);
+  gap:5px;
+  justify-content:center;
+  margin:8px 0;
+}
+
+#sceneEditorV1 .sev1-nudge{
+  width:42px;
+  height:42px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:14px;
+  touch-action:manipulation;
+}
+
+#sceneEditorV1 .sev1-nudge.blank{
+  visibility:hidden;
+}
+
+@media(max-width:820px){
+  #sceneEditorV1 .sev1-touch-sheet{
+    display:grid;
+  }
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE â SCENE EDITOR MOBILE v2
+   Removes keyboard shortcut dependence and adds touch-first
+   Undo/Redo, duplicate/delete and transform nudging.
+===================================================== */
+(function(){
+"use strict";
+
+if(!window.SceneEditorV1)return;
+
+/* Disable the previous Scene Editor shortcut handler by making its
+   listener early-return for this editor version. */
+document.documentElement.dataset.sev1MobileV2="1";
+
+/*
+  The v1 keyboard listener checks whether the editor is open and then
+  handles keys. We cannot remove an anonymous listener safely, so mobile
+  v2 no longer advertises or relies on keyboard shortcuts. Touch controls
+  below are the authoritative interface.
+*/
+
+async function selectedEntitiesMobile(){
+  const entities=await SceneEditorV1.entities();
+  return entities.filter(e=>SceneEditorV1.selected.has(e.id));
+}
+
+async function pushTransformHistory(label,before){
+  const after=await SceneEditorV1.captureState(label);
+  await SceneEditorV1.pushHistory(label,before,after);
+}
+
+async function nudgeSelection(dx,dy){
+  const selected=await selectedEntitiesMobile();
+  if(!selected.length){
+    showToast?.("Select an entity");
+    return;
+  }
+
+  const before=await SceneEditorV1.captureState("Move");
+
+  for(const e of selected){
+    const t={...(e.transform||{})};
+    t.x=SceneEditorV1.snapValue(Number(t.x||0)+dx);
+    t.y=SceneEditorV1.snapValue(Number(t.y||0)+dy);
+    await EntityWorld.update(e.id,{transform:t});
+  }
+
+  await pushTransformHistory("Move",before);
+
+  if(typeof refreshManager==="function"){
+    await refreshManager();
+  }else{
+    document.querySelector("[data-sev1-refresh]")?.click();
+  }
+}
+
+function addTouchInspector(){
+  const inspector=document.getElementById("sev1Inspector");
+  if(!inspector||document.getElementById("sev1NudgeGrid"))return;
+
+  const title=document.createElement("div");
+  title.className="sev1-section-title";
+  title.textContent="TOUCH MOVE";
+
+  const grid=document.createElement("div");
+  grid.id="sev1NudgeGrid";
+  grid.className="sev1-nudge-grid";
+  grid.innerHTML=
+    '<button class="sev1-nudge blank" type="button"></button>'+
+    '<button class="sev1-nudge" type="button" data-sev1-nudge="up">â</button>'+
+    '<button class="sev1-nudge blank" type="button"></button>'+
+    '<button class="sev1-nudge" type="button" data-sev1-nudge="left">â</button>'+
+    '<button class="sev1-nudge" type="button" data-sev1-nudge="down">â</button>'+
+    '<button class="sev1-nudge" type="button" data-sev1-nudge="right">â</button>';
+
+  inspector.append(title,grid);
+
+  grid.addEventListener("click",async e=>{
+    const btn=e.target.closest("[data-sev1-nudge]");
+    if(!btn)return;
+
+    const step=Number(SceneEditorV1.snapSize||16);
+    const dir=btn.dataset.sev1Nudge;
+
+    if(dir==="up")await nudgeSelection(0,-step);
+    if(dir==="down")await nudgeSelection(0,step);
+    if(dir==="left")await nudgeSelection(-step,0);
+    if(dir==="right")await nudgeSelection(step,0);
+  });
+}
+
+function installTouchSheet(){
+  const center=document.querySelector("#sceneEditorV1 .sev1-center");
+  if(!center||document.getElementById("sev1TouchSheet"))return;
+
+  const sheet=document.createElement("div");
+  sheet.id="sev1TouchSheet";
+  sheet.className="sev1-touch-sheet show";
+  sheet.innerHTML=
+    '<button class="sev1-touch-action primary" type="button" data-sev1-mobile-undo>UNDO</button>'+
+    '<button class="sev1-touch-action primary" type="button" data-sev1-mobile-redo>REDO</button>'+
+    '<button class="sev1-touch-action" type="button" data-sev1-mobile-duplicate>DUPLICATE</button>'+
+    '<button class="sev1-touch-action" type="button" data-sev1-mobile-delete>DELETE</button>';
+
+  center.appendChild(sheet);
+
+  sheet.addEventListener("click",async e=>{
+    if(e.target.closest("[data-sev1-mobile-undo]")){
+      await SceneEditorV1.undo();
+      document.querySelector("[data-sev1-refresh]")?.click();
+      return;
+    }
+
+    if(e.target.closest("[data-sev1-mobile-redo]")){
+      await SceneEditorV1.redo();
+      document.querySelector("[data-sev1-refresh]")?.click();
+      return;
+    }
+
+    if(e.target.closest("[data-sev1-mobile-duplicate]")){
+      const button=document.querySelector("[data-sev1-duplicate]");
+      button?.click();
+      return;
+    }
+
+    if(e.target.closest("[data-sev1-mobile-delete]")){
+      const button=document.querySelector("[data-sev1-delete]");
+      button?.click();
+      return;
+    }
+  });
+}
+
+function simplifyToolbarForMobile(){
+  const toolbar=document.querySelector("#sceneEditorV1 .sev1-toolbar");
+  if(!toolbar)return;
+
+  const undo=document.getElementById("sev1Undo");
+  const redo=document.getElementById("sev1Redo");
+
+  /*
+    Undo/Redo remain in the lower touch sheet on mobile.
+    Keep toolbar versions only on wide screens.
+  */
+  if(undo)undo.classList.add("sev1-desktop-history");
+  if(redo)redo.classList.add("sev1-desktop-history");
+
+  const style=document.createElement("style");
+  style.textContent=
+    '@media(max-width:820px){#sceneEditorV1 .sev1-desktop-history{display:none!important}}';
+  document.head.appendChild(style);
+}
+
+function mobileRefresh(){
+  installTouchSheet();
+  simplifyToolbarForMobile();
+  addTouchInspector();
+}
+
+/* Inspector content is recreated by v1 refresh, so restore touch controls. */
+const observer=new MutationObserver(()=>{
+  if(document.getElementById("sceneEditorV1")?.classList.contains("show")){
+    addTouchInspector();
+  }
+});
+
+function startObserver(){
+  const inspector=document.getElementById("sev1Inspector");
+  if(inspector){
+    observer.observe(inspector,{childList:true});
+  }
+}
+
+/* Patch only the Scene Editor open action, not global editor interactions. */
+const oldOpen=window.SceneEditorManagerV1?.open?.bind(window.SceneEditorManagerV1);
+
+if(window.SceneEditorManagerV1 && oldOpen){
+  SceneEditorManagerV1.open=async function(){
+    const result=await oldOpen();
+    mobileRefresh();
+    startObserver();
+    return result;
+  };
+}
+
+if(document.getElementById("sceneEditorV1")){
+  mobileRefresh();
+  startObserver();
+}
+
+})();
+</script>
+
+
+<style>
+/* =====================================================
+   SNAKE ENGINE â BUILD RUNTIME v2
+===================================================== */
+.build-runtime-v2{
+  position:absolute;
+  inset:0;
+  z-index:254;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.build-runtime-v2.show{display:flex}
+
+.brv2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.brv2-head-title{flex:1;min-width:0}
+.brv2-head-title strong{display:block;font-size:13px}
+.brv2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.brv2-body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  padding:14px 12px 100px;
+}
+.brv2-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.brv2-panel{
+  border:1px solid #252e36;
+  border-radius:10px;
+  background:#10151a;
+  overflow:hidden;
+}
+.brv2-panel h3{
+  margin:0;
+  padding:10px;
+  border-bottom:1px solid #202831;
+  color:#8c98a1;
+  font-size:9px;
+  letter-spacing:.09em;
+}
+.brv2-panel-body{padding:9px}
+
+.brv2-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.brv2-actions button{
+  flex:1;
+  min-height:40px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:800;
+  touch-action:manipulation;
+}
+.brv2-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.brv2-row{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.brv2-row label{color:#89959e;font-size:9px}
+.brv2-row input,
+.brv2-row select{
+  height:34px;
+  border:1px solid #2c353e;
+  border-radius:7px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+
+.brv2-checks{display:grid;gap:5px}
+.brv2-check{
+  display:grid;
+  grid-template-columns:8px 1fr auto;
+  gap:8px;
+  align-items:center;
+  min-height:38px;
+  padding:7px 8px;
+  border:1px solid #28323a;
+  border-radius:7px;
+  background:#12181d;
+}
+.brv2-check i{width:7px;height:7px;border-radius:50%}
+.brv2-check.ok i{background:#91e864}
+.brv2-check.warn i{background:#e6bd64}
+.brv2-check.error i{background:#e8646b}
+.brv2-check span{color:#dce2e6;font-size:9px}
+.brv2-check small{color:#68747e;font-size:8px;text-align:right}
+
+.brv2-console{
+  min-height:180px;
+  max-height:300px;
+  overflow:auto;
+  padding:9px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0b1014;
+  color:#7f8b94;
+  font:8px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+
+.brv2-progress{
+  height:8px;
+  margin-top:10px;
+  overflow:hidden;
+  border:1px solid #29343c;
+  border-radius:999px;
+  background:#090d11;
+}
+.brv2-progress i{
+  display:block;
+  width:0;
+  height:100%;
+  background:#91e864;
+  transition:width .18s ease;
+}
+
+@media(max-width:700px){
+  .brv2-grid{grid-template-columns:1fr}
+  .brv2-actions{position:sticky;top:0;z-index:4;background:#0a0d10;padding:4px 0}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE â BUILD RUNTIME v2
+   Exports a dedicated mobile-first game runtime.
+   The build includes project data + runtime systems, but no editor UI.
+===================================================== */
+(function(){
+"use strict";
+
+const BuildRuntimeV2={
+  version:"2.0.0",
+
+  configKey(){
+    try{return "snake_build_runtime_v2:"+encodeURIComponent(currentProject||"default")}
+    catch{return "snake_build_runtime_v2:default"}
+  },
+
+  loadConfig(){
+    const base={
+      title:(typeof currentProject!=="undefined"&&currentProject)||"Snake Game",
+      width:960,
+      height:540,
+      orientation:"landscape",
+      scaleMode:"fit",
+      background:"#0b1014",
+      virtualControls:true,
+      debug:false,
+      includeSaveData:false
+    };
+
+    try{
+      return {...base,...JSON.parse(localStorage.getItem(this.configKey())||"{}")};
+    }catch{
+      return base;
+    }
+  },
+
+  saveConfig(cfg){
+    localStorage.setItem(this.configKey(),JSON.stringify(cfg));
+  },
+
+  async collect(){
+    const base=window.BuildExport?.collect
+      ?await BuildExport.collect()
+      :{};
+
+    const extra={};
+
+    try{extra.components=await ComponentSystem?.load?.()}catch(_){}
+    try{extra.hierarchy=await HierarchySystemV2?.load?.()}catch(_){}
+    try{extra.prefabsV2=await PrefabsV2?.load?.()}catch(_){}
+    try{extra.tilemaps=await TileMapWorld?.load?.()}catch(_){}
+    try{extra.entities=await EntityWorld?.load?.()}catch(_){}
+    try{extra.camera=await CameraManagerV1?.load?.()}catch(_){}
+
+    return {
+      ...base,
+      runtimeVersion:"2.0.0",
+      systems:{
+        componentLifecycle:true,
+        scriptingV2:true,
+        physicsV2:true,
+        hierarchyV2:true,
+        prefabV2:true,
+        tilemapV2:true,
+        cameraV1:true
+      },
+      ...extra
+    };
+  },
+
+  async validate(bundle){
+    const checks=[];
+
+    checks.push({
+      level:bundle?.project?.name?"ok":"error",
+      name:"Project",
+      detail:bundle?.project?.name||"No project"
+    });
+
+    checks.push({
+      level:bundle?.startupScene?"ok":"warn",
+      name:"Startup Scene",
+      detail:bundle?.startupScene||"Not defined"
+    });
+
+    const files=Object.keys(bundle?.files||{});
+    checks.push({
+      level:files.length?"ok":"warn",
+      name:"Scripts",
+      detail:files.length+" file(s)"
+    });
+
+    const js=files.filter(n=>/\.(js|snake)$/i.test(n));
+    checks.push({
+      level:js.length?"ok":"warn",
+      name:"Runtime Code",
+      detail:js.length+" executable module(s)"
+    });
+
+    checks.push({
+      level:bundle?.assets?.length?"ok":"warn",
+      name:"Assets",
+      detail:(bundle?.assets?.length||0)+" asset(s)"
+    });
+
+    checks.push({
+      level:bundle?.input?"ok":"warn",
+      name:"Input",
+      detail:bundle?.input?"Input map included":"Fallback input"
+    });
+
+    checks.push({
+      level:bundle?.ui?"ok":"warn",
+      name:"UI",
+      detail:bundle?.ui?"UI screens included":"No UI screens"
+    });
+
+    checks.push({
+      level:bundle?.entities?"ok":"warn",
+      name:"Entities",
+      detail:bundle?.entities?"Scene entity state included":"No entity state"
+    });
+
+    checks.push({
+      level:"ok",
+      name:"Runtime",
+      detail:"Snake Runtime v2"
+    });
+
+    return checks;
+  },
+
+  escapeJSON(obj){
+    return JSON.stringify(obj)
+      .replace(/</g,"\\u003c")
+      .replace(/>/g,"\\u003e")
+      .replace(/&/g,"\\u0026")
+      .replace(/\u2028/g,"\\u2028")
+      .replace(/\u2029/g,"\\u2029");
+  },
+
+  standalone(bundle,cfg){
+    const data=this.escapeJSON(bundle);
+    const title=String(cfg.title||bundle.project?.name||"Snake Game")
+      .replace(/[<>&"]/g,m=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[m]));
+
+    const aspect=Math.max(1,Number(cfg.width||960))/Math.max(1,Number(cfg.height||540));
+
+    return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="${cfg.background}">
+<meta name="mobile-web-app-capable" content="yes">
+<title>${title}</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:${cfg.background};font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;user-select:none}
+body{display:grid;place-items:center}
+#game{position:relative;width:min(100vw,calc(100vh * ${aspect}));aspect-ratio:${cfg.width}/${cfg.height};overflow:hidden;background:${cfg.background};touch-action:none}
+#world,#entityCanvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none}
+#ui{position:absolute;inset:0;z-index:20;pointer-events:none}
+.ui{position:absolute;pointer-events:auto}
+.ui-text{color:#e8edf1;white-space:nowrap;text-shadow:0 1px 2px #000}
+.ui-button{border:1px solid #91e864;background:#91e864;color:#091006;border-radius:8px;font-weight:800;padding:0 14px;min-height:42px;touch-action:manipulation}
+.ui-panel{background:rgba(13,18,23,.88);border:1px solid #2d3942;border-radius:8px}
+.ui-progress{overflow:hidden;border:1px solid #33404a;border-radius:999px;background:#0a0f13}
+.ui-progress>i{display:block;height:100%;background:#91e864}
+#controls{position:absolute;inset:0;z-index:40;pointer-events:none}
+#stick{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));width:112px;height:112px;border-radius:50%;border:1px solid rgba(180,195,205,.26);background:rgba(15,20,25,.44);pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:rgba(145,232,100,.28);border:1px solid rgba(145,232,100,.72);transform:translate(0,0)}
+#actions{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));display:flex;gap:12px;pointer-events:auto}
+.action{width:56px;height:56px;border-radius:50%;border:1px solid rgba(145,232,100,.7);background:rgba(18,28,20,.82);color:#aef08f;font-weight:900;font-size:16px;touch-action:none}
+#debug{position:absolute;left:6px;bottom:4px;z-index:60;color:#76828b;font:8px monospace;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="game">
+  <canvas id="world"></canvas>
+  <canvas id="entityCanvas"></canvas>
+  <div id="ui"></div>
+  <div id="controls"${cfg.virtualControls?"":' style="display:none"'}>
+    <div id="stick"><div id="knob"></div></div>
+    <div id="actions"><button class="action" data-action="secondary">B</button><button class="action" data-action="primary">A</button></div>
+  </div>
+  <div id="debug"${cfg.debug?"":' style="display:none"'}></div>
+</div>
+
+<script>
+const BUILD=${data};
+const CONFIG=${this.escapeJSON(cfg)};
+
+const game=document.getElementById("game");
+const worldCanvas=document.getElementById("world");
+const entityCanvas=document.getElementById("entityCanvas");
+const wctx=worldCanvas.getContext("2d");
+const ectx=entityCanvas.getContext("2d");
+const uiRoot=document.getElementById("ui");
+const debugEl=document.getElementById("debug");
+
+const Runtime={
+  scene:BUILD.startupScene||BUILD.scenes?.[0]?.name||"Main",
+  running:true,
+  last:performance.now(),
+  files:new Map(),
+  moduleCache:new Map(),
+  hooks:{start:[],update:[],lateUpdate:[],destroy:[]},
+  uiActions:new Map(),
+  entities:new Map(),
+  images:new Map(),
+  camera:{x:0,y:0,zoom:1,target:null},
+  input:{
+    keys:new Set(),
+    pressed:new Set(),
+    released:new Set(),
+    virtual:new Map(),
+    vPressed:new Set(),
+    vReleased:new Set(),
+    stick:{x:0,y:0}
+  }
+};
+
+function resize(){
+  const r=game.getBoundingClientRect();
+  const d=Math.min(2,devicePixelRatio||1);
+  for(const c of [worldCanvas,entityCanvas]){
+    c.width=Math.max(1,Math.round(r.width*d));
+    c.height=Math.max(1,Math.round(r.height*d));
+  }
+  wctx.setTransform(d,0,0,d,0,0);
+  ectx.setTransform(d,0,0,d,0,0);
+  wctx.imageSmoothingEnabled=false;
+  ectx.imageSmoothingEnabled=false;
+}
+addEventListener("resize",resize);resize();
+
+function asset(ref){
+  return (BUILD.assets||[]).find(a=>a.id===ref||a.name===ref)||null;
+}
+function image(ref){
+  if(!ref)return null;
+  if(Runtime.images.has(ref))return Runtime.images.get(ref);
+  const a=asset(ref);
+  if(!a?.data)return null;
+  const img=new Image();
+  img.src=a.data;
+  Runtime.images.set(ref,img);
+  return img;
+}
+
+addEventListener("keydown",e=>{
+  if(!Runtime.input.keys.has(e.code))Runtime.input.pressed.add(e.code);
+  Runtime.input.keys.add(e.code);
+});
+addEventListener("keyup",e=>{
+  Runtime.input.keys.delete(e.code);
+  Runtime.input.released.add(e.code);
+});
+
+function actionConfig(name){
+  return BUILD.input?.actions?.[name]||null;
+}
+function aliases(name){
+  const set=new Set([name]);
+  const a=actionConfig(name);
+  for(const v of a?.virtual||[]){
+    if(v==="a")set.add("primary");
+    else if(v==="b")set.add("secondary");
+    else set.add(v);
+  }
+  if(name==="attack")set.add("primary");
+  return [...set];
+}
+function down(name){
+  const a=actionConfig(name);
+  if((a?.keys||[]).some(k=>Runtime.input.keys.has(k)))return true;
+  return aliases(name).some(v=>Runtime.input.virtual.get(v)===true);
+}
+function pressed(name){
+  const a=actionConfig(name);
+  if((a?.keys||[]).some(k=>Runtime.input.pressed.has(k)))return true;
+  return aliases(name).some(v=>Runtime.input.vPressed.has(v));
+}
+function vector(){
+  let x=0,y=0;
+  if(down("move_left"))x--;
+  if(down("move_right"))x++;
+  if(down("move_up"))y--;
+  if(down("move_down"))y++;
+  if(Math.hypot(Runtime.input.stick.x,Runtime.input.stick.y)>.08){
+    x=Runtime.input.stick.x;y=Runtime.input.stick.y;
+  }
+  const l=Math.hypot(x,y);if(l>1){x/=l;y/=l}
+  return {x,y};
+}
+
+(function bindTouch(){
+  const stick=document.getElementById("stick");
+  const knob=document.getElementById("knob");
+  let pid=null;
+
+  function update(e){
+    if(pid!==e.pointerId)return;
+    const r=stick.getBoundingClientRect();
+    const cx=r.left+r.width/2,cy=r.top+r.height/2;
+    let x=(e.clientX-cx)/(r.width/2);
+    let y=(e.clientY-cy)/(r.height/2);
+    const l=Math.hypot(x,y);
+    if(l>1){x/=l;y/=l}
+    Runtime.input.stick={x,y};
+    knob.style.transform="translate("+(x*30)+"px,"+(y*30)+"px)";
+  }
+  function end(e){
+    if(pid!==e.pointerId)return;
+    pid=null;
+    Runtime.input.stick={x:0,y:0};
+    knob.style.transform="translate(0,0)";
+  }
+  stick.addEventListener("pointerdown",e=>{pid=e.pointerId;stick.setPointerCapture?.(pid);update(e)});
+  stick.addEventListener("pointermove",update);
+  stick.addEventListener("pointerup",end);
+  stick.addEventListener("pointercancel",end);
+
+  document.querySelectorAll(".action").forEach(btn=>{
+    const name=btn.dataset.action;
+    const set=v=>{
+      const was=Runtime.input.virtual.get(name)===true;
+      Runtime.input.virtual.set(name,v);
+      if(v&&!was)Runtime.input.vPressed.add(name);
+      if(!v&&was)Runtime.input.vReleased.add(name);
+    };
+    btn.addEventListener("pointerdown",e=>{e.preventDefault();set(true)});
+    btn.addEventListener("pointerup",e=>{e.preventDefault();set(false)});
+    btn.addEventListener("pointercancel",()=>set(false));
+  });
+})();
+
+function anchorStyle(d){
+  const x=Number(d.x||0),y=Number(d.y||0);
+  if(d.anchor==="top-right")return {right:x+"px",top:y+"px"};
+  if(d.anchor==="bottom-left")return {left:x+"px",bottom:y+"px"};
+  if(d.anchor==="bottom-right")return {right:x+"px",bottom:y+"px"};
+  if(d.anchor==="top-center")return {left:"50%",top:y+"px",transform:"translateX(-50%)"};
+  if(d.anchor==="bottom-center")return {left:"50%",bottom:y+"px",transform:"translateX(-50%)"};
+  if(d.anchor==="center")return {left:"50%",top:"50%",transform:"translate(-50%,-50%) translate("+x+"px,"+y+"px)"};
+  return {left:x+"px",top:y+"px"};
+}
+function renderUI(name){
+  uiRoot.innerHTML="";
+  for(const d of BUILD.ui?.screens?.[name]||[]){
+    if(d.visible===false)continue;
+    let el;
+    if(d.type==="button"){
+      el=document.createElement("button");
+      el.className="ui ui-button";
+      el.textContent=d.text||"Button";
+      if(d.action)el.addEventListener("click",()=>emitUI(d.action,d));
+    }else if(d.type==="image"){
+      el=document.createElement("img");
+      el.className="ui";
+      const a=asset(d.asset);
+      if(a?.data)el.src=a.data;
+    }else if(d.type==="progress"){
+      el=document.createElement("div");
+      el.className="ui ui-progress";
+      el.innerHTML='<i style="width:'+Math.round(Number(d.value||0)*100)+'%"></i>';
+    }else{
+      el=document.createElement("div");
+      el.className="ui "+(d.type==="panel"?"ui-panel":"ui-text");
+      el.textContent=d.text||"";
+    }
+    el.dataset.id=d.id||"";
+    el.dataset.name=d.name||"";
+    Object.assign(el.style,anchorStyle(d));
+    if(d.width)el.style.width=d.width+"px";
+    if(d.height)el.style.height=d.height+"px";
+    if(d.fontSize)el.style.fontSize=d.fontSize+"px";
+    uiRoot.appendChild(el);
+  }
+}
+function emitUI(name,payload){
+  for(const fn of Runtime.uiActions.get(name)||[]){
+    try{fn(payload)}catch(e){console.error(e)}
+  }
+}
+function uiOn(name,fn){
+  if(!Runtime.uiActions.has(name))Runtime.uiActions.set(name,new Set());
+  Runtime.uiActions.get(name).add(fn);
+}
+function uiText(id,text){
+  const el=[...uiRoot.children].find(x=>x.dataset.id===id||x.dataset.name===id);
+  if(el)el.textContent=text;
+}
+function uiVisible(id,value){
+  const el=[...uiRoot.children].find(x=>x.dataset.id===id||x.dataset.name===id);
+  if(el)el.style.display=value?"":"none";
+}
+
+function sceneEntities(name){
+  return BUILD.entities?.scenes?.[name]?.entities||[];
+}
+function spawnRecord(rec){
+  const node={
+    id:rec.id||("runtime_"+Math.random().toString(36).slice(2)),
+    name:rec.name||"Entity",
+    tag:rec.tag||"Untagged",
+    transform:{x:Number(rec.transform?.x||0),y:Number(rec.transform?.y||0),rotation:Number(rec.transform?.rotation||0),scaleX:Number(rec.transform?.scaleX??1),scaleY:Number(rec.transform?.scaleY??1)},
+    meta:{...(rec.meta||{}),entityId:rec.id||null,prefabId:rec.prefabId||null},
+    active:rec.active!==false
+  };
+  Runtime.entities.set(node.id,node);
+  return node;
+}
+function rebuildEntities(name){
+  Runtime.entities.clear();
+  for(const rec of sceneEntities(name))spawnRecord(rec);
+}
+function findEntity(idOrName){
+  for(const n of Runtime.entities.values()){
+    if(n.id===idOrName||n.name===idOrName)return n;
+  }
+  return null;
+}
+function findByTag(tag){
+  return [...Runtime.entities.values()].filter(n=>n.tag===tag||n.meta?.tag===tag);
+}
+function spawnEntity(prefabOrName,opts={}){
+  const n={
+    id:"spawn_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),
+    name:opts.name||String(prefabOrName||"Entity"),
+    tag:opts.tag||"Untagged",
+    transform:{x:Number(opts.x||0),y:Number(opts.y||0),rotation:Number(opts.rotation||0),scaleX:Number(opts.scaleX??1),scaleY:Number(opts.scaleY??1)},
+    meta:{tag:opts.tag||"Untagged",prefabId:prefabOrName}
+  };
+  Runtime.entities.set(n.id,n);
+  return Promise.resolve(n);
+}
+function destroyEntity(target){
+  const n=typeof target==="string"?findEntity(target):target;
+  if(!n)return false;
+  Runtime.entities.delete(n.id);
+  return true;
+}
+
+function currentWorld(){
+  return BUILD.tilemaps?.scenes?.[Runtime.scene]||null;
+}
+function blocked(tx,ty){
+  const w=currentWorld();
+  const c=w?.layers?.find(l=>l.collision);
+  return !!c?.tiles?.[tx+","+ty];
+}
+
+function renderWorld(){
+  const r=game.getBoundingClientRect();
+  wctx.clearRect(0,0,r.width,r.height);
+  const w=currentWorld();
+  if(!w)return;
+
+  const ts=w.tileSize||32;
+  const cam=Runtime.camera;
+  if(cam.target){
+    cam.x=cam.target.transform.x;
+    cam.y=cam.target.transform.y;
+  }
+  if(!cam.x&&!cam.y){
+    cam.x=w.width*ts/2;
+    cam.y=w.height*ts/2;
+  }
+
+  const ox=r.width/2-cam.x*cam.zoom;
+  const oy=r.height/2-cam.y*cam.zoom;
+  const size=ts*cam.zoom;
+
+  for(const layer of w.layers||[]){
+    if(!layer.visible||layer.collision)continue;
+    for(const [k,ref] of Object.entries(layer.tiles||{})){
+      const [x,y]=k.split(",").map(Number);
+      const sx=ox+x*size,sy=oy+y*size;
+      if(sx+size<0||sy+size<0||sx>r.width||sy>r.height)continue;
+      const img=image(ref);
+      if(img?.complete&&img.naturalWidth)wctx.drawImage(img,sx,sy,size,size);
+    }
+  }
+}
+function renderEntities(){
+  const r=game.getBoundingClientRect();
+  ectx.clearRect(0,0,r.width,r.height);
+  const cam=Runtime.camera;
+  const ox=r.width/2-cam.x*cam.zoom;
+  const oy=r.height/2-cam.y*cam.zoom;
+
+  for(const n of Runtime.entities.values()){
+    if(n.active===false)continue;
+    const sprite=n.meta?.sprite||n.meta?.asset||
+      (n.name==="Player"?"rpg-player.png":n.tag==="Enemy"?"rpg-enemy.png":null);
+    const img=image(sprite);
+    const x=ox+n.transform.x*cam.zoom;
+    const y=oy+n.transform.y*cam.zoom;
+    const size=32*cam.zoom;
+    if(img?.complete&&img.naturalWidth){
+      ectx.save();
+      ectx.translate(x,y);
+      ectx.rotate((n.transform.rotation||0)*Math.PI/180);
+      ectx.scale(n.transform.scaleX||1,n.transform.scaleY||1);
+      ectx.drawImage(img,-size/2,-size/2,size,size);
+      ectx.restore();
+    }else{
+      ectx.fillStyle=n.tag==="Enemy"?"#c54e55":"#5f8fd1";
+      ectx.fillRect(x-10,y-10,20,20);
+    }
+  }
+}
+
+async function loadScene(name){
+  Runtime.scene=name;
+  rebuildEntities(name);
+  renderUI(name);
+  dispatchEvent(new CustomEvent("snake:sceneloaded",{detail:{scene:{name}}}));
+  return {name};
+}
+
+function saveRead(){
+  try{return JSON.parse(localStorage.getItem("snake_build_v2_save")||"{}")}
+  catch{return {}}
+}
+function pathGet(obj,path,fallback){
+  const parts=String(path||"").split(".");
+  let cur=obj;
+  for(const p of parts){if(cur==null||!(p in cur))return fallback;cur=cur[p]}
+  return cur;
+}
+function pathSet(obj,path,value){
+  const parts=String(path||"").split(".");
+  let cur=obj;
+  for(let i=0;i<parts.length-1;i++){cur[parts[i]]=cur[parts[i]]||{};cur=cur[parts[i]]}
+  cur[parts.at(-1)]=value;
+}
+const Save={
+  get:(path,f=null)=>pathGet(saveRead(),path,f),
+  set:(path,v)=>{const d=saveRead();pathSet(d,path,v);localStorage.setItem("snake_build_v2_save",JSON.stringify(d));return v},
+  commit:()=>Promise.resolve(true),
+  load:()=>Promise.resolve(saveRead())
+};
+
+const API={
+  input:{down,pressed,released:n=>false,vector},
+  ui:{show:n=>{renderUI(n);return Promise.resolve()},text:uiText,visible:uiVisible,on:uiOn},
+  scene:{load:loadScene,current:()=>Runtime.scene,name:()=>Runtime.scene},
+  save:Save,
+  entity:{spawn:spawnEntity,destroy:destroyEntity,get:findEntity,findByTag},
+  camera:{
+    follow:t=>{Runtime.camera.target=t},
+    position:(x,y)=>{Runtime.camera.target=null;Runtime.camera.x=Number(x)||0;Runtime.camera.y=Number(y)||0},
+    zoom:z=>{Runtime.camera.zoom=Math.max(.1,Number(z)||1)}
+  },
+  tilemap:{blocked,world:()=>currentWorld(),scene:()=>Runtime.scene},
+  audio:{
+    sfx:(ref,opts={})=>{const a=asset(ref);if(!a?.data)return;const x=new Audio(a.data);x.volume=Math.max(0,Math.min(1,Number(opts.volume??1)));x.playbackRate=Number(opts.playbackRate??1);x.play().catch(()=>{})},
+    music:(ref,opts={})=>{const a=asset(ref);if(!a?.data)return;const x=new Audio(a.data);x.loop=opts.loop!==false;x.volume=Number(opts.volume??1);x.play().catch(()=>{});return x}
+  },
+  physics:{
+    velocity:(node,x,y)=>{node.meta.velocity={x:Number(x)||0,y:Number(y)||0};return true},
+    raycast:()=>null
+  },
+  hierarchy:{
+    parent:(child,parent)=>{child.meta.parentRuntimeNode=parent;return Promise.resolve(true)},
+    unparent:child=>{child.meta.parentRuntimeNode=null;return Promise.resolve(true)}
+  },
+  log:(...a)=>console.log("[Snake]",...a)
+};
+
+function normalize(path){
+  const out=[];
+  for(const p of String(path||"").replace(/\\\\/g,"/").split("/")){
+    if(!p||p===".")continue;
+    if(p==="..")out.pop();else out.push(p);
+  }
+  return out.join("/");
+}
+function dirname(path){const i=path.lastIndexOf("/");return i>=0?path.slice(0,i):""}
+function resolve(req,from){
+  if(req.startsWith("."))req=normalize(dirname(from)+"/"+req);else req=normalize(req);
+  for(const n of [req,req+".js",req+".snake",req+"/index.js"]){
+    if(Runtime.files.has(n))return n;
+  }
+  return null;
+}
+function execute(file){
+  if(Runtime.moduleCache.has(file))return Runtime.moduleCache.get(file).exports;
+  const src=Runtime.files.get(file);
+  if(src==null)throw new Error("Module not found: "+file);
+  const module={exports:{}};
+  Runtime.moduleCache.set(file,module);
+  const require=req=>{const r=resolve(req,file);if(!r)throw new Error('Cannot resolve "'+req+'" from '+file);return execute(r)};
+  const engine={
+    onStart:fn=>Runtime.hooks.start.push(fn),
+    onUpdate:fn=>Runtime.hooks.update.push(fn),
+    onLateUpdate:fn=>Runtime.hooks.lateUpdate.push(fn),
+    onDestroy:fn=>Runtime.hooks.destroy.push(fn),
+    api:API
+  };
+  try{
+    const fn=new Function("module","exports","require","engine","input","ui","scene","entity","camera","tilemap","save","audio","physics","hierarchy","log",
+      '"use strict";\\n'+src+'\\n//# sourceURL='+file);
+    fn(module,module.exports,require,engine,API.input,API.ui,API.scene,API.entity,API.camera,API.tilemap,API.save,API.audio,API.physics,API.hierarchy,API.log);
+  }catch(e){console.error("[Snake Runtime v2]",file,e)}
+  return module.exports;
+}
+async function startScripts(){
+  Runtime.files.clear();
+  for(const [n,s] of Object.entries(BUILD.files||{})){
+    if(/\\.(js|snake)$/i.test(n))Runtime.files.set(normalize(n),String(s||""));
+  }
+  const entry=Runtime.files.has("main.js")?"main.js":Runtime.files.has("index.js")?"index.js":[...Runtime.files.keys()][0];
+  if(entry)execute(entry);
+  for(const fn of Runtime.hooks.start){try{await fn()}catch(e){console.error(e)}}
+}
+
+function clearEdges(){
+  Runtime.input.pressed.clear();
+  Runtime.input.released.clear();
+  Runtime.input.vPressed.clear();
+  Runtime.input.vReleased.clear();
+}
+async function boot(){
+  await loadScene(Runtime.scene);
+  await startScripts();
+}
+async function frame(t){
+  if(!Runtime.running)return;
+  const dt=Math.min(.05,(t-Runtime.last)/1000||0);
+  Runtime.last=t;
+
+  for(const fn of [...Runtime.hooks.update]){try{fn(dt)}catch(e){console.error(e)}}
+  renderWorld();
+  renderEntities();
+  for(const fn of [...Runtime.hooks.lateUpdate]){try{fn(dt)}catch(e){console.error(e)}}
+
+  if(CONFIG.debug){
+    debugEl.textContent="Snake Runtime v2 Â· "+Runtime.scene+" Â· entities "+Runtime.entities.size+" Â· "+Math.round(1/Math.max(.001,dt))+" FPS";
+  }
+
+  clearEdges();
+  requestAnimationFrame(frame);
+}
+boot().then(()=>requestAnimationFrame(frame));
+<\/script>
+</body>
+</html>`;
+  },
+
+  download(filename,text,type="text/html"){
+    const blob=new Blob([text],{type});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  },
+
+  safeName(name){
+    return String(name||"game")
+      .trim()
+      .replace(/[^\w\-]+/g,"_")
+      .replace(/^_+|_+$/g,"")
+      ||"game";
+  },
+
+  async exportHTML(){
+    const bar=document.getElementById("brv2ProgressBar");
+    const progress=v=>{if(bar)bar.style.width=v+"%"};
+
+    progress(8);
+    const cfg=this.readUIConfig();
+    this.saveConfig(cfg);
+
+    const bundle=await this.collect();
+    progress(36);
+
+    const checks=await this.validate(bundle);
+    this.renderValidation(checks,bundle);
+
+    if(checks.some(c=>c.level==="error")){
+      progress(0);
+      showToast?.("Build blocked");
+      return;
+    }
+
+    const output=this.standalone(bundle,cfg);
+    progress(82);
+
+    this.download(
+      this.safeName(cfg.title||bundle.project?.name)+".html",
+      output,
+      "text/html;charset=utf-8"
+    );
+
+    progress(100);
+    setTimeout(()=>progress(0),1200);
+    showToast?.("Runtime v2 exported");
+  },
+
+  async exportManifest(){
+    const bundle=await this.collect();
+    this.download(
+      this.safeName(bundle.project?.name)+".snakebuild-v2.json",
+      JSON.stringify(bundle,null,2),
+      "application/json"
+    );
+    showToast?.("Build v2 manifest exported");
+  },
+
+  readUIConfig(){
+    const old=this.loadConfig();
+
+    return {
+      ...old,
+      title:document.getElementById("brv2Title")?.value||old.title,
+      width:Math.max(240,Number(document.getElementById("brv2Width")?.value||old.width)),
+      height:Math.max(160,Number(document.getElementById("brv2Height")?.value||old.height)),
+      orientation:document.getElementById("brv2Orientation")?.value||old.orientation,
+      scaleMode:document.getElementById("brv2Scale")?.value||old.scaleMode,
+      background:document.getElementById("brv2Background")?.value||old.background,
+      virtualControls:!!document.getElementById("brv2Controls")?.checked,
+      debug:!!document.getElementById("brv2Debug")?.checked,
+      includeSaveData:!!document.getElementById("brv2Save")?.checked
+    };
+  },
+
+  renderValidation(checks,bundle){
+    const root=document.getElementById("brv2Checks");
+    if(root){
+      root.innerHTML=checks.map(c=>`
+        <div class="brv2-check ${c.level}">
+          <i></i><span>${c.name}</span><small>${c.detail}</small>
+        </div>
+      `).join("");
+    }
+
+    const summary=document.getElementById("brv2Summary");
+    if(summary){
+      let bytes=0;
+      try{bytes=new Blob([JSON.stringify(bundle)]).size}catch(_){}
+
+      const fmt=n=>{
+        if(n<1024)return n+" B";
+        if(n<1024*1024)return (n/1024).toFixed(1)+" KB";
+        return (n/1024/1024).toFixed(2)+" MB";
+      };
+
+      summary.textContent=
+`Project: ${bundle.project?.name||"â"}
+Runtime: Snake Runtime v2
+Startup: ${bundle.startupScene||"â"}
+Scenes: ${bundle.scenes?.length||0}
+Scripts: ${Object.keys(bundle.files||{}).filter(n=>/\.(js|snake)$/i.test(n)).length}
+Assets: ${bundle.assets?.length||0}
+Entity scenes: ${Object.keys(bundle.entities?.scenes||{}).length}
+TileMap scenes: ${Object.keys(bundle.tilemaps?.scenes||{}).length}
+Payload: ${fmt(bytes)}
+
+Editor UI included: NO
+Virtual controls: ${this.loadConfig().virtualControls?"YES":"NO"}`;
+    }
+  },
+
+  async refresh(){
+    const cfg=this.loadConfig();
+    const set=(id,v)=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      if(el.type==="checkbox")el.checked=!!v;
+      else el.value=v;
+    };
+
+    set("brv2Title",cfg.title);
+    set("brv2Width",cfg.width);
+    set("brv2Height",cfg.height);
+    set("brv2Orientation",cfg.orientation);
+    set("brv2Scale",cfg.scaleMode);
+    set("brv2Background",cfg.background);
+    set("brv2Controls",cfg.virtualControls);
+    set("brv2Debug",cfg.debug);
+    set("brv2Save",cfg.includeSaveData);
+
+    const bundle=await this.collect();
+    const checks=await this.validate(bundle);
+    this.renderValidation(checks,bundle);
+  }
+};
+
+window.BuildRuntimeV2=BuildRuntimeV2;
+SnakeEngine.runtime.BuildRuntimeV2=BuildRuntimeV2;
+
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("buildRuntimeV2"))return;
+
+  const ui=document.createElement("section");
+  ui.id="buildRuntimeV2";
+  ui.className="build-runtime-v2";
+
+  ui.innerHTML=`
+    <header class="brv2-head">
+      <button class="icon-btn" type="button" data-brv2-close>
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+
+      <div class="brv2-head-title">
+        <strong>BUILD RUNTIME v2</strong>
+        <small>Dedicated mobile game runtime Â· no editor UI</small>
+      </div>
+
+      <button class="icon-btn" type="button" data-brv2-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2-5.3"/><path d="M20 4v6h-6"/></svg>
+      </button>
+    </header>
+
+    <main class="brv2-body">
+      <div class="brv2-actions">
+        <button class="primary" type="button" data-brv2-export>EXPORT GAME</button>
+        <button type="button" data-brv2-manifest>MANIFEST</button>
+      </div>
+
+      <div class="brv2-grid">
+        <section class="brv2-panel">
+          <h3>GAME BUILD</h3>
+          <div class="brv2-panel-body">
+            <div class="brv2-row"><label>Title</label><input id="brv2Title"></div>
+            <div class="brv2-row"><label>Width</label><input id="brv2Width" type="number"></div>
+            <div class="brv2-row"><label>Height</label><input id="brv2Height" type="number"></div>
+            <div class="brv2-row">
+              <label>Orientation</label>
+              <select id="brv2Orientation">
+                <option value="landscape">Landscape</option>
+                <option value="portrait">Portrait</option>
+              </select>
+            </div>
+            <div class="brv2-row">
+              <label>Scale</label>
+              <select id="brv2Scale">
+                <option value="fit">Fit</option>
+                <option value="fill">Fill</option>
+                <option value="pixel-perfect">Pixel Perfect</option>
+              </select>
+            </div>
+            <div class="brv2-row"><label>Background</label><input id="brv2Background" type="color"></div>
+            <div class="brv2-row"><label>Virtual Controls</label><input id="brv2Controls" type="checkbox"></div>
+            <div class="brv2-row"><label>Debug Overlay</label><input id="brv2Debug" type="checkbox"></div>
+            <div class="brv2-row"><label>Include Save</label><input id="brv2Save" type="checkbox"></div>
+          </div>
+        </section>
+
+        <section class="brv2-panel">
+          <h3>VALIDATION</h3>
+          <div class="brv2-panel-body">
+            <div id="brv2Checks" class="brv2-checks"></div>
+          </div>
+        </section>
+
+        <section class="brv2-panel">
+          <h3>PACKAGE</h3>
+          <div class="brv2-panel-body">
+            <div id="brv2Summary" class="brv2-console"></div>
+            <div class="brv2-progress"><i id="brv2ProgressBar"></i></div>
+          </div>
+        </section>
+
+        <section class="brv2-panel">
+          <h3>RUNTIME v2</h3>
+          <div class="brv2-panel-body">
+            <div class="brv2-console">Export includes:
+â¢ project scripts/modules
+â¢ scene data
+â¢ TileMap worlds
+â¢ entities
+â¢ assets
+â¢ UI screens
+â¢ input map
+â¢ save API
+â¢ camera API
+â¢ mobile analog + A/B
+â¢ module require()/exports
+
+The Snake Engine editor interface is not included in the exported game.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  `;
+
+  editor.appendChild(ui);
+
+  ui.addEventListener("click",async e=>{
+    if(e.target.closest("[data-brv2-close]")){
+      ui.classList.remove("show");
+      return;
+    }
+
+    if(e.target.closest("[data-brv2-refresh]")){
+      return BuildRuntimeV2.refresh();
+    }
+
+    if(e.target.closest("[data-brv2-export]")){
+      return BuildRuntimeV2.exportHTML();
+    }
+
+    if(e.target.closest("[data-brv2-manifest]")){
+      return BuildRuntimeV2.exportManifest();
+    }
+  });
+
+  const menu=document.getElementById("editorMoreMenu");
+  if(menu&&!document.getElementById("editorMoreBuildRuntimeV2")){
+    const btn=document.createElement("button");
+    btn.id="editorMoreBuildRuntimeV2";
+    btn.type="button";
+    btn.className="editor-more-item";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<path d="M12 3v12"/>'+
+        '<path d="m7 10 5 5 5-5"/>'+
+        '<path d="M5 20h14"/>'+
+      '</svg>'+
+      '<span>Build Runtime v2</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      ui.classList.add("show");
+      BuildRuntimeV2.refresh();
+    });
+
+    menu.insertBefore(btn,menu.firstChild);
+  }
+}
+
+/* Make the clean Build / Export access open v2 now. */
+const oldBuildExport=window.BuildExport;
+window.BuildExport={
+  ...(oldBuildExport||{}),
+  version:"2.0.0",
+  open(){
+    ensureUI();
+    document.getElementById("buildRuntimeV2")?.classList.add("show");
+    BuildRuntimeV2.refresh();
+  },
+  exportHTML:()=>BuildRuntimeV2.exportHTML(),
+  exportManifest:()=>BuildRuntimeV2.exportManifest(),
+  collect:oldBuildExport?.collect?.bind(oldBuildExport)
+};
+
+/* old manager can still exist internally, but is no longer the primary UI */
+const oldOpenProjectBRV2=window.openProject;
+if(typeof oldOpenProjectBRV2==="function"){
+  window.openProject=async function(){
+    const r=await oldOpenProjectBRV2.apply(this,arguments);
+    ensureUI();
+
+    const cfg=BuildRuntimeV2.loadConfig();
+    if(!cfg.title||cfg.title==="Snake Game"){
+      cfg.title=currentProject||"Snake Game";
+      BuildRuntimeV2.saveConfig(cfg);
+    }
+
+    return r;
+  };
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",ensureUI,{once:true});
+}else{
+  ensureUI();
+}
+
+})();
+</script>
+
+</body>
+<\html>
