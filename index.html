@@ -1398,13 +1398,23 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 
   </div>
 
+  <div class="snake-scriptbar-v3">
+    <button onclick="SnakeScriptProV3.open('api')">API</button>
+    <button onclick="SnakeScriptProV3.open('snippets')">SNIPPETS</button>
+    <button onclick="SnakeScriptProV3.open('entities')">ENTITIES</button>
+    <span class="snake-scriptbar-spacer"></span>
+    <button id="snakeScriptDiagBtnV3" class="diag-ok" onclick="SnakeScriptProV3.open('diagnostics')">✓ CODE OK</button>
+  </div>
+
   <div class="code-wrapper">
 
     <div id="lineNumbers" class="line-numbers"></div>
 
+    <pre id="snakeCodeHighlightV4" class="snake-code-highlight-v4" aria-hidden="true"></pre>
+
     <textarea
       id="code"
-      class="code"
+      class="code snake-code-input-v4"
       spellcheck="false"
       autocapitalize="off"
       autocorrect="off"
@@ -1413,6 +1423,19 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
       onscroll="syncLines()"
     ></textarea>
 
+    <div id="snakeAutocompleteV3" class="snake-autocomplete-v3"></div>
+
+  </div>
+
+  <div id="snakeScriptDrawerV3" class="snake-script-drawer-v3">
+    <header>
+      <div>
+        <strong id="snakeScriptDrawerTitleV3">SNAKE API</strong>
+        <small id="snakeScriptDrawerSubV3">Reference & helpers</small>
+      </div>
+      <button onclick="SnakeScriptProV3.close()">×</button>
+    </header>
+    <div id="snakeScriptDrawerBodyV3" class="snake-script-drawer-body-v3"></div>
   </div>
 
 </section>
@@ -32928,6 +32951,624 @@ if(document.readyState==="loading"){
 
 
 <style>
+
+<script>
+/* =====================================================
+   SNAKE CODE COLORS v4
+===================================================== */
+(function(){
+"use strict";
+
+const KEYWORDS=new Set([
+  "const","let","var","function","return","if","else","for","while","do","switch",
+  "case","break","continue","try","catch","finally","throw","new","class","extends",
+  "async","await","typeof","instanceof","in","of","import","export","default","this"
+]);
+const BOOLS=new Set(["true","false","null","undefined","NaN","Infinity"]);
+const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","log"]);
+
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+
+function tokenizeLine(line){
+  let out="",i=0;
+  const span=(cls,text)=>{out+=`<span class="${cls}">${esc(text)}</span>`};
+
+  while(i<line.length){
+    const ch=line[i],n=line[i+1];
+
+    if(ch==="/"&&n==="/"){span("tok-comment",line.slice(i));break}
+
+    if(ch==="'"||ch==='"'||ch==="`"){
+      const q=ch;let j=i+1,slash=false;
+      while(j<line.length){
+        const c=line[j];
+        if(slash){slash=false;j++;continue}
+        if(c==="\\"){slash=true;j++;continue}
+        if(c===q){j++;break}
+        j++
+      }
+      span("tok-string",line.slice(i,j));i=j;continue
+    }
+
+    if(/[0-9]/.test(ch)){
+      let j=i+1;
+      while(j<line.length&&/[0-9a-fA-FxX._]/.test(line[j]))j++;
+      span("tok-number",line.slice(i,j));i=j;continue
+    }
+
+    if(/[A-Za-z_$]/.test(ch)){
+      let j=i+1;
+      while(j<line.length&&/[A-Za-z0-9_$]/.test(line[j]))j++;
+      const word=line.slice(i,j);
+      let k=j;while(k<line.length&&/\s/.test(line[k]))k++;
+      const prev=line.slice(0,i).trimEnd();
+      const isProp=prev.endsWith(".");
+
+      if(KEYWORDS.has(word))span("tok-keyword",word);
+      else if(BOOLS.has(word))span("tok-bool",word);
+      else if(API_ROOTS.has(word))span("tok-api",word);
+      else if(isProp)span("tok-property",word);
+      else if(line[k]==="(")span("tok-fn",word);
+      else span("tok-plain",word);
+
+      i=j;continue
+    }
+
+    if(/[+\-*%=!<>?:&|]/.test(ch)){
+      let j=i+1;
+      while(j<line.length&&/[+\-*%=!<>?:&|]/.test(line[j]))j++;
+      span("tok-operator",line.slice(i,j));i=j;continue
+    }
+
+    if(/[()[\]{},.;]/.test(ch)){span("tok-punct",ch);i++;continue}
+
+    out+=esc(ch);i++
+  }
+
+  return out||" "
+}
+
+function highlight(){
+  const input=document.getElementById("code");
+  const pre=document.getElementById("snakeCodeHighlightV4");
+  if(!input||!pre)return;
+  pre.innerHTML=input.value.split("\n").map(tokenizeLine).join("\n")+"\n";
+  pre.scrollTop=input.scrollTop;
+  pre.scrollLeft=input.scrollLeft
+}
+
+function sync(){
+  const input=document.getElementById("code");
+  const pre=document.getElementById("snakeCodeHighlightV4");
+  if(!input||!pre)return;
+  pre.scrollTop=input.scrollTop;
+  pre.scrollLeft=input.scrollLeft
+}
+
+function bind(){
+  const input=document.getElementById("code");
+  if(!input||input.dataset.syntaxColorsV4==="1")return;
+  input.dataset.syntaxColorsV4="1";
+  input.addEventListener("input",highlight);
+  input.addEventListener("scroll",sync);
+  input.addEventListener("keyup",highlight);
+  input.addEventListener("paste",()=>setTimeout(highlight,0));
+  setTimeout(highlight,0)
+}
+
+const originalUpdate=window.updateEditor;
+if(typeof originalUpdate==="function"&&!originalUpdate.__snakeColorsV4){
+  const wrapped=function(){
+    const r=originalUpdate.apply(this,arguments);
+    requestAnimationFrame(highlight);
+    return r
+  };
+  wrapped.__snakeColorsV4=true;
+  window.updateEditor=wrapped
+}
+
+const originalOpenProject=window.openProject;
+if(typeof originalOpenProject==="function"&&!originalOpenProject.__snakeColorsV4){
+  const wrappedOpen=async function(){
+    const r=await originalOpenProject.apply(this,arguments);
+    setTimeout(()=>{bind();highlight()},0);
+    return r
+  };
+  wrappedOpen.__snakeColorsV4=true;
+  window.openProject=wrappedOpen
+}
+
+window.SnakeCodeColorsV4={highlight,sync,bind};
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",bind,{once:true})
+}else bind();
+
+})();
+</script>
+
+<script>
+/* =====================================================
+   SNAKE SCRIPTING / API v3
+===================================================== */
+(function(){
+"use strict";
+
+const API={
+  engine:[
+    {name:"onStart",sig:"engine.onStart = () => {}",desc:"Executa uma vez quando o script/runtime inicia.",insert:"engine.onStart = () => {\n  \n};"},
+    {name:"onUpdate",sig:"engine.onUpdate = (dt) => {}",desc:"Executa continuamente. dt é o tempo entre frames.",insert:"engine.onUpdate = (dt) => {\n  \n};"}
+  ],
+  input:[
+    {name:"vector",sig:"input.vector()",desc:"Retorna {x,y} do controle direcional.",insert:"input.vector()"},
+    {name:"down",sig:'input.down("action")',desc:"Verdadeiro enquanto uma ação estiver pressionada.",insert:'input.down("primary")'},
+    {name:"pressed",sig:'input.pressed("action")',desc:"Verdadeiro somente no frame em que a ação começa.",insert:'input.pressed("attack")'},
+    {name:"released",sig:'input.released("action")',desc:"Verdadeiro no frame em que a ação é solta.",insert:'input.released("primary")'}
+  ],
+  entity:[
+    {name:"get",sig:'entity.get("id")',desc:"Obtém uma entidade pelo id.",insert:'entity.get("entity-id")'},
+    {name:"findByTag",sig:'entity.findByTag("Player")',desc:"Retorna entidades que possuem a tag.",insert:'entity.findByTag("Player")'},
+    {name:"spawn",sig:'entity.spawn("Enemy", options)',desc:"Cria uma entidade em runtime.",insert:'entity.spawn("Enemy", { x: 100, y: 100 })'},
+    {name:"destroy",sig:"entity.destroy(target)",desc:"Remove uma entidade do runtime.",insert:"entity.destroy(target)"}
+  ],
+  scene:[
+    {name:"load",sig:'scene.load("Scene")',desc:"Carrega uma cena.",insert:'scene.load("Main")'},
+    {name:"name",sig:"scene.name()",desc:"Retorna o nome da cena atual.",insert:"scene.name()"}
+  ],
+  ui:[
+    {name:"show",sig:'ui.show("Screen")',desc:"Mostra uma tela de UI.",insert:'ui.show("HUD")'},
+    {name:"text",sig:'ui.text("id", "Text")',desc:"Altera o texto de um elemento UI.",insert:'ui.text("Score", "0")'},
+    {name:"progress",sig:'ui.progress("id", value)',desc:"Atualiza uma barra de progresso.",insert:'ui.progress("Health", hp / maxHp)'},
+    {name:"visible",sig:'ui.visible("id", true)',desc:"Controla visibilidade de um elemento.",insert:'ui.visible("GameOver", true)'},
+    {name:"on",sig:'ui.on("action", fn)',desc:"Registra uma ação de interface.",insert:'ui.on("start", () => {\n  \n});'}
+  ],
+  audio:[
+    {name:"sfx",sig:'audio.sfx("sound.wav", options)',desc:"Reproduz um efeito sonoro.",insert:'audio.sfx("hit.wav", { volume: 0.8 })'},
+    {name:"music",sig:'audio.music("music.wav", options)',desc:"Reproduz música.",insert:'audio.music("theme.wav", { volume: 0.6, loop: true })'}
+  ],
+  save:[
+    {name:"get",sig:'save.get("path", fallback)',desc:"Lê um valor do save.",insert:'save.get("player.hp", 100)'},
+    {name:"set",sig:'save.set("path", value)',desc:"Define um valor.",insert:'save.set("player.hp", hp)'},
+    {name:"commit",sig:'await save.commit("slot1")',desc:"Persiste o estado no slot.",insert:'await save.commit("slot1")'},
+    {name:"load",sig:'await save.load("slot1")',desc:"Carrega um slot.",insert:'await save.load("slot1")'}
+  ],
+  camera:[
+    {name:"follow",sig:"camera.follow(target)",desc:"Faz a câmera seguir uma entidade.",insert:"camera.follow(player)"},
+    {name:"zoom",sig:"camera.zoom(value)",desc:"Define o zoom da câmera.",insert:"camera.zoom(1.2)"},
+    {name:"position",sig:"camera.position(x, y)",desc:"Define a posição da câmera.",insert:"camera.position(0, 0)"}
+  ],
+  tilemap:[
+    {name:"blocked",sig:"tilemap.blocked(x, y)",desc:"Consulta colisão do TileMap.",insert:"tilemap.blocked(tileX, tileY)"},
+    {name:"world",sig:"tilemap.world()",desc:"Retorna os dados do TileMap carregado.",insert:"tilemap.world()"}
+  ],
+  log:[
+    {name:"log",sig:'log("message")',desc:"Envia uma mensagem ao Output.",insert:'log("Hello Snake")'}
+  ]
+};
+
+const ROOTS=["engine","input","entity","scene","ui","audio","save","camera","tilemap","log"];
+
+const snippets=[
+  {
+    title:"Player movement",
+    desc:"Movimento mobile independente de FPS.",
+    code:`const player = entity.findByTag("Player")[0];
+const speed = 140;
+
+engine.onUpdate = (dt) => {
+  if(!player) return;
+
+  const move = input.vector();
+  player.transform.x += move.x * speed * dt;
+  player.transform.y += move.y * speed * dt;
+};`
+  },
+  {
+    title:"Attack action",
+    desc:"Executa uma ação uma vez por toque.",
+    code:`engine.onUpdate = (dt) => {
+  if(input.pressed("attack")){
+    log("Attack");
+  }
+};`
+  },
+  {
+    title:"Scene transition",
+    desc:"Troca de cena por código.",
+    code:`async function nextScene(){
+  await scene.load("Level 2");
+}`
+  },
+  {
+    title:"Save game",
+    desc:"Salva e restaura valores.",
+    code:`save.set("player.coins", coins);
+await save.commit("slot1");
+
+await save.load("slot1");
+const coins = save.get("player.coins", 0);`
+  },
+  {
+    title:"Enemy spawn",
+    desc:"Cria uma entidade em runtime.",
+    code:`const enemy = entity.spawn("Enemy", {
+  x: 200,
+  y: 120
+});`
+  },
+  {
+    title:"UI event",
+    desc:"Liga um botão da UI a uma função.",
+    code:`ui.on("start", async () => {
+  await scene.load("Main");
+});`
+  }
+];
+
+let diagnostics=[];
+let timer=null;
+
+function codeEl(){return document.getElementById("code")}
+function drawer(){return document.getElementById("snakeScriptDrawerV3")}
+
+function insertText(text){
+  const el=codeEl();if(!el)return;
+  const start=el.selectionStart??el.value.length;
+  const end=el.selectionEnd??start;
+  const before=el.value.slice(0,start),after=el.value.slice(end);
+  el.value=before+text+after;
+  const pos=start+text.length;
+  el.focus();
+  el.setSelectionRange(pos,pos);
+  try{updateEditor?.()}catch(_){}
+  scheduleDiagnostics();
+  hideAutocomplete()
+}
+
+function insertReplacingCurrentToken(text){
+  const el=codeEl();if(!el)return;
+  const pos=el.selectionStart??0;
+  const left=el.value.slice(0,pos);
+  const m=left.match(/([A-Za-z_$][\w$]*)(?:\.([A-Za-z_$][\w$]*))?$/);
+  if(!m)return insertText(text);
+
+  const token=m[0];
+  const start=pos-token.length;
+  el.value=el.value.slice(0,start)+text+el.value.slice(pos);
+  const n=start+text.length;
+  el.focus();el.setSelectionRange(n,n);
+  try{updateEditor?.()}catch(_){}
+  scheduleDiagnostics();
+  hideAutocomplete()
+}
+
+function apiFlat(){
+  const out=[];
+  for(const [root,items] of Object.entries(API)){
+    for(const item of items)out.push({root,...item})
+  }
+  return out
+}
+
+function suggestions(){
+  const el=codeEl();if(!el)return [];
+  const pos=el.selectionStart??0;
+  const left=el.value.slice(0,pos);
+  const dot=left.match(/([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)?$/);
+
+  if(dot){
+    const root=dot[1],prefix=(dot[2]||"").toLowerCase();
+    return (API[root]||[])
+      .filter(x=>!prefix||x.name.toLowerCase().startsWith(prefix))
+      .map(x=>({label:x.name,sub:x.desc,code:x.sig,insert:`${root}.${x.insert.replace(new RegExp("^"+root+"\\."),"")}`}));
+  }
+
+  const word=left.match(/([A-Za-z_$][\w$]*)$/)?.[1]?.toLowerCase()||"";
+  if(word.length<2)return [];
+  return ROOTS.filter(r=>r.startsWith(word)).map(r=>({
+    label:r,
+    sub:`Snake Engine ${r} API`,
+    code:r+".",
+    insert:r+"."
+  }))
+}
+
+function renderAutocomplete(){
+  const root=document.getElementById("snakeAutocompleteV3");if(!root)return;
+  const list=suggestions().slice(0,7);
+  if(!list.length){hideAutocomplete();return}
+  root.innerHTML=list.map((x,i)=>`
+    <button class="snake-auto-item" data-auto-index="${i}">
+      <span><strong>${escapeHTML?.(x.label)||x.label}</strong><small>${escapeHTML?.(x.sub)||x.sub}</small></span>
+      <code>${escapeHTML?.(x.code)||x.code}</code>
+    </button>
+  `).join("");
+  root.classList.add("show");
+  root.querySelectorAll("[data-auto-index]").forEach(btn=>{
+    btn.onclick=e=>{
+      e.preventDefault();
+      const x=list[+btn.dataset.autoIndex];
+      insertReplacingCurrentToken(x.insert)
+    }
+  })
+}
+function hideAutocomplete(){document.getElementById("snakeAutocompleteV3")?.classList.remove("show")}
+
+function currentIsJS(){
+  try{
+    const f=(typeof currentFile!=="undefined"?currentFile:"")||projectWorkspace?.activeFile||"";
+    return /\.m?js$/i.test(f)
+  }catch{return true}
+}
+
+function findSyntaxLine(err,source){
+  const stack=String(err?.stack||"");
+  const m=stack.match(/<anonymous>:(\d+):(\d+)/);
+  if(m)return {line:Math.max(1,+m[1]-2),column:+m[2]};
+
+  const message=String(err?.message||"");
+  const token=message.match(/Unexpected token ['"]?(.+?)['"]?(?:\s|$)/)?.[1];
+  if(token){
+    const lines=source.split("\n");
+    const idx=lines.findIndex(l=>l.includes(token));
+    if(idx>=0)return {line:idx+1,column:1}
+  }
+  return {line:null,column:null}
+}
+
+function bracketDiagnostics(source){
+  const stack=[];
+  const pairs={")":"(","}":"{","]":"["};
+  const opens=new Set(["(","{","["]);
+  let line=1,col=0,quote=null,escape=false,comment=null;
+
+  for(let i=0;i<source.length;i++){
+    const ch=source[i],next=source[i+1];col++;
+    if(ch==="\n"){line++;col=0;if(comment==="line")comment=null;continue}
+    if(comment==="line")continue;
+    if(comment==="block"){if(ch==="*"&&next==="/"){comment=null;i++;col++}continue}
+    if(quote){
+      if(escape){escape=false;continue}
+      if(ch==="\\"){escape=true;continue}
+      if(ch===quote)quote=null;
+      continue
+    }
+    if(ch==="/"&&next==="/"){comment="line";i++;col++;continue}
+    if(ch==="/"&&next==="*"){comment="block";i++;col++;continue}
+    if(ch==="'"||ch==='"'||ch==="`"){quote=ch;continue}
+    if(opens.has(ch))stack.push({ch,line,col});
+    else if(pairs[ch]){
+      const top=stack.pop();
+      if(!top||top.ch!==pairs[ch])return [{type:"error",message:`Unmatched ${ch}`,line,column:col}]
+    }
+  }
+  if(stack.length){
+    const x=stack[stack.length-1];
+    return [{type:"error",message:`Unclosed ${x.ch}`,line:x.line,column:x.col}]
+  }
+  return []
+}
+
+function analyze(){
+  const el=codeEl();
+  if(!el)return;
+  const source=el.value||"";
+  diagnostics=[];
+
+  if(currentIsJS()){
+    const bracket=bracketDiagnostics(source);
+    if(bracket.length)diagnostics.push(...bracket);
+    else{
+      try{
+        new Function("engine","input","ui","scene","save","entity","camera","tilemap","audio","log",source)
+      }catch(err){
+        const loc=findSyntaxLine(err,source);
+        diagnostics.push({type:"error",message:String(err.message||err),line:loc.line,column:loc.column})
+      }
+    }
+  }
+
+  const btn=document.getElementById("snakeScriptDiagBtnV3");
+  if(btn){
+    if(diagnostics.some(x=>x.type==="error")){
+      btn.className="diag-error";
+      btn.textContent=`⚠ ${diagnostics.length} ERROR${diagnostics.length===1?"":"S"}`
+    }else{
+      btn.className="diag-ok";
+      btn.textContent="✓ CODE OK"
+    }
+  }
+
+  if(drawer()?.classList.contains("show") &&
+     document.getElementById("snakeScriptDrawerTitleV3")?.textContent==="DIAGNOSTICS"){
+    renderDiagnostics()
+  }
+}
+
+function scheduleDiagnostics(){
+  clearTimeout(timer);
+  timer=setTimeout(analyze,220)
+}
+
+function gotoLine(line,column=1){
+  const el=codeEl();if(!el||!line)return;
+  const lines=el.value.split("\n");
+  let pos=0;
+  for(let i=0;i<Math.max(0,line-1);i++)pos+=lines[i].length+1;
+  pos+=Math.max(0,(column||1)-1);
+  el.focus();
+  el.setSelectionRange(pos,pos);
+  const lh=parseFloat(getComputedStyle(el).lineHeight)||18;
+  el.scrollTop=Math.max(0,(line-3)*lh);
+  close()
+}
+
+function renderAPI(){
+  const body=document.getElementById("snakeScriptDrawerBodyV3");if(!body)return;
+  body.innerHTML=Object.entries(API).map(([root,items])=>`
+    <section class="snake-api-group">
+      <div class="snake-api-group-title">${root.toUpperCase()}</div>
+      ${items.map(x=>`
+        <article class="snake-api-card">
+          <div class="snake-api-card-head">
+            <code>${escapeHTML?.(x.sig)||x.sig}</code>
+            <button data-insert="${encodeURIComponent(x.insert)}">INSERT</button>
+          </div>
+          <p>${escapeHTML?.(x.desc)||x.desc}</p>
+        </article>
+      `).join("")}
+    </section>
+  `).join("");
+  body.querySelectorAll("[data-insert]").forEach(b=>b.onclick=()=>insertText(decodeURIComponent(b.dataset.insert)))
+}
+
+function renderSnippets(){
+  const body=document.getElementById("snakeScriptDrawerBodyV3");if(!body)return;
+  body.innerHTML=snippets.map((s,i)=>`
+    <article class="snake-snippet-card">
+      <strong>${escapeHTML?.(s.title)||s.title}</strong>
+      <small>${escapeHTML?.(s.desc)||s.desc}</small>
+      <div class="snake-api-example">${escapeHTML?.(s.code)||s.code}</div>
+      <button data-snippet="${i}">INSERT SNIPPET</button>
+    </article>
+  `).join("");
+  body.querySelectorAll("[data-snippet]").forEach(b=>b.onclick=()=>insertText("\n"+snippets[+b.dataset.snippet].code+"\n"))
+}
+
+async function renderEntities(){
+  const body=document.getElementById("snakeScriptDrawerBodyV3");if(!body)return;
+  body.innerHTML='<div class="snake-diagnostic">Loading scene entities…</div>';
+  let list=[];
+  try{
+    const state=await EntityWorld.load();
+    const scene=window.RuntimeScenes?.current?.name||
+      document.querySelector(".world-label")?.textContent?.replace("WORLD / ","").trim()||
+      "Main";
+    list=state.scenes?.[scene]?.entities||[]
+  }catch(_){}
+
+  if(!list.length){
+    body.innerHTML='<div class="snake-diagnostic">No entities found in the current scene.</div>';
+    return
+  }
+
+  body.innerHTML=list.map(e=>`
+    <article class="snake-entity-ref">
+      <strong>${escapeHTML?.(e.name)||e.name}</strong>
+      <small>ID: ${escapeHTML?.(e.id)||e.id} · Tag: ${escapeHTML?.(e.tag||"Untagged")||e.tag||"Untagged"}</small>
+      <div class="snake-entity-ref-actions">
+        <button data-entity-id="${encodeURIComponent(e.id)}">INSERT GET</button>
+        <button data-entity-tag="${encodeURIComponent(e.tag||"")}">INSERT TAG</button>
+      </div>
+    </article>
+  `).join("");
+
+  body.querySelectorAll("[data-entity-id]").forEach(b=>{
+    b.onclick=()=>insertText(`entity.get("${decodeURIComponent(b.dataset.entityId)}")`)
+  });
+  body.querySelectorAll("[data-entity-tag]").forEach(b=>{
+    b.onclick=()=>{
+      const tag=decodeURIComponent(b.dataset.entityTag);
+      if(!tag)return showToast?.("Entity has no tag");
+      insertText(`entity.findByTag("${tag}")[0]`)
+    }
+  })
+}
+
+function renderDiagnostics(){
+  const body=document.getElementById("snakeScriptDrawerBodyV3");if(!body)return;
+  analyze();
+  if(!diagnostics.length){
+    body.innerHTML='<div class="snake-diagnostic">✓ No syntax problems detected in the active JavaScript file.</div>';
+    return
+  }
+  body.innerHTML=diagnostics.map((d,i)=>`
+    <div class="snake-diagnostic error">
+      <strong>${escapeHTML?.(d.message)||d.message}</strong>
+      <div>${d.line?`Line ${d.line}${d.column?`, column ${d.column}`:""}`:"Location unavailable"}</div>
+      ${d.line?`<button data-goto="${i}">GO TO LINE</button>`:""}
+    </div>
+  `).join("");
+  body.querySelectorAll("[data-goto]").forEach(b=>{
+    const d=diagnostics[+b.dataset.goto];
+    b.onclick=()=>gotoLine(d.line,d.column)
+  })
+}
+
+function open(kind="api"){
+  const d=drawer();if(!d)return;
+  d.classList.add("show");
+  const title=document.getElementById("snakeScriptDrawerTitleV3");
+  const sub=document.getElementById("snakeScriptDrawerSubV3");
+
+  if(kind==="api"){
+    title.textContent="SNAKE API";
+    sub.textContent="Runtime reference · tap INSERT";
+    renderAPI()
+  }else if(kind==="snippets"){
+    title.textContent="SNIPPETS";
+    sub.textContent="Production-ready starting points";
+    renderSnippets()
+  }else if(kind==="entities"){
+    title.textContent="ENTITY REFERENCES";
+    sub.textContent="Insert IDs and tags without typing";
+    renderEntities()
+  }else{
+    title.textContent="DIAGNOSTICS";
+    sub.textContent="Syntax checks for the active file";
+    renderDiagnostics()
+  }
+}
+function close(){drawer()?.classList.remove("show")}
+
+function bind(){
+  const el=codeEl();if(!el||el.dataset.scriptProV3==="1")return;
+  el.dataset.scriptProV3="1";
+
+  el.addEventListener("input",()=>{
+    renderAutocomplete();
+    scheduleDiagnostics()
+  });
+  el.addEventListener("keyup",e=>{
+    if(["ArrowLeft","ArrowRight","Backspace",".","Enter"].includes(e.key)||/^[A-Za-z0-9_$]$/.test(e.key)){
+      renderAutocomplete()
+    }
+    if(e.key==="Escape")hideAutocomplete()
+  });
+  el.addEventListener("click",hideAutocomplete);
+  el.addEventListener("blur",()=>setTimeout(hideAutocomplete,180));
+
+  analyze()
+}
+
+const api={
+  version:"3.0.0",
+  open,close,
+  insert:insertText,
+  analyze,
+  gotoLine,
+  refresh:bind
+};
+window.SnakeScriptProV3=api;
+
+const originalOpenProject=window.openProject;
+if(typeof originalOpenProject==="function"&&!originalOpenProject.__snakeScriptProV3){
+  const wrapped=async function(){
+    const r=await originalOpenProject.apply(this,arguments);
+    setTimeout(()=>{bind();analyze()},0);
+    return r
+  };
+  wrapped.__snakeScriptProV3=true;
+  window.openProject=wrapped
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",bind,{once:true})
+}else bind();
+
+})();
+</script>
+
 /* =====================================================
    SNAKE ENGINE — SCENE EDITOR MOBILE v2
    Touch-first scene editing + Undo/Redo
@@ -33320,12 +33961,16 @@ function clone(v){
 }
 
 const SceneEditorMobileV2={
-  version:"2.0.0",
+  version:"3.0.0",
   selected:new Set(),
   primary:null,
   tool:"select",
   snap:true,
   snapSize:16,
+  rotationSnap:15,
+  scaleSnap:.1,
+  gesturePointers:new Map(),
+  gesture:null,
   history:[],
   historyIndex:-1,
   maxHistory:80,
@@ -33519,6 +34164,97 @@ function assetImage(entity){
   }catch{return null}
 }
 
+
+function sem3Angle(cx,cy,x,y){
+  return Math.atan2(y-cy,x-cx)*180/Math.PI
+}
+function sem3Distance(a,b){
+  return Math.hypot(a.x-b.x,a.y-b.y)
+}
+function sem3SnapRotation(v){
+  const s=Number(SceneEditorMobileV2.rotationSnap||15);
+  return SceneEditorMobileV2.snap?Math.round(v/s)*s:v
+}
+function sem3SnapScale(v){
+  const s=Number(SceneEditorMobileV2.scaleSnap||.1);
+  if(!SceneEditorMobileV2.snap)return Math.max(.05,v);
+  return Math.max(.05,Math.round(v/s)*s)
+}
+async function sem3PrimaryEntity(){
+  const list=await selectedEntities();
+  return list.find(x=>x.id===SceneEditorMobileV2.primary)||list[0]||null
+}
+async function sem3BeginGesture(ev,node){
+  SceneEditorMobileV2.gesturePointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+  if(SceneEditorMobileV2.gesturePointers.size!==2)return false;
+
+  const pts=[...SceneEditorMobileV2.gesturePointers.values()];
+  const e=await sem3PrimaryEntity();
+  if(!e)return false;
+
+  const before=await SceneEditorMobileV2.capture("Gesture Transform");
+  SceneEditorMobileV2.gesture={
+    before,
+    entityId:e.id,
+    startDistance:Math.max(1,sem3Distance(pts[0],pts[1])),
+    startAngle:sem3Angle(pts[0].x,pts[0].y,pts[1].x,pts[1].y),
+    rotation:Number(e.transform?.rotation||0),
+    scaleX:Number(e.transform?.scaleX==null?1:e.transform.scaleX),
+    scaleY:Number(e.transform?.scaleY==null?1:e.transform.scaleY)
+  };
+  return true
+}
+async function sem3UpdateGesture(){
+  const g=SceneEditorMobileV2.gesture;
+  if(!g||SceneEditorMobileV2.gesturePointers.size<2)return;
+
+  const pts=[...SceneEditorMobileV2.gesturePointers.values()];
+  const dist=Math.max(1,sem3Distance(pts[0],pts[1]));
+  const angle=sem3Angle(pts[0].x,pts[0].y,pts[1].x,pts[1].y);
+  const ratio=dist/g.startDistance;
+  const deltaAngle=angle-g.startAngle;
+
+  const all=await SceneEditorMobileV2.entities();
+  const ent=all.find(x=>x.id===g.entityId);
+  if(!ent)return;
+  const t={...(ent.transform||{})};
+  t.rotation=sem3SnapRotation(g.rotation+deltaAngle);
+  t.scaleX=sem3SnapScale(g.scaleX*ratio);
+  t.scaleY=sem3SnapScale(g.scaleY*ratio);
+  await EntityWorld.update(ent.id,{transform:t});
+  await renderScene();
+  await renderInspector()
+}
+async function sem3EndGesture(pointerId){
+  SceneEditorMobileV2.gesturePointers.delete(pointerId);
+  if(SceneEditorMobileV2.gesture&&SceneEditorMobileV2.gesturePointers.size<2){
+    const g=SceneEditorMobileV2.gesture;
+    SceneEditorMobileV2.gesture=null;
+    await SceneEditorMobileV2.commit("Gesture Transform",g.before);
+    await refresh()
+  }
+}
+function sem3RenderGizmo(world,entity){
+  const old=world.querySelector(".sem3-gizmo");
+  if(old)old.remove();
+  if(!entity)return;
+
+  const t=entity.transform||{};
+  const g=document.createElement("div");
+  g.className="sem3-gizmo show";
+  g.style.left=Number(t.x||0)+"px";
+  g.style.top=Number(t.y||0)+"px";
+
+  if(SceneEditorMobileV2.tool==="rotate"){
+    g.innerHTML='<div class="ring"></div>';
+  }else if(SceneEditorMobileV2.tool==="scale"){
+    g.innerHTML='<div class="scale-box"></div><div class="handle hx"></div><div class="handle hy"></div>';
+  }else{
+    g.innerHTML='<div class="axis-x"></div><div class="axis-y"></div><div class="handle hx"></div><div class="handle hy"></div>';
+  }
+  world.appendChild(g)
+}
+
 async function renderScene(){
   const world=document.getElementById("sem2World");
   if(!world)return;
@@ -33526,7 +34262,7 @@ async function renderScene(){
   const size=await worldSize();
   world.style.width=size.width+"px";
   world.style.height=size.height+"px";
-  world.innerHTML='<div id="sem2SelectionBox" class="sem2-selection-box"></div>';
+  world.innerHTML='<div id="sem2SelectionBox" class="sem2-selection-box"></div><div class="sem3-mode-badge">'+String(SceneEditorMobileV2.tool||"select").toUpperCase()+'</div>';
 
   const entities=await SceneEditorMobileV2.entities();
 
@@ -33550,53 +34286,88 @@ async function renderScene(){
       ev.preventDefault();
       ev.stopPropagation();
 
+      node.setPointerCapture?.(ev.pointerId);
+
       const append=ev.pointerType==="touch"
         ?SceneEditorMobileV2.tool==="multi"
         :(ev.shiftKey||ev.ctrlKey||ev.metaKey);
 
-      if(!SceneEditorMobileV2.selected.has(e.id) || append){
+      if(!SceneEditorMobileV2.selected.has(e.id)||append){
         await select(e.id,append);
       }
 
-      if(SceneEditorMobileV2.tool!=="move")return;
+      SceneEditorMobileV2.gesturePointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+      if(SceneEditorMobileV2.gesturePointers.size===2){
+        await sem3BeginGesture(ev,node);
+        return
+      }
+
+      const tool=SceneEditorMobileV2.tool;
+      if(!["move","rotate","scale"].includes(tool))return;
 
       const selected=await selectedEntities();
-      const before=await SceneEditorMobileV2.capture("Move");
+      const before=await SceneEditorMobileV2.capture(
+        tool==="move"?"Move":tool==="rotate"?"Rotate":"Scale"
+      );
+
+      const primary=selected.find(x=>x.id===SceneEditorMobileV2.primary)||selected[0];
+      const pt=primary?.transform||{};
+      const centerX=Number(pt.x||0),centerY=Number(pt.y||0);
+      const worldRect=world.getBoundingClientRect();
 
       SceneEditorMobileV2.drag={
         pointerId:ev.pointerId,
+        tool,
         startX:ev.clientX,
         startY:ev.clientY,
         before,
-        starts:Object.fromEntries(
-          selected.map(x=>[
-            x.id,
-            {
-              x:Number(x.transform?.x||0),
-              y:Number(x.transform?.y||0)
-            }
-          ])
-        )
+        centerScreenX:worldRect.left+centerX,
+        centerScreenY:worldRect.top+centerY,
+        startAngle:sem3Angle(worldRect.left+centerX,worldRect.top+centerY,ev.clientX,ev.clientY),
+        starts:Object.fromEntries(selected.map(x=>[
+          x.id,{
+            x:Number(x.transform?.x||0),
+            y:Number(x.transform?.y||0),
+            rotation:Number(x.transform?.rotation||0),
+            scaleX:Number(x.transform?.scaleX==null?1:x.transform.scaleX),
+            scaleY:Number(x.transform?.scaleY==null?1:x.transform.scaleY)
+          }
+        ]))
       };
-
-      node.setPointerCapture?.(ev.pointerId);
     });
 
     node.addEventListener("pointermove",async ev=>{
+      if(SceneEditorMobileV2.gesturePointers.has(ev.pointerId)){
+        SceneEditorMobileV2.gesturePointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+      }
+      if(SceneEditorMobileV2.gesture){
+        await sem3UpdateGesture();
+        return
+      }
+
       const d=SceneEditorMobileV2.drag;
       if(!d||d.pointerId!==ev.pointerId)return;
 
       const dx=ev.clientX-d.startX;
       const dy=ev.clientY-d.startY;
+      const entitiesNow=await SceneEditorMobileV2.entities();
 
       for(const [id,start] of Object.entries(d.starts)){
-        const entitiesNow=await SceneEditorMobileV2.entities();
         const ent=entitiesNow.find(x=>x.id===id);
         if(!ent)continue;
-
         const t={...(ent.transform||{})};
-        t.x=SceneEditorMobileV2.snapValue(start.x+dx);
-        t.y=SceneEditorMobileV2.snapValue(start.y+dy);
+
+        if(d.tool==="move"){
+          t.x=SceneEditorMobileV2.snapValue(start.x+dx);
+          t.y=SceneEditorMobileV2.snapValue(start.y+dy);
+        }else if(d.tool==="rotate"){
+          const now=sem3Angle(d.centerScreenX,d.centerScreenY,ev.clientX,ev.clientY);
+          t.rotation=sem3SnapRotation(start.rotation+(now-d.startAngle));
+        }else if(d.tool==="scale"){
+          const delta=(dx-dy)/180;
+          t.scaleX=sem3SnapScale(start.scaleX+delta);
+          t.scaleY=sem3SnapScale(start.scaleY+delta);
+        }
         await EntityWorld.update(id,{transform:t});
       }
 
@@ -33605,11 +34376,21 @@ async function renderScene(){
     });
 
     const end=async ev=>{
+      SceneEditorMobileV2.gesturePointers.delete(ev.pointerId);
+
+      if(SceneEditorMobileV2.gesture){
+        await sem3EndGesture(ev.pointerId);
+        return
+      }
+
       const d=SceneEditorMobileV2.drag;
       if(!d||d.pointerId!==ev.pointerId)return;
 
       SceneEditorMobileV2.drag=null;
-      await SceneEditorMobileV2.commit("Move",d.before);
+      await SceneEditorMobileV2.commit(
+        d.tool==="move"?"Move":d.tool==="rotate"?"Rotate":"Scale",
+        d.before
+      );
       await refresh();
     };
 
@@ -33618,6 +34399,9 @@ async function renderScene(){
 
     world.appendChild(node);
   }
+
+  const primary=entities.find(x=>x.id===SceneEditorMobileV2.primary);
+  if(primary)sem3RenderGizmo(world,primary);
 
   world.onclick=async e=>{
     if(e.target===world){
@@ -33669,6 +34453,17 @@ async function renderInspector(){
     <div class="sem2-actions">
       <button class="primary" type="button" data-sem2-apply>APPLY</button>
     </div>
+
+    <div class="sem2-section-title">SNAP & TOUCH</div>
+
+    <div class="sem3-snap-config">
+      <select id="sem3SnapSize" onchange="SceneEditorMobileV2.snapSize=Number(this.value);document.querySelector('[data-sem2-snap]').textContent=SceneEditorMobileV2.snap?'SNAP '+this.value:'SNAP OFF'">
+        ${[1,4,8,16,24,32,48,64].map(v=>`<option value="${v}" ${Number(SceneEditorMobileV2.snapSize)===v?"selected":""}>Grid ${v}px</option>`).join("")}
+      </select>
+      <input id="sem3RotSnap" type="number" min="1" max="90" value="${Number(SceneEditorMobileV2.rotationSnap||15)}" onchange="SceneEditorMobileV2.rotationSnap=Math.max(1,Number(this.value)||15)" title="Rotation snap">
+    </div>
+
+    <div class="sem3-touch-hint">MOVE: arraste · ROTATE: arraste ao redor · SCALE: arraste diagonalmente · 2 DEDOS: pinch = escala + giro simultâneo.</div>
 
     <div class="sem2-section-title">TOUCH MOVE</div>
 
@@ -33877,8 +34672,8 @@ function ensureUI(){
       </button>
 
       <div class="sem2-head-title">
-        <strong>SCENE EDITOR MOBILE v2</strong>
-        <small>Touch-first editing · Undo/Redo · Prefab-aware</small>
+        <strong>SCENE EDITOR MOBILE v3</strong>
+        <small>Gizmos touch · Rotate/Scale · Gesture transform · Undo/Redo</small>
       </div>
 
       <button class="icon-btn" type="button" data-sem2-refresh>
@@ -33892,6 +34687,8 @@ function ensureUI(){
     <div class="sem2-toolbar">
       <button class="sem2-tool active" type="button" data-sem2-tool="select">SELECT</button>
       <button class="sem2-tool" type="button" data-sem2-tool="move">MOVE</button>
+      <button class="sem2-tool" type="button" data-sem2-tool="rotate">ROTATE</button>
+      <button class="sem2-tool" type="button" data-sem2-tool="scale">SCALE</button>
       <button class="sem2-tool" type="button" data-sem2-tool="multi">MULTI</button>
       <button class="sem2-tool" type="button" data-sem2-snap>SNAP 16</button>
       <button class="sem2-tool primary" type="button" data-sem2-create>NEW</button>
@@ -33950,6 +34747,7 @@ function ensureUI(){
       SceneEditorMobileV2.tool=tool.dataset.sem2Tool;
       ui.querySelectorAll("[data-sem2-tool]").forEach(x=>x.classList.remove("active"));
       tool.classList.add("active");
+      await renderScene();
       await renderInspector();
       return;
     }
@@ -33972,7 +34770,7 @@ function ensureUI(){
       SceneEditorMobileV2.snap=!SceneEditorMobileV2.snap;
       const btn=e.target.closest("[data-sem2-snap]");
       btn.classList.toggle("active",SceneEditorMobileV2.snap);
-      btn.textContent=SceneEditorMobileV2.snap?"SNAP 16":"SNAP OFF";
+      btn.textContent=SceneEditorMobileV2.snap?"SNAP "+SceneEditorMobileV2.snapSize:"SNAP OFF";
       return renderInspector();
     }
 
@@ -34019,7 +34817,7 @@ function ensureUI(){
         '<rect x="4" y="4" width="16" height="16" rx="2"/>'+
         '<path d="M8 12h8M12 8v8"/>'+
       '</svg>'+
-      '<span>Scene Editor Mobile v2</span>';
+      '<span>Scene Editor Mobile v3</span>';
 
     btn.addEventListener("click",e=>{
       e.preventDefault();
@@ -34044,7 +34842,7 @@ async function openManager(){
 }
 
 window.SceneEditorMobileManagerV2={
-  version:"2.0.0",
+  version:"3.0.0",
   open:openManager,
   runtime:SceneEditorMobileV2
 };
@@ -34069,6 +34867,176 @@ if(document.readyState==="loading"){
 
 
 <style>
+
+<style>
+/* SCENE EDITOR MOBILE v3 — FINAL TOUCH WORKFLOW */
+.sem3-gizmo{
+  position:absolute;z-index:25;pointer-events:none;display:none;
+  width:78px;height:78px;transform:translate(-50%,-50%);
+}
+.sem3-gizmo.show{display:block}
+.sem3-gizmo .ring{
+  position:absolute;inset:3px;border:2px dashed rgba(145,232,100,.85);
+  border-radius:50%;
+}
+.sem3-gizmo .axis-x,.sem3-gizmo .axis-y{
+  position:absolute;left:50%;top:50%;transform-origin:left center;
+  height:2px;width:34px;background:#91e864;
+}
+.sem3-gizmo .axis-y{transform:rotate(90deg)}
+.sem3-gizmo .handle{
+  position:absolute;width:12px;height:12px;border-radius:3px;
+  border:1px solid #91e864;background:#132016;
+}
+.sem3-gizmo .hx{right:-2px;top:33px}
+.sem3-gizmo .hy{left:33px;bottom:-2px}
+.sem3-gizmo .scale-box{
+  position:absolute;inset:15px;border:1px solid rgba(145,232,100,.75)
+}
+.sem3-snap-config{
+  display:grid;grid-template-columns:1fr 66px;gap:6px;align-items:center;
+  margin:8px 0
+}
+.sem3-snap-config select,.sem3-snap-config input{
+  height:34px;border:1px solid #2c353e;border-radius:6px;background:#090d11;
+  color:#dce2e6;padding:0 7px;font-size:8px
+}
+.sem3-touch-hint{
+  margin:8px 0;padding:8px;border:1px solid #2a353d;border-radius:7px;
+  background:#0b1115;color:#6e7c86;font:8px/1.55 ui-monospace,monospace
+}
+.sem3-mode-badge{
+  position:absolute;right:8px;top:8px;z-index:35;
+  padding:6px 8px;border:1px solid #355038;border-radius:7px;
+  background:rgba(16,26,17,.92);color:#91e864;font:8px ui-monospace,monospace;
+  pointer-events:none
+}
+</style>
+
+
+<style>
+/* SNAKE SCRIPTING / API v3 */
+
+/* SNAKE CODE COLORS v4 */
+.code-wrapper{position:relative}
+.snake-code-highlight-v4,
+.snake-code-input-v4{
+  position:absolute!important;inset:0!important;margin:0!important;
+  padding:12px 12px 12px 54px!important;border:0!important;
+  width:100%!important;height:100%!important;box-sizing:border-box!important;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace!important;
+  font-size:13px!important;line-height:1.55!important;tab-size:2!important;
+  white-space:pre!important;overflow:auto!important
+}
+.snake-code-highlight-v4{z-index:1;pointer-events:none;color:#c7d0d8;background:#0a0f13}
+.snake-code-input-v4{
+  z-index:2;resize:none!important;background:transparent!important;color:transparent!important;
+  caret-color:#f2f5f7!important;-webkit-text-fill-color:transparent!important
+}
+.snake-code-input-v4::selection{background:rgba(80,140,210,.34)}
+.snake-code-highlight-v4 .tok-keyword{color:#c792ea}
+.snake-code-highlight-v4 .tok-string{color:#c3e88d}
+.snake-code-highlight-v4 .tok-number{color:#f78c6c}
+.snake-code-highlight-v4 .tok-comment{color:#607080;font-style:italic}
+.snake-code-highlight-v4 .tok-fn{color:#82aaff}
+.snake-code-highlight-v4 .tok-api{color:#89ddff}
+.snake-code-highlight-v4 .tok-property{color:#ffcb6b}
+.snake-code-highlight-v4 .tok-operator{color:#89ddff}
+.snake-code-highlight-v4 .tok-bool{color:#ff5874}
+.snake-code-highlight-v4 .tok-punct{color:#a9b4bd}
+.snake-code-highlight-v4 .tok-plain{color:#c7d0d8}
+@media(max-width:700px){
+  .snake-code-highlight-v4,.snake-code-input-v4{font-size:12px!important;padding-left:48px!important}
+}
+
+#codeArea{position:relative}
+.snake-scriptbar-v3{
+  min-height:39px;display:flex;align-items:center;gap:5px;padding:5px 7px;
+  border-bottom:1px solid #242d35;background:#0d1318;overflow-x:auto
+}
+.snake-scriptbar-v3 button{
+  height:29px;flex:0 0 auto;padding:0 8px;border:1px solid #2d3841;border-radius:6px;
+  background:#151c22;color:#7f8c95;font-size:7px;font-weight:850;touch-action:manipulation
+}
+.snake-scriptbar-v3 .diag-ok{border-color:#35553c;color:#91e864;background:#111a13}
+.snake-scriptbar-v3 .diag-error{border-color:#653f3f;color:#ff9a9a;background:#211414}
+.snake-scriptbar-spacer{flex:1}
+
+.snake-autocomplete-v3{
+  position:absolute;left:52px;right:8px;bottom:8px;z-index:45;
+  display:none;max-height:190px;overflow:auto;padding:5px;border:1px solid #32404a;
+  border-radius:9px;background:rgba(12,18,23,.98);box-shadow:0 12px 35px rgba(0,0,0,.45)
+}
+.snake-autocomplete-v3.show{display:grid;gap:4px}
+.snake-auto-item{
+  width:100%;min-height:38px;display:grid;grid-template-columns:1fr auto;gap:7px;
+  align-items:center;padding:6px 8px;border:1px solid #26323a;border-radius:6px;
+  background:#12191f;color:#9aa7b0;text-align:left;touch-action:manipulation
+}
+.snake-auto-item strong{display:block;color:#b9c4ca;font:8px ui-monospace,monospace}
+.snake-auto-item small{display:block;margin-top:2px;color:#5f6d77;font-size:7px}
+.snake-auto-item code{color:#91e864;font:7px ui-monospace,monospace}
+
+.snake-script-drawer-v3{
+  position:absolute;top:79px;right:0;bottom:0;z-index:60;width:min(390px,92%);
+  display:none;flex-direction:column;border-left:1px solid #2b3740;background:#0d1318;
+  box-shadow:-18px 0 45px rgba(0,0,0,.35)
+}
+.snake-script-drawer-v3.show{display:flex}
+.snake-script-drawer-v3 header{
+  min-height:54px;display:flex;align-items:center;gap:8px;padding:8px 9px;
+  border-bottom:1px solid #29343d;background:#11181e
+}
+.snake-script-drawer-v3 header>div{flex:1;min-width:0}
+.snake-script-drawer-v3 header strong{display:block;font-size:10px}
+.snake-script-drawer-v3 header small{display:block;margin-top:2px;color:#64717b;font-size:7px}
+.snake-script-drawer-v3 header button{
+  width:34px;height:34px;border:1px solid #303b44;border-radius:7px;background:#171e24;color:#89969f;font-size:17px
+}
+.snake-script-drawer-body-v3{flex:1;min-height:0;overflow:auto;padding:8px}
+.snake-api-group{margin-bottom:10px}
+.snake-api-group-title{margin:3px 2px 6px;color:#6f7d87;font-size:7px;font-weight:900;letter-spacing:.1em}
+.snake-api-card{
+  margin-bottom:5px;padding:8px;border:1px solid #29343d;border-radius:7px;background:#11171c
+}
+.snake-api-card-head{display:flex;gap:7px;align-items:center}
+.snake-api-card-head code{flex:1;color:#a7e899;font:8px ui-monospace,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.snake-api-card-head button{
+  min-width:54px;height:28px;border:1px solid #35533b;border-radius:5px;background:#152018;color:#91e864;font-size:7px;font-weight:850
+}
+.snake-api-card p{margin:5px 0 0;color:#71808a;font-size:8px;line-height:1.5}
+.snake-api-example{margin-top:6px;padding:7px;border-radius:5px;background:#080d11;color:#8fb883;font:7px/1.55 ui-monospace,monospace;white-space:pre-wrap}
+.snake-snippet-card{
+  margin-bottom:6px;padding:8px;border:1px solid #29343d;border-radius:7px;background:#11171c
+}
+.snake-snippet-card strong{display:block;font-size:9px;color:#adb8bf}
+.snake-snippet-card small{display:block;margin:3px 0 7px;color:#66747e;font-size:7px}
+.snake-snippet-card button{
+  width:100%;height:32px;border:1px solid #35533b;border-radius:6px;background:#152018;color:#91e864;font-size:7px;font-weight:850
+}
+.snake-entity-ref{
+  margin-bottom:5px;padding:8px;border:1px solid #29343d;border-radius:7px;background:#11171c
+}
+.snake-entity-ref strong{display:block;color:#aeb8bf;font-size:8px}
+.snake-entity-ref small{display:block;margin:3px 0 7px;color:#62707a;font-size:7px}
+.snake-entity-ref-actions{display:flex;gap:5px}
+.snake-entity-ref-actions button{
+  flex:1;height:30px;border:1px solid #303b44;border-radius:5px;background:#171e24;color:#84919a;font-size:7px
+}
+.snake-diagnostic{
+  margin-bottom:6px;padding:8px;border:1px solid #35553c;border-radius:7px;background:#111a13;color:#91e864;font-size:8px;line-height:1.5
+}
+.snake-diagnostic.error{border-color:#684242;background:#211515;color:#ff9d9d}
+.snake-diagnostic button{
+  display:block;margin-top:6px;height:28px;padding:0 8px;border:1px solid currentColor;border-radius:5px;background:transparent;color:inherit;font-size:7px
+}
+@media(max-width:700px){
+  .snake-scriptbar-v3{min-height:36px;padding:4px 6px}
+  .snake-script-drawer-v3{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;height:min(72vh,620px);border-left:0;border-top:1px solid #2b3740;border-radius:14px 14px 0 0}
+  .snake-autocomplete-v3{position:fixed;left:7px;right:7px;bottom:calc(64px + env(safe-area-inset-bottom));max-height:34vh}
+}
+</style>
+
 /* =====================================================
    SNAKE ENGINE — GUIA v1
 ===================================================== */
