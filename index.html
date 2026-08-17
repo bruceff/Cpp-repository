@@ -30279,5 +30279,1221 @@ if(document.readyState==="loading"){
 })();
 </script>
 
-</body>
-</html>
+
+<style>
+/* =====================================================
+   SNAKE ENGINE â PREFAB v2
+===================================================== */
+.prefab-v2-manager{
+  position:absolute;
+  inset:0;
+  z-index:250;
+  display:none;
+  flex-direction:column;
+  background:#0a0d10;
+}
+.prefab-v2-manager.show{display:flex}
+
+.pfv2-head{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  background:#0d1014;
+  border-bottom:1px solid #252b32;
+}
+.pfv2-head-title{flex:1;min-width:0}
+.pfv2-head-title strong{display:block;font-size:13px}
+.pfv2-head-title small{display:block;margin-top:2px;color:#69737c;font-size:9px}
+
+.pfv2-body{
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:220px 1fr 250px;
+  background:#090c0f;
+}
+.pfv2-sidebar{
+  min-height:0;
+  overflow:auto;
+  padding:10px;
+  border-right:1px solid #242b32;
+  background:#0e1318;
+}
+.pfv2-sidebar.right{
+  border-right:0;
+  border-left:1px solid #242b32;
+}
+.pfv2-center{
+  min-width:0;
+  min-height:0;
+  overflow:auto;
+  padding:12px;
+}
+.pfv2-section-title{
+  margin:5px 2px 8px;
+  color:#6e7a84;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.1em;
+}
+.pfv2-list{display:grid;gap:6px}
+.pfv2-item{
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#12181d;
+}
+.pfv2-item.active{
+  border-color:#486547;
+  background:#151f16;
+}
+.pfv2-item-info{flex:1;min-width:0}
+.pfv2-item-name{
+  color:#dce2e6;
+  font-size:10px;
+  font-weight:750;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.pfv2-item-meta{
+  margin-top:3px;
+  color:#68747e;
+  font-size:8px;
+}
+.pfv2-mini{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border:1px solid #2a343c;
+  border-radius:6px;
+  background:#171d22;
+  color:#7f8a93;
+  font-size:9px;
+}
+.pfv2-mini.primary{color:#aef08f}
+.pfv2-mini.danger{color:#e67d84}
+
+.pfv2-actions{
+  display:flex;
+  gap:7px;
+  margin-bottom:9px;
+}
+.pfv2-actions button{
+  flex:1;
+  min-height:38px;
+  border:1px solid #2d3740;
+  border-radius:8px;
+  background:#151b21;
+  color:#95a1aa;
+  font-size:9px;
+  font-weight:750;
+}
+.pfv2-actions button.primary{
+  color:#091006;
+  background:#91e864;
+  border-color:#91e864;
+}
+
+.pfv2-card{
+  margin-bottom:8px;
+  padding:10px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#11171c;
+}
+.pfv2-card strong{
+  display:block;
+  color:#dce2e6;
+  font-size:10px;
+  margin-bottom:6px;
+}
+.pfv2-card p{
+  margin:0 0 8px;
+  color:#68747e;
+  font-size:8px;
+  line-height:1.45;
+}
+.pfv2-row{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.pfv2-row label{color:#89959e;font-size:9px}
+.pfv2-row input,
+.pfv2-row select{
+  height:32px;
+  border:1px solid #2c353e;
+  border-radius:6px;
+  outline:none;
+  background:#090d11;
+  color:#dce2e6;
+  padding:0 8px;
+  font-size:9px;
+}
+.pfv2-summary{
+  padding:10px;
+  border:1px solid #28323a;
+  border-radius:8px;
+  background:#0c1115;
+  color:#7b8790;
+  font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre-wrap;
+}
+.pfv2-pill{
+  padding:3px 6px;
+  border:1px solid #365438;
+  border-radius:999px;
+  background:#172019;
+  color:#aef08f;
+  font-size:7px;
+  font-weight:800;
+}
+
+@media(max-width:820px){
+  .pfv2-body{grid-template-columns:140px 1fr}
+  .pfv2-sidebar.right{display:none}
+}
+</style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE â PREFAB v2
+   Linked prefab assets with:
+   - entity snapshots
+   - linked scene instances
+   - per-instance overrides
+   - apply/revert overrides
+   - propagation to instances
+   - variants
+   - nested prefab references
+   - runtime instantiate support
+===================================================== */
+(function(){
+"use strict";
+
+const PREFIX="snake_prefabs_v2:";
+
+function project(){
+  try{return currentProject||null}catch{return null}
+}
+function clone(v){
+  try{return structuredClone(v)}
+  catch{return JSON.parse(JSON.stringify(v))}
+}
+function uid(prefix="pfv2"){
+  return prefix+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+}
+function key(name){return PREFIX+name}
+function sceneName(){
+  try{
+    return window.RuntimeScenes?.current?.name ||
+      document.querySelector(".world-label")?.textContent?.replace("WORLD / ","").trim() ||
+      "Main";
+  }catch{return "Main"}
+}
+
+function emptyState(){
+  return {
+    version:2,
+    prefabs:[],
+    instances:{},
+    updatedAt:new Date().toISOString()
+  };
+}
+
+function loadLocal(name){
+  try{
+    const raw=localStorage.getItem(key(name));
+    if(raw){
+      const s=JSON.parse(raw);
+      if(s?.version===2)return s;
+    }
+  }catch(_){}
+  const s=emptyState();
+  if(name)localStorage.setItem(key(name),JSON.stringify(s));
+  return s;
+}
+
+async function loadState(name=project()){
+  if(!name)return emptyState();
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+      const row=await SnakeDB.get("assets","prefab-v2-index:"+projectId);
+      if(row?.state?.version===2){
+        localStorage.setItem(key(name),JSON.stringify(row.state));
+        return clone(row.state);
+      }
+    }catch(e){console.warn("Prefab v2 load:",e)}
+  }
+
+  return loadLocal(name);
+}
+
+async function saveState(state,name=project()){
+  if(!name)return;
+
+  state.updatedAt=new Date().toISOString();
+  localStorage.setItem(key(name),JSON.stringify(state));
+
+  if(window.SnakeDB){
+    try{
+      await SnakeDB.ready;
+      const projectId=await SnakeDB.projectIdForName(name);
+
+      await SnakeDB.put("assets",{
+        id:"prefab-v2-index:"+projectId,
+        type:"application/x-snake-prefab-v2-index",
+        name:"Prefab v2 Index",
+        folder:"other",
+        projectId,
+        source:"prefab-v2",
+        state:clone(state),
+        updatedAt:state.updatedAt
+      });
+    }catch(e){console.warn("Prefab v2 save:",e)}
+  }
+}
+
+async function entities(){
+  try{
+    const state=await EntityWorld.load();
+    return clone(state.scenes?.[sceneName()]?.entities||[]);
+  }catch{return []}
+}
+
+async function hierarchyData(){
+  try{
+    const state=await HierarchySystemV2.load();
+    return clone(state.scenes?.[sceneName()]||{parentById:{},activeById:{}});
+  }catch{
+    return {parentById:{},activeById:{}};
+  }
+}
+
+async function componentState(){
+  try{
+    const state=await ComponentSystem.load();
+    return clone(state.scenes?.[sceneName()]||{});
+  }catch{return {}}
+}
+
+function entityById(list,id){
+  return list.find(e=>e.id===id)||null;
+}
+
+function childIds(hier,parentId){
+  return Object.entries(hier.parentById||{})
+    .filter(([,p])=>(p||null)===(parentId||null))
+    .map(([id])=>id);
+}
+
+async function snapshotEntityTree(rootId){
+  const list=await entities();
+  const hier=await hierarchyData();
+  const components=await componentState();
+  const root=entityById(list,rootId);
+
+  if(!root)return null;
+
+  function walk(id){
+    const e=entityById(list,id);
+    if(!e)return null;
+
+    return {
+      sourceEntityId:e.id,
+      name:e.name,
+      tag:e.tag||"Untagged",
+      active:e.active!==false,
+      transform:clone(e.transform||{
+        x:0,y:0,rotation:0,scaleX:1,scaleY:1
+      }),
+      components:clone(components[e.id]||{}),
+      nestedPrefabId:e.prefabId||null,
+      meta:clone(e.meta||{}),
+      children:childIds(hier,e.id)
+        .map(walk)
+        .filter(Boolean)
+    };
+  }
+
+  return walk(rootId);
+}
+
+function findPrefab(state,idOrName){
+  return state.prefabs.find(
+    p=>p.id===idOrName||p.name===idOrName
+  )||null;
+}
+
+async function mirrorAsset(prefab){
+  if(typeof assets2==="undefined")return;
+
+  const asset={
+    id:"prefab-v2:"+prefab.id,
+    name:prefab.name+".prefab2",
+    type:"application/x-snake-prefab-v2",
+    folder:"other",
+    source:"prefab-v2",
+    prefabId:prefab.id,
+    data:JSON.stringify(prefab),
+    updatedAt:prefab.updatedAt
+  };
+
+  const existing=assets2.find(a=>a.id===asset.id);
+  if(existing)Object.assign(existing,asset);
+  else assets2.push(asset);
+
+  await Promise.resolve(saveAssets2?.());
+}
+
+async function createFromEntity(entityId,name){
+  name=String(name||"").trim().slice(0,50);
+  if(!name)return null;
+
+  const template=await snapshotEntityTree(entityId);
+  if(!template)return null;
+
+  const state=await loadState();
+
+  if(state.prefabs.some(p=>p.name.toLowerCase()===name.toLowerCase())){
+    showToast?.("A Prefab with this name already exists");
+    return null;
+  }
+
+  const prefab={
+    id:uid("prefab"),
+    name,
+    basePrefabId:null,
+    template,
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString(),
+    revision:1
+  };
+
+  state.prefabs.push(prefab);
+  await saveState(state);
+  await mirrorAsset(prefab);
+
+  try{
+    await EntityWorld.update(entityId,{
+      meta:{
+        prefabId:prefab.id,
+        prefabInstanceId:uid("instance"),
+        prefabRevision:prefab.revision,
+        prefabOverrides:{}
+      }
+    });
+  }catch(_){}
+
+  showToast?.("Prefab v2 created");
+  return clone(prefab);
+}
+
+function deepMerge(base,overrides){
+  if(Array.isArray(base))return clone(overrides??base);
+  if(!base||typeof base!=="object")return overrides!==undefined?clone(overrides):clone(base);
+
+  const out=clone(base);
+
+  for(const [k,v] of Object.entries(overrides||{})){
+    if(
+      v && typeof v==="object" && !Array.isArray(v) &&
+      out[k] && typeof out[k]==="object" && !Array.isArray(out[k])
+    ){
+      out[k]=deepMerge(out[k],v);
+    }else{
+      out[k]=clone(v);
+    }
+  }
+
+  return out;
+}
+
+function flattenTemplate(root,parentTemplateId=null,out=[]){
+  if(!root)return out;
+
+  const templateId=root.__templateId||uid("node");
+  root.__templateId=templateId;
+
+  out.push({
+    templateId,
+    parentTemplateId,
+    node:root
+  });
+
+  for(const child of root.children||[]){
+    flattenTemplate(child,templateId,out);
+  }
+
+  return out;
+}
+
+async function resolvedPrefab(state,prefab){
+  if(!prefab)return null;
+
+  if(!prefab.basePrefabId){
+    return clone(prefab);
+  }
+
+  const base=findPrefab(state,prefab.basePrefabId);
+  if(!base)return clone(prefab);
+
+  const resolvedBase=await resolvedPrefab(state,base);
+
+  return {
+    ...clone(resolvedBase),
+    ...clone(prefab),
+    template:deepMerge(
+      resolvedBase.template,
+      prefab.templateOverrides||{}
+    ),
+    id:prefab.id,
+    name:prefab.name,
+    basePrefabId:prefab.basePrefabId
+  };
+}
+
+async function createVariant(basePrefabId,name,templateOverrides={}){
+  const state=await loadState();
+  const base=findPrefab(state,basePrefabId);
+  if(!base)return null;
+
+  const variant={
+    id:uid("variant"),
+    name:String(name||base.name+" Variant").slice(0,50),
+    basePrefabId:base.id,
+    templateOverrides:clone(templateOverrides),
+    template:clone(base.template),
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString(),
+    revision:1
+  };
+
+  state.prefabs.push(variant);
+  await saveState(state);
+  await mirrorAsset(variant);
+
+  showToast?.("Prefab variant created");
+  return clone(variant);
+}
+
+async function instantiateEntity(prefabId,options={}){
+  const state=await loadState();
+  const source=findPrefab(state,prefabId);
+  if(!source)return null;
+
+  const prefab=await resolvedPrefab(state,source);
+  const overrideRoot=clone(options.overrides||{});
+  const rootTemplate=deepMerge(prefab.template,overrideRoot);
+
+  const created=[];
+  const templateMap=new Map();
+
+  async function spawnNode(t,parentEntityId=null){
+    let entity=null;
+
+    if(t.nestedPrefabId && t.nestedPrefabId!==prefab.id){
+      const nested=await instantiateEntity(t.nestedPrefabId,{
+        x:t.transform?.x,
+        y:t.transform?.y,
+        parentId:parentEntityId
+      });
+      if(nested)return nested;
+    }
+
+    entity=await EntityWorld.create({
+      name:t.name||"Entity",
+      tag:t.tag||"Untagged",
+      x:Number(t.transform?.x||0),
+      y:Number(t.transform?.y||0),
+      rotation:Number(t.transform?.rotation||0),
+      scaleX:Number(t.transform?.scaleX==null?1:t.transform.scaleX),
+      scaleY:Number(t.transform?.scaleY==null?1:t.transform.scaleY),
+      active:t.active!==false,
+      prefabId:prefab.id,
+      meta:{
+        ...(clone(t.meta||{})),
+        prefabId:prefab.id,
+        prefabRevision:source.revision,
+        prefabInstanceId:null,
+        prefabOverrides:{}
+      }
+    });
+
+    const instanceId=uid("instance");
+    await EntityWorld.update(entity.id,{
+      meta:{
+        ...(entity.meta||{}),
+        prefabId:prefab.id,
+        prefabRevision:source.revision,
+        prefabInstanceId:instanceId,
+        prefabOverrides:{}
+      }
+    });
+
+    if(parentEntityId){
+      try{
+        await HierarchySystemV2.setParent?.(entity.id,parentEntityId,false);
+      }catch(_){
+        try{await RuntimeHierarchy.parent(entity.id,parentEntityId,false)}catch(_){}
+      }
+    }
+
+    for(const [type,data] of Object.entries(t.components||{})){
+      try{
+        await ComponentSystem.add(entity.id,type,clone(data));
+      }catch(_){}
+    }
+
+    created.push(entity.id);
+    templateMap.set(t.__templateId||t.sourceEntityId||entity.id,entity.id);
+
+    for(const child of t.children||[]){
+      await spawnNode(child,entity.id);
+    }
+
+    return entity;
+  }
+
+  if(options.x!=null)rootTemplate.transform.x=Number(options.x);
+  if(options.y!=null)rootTemplate.transform.y=Number(options.y);
+  if(options.name)rootTemplate.name=options.name;
+
+  const root=await spawnNode(rootTemplate,options.parentId||null);
+
+  state.instances[root?.id||uid("orphan")]={
+    rootEntityId:root?.id||null,
+    prefabId:prefab.id,
+    revision:source.revision,
+    overrides:overrideRoot,
+    entityIds:created,
+    scene:sceneName(),
+    createdAt:new Date().toISOString()
+  };
+
+  await saveState(state);
+
+  return root;
+}
+
+function diffObject(base,current){
+  if(base===current)return undefined;
+
+  if(
+    base && current &&
+    typeof base==="object" &&
+    typeof current==="object" &&
+    !Array.isArray(base) &&
+    !Array.isArray(current)
+  ){
+    const out={};
+
+    for(const k of new Set([...Object.keys(base),...Object.keys(current)])){
+      const d=diffObject(base[k],current[k]);
+      if(d!==undefined)out[k]=d;
+    }
+
+    return Object.keys(out).length?out:undefined;
+  }
+
+  try{
+    if(JSON.stringify(base)===JSON.stringify(current))return undefined;
+  }catch(_){}
+
+  return clone(current);
+}
+
+async function captureInstanceOverrides(rootEntityId){
+  const state=await loadState();
+  const instance=state.instances[rootEntityId];
+  if(!instance)return null;
+
+  const prefab=findPrefab(state,instance.prefabId);
+  if(!prefab)return null;
+
+  const list=await entities();
+  const root=entityById(list,rootEntityId);
+  if(!root)return null;
+
+  const current=await snapshotEntityTree(rootEntityId);
+  const resolved=await resolvedPrefab(state,prefab);
+  const overrides=diffObject(resolved.template,current)||{};
+
+  instance.overrides=overrides;
+  state.instances[rootEntityId]=instance;
+  await saveState(state);
+
+  return clone(overrides);
+}
+
+async function applyOverridesToPrefab(rootEntityId){
+  const state=await loadState();
+  const instance=state.instances[rootEntityId];
+  if(!instance)return false;
+
+  const prefab=findPrefab(state,instance.prefabId);
+  if(!prefab)return false;
+
+  const current=await snapshotEntityTree(rootEntityId);
+  if(!current)return false;
+
+  prefab.template=current;
+  prefab.revision=(Number(prefab.revision)||0)+1;
+  prefab.updatedAt=new Date().toISOString();
+
+  instance.overrides={};
+  instance.revision=prefab.revision;
+
+  await saveState(state);
+  await mirrorAsset(prefab);
+  await propagate(prefab.id,{excludeRoot:rootEntityId});
+
+  showToast?.("Overrides applied to Prefab");
+  return true;
+}
+
+async function applyTemplateToEntity(rootEntityId,template,instance){
+  const list=await entities();
+  const root=entityById(list,rootEntityId);
+  if(!root)return false;
+
+  const resolved=deepMerge(template,instance?.overrides||{});
+
+  await EntityWorld.update(rootEntityId,{
+    name:resolved.name,
+    tag:resolved.tag,
+    active:resolved.active!==false,
+    transform:clone(resolved.transform),
+    meta:{
+      ...(clone(resolved.meta||{})),
+      prefabId:instance.prefabId,
+      prefabRevision:instance.revision,
+      prefabInstanceId:root.meta?.prefabInstanceId||uid("instance"),
+      prefabOverrides:clone(instance.overrides||{})
+    }
+  });
+
+  for(const [type,data] of Object.entries(resolved.components||{})){
+    try{
+      const state=await ComponentSystem.load();
+      const existing=state.scenes?.[sceneName()]?.[rootEntityId]?.[type];
+
+      if(existing)await ComponentSystem.update(rootEntityId,type,clone(data));
+      else await ComponentSystem.add(rootEntityId,type,clone(data));
+    }catch(_){}
+  }
+
+  return true;
+}
+
+async function revertOverrides(rootEntityId){
+  const state=await loadState();
+  const instance=state.instances[rootEntityId];
+  if(!instance)return false;
+
+  const prefab=findPrefab(state,instance.prefabId);
+  if(!prefab)return false;
+
+  const resolved=await resolvedPrefab(state,prefab);
+
+  instance.overrides={};
+  instance.revision=prefab.revision;
+
+  await applyTemplateToEntity(rootEntityId,resolved.template,instance);
+  state.instances[rootEntityId]=instance;
+  await saveState(state);
+
+  showToast?.("Prefab overrides reverted");
+  return true;
+}
+
+async function propagate(prefabId,options={}){
+  const state=await loadState();
+  const prefab=findPrefab(state,prefabId);
+  if(!prefab)return false;
+
+  const resolved=await resolvedPrefab(state,prefab);
+
+  for(const [rootId,instance] of Object.entries(state.instances||{})){
+    if(instance.prefabId!==prefab.id)continue;
+    if(options.excludeRoot===rootId)continue;
+    if(instance.scene!==sceneName())continue;
+
+    instance.revision=prefab.revision;
+    await applyTemplateToEntity(rootId,resolved.template,instance);
+  }
+
+  await saveState(state);
+  showToast?.("Prefab instances updated");
+  return true;
+}
+
+async function updateFromEntity(prefabId,entityId){
+  const state=await loadState();
+  const prefab=findPrefab(state,prefabId);
+  if(!prefab)return false;
+
+  const snapshot=await snapshotEntityTree(entityId);
+  if(!snapshot)return false;
+
+  if(prefab.basePrefabId){
+    const base=findPrefab(state,prefab.basePrefabId);
+    const resolvedBase=await resolvedPrefab(state,base);
+    prefab.templateOverrides=diffObject(resolvedBase.template,snapshot)||{};
+  }else{
+    prefab.template=snapshot;
+  }
+
+  prefab.revision=(Number(prefab.revision)||0)+1;
+  prefab.updatedAt=new Date().toISOString();
+
+  await saveState(state);
+  await mirrorAsset(prefab);
+  await propagate(prefab.id,{excludeRoot:entityId});
+
+  return true;
+}
+
+async function removePrefab(prefabId){
+  const state=await loadState();
+  const prefab=findPrefab(state,prefabId);
+  if(!prefab)return false;
+
+  if(!confirm(`Delete Prefab "${prefab.name}"?`))return false;
+
+  state.prefabs=state.prefabs.filter(p=>p.id!==prefabId);
+
+  for(const [id,inst] of Object.entries(state.instances||{})){
+    if(inst.prefabId===prefabId)delete state.instances[id];
+  }
+
+  for(const p of state.prefabs){
+    if(p.basePrefabId===prefabId){
+      p.basePrefabId=null;
+    }
+  }
+
+  await saveState(state);
+
+  try{
+    assets2=assets2.filter(a=>a.id!=="prefab-v2:"+prefabId);
+    await Promise.resolve(saveAssets2?.());
+  }catch(_){}
+
+  showToast?.("Prefab deleted");
+  return true;
+}
+
+/* -----------------------------------------------------
+   Runtime instantiation
+----------------------------------------------------- */
+async function instantiateRuntime(prefabId,options={}){
+  const state=await loadState();
+  const source=findPrefab(state,prefabId);
+  if(!source)return null;
+
+  const prefab=await resolvedPrefab(state,source);
+  const template=deepMerge(prefab.template,options.overrides||{});
+
+  async function spawnNode(t,parentNode=null){
+    let node=null;
+
+    if(t.nestedPrefabId && t.nestedPrefabId!==prefab.id){
+      node=await instantiateRuntime(t.nestedPrefabId,{
+        x:t.transform?.x,
+        y:t.transform?.y
+      });
+    }
+
+    if(!node){
+      node=new SnakeNode(
+        t.name||prefab.name,
+        "Sprite"
+      );
+
+      node.transform.x=Number(t.transform?.x||0);
+      node.transform.y=Number(t.transform?.y||0);
+      node.transform.rotation=Number(t.transform?.rotation||0);
+      node.transform.scaleX=Number(t.transform?.scaleX==null?1:t.transform.scaleX);
+      node.transform.scaleY=Number(t.transform?.scaleY==null?1:t.transform.scaleY);
+
+      node.meta=node.meta||{};
+      node.meta.prefabId=prefab.id;
+      node.meta.prefabRevision=source.revision;
+      node.meta.prefabInstance=true;
+      node.meta.tag=t.tag||"Untagged";
+      node.meta.activeInHierarchy=t.active!==false;
+
+      snakeRuntime?.graph?.add?.(node);
+
+      if(parentNode){
+        node.meta.parentRuntimeNode=parentNode;
+      }
+
+      for(const [type,data] of Object.entries(t.components||{})){
+        if(type==="Health" && window.SnakeHealthComponent){
+          node.addComponent?.(new SnakeHealthComponent(data));
+        }
+
+        if(type==="Collider"){
+          node.meta.collider=clone(data);
+        }
+
+        if(type==="Rigidbody"){
+          node.meta.rigidbody=clone(data);
+        }
+
+        if(type==="SpriteRenderer"){
+          node.meta.sprite=data.asset||null;
+        }
+
+        if(type==="Script" && data.file && window.ProjectScriptComponentV2){
+          node.addComponent?.(
+            new ProjectScriptComponentV2(data.file,data.options||{})
+          );
+        }
+      }
+    }
+
+    for(const child of t.children||[]){
+      await spawnNode(child,node);
+    }
+
+    return node;
+  }
+
+  if(options.x!=null)template.transform.x=Number(options.x);
+  if(options.y!=null)template.transform.y=Number(options.y);
+  if(options.name)template.name=options.name;
+
+  const root=await spawnNode(template,null);
+
+  try{
+    PhysicsIntegrationV2?.syncFromRuntime?.();
+  }catch(_){}
+
+  return root;
+}
+
+/* -----------------------------------------------------
+   Migration from v1 Prefabs
+----------------------------------------------------- */
+async function migrateV1(){
+  const state=await loadState();
+
+  if(state.__migratedV1)return state;
+
+  try{
+    const old=await window.Prefabs?.list?.();
+
+    for(const p of old||[]){
+      if(state.prefabs.some(x=>x.name===p.name))continue;
+
+      state.prefabs.push({
+        id:"v1_"+p.id,
+        name:p.name,
+        basePrefabId:null,
+        revision:1,
+        createdAt:p.createdAt||new Date().toISOString(),
+        updatedAt:p.updatedAt||new Date().toISOString(),
+        migratedFromV1:p.id,
+        template:{
+          name:p.template?.name||p.name,
+          tag:"Untagged",
+          active:true,
+          transform:clone(p.template?.transform||{
+            x:0,y:0,rotation:0,scaleX:1,scaleY:1
+          }),
+          components:{},
+          nestedPrefabId:null,
+          meta:clone(p.template?.meta||{}),
+          children:[]
+        }
+      });
+    }
+  }catch(_){}
+
+  state.__migratedV1=true;
+  await saveState(state);
+  return state;
+}
+
+/* -----------------------------------------------------
+   Public API
+----------------------------------------------------- */
+const API={
+  version:"2.0.0",
+  load:loadState,
+  save:saveState,
+  createFromEntity,
+  createVariant,
+  instantiateEntity,
+  instantiateRuntime,
+  captureOverrides:captureInstanceOverrides,
+  applyOverrides:applyOverridesToPrefab,
+  revertOverrides,
+  propagate,
+  updateFromEntity,
+  remove:removePrefab,
+  resolve:async id=>{
+    const s=await loadState();
+    return resolvedPrefab(s,findPrefab(s,id));
+  },
+  list:async()=>clone((await loadState()).prefabs)
+};
+
+window.PrefabsV2=API;
+SnakeEngine.runtime.PrefabsV2=API;
+
+/* Compatibility: prefer v2 runtime instantiate when matching prefab exists */
+if(window.Prefabs){
+  const oldInstantiateRuntime=Prefabs.instantiateRuntime?.bind(Prefabs);
+  const oldList=Prefabs.list?.bind(Prefabs);
+
+  Prefabs.instantiateRuntime=async function(id,options={}){
+    const state=await loadState();
+    const found=findPrefab(state,id);
+
+    if(found){
+      return instantiateRuntime(found.id,options);
+    }
+
+    return oldInstantiateRuntime
+      ?oldInstantiateRuntime(id,options)
+      :null;
+  };
+
+  Prefabs.list=async function(){
+    const old=oldList?await oldList():[];
+    const v2=await API.list();
+
+    return [
+      ...old,
+      ...v2.filter(p=>!old.some(o=>o.name===p.name))
+    ];
+  };
+}
+
+/* Script Runtime v2 API */
+if(window.ScriptRuntimeV2?.createAPI){
+  const oldCreateAPI=ScriptRuntimeV2.createAPI.bind(ScriptRuntimeV2);
+
+  ScriptRuntimeV2.createAPI=function(){
+    const api=oldCreateAPI();
+
+    return Object.freeze({
+      ...api,
+      prefab:{
+        instantiate:(id,options)=>instantiateRuntime(id,options),
+        variant:(base,name,overrides)=>createVariant(base,name,overrides),
+        resolve:id=>API.resolve(id)
+      }
+    });
+  };
+}
+
+/* -----------------------------------------------------
+   Editor manager
+----------------------------------------------------- */
+let selectedPrefabId=null;
+let selectedEntityId=null;
+
+async function renderEntities(){
+  const root=document.getElementById("pfv2Entities");
+  if(!root)return;
+
+  const list=await entities();
+
+  if(!selectedEntityId && list.length){
+    selectedEntityId=list[0].id;
+  }
+
+  root.innerHTML=list.length
+    ?list.map(e=>`
+      <div class="pfv2-item ${e.id===selectedEntityId?"active":""}">
+        <div class="pfv2-item-info">
+          <div class="pfv2-item-name">${escapeHTML?.(e.name)||e.name}</div>
+          <div class="pfv2-item-meta">${escapeHTML?.(e.tag)||e.tag||"Untagged"}</div>
+        </div>
+        <button class="pfv2-mini" type="button" data-pfv2-entity="${e.id}">â</button>
+      </div>
+    `).join("")
+    :'<div class="pfv2-summary">No entities in this scene.</div>';
+}
+
+async function renderPrefabs(){
+  const root=document.getElementById("pfv2Prefabs");
+  if(!root)return;
+
+  const state=await migrateV1();
+
+  if(!selectedPrefabId && state.prefabs.length){
+    selectedPrefabId=state.prefabs[0].id;
+  }
+
+  root.innerHTML=state.prefabs.length
+    ?state.prefabs.map(p=>`
+      <div class="pfv2-item ${p.id===selectedPrefabId?"active":""}">
+        <div class="pfv2-item-info">
+          <div class="pfv2-item-name">${escapeHTML?.(p.name)||p.name}</div>
+          <div class="pfv2-item-meta">
+            ${p.basePrefabId?"VARIANT":"PREFAB"} Â· REV ${p.revision||1}
+          </div>
+        </div>
+        <button class="pfv2-mini primary" type="button" data-pfv2-select="${p.id}">â</button>
+      </div>
+    `).join("")
+    :'<div class="pfv2-summary">No Prefab v2 assets yet.</div>';
+}
+
+async function renderDetails(){
+  const root=document.getElementById("pfv2Details");
+  if(!root)return;
+
+  const state=await loadState();
+  const prefab=findPrefab(state,selectedPrefabId);
+
+  if(!prefab){
+    root.innerHTML='<div class="pfv2-summary">Select a Prefab.</div>';
+    return;
+  }
+
+  const instances=Object.values(state.instances||{})
+    .filter(i=>i.prefabId===prefab.id);
+
+  root.innerHTML=`
+    <div class="pfv2-section-title">PREFAB</div>
+
+    <div class="pfv2-row">
+      <label>Name</label>
+      <input id="pfv2Name" value="${String(prefab.name).replace(/"/g,"&quot;")}">
+    </div>
+
+    <div class="pfv2-summary">ID: ${prefab.id}
+Revision: ${prefab.revision||1}
+Type: ${prefab.basePrefabId?"Variant":"Base Prefab"}
+Base: ${prefab.basePrefabId||"â"}
+Linked instances: ${instances.length}
+Nested children: ${(prefab.template?.children||[]).length}</div>
+
+    <div class="pfv2-actions" style="margin-top:8px">
+      <button class="primary" type="button" data-pfv2-instantiate>INSTANTIATE</button>
+      <button type="button" data-pfv2-propagate>PROPAGATE</button>
+    </div>
+
+    <div class="pfv2-actions">
+      <button type="button" data-pfv2-update>UPDATE FROM ENTITY</button>
+      <button type="button" data-pfv2-variant>CREATE VARIANT</button>
+    </div>
+
+    <div class="pfv2-actions">
+      <button type="button" data-pfv2-capture>CAPTURE OVERRIDES</button>
+      <button type="button" data-pfv2-revert>REVERT OVERRIDES</button>
+    </div>
+
+    <div class="pfv2-actions">
+      <button type="button" data-pfv2-apply>APPLY OVERRIDES</button>
+      <button type="button" data-pfv2-delete>DELETE</button>
+    </div>
+  `;
+}
+
+async function renderStatus(){
+  const root=document.getElementById("pfv2Status");
+  if(!root)return;
+
+  const state=await loadState();
+
+  const variants=state.prefabs.filter(p=>p.basePrefabId).length;
+  const instances=Object.keys(state.instances||{}).length;
+
+  root.textContent=
+`Prefabs: ${state.prefabs.length}
+Variants: ${variants}
+Tracked instances: ${instances}
+Scene: ${sceneName()}
+
+Instance model:
+Prefab template
++ Variant overrides
++ Instance overrides
+= Final instance`;
+}
+
+async function refreshManager(){
+  await renderEntities();
+  await renderPrefabs();
+  await renderDetails();
+  await renderStatus();
+}
+
+function ensureUI(){
+  const editor=document.getElementById("editor");
+  if(!editor||document.getElementById("prefabV2Manager"))return;
+
+  const ui=document.createElement("section");
+  ui.id="prefabV2Manager";
+  ui.className="prefab-v2-manager";
+
+  ui.innerHTML=`
+    <header class="pfv2-head">
+      <button class="icon-btn" type="button" data-pfv2-close>
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="pfv2-head-title">
+        <strong>PREFAB v2</strong>
+        <small>Linked instances Â· overrides Â· variants Â· nesting</small>
+      </div>
+
+      <button class="icon-btn" type="button" data-pfv2-refresh>
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M20 12a8 8 0 1 1-2-5.3"/>
+          <path d="M20 4v6h-6"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="pfv2-body">
+      <aside class="pfv2-sidebar">
+        <div class="pfv2-section-title">SCENE ENTITIES</div>
+        <div id="pfv2Entities" class="pfv2-list"></div>
+
+        <div class="pfv2-section-title">PREFABS</div>
+        <div id="pfv2Prefabs" class="pfv2-list"></div>
+      </aside>
+
+      <section class="pfv2-center">
+        <div class="pfv2-card">
+          <strong>Create linked Prefab</strong>
+          <p>
+            Select a scene entity. Its children and components are captured
+            into one reusable Prefab asset.
+          </p>
+
+          <div class="pfv2-row">
+            <label>Prefab Name</label>
+            <input id="pfv2CreateName" placeholder="Enemy">
+          </div>
+
+          <div class="pfv2-actions">
+            <button class="primary" type="button" data-pfv2-create>CREATE FROM ENTITY</button>
+          </div>
+        </div>
+
+        <div class="pfv2-card">
+          <strong>Professional instance workflow</strong>
+          <p>
