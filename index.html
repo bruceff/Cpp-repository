@@ -1058,6 +1058,51 @@ svg{
 .tm-template-actions button{width:100%;height:36px;border:1px solid #303b44;border-radius:7px;background:#171e24;color:#8f9ca5;font-size:8px;font-weight:850}
 @media(max-width:700px){.tm-template-dialog{padding:0}.tm-template-sheet{width:100%;border-radius:14px 14px 0 0;border-bottom:0}.tm-template-grid{grid-template-columns:1fr 1fr}}
 
+
+/* TILEMAP ASSET USABILITY v6 */
+.tm-active-tile-info{
+  margin:0 10px 8px;padding:7px 8px;border:1px solid #35553c;border-radius:6px;
+  background:#111a13;color:#91e864;font:8px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.tm-tile.imported{
+  border-color:#45634a;
+}
+.tm-tile.imported:after{
+  content:"A";position:absolute;left:3px;top:3px;min-width:12px;height:12px;
+  display:grid;place-items:center;border-radius:3px;background:#91e864;color:#071006;
+  font:7px ui-monospace,monospace
+}
+.tm-tile.active{
+  border-color:#91e864!important;
+  box-shadow:0 0 0 2px rgba(145,232,100,.32)!important;
+}
+@media(max-width:900px){
+  .tm-studio.palette-open .tm-left{z-index:20}
+}
+
+
+/* TILEMAP PAINT INPUT FIX v7 */
+#tmCanvas{
+  touch-action:none!important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+.tm-paint-live{
+  position:absolute;
+  left:8px;
+  top:8px;
+  z-index:6;
+  max-width:65%;
+  padding:6px 8px;
+  border:1px solid #35553c;
+  border-radius:6px;
+  background:rgba(10,16,13,.90);
+  color:#91e864;
+  font:7px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
+  pointer-events:none;
+}
+
 /* assets */
 .asset-toolbar{display:flex;gap:7px;overflow:auto;margin:8px 0}.asset-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.asset-item{position:relative;min-height:110px;background:#11151a;border:1px solid #242a31;border-radius:10px;overflow:hidden}.asset-preview2{height:75px;display:grid;place-items:center;background:#0b0e11;font-size:35px}.asset-preview2 img{width:100%;height:100%;object-fit:contain}.asset-meta{padding:6px;font-size:10px}.asset-del{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:6px;background:#8f2525}.folder-row{display:flex;gap:7px;overflow:auto;margin-bottom:8px}.folder-chip{padding:7px 10px;border-radius:7px;background:#171c21;color:#aeb6bf;font-size:10px}.folder-chip.active{background:#2878ff;color:#fff}
 /* dictionary/project/audio */
@@ -2947,12 +2992,38 @@ function tmResize(){const c=document.getElementById('tmCanvas'),r=c.parentElemen
 function tmView(){const c=document.getElementById('tmCanvas'),s=tm.size*tm.zoom;return{w:c.clientWidth,h:c.clientHeight,s,x:(c.clientWidth-tm.w*s)/2+tm.pan.x,y:(c.clientHeight-tm.h*s)/2+tm.pan.y}}
 function tmCell(e){const r=document.getElementById('tmCanvas').getBoundingClientRect(),v=tmView(),s=v.s;return{x:Math.floor((e.clientX-r.left-v.x)/s),y:Math.floor((e.clientY-r.top-v.y)/s)}}
 function tmPointerDown(e){
-  e.currentTarget.setPointerCapture?.(e.pointerId);
+  e.preventDefault();
+  e.stopPropagation();
+
+  const canvas=document.getElementById('tmCanvas');
+  canvas?.setPointerCapture?.(e.pointerId);
+
   tm.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(tm.pointers.size===2){tm.pinch=tmPinchState();tm.drawing=false;return}
-  if(tm.panning||tm.tool==='pan'){tm.panning=true;tm.panStart={x:e.clientX-tm.pan.x,y:e.clientY-tm.pan.y};return}
+
+  if(tm.pointers.size===2){
+    tm.pinch=tmPinchState();
+    tm.drawing=false;
+    return
+  }
+
+  if(tm.panning||tm.tool==='pan'){
+    tm.panning=true;
+    tm.panStart={x:e.clientX-tm.pan.x,y:e.clientY-tm.pan.y};
+    return
+  }
+
   const p=tmCell(e);
-  if(p.x<0||p.y<0||p.x>=tm.w||p.y>=tm.h)return;
+  if(p.x<0||p.y<0||p.x>=tm.w||p.y>=tm.h){
+    const live=document.getElementById('tmPaintLive');
+    if(live)live.textContent='Fora da área do mapa';
+    return
+  }
+
+  const activeLayer=tm.layers[tm.layer];
+  if(activeLayer){
+    activeLayer.visible=true;
+    activeLayer.cells=activeLayer.cells||{};
+  }
 
   if(tm.mode==='collision'){
     if(tm.tool==='select'){
@@ -2978,41 +3049,124 @@ function tmPointerDown(e){
     tmRender();tmCollisionStats();return
   }
 
-  if(tm.stampMode&&tm.tool==='paint'&&tm.mode==='edit'){tmSnapshot();tmPlaceStamp(p.x,p.y);tmRender();return}
-  if(tm.tool==='fill'){tmSnapshot();tmFlood(p.x,p.y);tmRender();return}
-  if(tm.tool==='picker'){const v=tm.layers[tm.layer].cells[p.x+','+p.y];if(v!=null){tm.tile=v;tmRenderTiles()}tmSetTool('paint');return}
-  tmSnapshot();tm.drawing=true;tm.start=p;tm.last=p;
-  if(tm.tool==='select'){tm.selection={x:p.x,y:p.y,x2:p.x,y2:p.y};tmRender();return}
-  tmPaintBrush(p.x,p.y)
+  if(tm.stampMode&&tm.tool==='paint'&&tm.mode==='edit'){
+    tmSnapshot();tmPlaceStamp(p.x,p.y);tmRender();return
+  }
+
+  if(tm.tool==='fill'){
+    tmSnapshot();tmFlood(p.x,p.y);tmRender();return
+  }
+
+  if(tm.tool==='picker'){
+    const v=tm.layers[tm.layer].cells[p.x+','+p.y];
+    if(v!=null)tmSelectTile(v);
+    return
+  }
+
+  tmSnapshot();
+  tm.drawing=true;
+  tm.start=p;
+  tm.last=p;
+
+  if(tm.tool==='select'){
+    tm.selection={x:p.x,y:p.y,x2:p.x,y2:p.y};
+    tmRender();return
+  }
+
+  // Paint immediately on touch-down. This makes a single tap enough.
+  if(tm.tool==='paint'||tm.tool==='erase'){
+    tmPaintBrush(p.x,p.y);
+    tmRender();
+
+    const live=document.getElementById('tmPaintLive');
+    const tile=tm.tiles[tm.tile];
+    if(live){
+      live.textContent=tm.tool==='erase'
+        ?`ERASE · ${p.x},${p.y}`
+        :`PAINT · ${tile?.name||('Tile '+(tm.tile+1))} · ${p.x},${p.y}`;
+    }
+  }
 }
 function tmPinchState(){const a=[...tm.pointers.values()];const dx=a[0].x-a[1].x,dy=a[0].y-a[1].y;return{dist:Math.hypot(dx,dy),zoom:tm.zoom,pan:{...tm.pan},mid:{x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2}}}
 function tmPointerMove(e){
   if(tm.pointers.has(e.pointerId))tm.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+
   if(tm.pointers.size>=2&&tm.pinch){
-    const a=[...tm.pointers.values()],dx=a[0].x-a[1].x,dy=a[0].y-a[1].y,dist=Math.max(1,Math.hypot(dx,dy)),factor=dist/tm.pinch.dist;
-    tm.zoom=Math.max(.25,Math.min(8,tm.pinch.zoom*factor));tmRender();return
+    const a=[...tm.pointers.values()],
+      dx=a[0].x-a[1].x,dy=a[0].y-a[1].y,
+      dist=Math.max(1,Math.hypot(dx,dy)),
+      factor=dist/tm.pinch.dist;
+    tm.zoom=Math.max(.25,Math.min(8,tm.pinch.zoom*factor));
+    tmRender();
+    return
   }
-  if(tm.panning&&tm.panStart){tm.pan.x=e.clientX-tm.panStart.x;tm.pan.y=e.clientY-tm.panStart.y;tmRender();return}
+
+  if(tm.panning&&tm.panStart){
+    tm.pan.x=e.clientX-tm.panStart.x;
+    tm.pan.y=e.clientY-tm.panStart.y;
+    tmRender();
+    return
+  }
+
   tmUpdateBrushCursor(e);
   if(!tm.drawing)return;
+
   const p=tmCell(e);
   if(p.x<0||p.y<0||p.x>=tm.w||p.y>=tm.h)return;
 
   if(tm.mode==='collision'){
-    if(tm.tool==='select'){tm.selection.x2=p.x;tm.selection.y2=p.y;tmRender();return}
+    if(tm.tool==='select'){
+      tm.selection.x2=p.x;tm.selection.y2=p.y;tmRender();return
+    }
     if(p.x===tm.last?.x&&p.y===tm.last?.y)return;
     tmCollisionLine(tm.last,p,tm.tool==='erase');
     tm.last=p;tmRender();tmCollisionStats();return
   }
 
-  if(tm.tool==='select'){tm.selection.x2=p.x;tm.selection.y2=p.y;tmRender();return}
+  if(tm.tool==='select'){
+    tm.selection.x2=p.x;tm.selection.y2=p.y;tmRender();return
+  }
+
   if(tm.stampMode&&tm.tool==='paint')return;
   if(p.x===tm.last?.x&&p.y===tm.last?.y)return;
-  tm.last=p;
-  if(tm.tool==='paint'||tm.tool==='erase')tmLine(tm.start,p),tm.start=p;
-  else tmRender()
+
+  if(tm.tool==='paint'||tm.tool==='erase'){
+    tmLine(tm.last,p);
+    tm.last=p;
+    tmRender();
+
+    const live=document.getElementById('tmPaintLive'),tile=tm.tiles[tm.tile];
+    if(live)live.textContent=tm.tool==='erase'
+      ?`ERASE · ${p.x},${p.y}`
+      :`PAINT · ${tile?.name||('Tile '+(tm.tile+1))} · ${p.x},${p.y}`;
+  }else{
+    tm.last=p;
+    tmRender()
+  }
 }
-function tmPointerUp(e){tm.pointers.delete(e.pointerId);if(tm.pointers.size<2)tm.pinch=null;if(tm.drawing){if(tm.tool==='rect')tmDrawRect(tm.start,tmCell(e));if(tm.tool==='select')tmNormalizeSelection();tm.drawing=false;tm.start=null;tm.last=null;tmRender()}if(tm.panning&&tm.panStart&&tm.pointers.size===0){tm.pan.x=e.clientX-tm.panStart.x;tm.pan.y=e.clientY-tm.panStart.y;tm.panStart=null;tm.panning=false;tmRender()}}
+function tmPointerUp(e){
+  e.preventDefault();
+  tm.pointers.delete(e.pointerId);
+
+  if(tm.pointers.size<2)tm.pinch=null;
+
+  if(tm.drawing){
+    if(tm.tool==='rect')tmDrawRect(tm.start,tmCell(e));
+    if(tm.tool==='select')tmNormalizeSelection();
+    tm.drawing=false;
+    tm.start=null;
+    tm.last=null;
+    tmRender()
+  }
+
+  if(tm.panning&&tm.panStart&&tm.pointers.size===0){
+    tm.pan.x=e.clientX-tm.panStart.x;
+    tm.pan.y=e.clientY-tm.panStart.y;
+    tm.panStart=null;
+    tm.panning=false;
+    tmRender()
+  }
+}
 function tmPointerLeave(){document.getElementById('tmBrushPreview')?.style.setProperty('display','none')}
 function tmUpdateBrushCursor(e){const b=document.getElementById('tmBrushPreview');if(!b)return;if(tm.tool==='paint'||tm.tool==='erase'){const r=document.getElementById('tmCanvas').getBoundingClientRect(),v=tmView(),s=v.s;const p=tmCell(e);b.style.display='block';b.style.left=(v.x+p.x*s)+'px';b.style.top=(v.y+p.y*s)+'px';b.style.width=(s*tm.brush)+'px';b.style.height=(s*tm.brush)+'px'}else b.style.display='none'}
 function tmRenderBrush(){tmRender()}
@@ -3029,7 +3183,77 @@ function tmFlood(x,y){const L=tm.layers[tm.layer],k=x+','+y,old=L.cells[k]??null
 function tmSnapshot(){tm.history.push(JSON.stringify(tm.layers));if(tm.history.length>60)tm.history.shift();tm.future=[]}
 function tmUndo(){if(!tm.history.length)return;tm.future.push(JSON.stringify(tm.layers));tm.layers=JSON.parse(tm.history.pop());tm.layer=Math.min(tm.layer,tm.layers.length-1);tmRenderLayers();tmRender()}function tmRedo(){if(!tm.future.length)return;tm.history.push(JSON.stringify(tm.layers));tm.layers=JSON.parse(tm.future.pop());tm.layer=Math.min(tm.layer,tm.layers.length-1);tmRenderLayers();tmRender()}
 function tmRender(){const c=document.getElementById('tmCanvas');if(!tm.ctx)return;const ctx=tm.ctx,v=tmView(),s=v.s;ctx.clearRect(0,0,c.clientWidth,c.clientHeight);ctx.fillStyle='#080b0e';ctx.fillRect(0,0,c.clientWidth,c.clientHeight);ctx.save();ctx.translate(v.x,v.y);for(const L of tm.layers){if(!L.visible)continue;ctx.globalAlpha=L.opacity??1;if(tm.mode==='edit'||tm.mode==='height'){for(const [k,id] of Object.entries(L.cells||{})){const [x,y]=k.split(',').map(Number),T=tm.tiles[id];if(T?.canvas){ctx.imageSmoothingEnabled=false;ctx.drawImage(T.canvas,x*s,y*s,s,s)}else{ctx.fillStyle=T?.color||'#444';ctx.fillRect(x*s,y*s,s+.5,s+.5)}}}if(tm.mode==='collision'&&tm.collisionPreview!=='hidden'){for(const k of Object.keys(L.collision||{})){const [x,y]=k.split(',').map(Number);if(tm.collisionPreview==='outline'){ctx.strokeStyle='rgba(255,95,95,.95)';ctx.lineWidth=Math.max(1,2/tm.zoom);ctx.strokeRect(x*s+1,y*s+1,s-2,s-2)}else{ctx.fillStyle='rgba(240,95,95,.48)';ctx.fillRect(x*s,y*s,s,s);ctx.strokeStyle='rgba(255,145,145,.9)';ctx.lineWidth=Math.max(1,1/tm.zoom);ctx.strokeRect(x*s+.5,y*s+.5,s-1,s-1)}}}if(tm.mode==='navigation'){ctx.fillStyle='rgba(75,180,255,.38)';for(const k of Object.keys(L.navigation||{})){const [x,y]=k.split(',').map(Number);ctx.fillRect(x*s,y*s,s,s)}}if(tm.mode==='edit'&&tm.collisionPreview==='overlay'){ctx.fillStyle='rgba(240,95,95,.13)';for(const k of Object.keys(L.collision||{})){const [x,y]=k.split(',').map(Number);ctx.fillRect(x*s,y*s,s,s)}}}ctx.globalAlpha=1;if(tm.grid){ctx.strokeStyle='rgba(110,125,140,.2)';ctx.lineWidth=1;for(let x=0;x<=tm.w;x++){ctx.beginPath();ctx.moveTo(x*s+.5,0);ctx.lineTo(x*s+.5,tm.h*s);ctx.stroke()}for(let y=0;y<=tm.h;y++){ctx.beginPath();ctx.moveTo(0,y*s+.5);ctx.lineTo(tm.w*s,y*s+.5);ctx.stroke()}}if(tm.selection){const a=tmNormalizedSelection();ctx.strokeStyle='#74c5ff';ctx.setLineDash([5,4]);ctx.lineWidth=2;ctx.strokeRect(a.x*s+.5,a.y*s+.5,(a.x2-a.x+1)*s-1,(a.y2-a.y+1)*s-1);ctx.setLineDash([])}ctx.strokeStyle='#3b556b';ctx.strokeRect(.5,.5,tm.w*s-1,tm.h*s-1);ctx.restore();document.getElementById('tmStatus').textContent=`${tm.w} × ${tm.h} · ${tm.size}px · ${Math.round(tm.zoom*100)}% · ${tm.mode.toUpperCase()}`;document.getElementById('tmZoomReadout').textContent=Math.round(tm.zoom*100)+'%';tmRenderPreview()}
-function tmRenderTiles(){const el=document.getElementById('tmTiles');if(!el)return;el.innerHTML=tm.tiles.map((t,i)=>`<button class="tm-tile ${i===tm.tile?'active':''}" title="${escapeHTML(t.name)}" onclick="tm.tile=${i};tmRenderTiles()"><canvas width="32" height="32" data-tile="${i}"></canvas><span class="tm-tile-index">${i+1}</span></button>`).join('');el.querySelectorAll('canvas').forEach(c=>{const i=+c.dataset.tile,x=c.getContext('2d');x.imageSmoothingEnabled=false;if(tm.tiles[i].canvas)x.drawImage(tm.tiles[i].canvas,0,0,32,32);else{x.fillStyle=tm.tiles[i].color||'#444';x.fillRect(0,0,32,32)}})}
+function tmSelectTile(index,keepPalette=true){
+  index=Number(index);
+  if(!Number.isInteger(index)||index<0||index>=tm.tiles.length)return;
+
+  tm.tile=index;
+  tm.mode='edit';
+  tm.stampMode=false;
+  tm.autotile=false;
+  tm.tool='paint';
+  tm.panning=false;
+  tm.panStart=null;
+  tm.selection=null;
+
+  const L=tm.layers[tm.layer];
+  if(L){L.visible=true;L.locked=false;L.cells=L.cells||{}}
+
+  document.querySelectorAll('[data-tm-mode]').forEach(b=>b.classList.toggle('active',b.dataset.tmMode==='edit'));
+  document.querySelectorAll('[data-tm-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmTool==='paint'));
+  document.querySelectorAll('[data-tm-mobile-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmMobileTool==='paint'));
+
+  tmRenderTiles();
+  tmRenderLayers();
+  tmAutotileStatus();
+
+  const tile=tm.tiles[index],label=tile?.name||('Tile '+(index+1));
+  const info=document.getElementById('tmActiveTileInfo');
+  const live=document.getElementById('tmPaintLive');
+  if(info)info.textContent=`PINTANDO: ${label} · toque no mapa`;
+  if(live)live.textContent=`PAINT · ${label}`;
+
+  requestAnimationFrame(()=>{
+    document.querySelector(`.tm-tile[data-tile-button="${index}"]`)?.scrollIntoView({
+      block:'nearest',inline:'nearest'
+    });
+  });
+
+  // On mobile, selecting the tile must return immediately to the canvas.
+  if(innerWidth<=900){
+    document.getElementById('tmStudio')?.classList.remove('palette-open','right-open');
+  }
+
+  tmRender();
+}
+function tmRenderTiles(){
+  const el=document.getElementById('tmTiles');if(!el)return;
+
+  el.innerHTML=tm.tiles.map((t,i)=>`
+    <button
+      class="tm-tile ${i===tm.tile?'active':''} ${t.assetId!=null?'imported':''}"
+      data-tile-button="${i}"
+      title="${escapeHTML(t.name)}"
+      onclick="tmSelectTile(${i})">
+      <canvas width="32" height="32" data-tile="${i}"></canvas>
+      <span class="tm-tile-index">${i+1}</span>
+    </button>
+  `).join('');
+
+  el.querySelectorAll('canvas').forEach(c=>{
+    const i=+c.dataset.tile,x=c.getContext('2d');
+    x.imageSmoothingEnabled=false;
+    if(tm.tiles[i].canvas)x.drawImage(tm.tiles[i].canvas,0,0,32,32);
+    else{
+      x.fillStyle=tm.tiles[i].color||'#444';
+      x.fillRect(0,0,32,32)
+    }
+  });
+
+  const info=document.getElementById('tmActiveTileInfo');
+  const t=tm.tiles[tm.tile];
+  if(info)info.textContent=t?`PINTANDO: ${t.name||('Tile '+(tm.tile+1))} · toque no mapa`:'Nenhum tile selecionado'
+}
 function tmRenderLayers(){
   const el=document.getElementById('tmLayers');if(!el)return;
   el.innerHTML=tm.layers.map((l,i)=>`
@@ -3045,7 +3269,14 @@ function tmRenderLayers(){
   `).join('')
 }
 function tmRenderPreview(){const el=document.getElementById('tmPreview');if(!el)return;el.innerHTML='';const c=document.createElement('canvas');c.width=tm.w;c.height=tm.h;c.style.width=Math.min(760,Math.max(120,tm.w*3))+'px';c.style.height=Math.min(72,Math.max(30,tm.h*3))+'px';const x=c.getContext('2d');x.imageSmoothingEnabled=false;for(const L of tm.layers){if(!L.visible)continue;for(const [k,id] of Object.entries(L.cells||{})){const [a,b]=k.split(',').map(Number),t=tm.tiles[id];if(t?.canvas)x.drawImage(t.canvas,a,b,1,1);else{x.fillStyle=t?.color||'#444';x.fillRect(a,b,1,1)}}}el.appendChild(c)}
-function tmSetTool(t){tm.tool=t;document.querySelectorAll('[data-tm-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmTool===t));document.querySelectorAll('[data-tm-mobile-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmMobileTool===t));if(t==='pan')tm.panning=true;else if(!tm.pointers.size)tm.panning=false}
+function tmSetTool(t){
+  tm.tool=t;
+  document.querySelectorAll('[data-tm-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmTool===t));
+  document.querySelectorAll('[data-tm-mobile-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tmMobileTool===t));
+  if(t==='pan')tm.panning=true;else if(!tm.pointers.size)tm.panning=false;
+  const info=document.getElementById('tmActiveTileInfo'),tile=tm.tiles[tm.tile];
+  if(info&&tile&&t==='paint')info.textContent=`PINTANDO: ${tile.name||('Tile '+(tm.tile+1))} · toque no mapa`
+}
 function tmSetMode(m){tm.mode=m;document.querySelectorAll('[data-tm-mode]').forEach(b=>b.classList.toggle('active',b.dataset.tmMode===m));tmRender();tmCollisionStats()}
 function tmZoom(z,anchor){const old=tm.zoom,next=Math.max(.25,Math.min(8,old*z));if(anchor){const c=document.getElementById('tmCanvas').getBoundingClientRect(),v=tmView(),px=anchor.x-c.left,py=anchor.y-c.top;const wx=(px-v.x)/v.s,wy=(py-v.y)/v.s;tm.zoom=next;const nv=tmView();tm.pan.x+=px-(nv.x+wx*nv.s);tm.pan.y+=py-(nv.y+wy*nv.s)}else tm.zoom=next;tmRender()}
 function tmToggleGrid(){tm.grid=!tm.grid;tmRender()}
@@ -3066,7 +3297,23 @@ function tmMoveLayer(delta){
 function tmClearLayer(){tmSnapshot();tm.layers[tm.layer].cells={};tm.layers[tm.layer].collision={};tm.layers[tm.layer].navigation={};tmRender()}
 function tmResizeMap(){const w=Math.max(1,Math.min(500,+document.getElementById('tmMapW').value||40)),h=Math.max(1,Math.min(500,+document.getElementById('tmMapH').value||25));tmSnapshot();tm.w=w;tm.h=h;for(const L of tm.layers)for(const prop of ['cells','collision','navigation'])for(const k of Object.keys(L[prop]||{})){const [x,y]=k.split(',').map(Number);if(x>=w||y>=h)delete L[prop][k]}tmRender()}
 function tmChangeSize(){tm.size=+document.getElementById('tmTileSize').value;tmRender()}
-function tmImportFile(f){const img=new Image();img.onload=()=>{const size=tm.size,cols=Math.floor(img.width/size),rows=Math.floor(img.height/size);tm.tiles=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const cv=document.createElement('canvas');cv.width=size;cv.height=size;const cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;cx.drawImage(img,x*size,y*size,size,size,0,0,size,size);tm.tiles.push({id:tm.tiles.length,name:`Tile ${tm.tiles.length+1}`,canvas:cv,color:null})}tm.tile=0;tmRenderTiles();showToast(`${tm.tiles.length} tiles imported`)};img.src=URL.createObjectURL(f)}
+function tmImportFile(f){
+  const img=new Image();
+  img.onload=()=>{
+    const size=tm.size,cols=Math.floor(img.width/size),rows=Math.floor(img.height/size);
+    tm.tiles=[];
+    for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+      const cv=document.createElement('canvas');cv.width=size;cv.height=size;
+      const cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;
+      cx.drawImage(img,x*size,y*size,size,size,0,0,size,size);
+      tm.tiles.push({id:tm.tiles.length,name:`Tile ${tm.tiles.length+1}`,canvas:cv,color:null,source:'file'})
+    }
+    tmSelectTile(0,true);
+    tmRender();
+    showToast(`${tm.tiles.length} tiles imported · first tile selected`)
+  };
+  img.src=URL.createObjectURL(f)
+}
 function tmImportTileset(e){const f=e.target.files[0];if(f)tmImportFile(f);e.target.value=''}
 
 document.addEventListener('click',e=>{const p=document.getElementById('tmAssetPicker1');if(p&&e.target===p)tmCloseAssetTiles1()});
@@ -3089,7 +3336,29 @@ async function tmImportAssetTile1(id){
     }else{
       const cv=document.createElement('canvas');cv.width=size;cv.height=size;const cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;cx.clearRect(0,0,size,size);cx.drawImage(img,0,0,img.width,img.height,0,0,size,size);imported.push({id:0,name:asset.name||'Asset Tile',canvas:cv,color:null,assetId:asset.id})
     }
-    const start=tm.tiles.length;imported.forEach((tile,i)=>{tile.id=start+i;tm.tiles.push(tile)});tm.tile=start;tmRenderTiles();tmRender();tmCloseAssetTiles1();showToast(imported.length===1?'Tile importado dos Assets':`${imported.length} tiles importados dos Assets`)
+    const start=tm.tiles.length;
+    imported.forEach((tile,i)=>{
+      tile.id=start+i;
+      tile.assetId=tile.assetId??asset.id;
+      tm.tiles.push(tile)
+    });
+
+    tmCloseAssetTiles1();
+
+    // Imported asset becomes the active paint tile immediately.
+    tmSelectTile(start,true);
+    tmRender();
+
+    requestAnimationFrame(()=>{
+      const studio=document.getElementById('tmStudio');
+      if(innerWidth<=900)studio?.classList.add('palette-open');
+      const btn=document.querySelector(`.tm-tile[data-tile-button="${start}"]`);
+      btn?.scrollIntoView({block:'center',inline:'center',behavior:'smooth'})
+    });
+
+    showToast(imported.length===1
+      ?'Tile importado e selecionado · toque no mapa para pintar'
+      :`${imported.length} tiles importados · primeiro tile selecionado`)
   }catch(e){console.error('Tile Asset Import:',e);showToast('Não foi possível importar este Asset')}
 }
 function tmNormalizedSelection(){if(!tm.selection)return null;return{x:Math.min(tm.selection.x,tm.selection.x2),y:Math.min(tm.selection.y,tm.selection.y2),x2:Math.max(tm.selection.x,tm.selection.x2),y2:Math.max(tm.selection.y,tm.selection.y2)}}function tmNormalizeSelection(){if(tm.selection)tm.selection=tmNormalizedSelection()}
@@ -3712,10 +3981,14 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
 <div class="tm-assets-source-hint">Use imagens já salvas nos Assets como tiles. Tilesets maiores são divididos automaticamente pelo Tile size.</div>
 </div>
 <div class="tm-section"><div class="tm-panel-title">EDIT MODE</div><div class="tm-mode-tabs"><button class="active" data-tm-mode="edit" onclick="tmSetMode('edit')">EDIT</button><button data-tm-mode="collision" onclick="tmSetMode('collision')">COLLISION</button><button data-tm-mode="navigation" onclick="tmSetMode('navigation')">NAV</button><button data-tm-mode="height" onclick="tmSetMode('height')">HEIGHT</button></div></div>
-<div class="tm-section"><div class="tm-panel-title">TILES</div><div id="tmTiles" class="tm-tiles"></div></div>
+<div class="tm-section">
+<div class="tm-panel-title">TILES</div>
+<div id="tmActiveTileInfo" class="tm-active-tile-info">Nenhum tile selecionado</div>
+<div id="tmTiles" class="tm-tiles"></div>
+</div>
 <div class="tm-hotkeys">Touch: 1 finger paint · 2 fingers pan · pinch zoom · long press pick<br>Desktop: 1–7 tools · Space pan · wheel zoom</div>
 </aside>
-<div class="tm-viewport" id="tmViewport"><canvas id="tmCanvas"></canvas><div id="tmDrop" class="tm-drop">Drop tileset image</div><div class="tm-gesture-hint">Pinch to zoom · two fingers to pan</div><div class="tm-brush-preview" id="tmBrushPreview"></div></div>
+<div class="tm-viewport" id="tmViewport"><canvas id="tmCanvas"></canvas><div id="tmPaintLive" class="tm-paint-live">PAINT · escolha um tile</div><div id="tmDrop" class="tm-drop">Drop tileset image</div><div class="tm-gesture-hint">Pinch to zoom · two fingers to pan</div><div class="tm-brush-preview" id="tmBrushPreview"></div></div>
 <aside class="tm-right" id="tmLayersPanel">
 <div class="tm-panel-title">MAP</div>
 <div class="tm-control"><label>NAME</label><input id="tmMapName" class="tool-input" value="New Tilemap"></div>
