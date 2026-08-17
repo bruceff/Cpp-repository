@@ -975,6 +975,31 @@ svg{
 .snd-mobile-bar{display:none}
 @media(max-width:700px){.snd-shell{height:calc(100vh - 104px);min-height:520px;border-radius:9px}.snd-tabs{display:none}.snd-page{padding:9px 8px 76px}.snd-toolbar{padding:5px 7px}.snd-tool-btn{display:none}.snd-inline input[type=range]{width:70px}.snd-sequencer{min-width:650px}.snd-track{grid-template-columns:78px repeat(16,1fr)}.snd-knob-grid{grid-template-columns:1fr 1fr}.snd-drum-pads{grid-template-columns:1fr 1fr}.snd-mixer{grid-template-columns:1fr 1fr}.snd-mobile-bar{position:absolute;left:0;right:0;bottom:0;z-index:20;display:flex;min-height:58px;padding:5px 7px calc(5px + env(safe-area-inset-bottom));border-top:1px solid #27313a;background:#0d1318}.snd-mobile-bar button{flex:1;background:none;color:#65727c}.snd-mobile-bar button.active{color:#91e864;background:#141d16;border-radius:7px}.snd-mobile-bar span,.snd-mobile-bar small{display:block}.snd-mobile-bar span{font-size:15px}.snd-mobile-bar small{margin-top:2px;font-size:7px}}
 
+
+/* TILEMAP — IMPORT FROM ASSETS v1 */
+.tm-assets-source-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tm-assets-source-row .tool-btn{width:100%;min-width:0}
+.tm-assets-source-hint{margin-top:6px;color:#5e6c76;font-size:7px;line-height:1.45}
+.tm-asset-picker{position:fixed;inset:0;z-index:1200;display:none;align-items:flex-end;justify-content:center;padding:14px;background:rgba(0,0,0,.72);backdrop-filter:blur(6px)}
+.tm-asset-picker.show{display:flex}
+.tm-asset-sheet{width:min(720px,100%);max-height:min(78vh,700px);display:flex;flex-direction:column;overflow:hidden;border:1px solid #303b44;border-radius:14px;background:#0e1419;box-shadow:0 18px 55px rgba(0,0,0,.48)}
+.tm-asset-head{min-height:57px;padding:9px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #28323b;background:#11181e}
+.tm-asset-head>div{flex:1;min-width:0}.tm-asset-head strong{display:block;color:#dce4e9;font-size:10px}.tm-asset-head small{display:block;margin-top:3px;color:#63717b;font-size:8px}
+.tm-asset-head button{width:36px;height:36px;border:1px solid #303b44;border-radius:8px;background:#171e24;color:#89969f;font-size:18px}
+.tm-asset-search-row{padding:8px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;border-bottom:1px solid #252f37}
+.tm-asset-search-row span{min-width:42px;text-align:center;padding:6px;border:1px solid #2d3942;border-radius:6px;background:#0a0f13;color:#71808a;font:8px ui-monospace,monospace}
+.tm-asset-grid{flex:1;min-height:0;overflow:auto;padding:9px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.tm-asset-card{min-width:0;padding:7px;border:1px solid #29343d;border-radius:9px;background:#11171c;color:#8d99a2;text-align:left;touch-action:manipulation}
+.tm-asset-card:active{border-color:#56734d;background:#162018}
+.tm-asset-thumb{width:100%;aspect-ratio:1;display:grid;place-items:center;overflow:hidden;margin-bottom:6px;border-radius:6px;background:#12181d}
+.tm-asset-thumb img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.tm-asset-card strong{display:block;color:#b5bec5;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tm-asset-card small{display:block;margin-top:3px;color:#5f6c76;font-size:7px}
+.tm-asset-empty{grid-column:1/-1;padding:28px 12px;text-align:center;color:#62707a;font-size:9px;line-height:1.55}
+.tm-asset-foot{min-height:50px;padding:7px 9px;display:flex;align-items:center;gap:8px;border-top:1px solid #28323b;background:#11181e}
+.tm-asset-foot span{flex:1;color:#697781;font-size:8px}.tm-asset-foot b{color:#9aa7b0}
+.tm-asset-foot button{height:34px;padding:0 11px;border:1px solid #303b44;border-radius:7px;background:#171e24;color:#8f9ca5;font-size:8px;font-weight:850}
+@media(max-width:700px){.tm-asset-picker{padding:0}.tm-asset-sheet{width:100%;max-height:82vh;border-radius:14px 14px 0 0;border-bottom:0}.tm-asset-grid{grid-template-columns:repeat(3,minmax(0,1fr));padding-bottom:14px}}
+
 /* assets */
 .asset-toolbar{display:flex;gap:7px;overflow:auto;margin:8px 0}.asset-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.asset-item{position:relative;min-height:110px;background:#11151a;border:1px solid #242a31;border-radius:10px;overflow:hidden}.asset-preview2{height:75px;display:grid;place-items:center;background:#0b0e11;font-size:35px}.asset-preview2 img{width:100%;height:100%;object-fit:contain}.asset-meta{padding:6px;font-size:10px}.asset-del{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:6px;background:#8f2525}.folder-row{display:flex;gap:7px;overflow:auto;margin-bottom:8px}.folder-chip{padding:7px 10px;border-radius:7px;background:#171c21;color:#aeb6bf;font-size:10px}.folder-chip.active{background:#2878ff;color:#fff}
 /* dictionary/project/audio */
@@ -2891,6 +2916,30 @@ function tmResizeMap(){const w=Math.max(1,Math.min(500,+document.getElementById(
 function tmChangeSize(){tm.size=+document.getElementById('tmTileSize').value;tmRender()}
 function tmImportFile(f){const img=new Image();img.onload=()=>{const size=tm.size,cols=Math.floor(img.width/size),rows=Math.floor(img.height/size);tm.tiles=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const cv=document.createElement('canvas');cv.width=size;cv.height=size;const cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;cx.drawImage(img,x*size,y*size,size,size,0,0,size,size);tm.tiles.push({id:tm.tiles.length,name:`Tile ${tm.tiles.length+1}`,canvas:cv,color:null})}tm.tile=0;tmRenderTiles();showToast(`${tm.tiles.length} tiles imported`)};img.src=URL.createObjectURL(f)}
 function tmImportTileset(e){const f=e.target.files[0];if(f)tmImportFile(f);e.target.value=''}
+
+document.addEventListener('click',e=>{const p=document.getElementById('tmAssetPicker1');if(p&&e.target===p)tmCloseAssetTiles1()});
+function tmOpenAssetTiles1(){const p=document.getElementById('tmAssetPicker1');if(!p)return;document.getElementById('tmAssetTileSize1').textContent=tm.size+'px';document.getElementById('tmAssetSearch1').value='';tmRenderAssetTiles1();p.classList.add('show')}
+function tmCloseAssetTiles1(){document.getElementById('tmAssetPicker1')?.classList.remove('show')}
+function tmAssetImages1(){const q=(document.getElementById('tmAssetSearch1')?.value||'').trim().toLowerCase();return assets2.filter(a=>String(a.type||'').startsWith('image/')&&(!q||String(a.name||'').toLowerCase().includes(q)))}
+function tmRenderAssetTiles1(){
+  const root=document.getElementById('tmAssetGrid1'),count=document.getElementById('tmAssetCount1');if(!root)return;
+  const all=assets2.filter(a=>String(a.type||'').startsWith('image/')),list=tmAssetImages1();if(count)count.textContent=list.length+'/'+all.length;
+  root.innerHTML=list.length?list.map(a=>`<button class="tm-asset-card" onclick="tmImportAssetTile1('${String(a.id).replace(/'/g,"\\'")}')"><div class="tm-asset-thumb"><img src="${a.data}" alt=""></div><strong>${escapeHTML(a.name||'Image')}</strong><small>Toque para importar</small></button>`).join(''):`<div class="tm-asset-empty">${all.length?'Nenhuma imagem corresponde à busca.':'Ainda não existem imagens nos Assets.<br>Crie uma arte ou importe uma imagem primeiro.'}</div>`
+}
+function tmImageFromAsset1(asset){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=asset.data})}
+async function tmImportAssetTile1(id){
+  const asset=assets2.find(a=>String(a.id)===String(id));if(!asset||!String(asset.type||'').startsWith('image/'))return;
+  try{
+    const img=await tmImageFromAsset1(asset),size=tm.size,exact=img.width===size&&img.height===size,canSlice=img.width>=size&&img.height>=size&&img.width%size===0&&img.height%size===0,imported=[];
+    if(canSlice&&!exact){
+      const cols=Math.floor(img.width/size),rows=Math.floor(img.height/size);
+      for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const cv=document.createElement('canvas');cv.width=size;cv.height=size;const cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;cx.drawImage(img,x*size,y*size,size,size,0,0,size,size);imported.push({id:0,name:`${asset.name} · ${x+1},${y+1}`,canvas:cv,color:null,assetId:asset.id})}
+    }else{
+      const cv=document.createElement('canvas');cv.width=size;cv.height=size;const cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;cx.clearRect(0,0,size,size);cx.drawImage(img,0,0,img.width,img.height,0,0,size,size);imported.push({id:0,name:asset.name||'Asset Tile',canvas:cv,color:null,assetId:asset.id})
+    }
+    const start=tm.tiles.length;imported.forEach((tile,i)=>{tile.id=start+i;tm.tiles.push(tile)});tm.tile=start;tmRenderTiles();tmRender();tmCloseAssetTiles1();showToast(imported.length===1?'Tile importado dos Assets':`${imported.length} tiles importados dos Assets`)
+  }catch(e){console.error('Tile Asset Import:',e);showToast('Não foi possível importar este Asset')}
+}
 function tmNormalizedSelection(){if(!tm.selection)return null;return{x:Math.min(tm.selection.x,tm.selection.x2),y:Math.min(tm.selection.y,tm.selection.y2),x2:Math.max(tm.selection.x,tm.selection.x2),y2:Math.max(tm.selection.y,tm.selection.y2)}}function tmNormalizeSelection(){if(tm.selection)tm.selection=tmNormalizedSelection()}
 function tmSelectionAction(action){const a=tmNormalizedSelection();if(!a)return showToast('Select an area first');const L=tm.layers[tm.layer];if(action==='clear'){tmSnapshot();for(let y=a.y;y<=a.y2;y++)for(let x=a.x;x<=a.x2;x++)delete L.cells[x+','+y];tmRender();return}const data=[];for(let y=a.y;y<=a.y2;y++)for(let x=a.x;x<=a.x2;x++)data.push({x:x-a.x,y:y-a.y,id:L.cells[x+','+y]});if(action==='copy'){tm.clipboard={w:a.x2-a.x+1,h:a.y2-a.y+1,data};showToast('Selection copied');return}if(action==='duplicate'){tmSnapshot();const ox=a.x2+1;data.forEach(d=>{if(d.id!=null&&ox+d.x<tm.w&&a.y+d.y<tm.h)L.cells[(ox+d.x)+','+(a.y+d.y)]=d.id});tmRender();return}if(action==='flip'){tmSnapshot();for(const d of data){const src=L.cells[(a.x+d.x)+','+(a.y+d.y)];if(src!=null)L.cells[(a.x+(a.x2-a.x-d.x))+','+(a.y+d.y)]=src}tmRender()}}
 function tmSaveResource(){const name=(document.getElementById('tmMapName').value||'New Tilemap').trim();const resources=JSON.parse(localStorage.getItem('snake_global_tilemaps')||'[]');const data={id:Date.now(),name,w:tm.w,h:tm.h,size:tm.size,mode:tm.mode,layers:tm.layers,tiles:tm.tiles.map(t=>({id:t.id,name:t.name,color:t.color,data:t.canvas?t.canvas.toDataURL('image/png'):null}))};const i=resources.findIndex(x=>x.name===name);if(i>=0)resources[i]=data;else resources.push(data);localStorage.setItem('snake_global_tilemaps',JSON.stringify(resources));localStorage.setItem('myengine_tilemap',JSON.stringify(tm));showToast('Tilemap saved to global library')}
@@ -3165,7 +3214,15 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
 <div class="tm-panel-title">TILESET</div>
 <div class="tm-control"><label>Tile size</label><select id="tmTileSize" onchange="tmChangeSize()"><option>8</option><option>16</option><option selected>32</option><option>48</option><option>64</option></select></div>
 <div class="tm-control"><label>BRUSH SIZE</label><input class="tm-range" id="tmBrushSize" type="range" min="1" max="6" value="1" oninput="tm.brush=+this.value;tmRenderBrush()"></div>
-<div class="tm-control"><label>Tileset source</label><button class="tool-btn" style="width:100%" onclick="document.getElementById('tmTileInput').click()">Import tileset</button><input id="tmTileInput" type="file" accept="image/*" hidden onchange="tmImportTileset(event)"></div>
+<div class="tm-control">
+<label>Tileset source</label>
+<div class="tm-assets-source-row">
+  <button class="tool-btn" onclick="tmOpenAssetTiles1()">DOS ASSETS</button>
+  <button class="tool-btn" onclick="document.getElementById('tmTileInput').click()">ARQUIVO</button>
+</div>
+<input id="tmTileInput" type="file" accept="image/*" hidden onchange="tmImportTileset(event)">
+<div class="tm-assets-source-hint">Use imagens já salvas nos Assets como tiles. Tilesets maiores são divididos automaticamente pelo Tile size.</div>
+</div>
 <div class="tm-section"><div class="tm-panel-title">EDIT MODE</div><div class="tm-mode-tabs"><button class="active" data-tm-mode="edit" onclick="tmSetMode('edit')">EDIT</button><button data-tm-mode="collision" onclick="tmSetMode('collision')">COLLISION</button><button data-tm-mode="navigation" onclick="tmSetMode('navigation')">NAV</button><button data-tm-mode="height" onclick="tmSetMode('height')">HEIGHT</button></div></div>
 <div class="tm-section"><div class="tm-panel-title">TILES</div><div id="tmTiles" class="tm-tiles"></div></div>
 <div class="tm-hotkeys">Touch: 1 finger paint · 2 fingers pan · pinch zoom · long press pick<br>Desktop: 1–7 tools · Space pan · wheel zoom</div>
@@ -3187,6 +3244,24 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
 <button type="button" onclick="tmTogglePanel('palette')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1.5a2.5 2.5 0 0 0 0-5H12a2 2 0 0 1 0-4h2a7 7 0 0 0 0-14Z"/><circle cx="7" cy="10" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></svg><span>Tiles</span></button>
 <button type="button" onclick="tmTogglePanel('layers')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg><span>Layers</span></button>
 </nav>
+</div>
+
+<div id="tmAssetPicker1" class="tm-asset-picker">
+  <div class="tm-asset-sheet">
+    <header class="tm-asset-head">
+      <div><strong>IMPORTAR DOS ASSETS</strong><small>Escolha uma imagem para virar tile ou tileset</small></div>
+      <button onclick="tmCloseAssetTiles1()">×</button>
+    </header>
+    <div class="tm-asset-search-row">
+      <input id="tmAssetSearch1" class="tool-input" placeholder="Buscar imagem..." oninput="tmRenderAssetTiles1()">
+      <span id="tmAssetCount1">0</span>
+    </div>
+    <div id="tmAssetGrid1" class="tm-asset-grid"></div>
+    <footer class="tm-asset-foot">
+      <span>Tile size atual: <b id="tmAssetTileSize1">32px</b></span>
+      <button onclick="tmCloseAssetTiles1()">FECHAR</button>
+    </footer>
+  </div>
 </div>
 </main>
 
