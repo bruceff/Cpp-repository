@@ -2846,13 +2846,31 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
             <button data-art-tool="move" onclick="art2.tool='move';artSyncUI2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M8 11V5a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-4a1.5 1.5 0 0 1 3 0v7c0 5-3 8-7 8-3 0-5-2-6-5l-2-4a1.5 1.5 0 0 1 3-1Z"/></svg><small>Move</small></button>
             <button onclick="artUndo2()">↶<small>Undo</small></button><button onclick="artRedo2()">↷<small>Redo</small></button>
           </div>
+          <div id="artSelectionActionsV3" class="art-selection-actions-v3">
+            <button onclick="art2.tool='move';artSyncUI2()">MOVER SELEÇÃO</button>
+            <button onclick="artDeleteSelectionV3()">APAGAR SELEÇÃO</button>
+            <button onclick="artClearSelectionV3()">CANCELAR</button>
+          </div>
           <div class="art-stage art-checker" id="artStage2">
+            <div id="artSelectionBoxV3" class="art-select-box-v3"></div>
             <canvas id="artCanvas2" width="32" height="32"></canvas>
             <div class="art-stagebar"><div><span class="art-badge" id="artInfo2">0, 0</span></div><div><button class="art-mini-btn" id="artGridBtn2" onclick="art2.grid=!art2.grid;artSyncUI2();artRender2()">▦</button><button class="art-mini-btn" id="artOnionBtn2" onclick="art2.onion=!art2.onion;artRender2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4c4 0 7 3 7 7 0 6-3 9-7 9s-7-3-7-9c0-4 3-7 7-7Z"/><path d="M9 9c1-2 5-2 6 0M8 13c2-2 6-2 8 0"/></svg></button></div></div>
           </div>
           <div class="art-bottom">
             <div class="art-panel"><div class="art-panel-title">Brush</div><div class="art-color-row"><input id="artColor2" type="color" value="#111111" onchange="artSetColor2(this.value)"><input id="artHex2" class="tool-input" value="#111111" onchange="artSetColor2(this.value)"></div><input id="artSizeRange2" class="art-range" type="range" min="1" max="32" value="1" oninput="art2.size=+this.value;document.getElementById('artSizeValue2').textContent=this.value"><div class="art-stat">Size: <span id="artSizeValue2">1</span> px</div></div>
-            <div class="art-panel"><div class="art-panel-title">View</div><input class="art-range" type="range" min="2" max="48" value="12" oninput="artSetZoom2(this.value)"><div class="art-stat">Zoom <span id="artZoom2">100%</span></div><div class="tool-row"><button class="tool-btn" onclick="art2.grid=!art2.grid;artRender2()">Grid</button><button class="tool-btn" onclick="artClear2()">Limpar</button></div></div>
+            <div class="art-panel"><div class="art-panel-title">View</div><input class="art-range" type="range" min="2" max="48" value="12" oninput="artSetZoom2(this.value)"><div class="art-stat">Zoom <span id="artZoom2">100%</span></div><div class="tool-row"><button class="tool-btn" onclick="art2.grid=!art2.grid;artRender2()">Grid</button><button class="tool-btn" onclick="artClear2()">Limpar</button></div>
+<div class="art-stat" style="margin-top:9px">Fundo de trabalho</div>
+<div class="art-work-bg-row">
+  <select id="artWorkBgV3" onchange="artSetWorkBackgroundV3(this.value)">
+    <option value="light">Claro</option>
+    <option value="dark">Escuro</option>
+    <option value="checker">Xadrez</option>
+    <option value="custom">Cor personalizada</option>
+  </select>
+  <input id="artWorkBgColorV3" type="color" value="#7d8791" onchange="artSetWorkBackgroundColorV3(this.value)">
+</div>
+<div class="art-hint" style="margin-top:5px">O fundo é apenas visual e não é exportado no PNG.</div>
+</div>
             <div class="art-panel"><div class="art-panel-title">Export / Import</div><div class="tool-row"><button class="tool-btn primary" onclick="artExportPNG2()">PNG</button><button class="tool-btn" onclick="artExportSheet2()">Spritesheet</button><label class="tool-btn" style="display:grid;place-items:center;cursor:pointer">Importar<input type="file" accept="image/*" hidden onchange="artImportImage2(this)"></label></div></div>
           </div>
         </section>
@@ -2860,7 +2878,11 @@ function backToDashboard(){saveProjectWorkspace();document.getElementById('edito
           <div class="art-panel"><div class="art-panel-title">Paleta</div><div id="artPalette2" class="art-palette"></div><button class="tool-btn" style="width:100%;margin-top:7px" onclick="artAddPalette2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nova cor</button></div>
           <div class="art-panel"><div class="art-panel-title">Layers</div><div id="artLayers2" class="art-layers"></div><div class="tool-row"><button class="tool-btn primary" onclick="artAddLayer2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Layer</button><button class="tool-btn" onclick="artDeleteLayer2()">Excluir</button></div><label class="tool-muted">Opacidade <input id="artLayerOpacity2" class="art-range" type="range" min="0" max="100" value="100" oninput="artSetOpacity2(this.value)"></label></div>
           <div class="art-panel"><div class="art-panel-title">Animation</div><div class="tool-row"><button class="tool-btn primary" id="artPlay2" onclick="artPlay2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg></button><button class="tool-btn" onclick="artAddFrame2()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Frame</button><button class="tool-btn" onclick="artDuplicateFrame2()">⧉</button><button class="tool-btn" onclick="artDeleteFrame2()">−</button></div><input class="art-range" type="range" min="1" max="30" value="8" oninput="art2.fps=+this.value;document.getElementById('artFps2').textContent=this.value"><div class="art-stat">FPS: <span id="artFps2">8</span></div><div id="artFrames2" class="art-frames" style="margin-top:7px"></div></div>
-          <div class="art-panel"><div class="art-panel-title">Workflow</div><div class="art-hint">Desenhe com precisão pixel-perfect. <span class="art-kbd">P</span> Pencil · <span class="art-kbd">E</span> Eraser · <span class="art-kbd">F</span> Fill · <span class="art-kbd">G</span> Grid.</div><div class="tool-row"><button class="tool-btn" onclick="artNewDoc2()">Novo sprite</button><button class="tool-btn green" onclick="artSave2()">Salvar recurso</button></div></div>
+          <div class="art-panel"><div class="art-panel-title">Workflow</div>
+<div class="art-hint">Use <b>Select</b> para marcar uma área. Depois use <b>Move</b> para mover somente os pixels selecionados. Nos frames, use ↑ e ↓ para alterar a ordem da animação.</div>
+<div class="tool-row"><button class="tool-btn" onclick="artNewDoc2()">Novo sprite</button><button class="tool-btn green" onclick="artSave2()">Salvar recurso</button></div>
+<button class="art-finish-new" onclick="artFinishAndNewV3()">SALVAR SPRITE + COMEÇAR NOVO</button>
+</div>
         </aside>
       </div>
     </main>
@@ -33269,274 +33291,159 @@ if(document.readyState==="loading"){
 
 
 <style>
-/* =====================================================
-   SNAKE ENGINE — ARTE WORKFLOW v2
-   Selection + frame order + new sprite + work background
-===================================================== */
-.art-select-box-v2{
-  position:absolute;
-  z-index:7;
-  display:none;
-  border:1px dashed #f7f7f7;
-  box-shadow:0 0 0 1px rgba(0,0,0,.9),inset 0 0 0 1px rgba(0,0,0,.35);
-  background:rgba(255,255,255,.045);
-  pointer-events:none;
-}
-.art-select-box-v2.show{display:block}
+/* SNAKE ENGINE — ARTE WORKFLOW v3 */
+.art-work-bg-row{display:grid;grid-template-columns:1fr 48px;gap:6px;margin-top:6px}
+.art-work-bg-row select{height:35px;border:1px solid #303841;border-radius:7px;background:#0b0e11;color:#dfe6ed;padding:0 7px;font-size:9px}
+.art-work-bg-row input[type=color]{width:48px;height:35px;padding:2px;border:1px solid #303841;border-radius:7px;background:#0b0e11}
+.art-finish-new{width:100%;min-height:40px;margin-top:8px;border:1px solid #42643c;border-radius:8px;background:#172219;color:#a7eb97;font-size:9px;font-weight:900;touch-action:manipulation}
 
-.art-frame-order{
-  width:29px!important;
-  height:29px!important;
-  flex:0 0 29px;
-  display:grid;
-  place-items:center;
-  border:1px solid #33404a!important;
-  background:#202830!important;
-  color:#a9b5be!important;
-  font-size:11px!important;
-  touch-action:manipulation;
-}
-.art-frame-order:disabled{opacity:.3}
-.art-frame-index{
-  width:22px;
-  min-width:22px;
-  height:22px;
-  display:grid;
-  place-items:center;
-  border:1px solid #3a4650;
-  border-radius:5px;
-  background:#0e1419;
-  color:#81909a;
-  font:8px ui-monospace,monospace;
-}
-.art-frame.active .art-frame-index{
-  border-color:#fff8;
-  color:#fff;
-}
+.art-selection-actions-v3{display:none;gap:6px;padding:6px 0}
+.art-selection-actions-v3.show{display:flex}
+.art-selection-actions-v3 button{flex:1;min-height:36px;border:1px solid #303943;border-radius:7px;background:#1b2229;color:#dfe6ed;font-size:8px;font-weight:850;touch-action:manipulation}
 
-.art-work-bg-row{
-  display:grid;
-  grid-template-columns:1fr 48px;
-  gap:6px;
-  margin-top:8px;
-}
-.art-work-bg-row select{
-  min-width:0;
-  height:34px;
-  border:1px solid #303841;
-  border-radius:7px;
-  background:#0b0e11;
-  color:#dfe6ed;
-  padding:0 7px;
-  font-size:9px;
-}
-.art-work-bg-row input[type=color]{
-  width:48px;
-  height:34px;
-  padding:2px;
-  border:1px solid #303841;
-  border-radius:7px;
-  background:#0b0e11;
-}
+.art-select-box-v3{position:absolute;z-index:9;display:none;border:2px dashed #fff;box-shadow:0 0 0 1px #000;background:rgba(255,255,255,.06);pointer-events:none}
+.art-select-box-v3.show{display:block}
 
-.art-finish-new{
-  width:100%;
-  margin-top:7px;
-  min-height:39px;
-  border-radius:8px;
-  border:1px solid #3c5838;
-  background:#172219;
-  color:#a6ea95;
-  font-size:9px;
-  font-weight:800;
-  touch-action:manipulation;
-}
-.art-selection-actions{
-  display:none;
-  gap:6px;
-  margin-top:7px;
-}
-.art-selection-actions.show{display:flex}
-.art-selection-actions button{
-  flex:1;
-  min-height:34px;
-  border:1px solid #303943;
-  border-radius:7px;
-  background:#1b2229;
-  color:#dfe6ed;
-  font-size:8px;
-  font-weight:800;
-}
+.art-frame-v3{display:flex;align-items:center;gap:5px;min-height:40px;padding:5px 6px;border-radius:7px;background:#171d23;border:1px solid #2a323a;font-size:10px}
+.art-frame-v3.active{background:#2878ff;color:#fff;border-color:#2878ff}
+.art-frame-v3 .frame-num{width:22px;min-width:22px;height:22px;border:1px solid #3a4650;border-radius:5px;background:#0e1419;color:#87939c;display:grid;place-items:center;font:8px ui-monospace,monospace}
+.art-frame-v3.active .frame-num{color:#fff;border-color:#ffffff80}
+.art-frame-v3 .frame-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.art-frame-v3 button{width:29px;height:29px;border-radius:6px;background:#252d35;color:#d7dfe5;border:1px solid #34404a;touch-action:manipulation}
+.art-frame-v3 button:disabled{opacity:.3}
 </style>
 
 <script>
 /* =====================================================
-   SNAKE ENGINE — ARTE WORKFLOW v2
+   SNAKE ENGINE — ARTE WORKFLOW v3
 ===================================================== */
 (function(){
 "use strict";
 
-if(typeof window.art2==="undefined"){
-  console.warn("Arte Workflow v2: art2 não encontrado.");
-  return;
-}
+const ART_BG_KEY_V3="snake_art_work_background_v3";
 
-const BG_KEY="snake_art_work_background_v2";
-
-art2.selection=art2.selection||null;
+art2.selection=null;
 art2.selectionDraft=null;
 art2.selectionMove=null;
-art2.workBackground=localStorage.getItem(BG_KEY)||"light";
+art2.workBackground=localStorage.getItem(ART_BG_KEY_V3)||"light";
 
-function normRect(a,b){
-  const x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);
+function artNormRectV3(a,b){
   return {
-    x,
-    y,
+    x:Math.min(a.x,b.x),
+    y:Math.min(a.y,b.y),
     w:Math.abs(b.x-a.x)+1,
     h:Math.abs(b.y-a.y)+1
   };
 }
-
-function pointInRect(p,r){
-  return !!r &&
-    p.x>=r.x && p.y>=r.y &&
-    p.x<r.x+r.w && p.y<r.y+r.h;
+function artPointInRectV3(p,r){
+  return !!r&&p.x>=r.x&&p.y>=r.y&&p.x<r.x+r.w&&p.y<r.y+r.h;
 }
-
-function selectionRect(){
+function artSelectionRectV3(){
   return art2.selectionDraft||art2.selection;
 }
 
-function ensureSelectionBox(){
-  const stage=document.getElementById("artStage2");
-  if(!stage)return null;
-
-  let box=document.getElementById("artSelectionBoxV2");
-  if(!box){
-    box=document.createElement("div");
-    box.id="artSelectionBoxV2";
-    box.className="art-select-box-v2";
-    stage.appendChild(box);
-  }
-  return box;
-}
-
-function renderSelection(){
-  const box=ensureSelectionBox();
+function artRenderSelectionV3(){
+  const box=document.getElementById("artSelectionBoxV3");
   const canvas=document.getElementById("artCanvas2");
   const stage=document.getElementById("artStage2");
-  const r=selectionRect();
+  const actions=document.getElementById("artSelectionActionsV3");
+  const r=artSelectionRectV3();
 
-  if(!box||!canvas||!stage||!r||r.w<=0||r.h<=0){
+  if(!box||!canvas||!stage||!r){
     box?.classList.remove("show");
-    document.getElementById("artSelectionActionsV2")?.classList.remove("show");
+    actions?.classList.remove("show");
     return;
   }
 
   const cr=canvas.getBoundingClientRect();
   const sr=stage.getBoundingClientRect();
-
-  const px=cr.width/Math.max(1,art2.w);
-  const py=cr.height/Math.max(1,art2.h);
+  const px=cr.width/art2.w;
+  const py=cr.height/art2.h;
 
   box.style.left=(cr.left-sr.left+r.x*px)+"px";
   box.style.top=(cr.top-sr.top+r.y*py)+"px";
   box.style.width=(r.w*px)+"px";
   box.style.height=(r.h*py)+"px";
   box.classList.add("show");
-
-  document.getElementById("artSelectionActionsV2")?.classList.toggle(
-    "show",
-    !!art2.selection
-  );
+  actions?.classList.toggle("show",!!art2.selection);
 }
 
-function clearSelection(){
+window.artClearSelectionV3=function(){
   art2.selection=null;
   art2.selectionDraft=null;
   art2.selectionMove=null;
-  renderSelection();
-}
+  artRenderSelectionV3();
+};
 
-function deleteSelection(){
+window.artDeleteSelectionV3=function(){
   const r=art2.selection;
   const layer=artActiveLayer2();
   if(!r||!layer||layer.locked)return;
 
   artSaveState2();
-
-  const d=layer.data.data;
   for(let y=r.y;y<r.y+r.h;y++){
     for(let x=r.x;x<r.x+r.w;x++){
       if(x<0||y<0||x>=art2.w||y>=art2.h)continue;
       const i=(y*art2.w+x)*4;
-      d[i]=0;d[i+1]=0;d[i+2]=0;d[i+3]=0;
+      layer.data.data[i]=0;
+      layer.data.data[i+1]=0;
+      layer.data.data[i+2]=0;
+      layer.data.data[i+3]=0;
     }
   }
-
-  clearSelection();
+  artClearSelectionV3();
   artRender2();
-}
+};
 
-function copySelectionPixels(r,layer){
-  const out=new Uint8ClampedArray(r.w*r.h*4);
+function artCopyRegionV3(r,layer){
+  const pixels=new Uint8ClampedArray(r.w*r.h*4);
   for(let y=0;y<r.h;y++){
     for(let x=0;x<r.w;x++){
       const sx=r.x+x,sy=r.y+y;
       if(sx<0||sy<0||sx>=art2.w||sy>=art2.h)continue;
       const si=(sy*art2.w+sx)*4;
       const di=(y*r.w+x)*4;
-      out[di]=layer.data.data[si];
-      out[di+1]=layer.data.data[si+1];
-      out[di+2]=layer.data.data[si+2];
-      out[di+3]=layer.data.data[si+3];
+      for(let k=0;k<4;k++)pixels[di+k]=layer.data.data[si+k];
     }
   }
-  return out;
+  return pixels;
 }
 
-function moveSelectionPixels(from,to){
+function artApplyMoveV3(from,to){
   const layer=artActiveLayer2();
   if(!layer||layer.locked)return;
+  const pixels=artCopyRegionV3(from,layer);
 
-  const pixels=copySelectionPixels(from,layer);
-  const d=layer.data.data;
-
-  // limpa a área original
   for(let y=from.y;y<from.y+from.h;y++){
     for(let x=from.x;x<from.x+from.w;x++){
       if(x<0||y<0||x>=art2.w||y>=art2.h)continue;
       const i=(y*art2.w+x)*4;
-      d[i]=0;d[i+1]=0;d[i+2]=0;d[i+3]=0;
+      layer.data.data[i]=0;
+      layer.data.data[i+1]=0;
+      layer.data.data[i+2]=0;
+      layer.data.data[i+3]=0;
     }
   }
 
-  // cola na nova posição
   for(let y=0;y<from.h;y++){
     for(let x=0;x<from.w;x++){
       const tx=to.x+x,ty=to.y+y;
       if(tx<0||ty<0||tx>=art2.w||ty>=art2.h)continue;
       const si=(y*from.w+x)*4;
       const di=(ty*art2.w+tx)*4;
-      d[di]=pixels[si];
-      d[di+1]=pixels[si+1];
-      d[di+2]=pixels[si+2];
-      d[di+3]=pixels[si+3];
+      for(let k=0;k<4;k++)layer.data.data[di+k]=pixels[si+k];
     }
   }
 }
 
-/* -----------------------------
-   Corrige Select + Move
------------------------------ */
-const oldDown=window.artPointerDown2;
-const oldMove=window.artPointerMove2;
-const oldUp=window.artPointerUp2;
+/* Guarda funções originais antes de substituir. */
+const artPointerDownOriginalV3=artPointerDown2;
+const artPointerMoveOriginalV3=artPointerMove2;
+const artPointerUpOriginalV3=artPointerUp2;
 
-window.artPointerDown2=function(e){
-  if(art2.tool!=="select" && art2.tool!=="move"){
-    return oldDown(e);
+artPointerDown2=function(e){
+  if(art2.tool!=="select"&&art2.tool!=="move"){
+    return artPointerDownOriginalV3(e);
   }
 
   e.preventDefault();
@@ -33546,27 +33453,22 @@ window.artPointerDown2=function(e){
     art2.drawing=true;
     art2.selectStart=p;
     art2.selectionDraft={x:p.x,y:p.y,w:1,h:1};
-    renderSelection();
+    artRenderSelectionV3();
     return;
   }
 
-  // Move só começa quando há uma seleção e o toque está dentro dela.
-  if(art2.tool==="move" && art2.selection && pointInRect(p,art2.selection)){
+  if(art2.tool==="move"&&art2.selection&&artPointInRectV3(p,art2.selection)){
     art2.drawing=true;
-    art2.selectionMove={
-      pointerStart:p,
-      original:{...art2.selection}
-    };
+    art2.selectionMove={start:p,original:{...art2.selection}};
     return;
   }
 
-  // Se não há seleção, Move não altera pixels por acidente.
   art2.drawing=false;
 };
 
-window.artPointerMove2=function(e){
-  if(art2.tool!=="select" && art2.tool!=="move"){
-    return oldMove(e);
+artPointerMove2=function(e){
+  if(art2.tool!=="select"&&art2.tool!=="move"){
+    return artPointerMoveOriginalV3(e);
   }
 
   const p=artPos2(e);
@@ -33576,219 +33478,181 @@ window.artPointerMove2=function(e){
   if(!art2.drawing)return;
 
   if(art2.tool==="select"){
-    art2.selectionDraft=normRect(art2.selectStart,p);
-    renderSelection();
+    art2.selectionDraft=artNormRectV3(art2.selectStart,p);
+    artRenderSelectionV3();
     return;
   }
 
-  if(art2.tool==="move" && art2.selectionMove){
+  if(art2.tool==="move"&&art2.selectionMove){
     const m=art2.selectionMove;
-    const dx=p.x-m.pointerStart.x;
-    const dy=p.y-m.pointerStart.y;
+    const dx=p.x-m.start.x;
+    const dy=p.y-m.start.y;
     const o=m.original;
 
     art2.selection={
       x:Math.max(0,Math.min(art2.w-o.w,o.x+dx)),
       y:Math.max(0,Math.min(art2.h-o.h,o.y+dy)),
-      w:o.w,
-      h:o.h
+      w:o.w,h:o.h
     };
-    renderSelection();
+    artRenderSelectionV3();
   }
 };
 
-window.artPointerUp2=function(e){
-  if(art2.tool!=="select" && art2.tool!=="move"){
-    return oldUp(e);
+artPointerUp2=function(e){
+  if(art2.tool!=="select"&&art2.tool!=="move"){
+    return artPointerUpOriginalV3(e);
   }
-
   if(!art2.drawing)return;
+
   const p=artPos2(e);
 
   if(art2.tool==="select"){
-    art2.selection=normRect(art2.selectStart,p);
+    art2.selection=artNormRectV3(art2.selectStart,p);
     art2.selectionDraft=null;
     art2.selectStart=null;
-  }else if(art2.tool==="move" && art2.selectionMove){
+  }else if(art2.tool==="move"&&art2.selectionMove){
     const original=art2.selectionMove.original;
     const target={...art2.selection};
 
-    if(original.x!==target.x || original.y!==target.y){
+    if(original.x!==target.x||original.y!==target.y){
       artSaveState2();
-      moveSelectionPixels(original,target);
+      artApplyMoveV3(original,target);
     }
-
     art2.selectionMove=null;
   }
 
   art2.drawing=false;
   artRender2();
-  renderSelection();
+  artRenderSelectionV3();
 };
 
-/*
-  Os listeners antigos apontam para as funções originais.
-  Rebind do canvas para que a correção passe a ser a autoridade.
-*/
-function rebindCanvas(){
+function artRebindCanvasV3(){
   const c=document.getElementById("artCanvas2");
-  if(!c||c.dataset.artWorkflowV2==="1")return;
+  if(!c||c.dataset.workflowV3==="1")return;
 
-  c.removeEventListener("pointerdown",oldDown);
-  c.removeEventListener("pointermove",oldMove);
-  c.removeEventListener("pointerup",oldUp);
-  c.removeEventListener("pointercancel",oldUp);
-  c.removeEventListener("pointerleave",oldUp);
+  c.removeEventListener("pointerdown",artPointerDownOriginalV3);
+  c.removeEventListener("pointermove",artPointerMoveOriginalV3);
+  c.removeEventListener("pointerup",artPointerUpOriginalV3);
+  c.removeEventListener("pointercancel",artPointerUpOriginalV3);
+  c.removeEventListener("pointerleave",artPointerUpOriginalV3);
 
-  c.addEventListener("pointerdown",window.artPointerDown2);
-  c.addEventListener("pointermove",window.artPointerMove2);
-  c.addEventListener("pointerup",window.artPointerUp2);
-  c.addEventListener("pointercancel",window.artPointerUp2);
-  c.addEventListener("pointerleave",window.artPointerUp2);
+  c.addEventListener("pointerdown",artPointerDown2);
+  c.addEventListener("pointermove",artPointerMove2);
+  c.addEventListener("pointerup",artPointerUp2);
+  c.addEventListener("pointercancel",artPointerUp2);
+  c.addEventListener("pointerleave",artPointerUp2);
 
-  c.dataset.artWorkflowV2="1";
+  c.dataset.workflowV3="1";
 }
 
-/* -----------------------------
-   Frame order
------------------------------ */
-window.artMoveFrame2=function(index,delta){
-  const to=index+delta;
-  if(index<0||to<0||index>=art2.frames.length||to>=art2.frames.length)return;
+/* FRAME ORDER */
+window.artMoveFrameV3=function(index,delta){
+  const target=index+delta;
+  if(index<0||target<0||index>=art2.frames.length||target>=art2.frames.length)return;
 
   artSaveState2();
+  const selectedFrame=art2.frames[art2.frame];
+  const [moving]=art2.frames.splice(index,1);
+  art2.frames.splice(target,0,moving);
 
-  const current=art2.frames[art2.frame];
-  const [item]=art2.frames.splice(index,1);
-  art2.frames.splice(to,0,item);
-  art2.frame=art2.frames.indexOf(current);
+  art2.frame=art2.frames.indexOf(selectedFrame);
   art2.layers=art2.frames[art2.frame].layers;
-
   artRender2();
-  showToast?.(`Frame movido para ${to+1}`);
 };
 
-const oldRenderLists=window.artRenderLists2;
-window.artRenderLists2=function(){
-  oldRenderLists();
+const artRenderListsOriginalV3=artRenderLists2;
+artRenderLists2=function(){
+  artRenderListsOriginalV3();
 
   const F=document.getElementById("artFrames2");
-  if(!F)return;
-
-  F.innerHTML=art2.frames.map((f,i)=>`
-    <div class="art-frame ${i===art2.frame?"active":""}" onclick="artSelectFrame2(${i})">
-      <span class="art-frame-index">${i+1}</span>
-      <span>${f.name}</span>
-      <button class="art-frame-order" ${i===0?"disabled":""}
-        onclick="event.stopPropagation();artMoveFrame2(${i},-1)" title="Mover frame para cima">↑</button>
-      <button class="art-frame-order" ${i===art2.frames.length-1?"disabled":""}
-        onclick="event.stopPropagation();artMoveFrame2(${i},1)" title="Mover frame para baixo">↓</button>
-      <button onclick="event.stopPropagation();artDuplicateFrame2(${i})" title="Duplicar">⧉</button>
-    </div>
-  `).join("");
+  if(F){
+    F.innerHTML=art2.frames.map((f,i)=>`
+      <div class="art-frame-v3 ${i===art2.frame?"active":""}" onclick="artSelectFrame2(${i})">
+        <span class="frame-num">${i+1}</span>
+        <span class="frame-name">${f.name}</span>
+        <button ${i===0?"disabled":""} onclick="event.stopPropagation();artMoveFrameV3(${i},-1)">↑</button>
+        <button ${i===art2.frames.length-1?"disabled":""} onclick="event.stopPropagation();artMoveFrameV3(${i},1)">↓</button>
+        <button onclick="event.stopPropagation();artDuplicateFrame2(${i})">⧉</button>
+      </div>
+    `).join("");
+  }
 };
 
-/* -----------------------------
-   Fundo de trabalho
------------------------------ */
-function applyWorkBackground(){
+/* FUNDO */
+function artApplyWorkBackgroundV3(){
   const stage=document.getElementById("artStage2");
   if(!stage)return;
 
-  const mode=art2.workBackground||"light";
+  const value=art2.workBackground||"light";
   stage.classList.remove("art-checker");
   stage.style.backgroundImage="none";
 
-  if(mode==="checker"){
+  if(value==="checker"){
     stage.classList.add("art-checker");
     stage.style.backgroundColor="";
-  }else if(mode==="light"){
+  }else if(value==="light"){
     stage.style.backgroundColor="#d8dde2";
-  }else if(mode==="dark"){
-    stage.style.backgroundColor="#20262d";
-  }else if(mode.startsWith("#")){
-    stage.style.backgroundColor=mode;
+  }else if(value==="dark"){
+    stage.style.backgroundColor="#1b2026";
   }else{
-    stage.style.backgroundColor="#d8dde2";
+    stage.style.backgroundColor=value;
   }
 
-  const select=document.getElementById("artWorkBgV2");
-  const custom=document.getElementById("artWorkBgColorV2");
+  const sel=document.getElementById("artWorkBgV3");
+  const color=document.getElementById("artWorkBgColorV3");
 
-  if(select){
-    select.value=mode.startsWith("#")?"custom":mode;
-  }
-  if(custom && mode.startsWith("#")){
-    custom.value=mode;
-  }
+  if(sel)sel.value=value.startsWith("#")?"custom":value;
+  if(color&&value.startsWith("#"))color.value=value;
 }
-
-window.artSetWorkBackgroundV2=function(value){
+window.artSetWorkBackgroundV3=function(value){
   if(value==="custom"){
-    const c=document.getElementById("artWorkBgColorV2")?.value||"#7d8791";
-    art2.workBackground=c;
-  }else{
-    art2.workBackground=value;
+    value=document.getElementById("artWorkBgColorV3")?.value||"#7d8791";
   }
-
-  localStorage.setItem(BG_KEY,art2.workBackground);
-  applyWorkBackground();
-};
-
-window.artSetWorkBackgroundColorV2=function(value){
-  if(!/^#[0-9a-f]{6}$/i.test(value))return;
   art2.workBackground=value;
-  localStorage.setItem(BG_KEY,value);
-
-  const select=document.getElementById("artWorkBgV2");
-  if(select)select.value="custom";
-
-  applyWorkBackground();
+  localStorage.setItem(ART_BG_KEY_V3,value);
+  artApplyWorkBackgroundV3();
+};
+window.artSetWorkBackgroundColorV3=function(value){
+  art2.workBackground=value;
+  localStorage.setItem(ART_BG_KEY_V3,value);
+  const sel=document.getElementById("artWorkBgV3");
+  if(sel)sel.value="custom";
+  artApplyWorkBackgroundV3();
 };
 
-/* -----------------------------
-   Novo sprite e Concluir + Novo
------------------------------ */
-function resetBlankSprite(w=art2.w,h=art2.h){
+/* NOVO SPRITE */
+function artResetBlankV3(w,h){
   art2.playing=false;
-  art2.w=w;
-  art2.h=h;
-  art2.frame=0;
-  art2.layer=0;
+  art2.w=w;art2.h=h;
+  art2.frame=0;art2.layer=0;
   art2.frames=[artBlank(w,h)];
   art2.layers=art2.frames[0].layers;
   art2.history=[];
   art2.future=[];
-  clearSelection();
+  artClearSelectionV3();
   artRender2();
   artResize2();
 }
 
-window.artNewDoc2=function(){
+artNewDoc2=function(){
   const w=Number(prompt("Largura do novo sprite",String(art2.w||32)));
   if(!w||w<1||w>512)return;
-
   const h=Number(prompt("Altura do novo sprite",String(art2.h||w)));
   if(!h||h<1||h>512)return;
 
-  if(!confirm("Criar um sprite vazio? O desenho atual não será apagado dos Assets se já tiver sido salvo."))return;
-
-  resetBlankSprite(w,h);
-  showToast?.("Novo sprite vazio criado");
+  if(!confirm("Criar um sprite vazio agora?"))return;
+  artResetBlankV3(w,h);
+  showToast?.("Novo sprite vazio");
 };
 
-function saveNamedArtAsset(name){
+function artSaveNamedAssetV3(name){
   const o=artComposite2();
   const data=o.toDataURL("image/png");
-
   assets2=assets2||[];
 
-  const safe=String(name||"Sprite").trim()||"Sprite";
-  const id="art-"+Date.now()+"-"+Math.random().toString(36).slice(2,7);
-
   assets2.push({
-    id,
-    name:safe.toLowerCase().endsWith(".png")?safe:safe+".png",
+    id:"art-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),
+    name:/\.png$/i.test(name)?name:name+".png",
     type:"image/png",
     data,
     folder:"root",
@@ -33797,168 +33661,78 @@ function saveNamedArtAsset(name){
 
   saveAssets2?.();
   renderAssets2?.();
-
-  return id;
 }
-
-window.artFinishAndNewV2=function(){
-  const defaultName="Sprite "+new Date().toLocaleTimeString([],{
-    hour:"2-digit",minute:"2-digit"
-  }).replace(":","-");
-
-  const name=prompt("Nome do sprite que será salvo",defaultName);
+window.artFinishAndNewV3=function(){
+  const name=prompt("Nome do sprite","Sprite");
   if(!name)return;
 
-  saveNamedArtAsset(name);
+  artSaveNamedAssetV3(name);
 
-  const keepSize=confirm(
-    "Sprite salvo nos Assets.\n\nOK = iniciar outro sprite com o mesmo tamanho.\nCancelar = escolher outro tamanho."
-  );
+  const same=confirm("Sprite salvo nos Assets.\n\nOK: novo sprite com o mesmo tamanho.\nCancelar: escolher outro tamanho.");
 
-  if(keepSize){
-    resetBlankSprite(art2.w,art2.h);
+  if(same){
+    artResetBlankV3(art2.w,art2.h);
   }else{
-    const w=Number(prompt("Largura do novo sprite",String(art2.w||32)));
+    const w=Number(prompt("Nova largura",String(art2.w)));
     if(!w||w<1||w>512)return;
-    const h=Number(prompt("Altura do novo sprite",String(art2.h||w)));
+    const h=Number(prompt("Nova altura",String(art2.h)));
     if(!h||h<1||h>512)return;
-    resetBlankSprite(w,h);
+    artResetBlankV3(w,h);
   }
 
-  showToast?.("Sprite salvo · canvas pronto para o próximo");
+  showToast?.("Sprite salvo · novo canvas pronto");
 };
 
-/* -----------------------------
-   Mantém selection overlay sincronizado
------------------------------ */
-const oldRender=window.artRender2;
-window.artRender2=function(){
-  const result=oldRender.apply(this,arguments);
+/* Sincronização */
+const artRenderOriginalV3=artRender2;
+artRender2=function(){
+  const result=artRenderOriginalV3.apply(this,arguments);
   requestAnimationFrame(()=>{
-    renderSelection();
-    applyWorkBackground();
+    artRenderSelectionV3();
+    artApplyWorkBackgroundV3();
   });
   return result;
 };
 
-const oldResize=window.artResize2;
-window.artResize2=function(){
-  const result=oldResize.apply(this,arguments);
-  requestAnimationFrame(renderSelection);
-  return result;
+const artResizeOriginalV3=artResize2;
+artResize2=function(){
+  const r=artResizeOriginalV3.apply(this,arguments);
+  requestAnimationFrame(artRenderSelectionV3);
+  return r;
 };
 
-const oldSelectFrame=window.artSelectFrame2;
-window.artSelectFrame2=function(i){
-  clearSelection();
-  return oldSelectFrame(i);
+const artSelectFrameOriginalV3=artSelectFrame2;
+artSelectFrame2=function(i){
+  artClearSelectionV3();
+  return artSelectFrameOriginalV3(i);
 };
 
-const oldClear=window.artClear2;
-window.artClear2=function(){
-  clearSelection();
-  return oldClear();
+const artInitOriginalV3=artInit2;
+artInit2=function(){
+  const r=artInitOriginalV3.apply(this,arguments);
+  artRebindCanvasV3();
+  artApplyWorkBackgroundV3();
+  artRender2();
+  return r;
 };
 
-/* -----------------------------
-   UI
------------------------------ */
-function installUI(){
-  const art=document.getElementById("tool-art");
-  if(!art||art.dataset.workflowV2==="1")return;
-  art.dataset.workflowV2="1";
-
-  ensureSelectionBox();
-
-  // Ações da seleção, logo após a toolstrip.
-  const tools=document.getElementById("artTools2");
-  if(tools){
-    const actions=document.createElement("div");
-    actions.id="artSelectionActionsV2";
-    actions.className="art-selection-actions";
-    actions.innerHTML=`
-      <button type="button" onclick="art2.tool='move';artSyncUI2()">MOVER SELEÇÃO</button>
-      <button type="button" onclick="SnakeArtWorkflowV2.deleteSelection()">APAGAR SELEÇÃO</button>
-      <button type="button" onclick="SnakeArtWorkflowV2.clearSelection()">CANCELAR</button>
-    `;
-    tools.insertAdjacentElement("afterend",actions);
-  }
-
-  // Fundo de trabalho no painel View.
-  const viewPanel=[...art.querySelectorAll(".art-panel")]
-    .find(p=>p.querySelector(".art-panel-title")?.textContent.trim()==="View");
-
-  if(viewPanel){
-    const bg=document.createElement("div");
-    bg.innerHTML=`
-      <div class="art-stat" style="margin-top:8px">Fundo de trabalho</div>
-      <div class="art-work-bg-row">
-        <select id="artWorkBgV2" onchange="artSetWorkBackgroundV2(this.value)">
-          <option value="light">Claro</option>
-          <option value="dark">Escuro</option>
-          <option value="checker">Xadrez</option>
-          <option value="custom">Cor personalizada</option>
-        </select>
-        <input id="artWorkBgColorV2" type="color" value="#7d8791"
-          onchange="artSetWorkBackgroundColorV2(this.value)">
-      </div>
-      <div class="art-hint" style="margin-top:5px">
-        O fundo serve apenas para visualizar. Ele não entra no PNG.
-      </div>
-    `;
-    viewPanel.appendChild(bg);
-  }
-
-  // Workflow mais claro.
-  const workflow=[...art.querySelectorAll(".art-panel")]
-    .find(p=>p.querySelector(".art-panel-title")?.textContent.trim()==="Workflow");
-
-  if(workflow){
-    const btn=document.createElement("button");
-    btn.className="art-finish-new";
-    btn.type="button";
-    btn.textContent="SALVAR SPRITE + COMEÇAR NOVO";
-    btn.onclick=window.artFinishAndNewV2;
-    workflow.appendChild(btn);
-
-    const hint=workflow.querySelector(".art-hint");
-    if(hint){
-      hint.innerHTML=
-        'Selecione uma área com <b>Select</b> e use <b>Move</b> para deslocá-la. '+
-        'Nos frames, use ↑/↓ para alterar a ordem da animação.';
-    }
-  }
-
-  rebindCanvas();
-  applyWorkBackground();
+function artWorkflowInitV3(){
+  artRebindCanvasV3();
+  artApplyWorkBackgroundV3();
   artRender2();
 }
 
-window.SnakeArtWorkflowV2={
-  version:"2.0.0",
-  clearSelection,
-  deleteSelection,
-  renderSelection,
-  applyWorkBackground,
-  resetBlankSprite
-};
-
-const oldArtInit=window.artInit2;
-window.artInit2=function(){
-  const result=oldArtInit.apply(this,arguments);
-  installUI();
-  rebindCanvas();
-  applyWorkBackground();
-  return result;
-};
-
 if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded",()=>{
-    installUI();
-  },{once:true});
+  document.addEventListener("DOMContentLoaded",artWorkflowInitV3,{once:true});
 }else{
-  installUI();
+  artWorkflowInitV3();
 }
+
+window.SnakeArtWorkflowV3={
+  clearSelection:artClearSelectionV3,
+  renderSelection:artRenderSelectionV3,
+  applyBackground:artApplyWorkBackgroundV3
+};
 
 })();
 </script>
