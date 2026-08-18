@@ -13602,6 +13602,51 @@ setTimeout(()=>synchronizeAll().catch(console.error),250);
 
 <style>
 /* =====================================================
+   SNAKE ENGINE — UI SYSTEM v2
+===================================================== */
+.ui2-screen{position:fixed;inset:0;z-index:880;background:#0a0f13;color:#dbe3e8;display:none;flex-direction:column}
+.ui2-screen.show{display:flex}
+.ui2-head{height:58px;min-height:58px;display:flex;align-items:center;gap:9px;padding:0 11px;border-bottom:1px solid #27323a;background:#0d1318}
+.ui2-head button,.ui2-btn{min-height:38px;border:1px solid #2d3942;border-radius:8px;background:#121a20;color:#9aa7b0;padding:0 11px;font-weight:700}
+.ui2-head strong{font-size:13px;letter-spacing:.6px}.ui2-head small{display:block;margin-top:3px;color:#62717b;font-size:8px}
+.ui2-body{flex:1;min-height:0;display:grid;grid-template-columns:210px minmax(0,1fr) 250px;overflow:hidden}
+.ui2-side,.ui2-inspector{min-height:0;overflow:auto;background:#0d1318}
+.ui2-side{border-right:1px solid #27323a}.ui2-inspector{border-left:1px solid #27323a}
+.ui2-center{min-width:0;min-height:0;overflow:auto;padding:12px;background:#080d11}
+.ui2-panel-title{padding:10px 11px;border-bottom:1px solid #26323a;color:#82909a;font-size:8px;font-weight:900;letter-spacing:1.2px}
+.ui2-pad{padding:9px}
+.ui2-element{display:flex;align-items:center;gap:6px;padding:7px;border:1px solid #28343d;border-radius:7px;background:#11181e;margin-bottom:5px}
+.ui2-element.active{border-color:#75db57}.ui2-element strong{font-size:8px}.ui2-element small{display:block;color:#63727c;font-size:7px;margin-top:2px}
+.ui2-element-main{flex:1;min-width:0}
+.ui2-canvas-wrap{min-width:320px;display:flex;justify-content:center}
+.ui2-canvas{position:relative;width:min(390px,100%);aspect-ratio:9/16;border:1px solid #34414b;border-radius:12px;background:#111820;overflow:hidden;box-shadow:0 16px 35px rgba(0,0,0,.38)}
+.ui2-node{position:absolute;box-sizing:border-box;min-width:24px;min-height:24px;border:1px dashed transparent;touch-action:none;user-select:none}
+.ui2-node.selected{border-color:#91e864;box-shadow:0 0 0 1px rgba(145,232,100,.3)}
+.ui2-node.button{display:grid;place-items:center;background:#1b252d;border-radius:8px;color:#dce5e9;font-size:11px}
+.ui2-node.label{color:#dce5e9;font-size:13px}
+.ui2-node.image{background:#1a2229 center/contain no-repeat}
+.ui2-node.progress{border-radius:6px;background:#202a31;overflow:hidden}.ui2-node.progress>span{display:block;height:100%;background:#91e864}
+.ui2-node.container{border:1px dashed #3e4d58;background:rgba(255,255,255,.02)}
+.ui2-row{display:grid;grid-template-columns:90px minmax(0,1fr);gap:7px;align-items:center;margin-bottom:7px;color:#71808a;font-size:8px}
+.ui2-row input,.ui2-row select{width:100%;min-height:34px;border:1px solid #2b3740;border-radius:7px;background:#0a1014;color:#d7e0e5;padding:0 8px}
+.ui2-grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ui2-anchor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.ui2-anchor-grid button{aspect-ratio:1;border:1px solid #2d3942;border-radius:6px;background:#11181e;color:#788790}
+.ui2-anchor-grid button.active{border-color:#74d956;color:#91e864;background:#132016}
+.ui2-bottom{display:none}
+@media(max-width:850px){
+  .ui2-body{grid-template-columns:1fr}
+  .ui2-side,.ui2-inspector{position:absolute;top:58px;bottom:58px;z-index:30;width:min(82vw,330px);display:none;box-shadow:0 10px 35px rgba(0,0,0,.5)}
+  .ui2-side{left:0}.ui2-inspector{right:0}
+  .ui2-side.show,.ui2-inspector.show{display:block}
+  .ui2-center{padding:8px;padding-bottom:72px}
+  .ui2-bottom{display:flex;position:absolute;left:0;right:0;bottom:0;height:58px;background:#0d1318;border-top:1px solid #27323a;z-index:35;padding:5px}
+  .ui2-bottom button{flex:1;border:0;background:transparent;color:#71808a;font-size:8px}.ui2-bottom button.active{color:#91e864;background:#131d16;border-radius:7px}
+}
+</style>
+
+<style>
+/* =====================================================
    SNAKE ENGINE — ANIMATION SYSTEM v2 / ANIMATOR CONTROLLER
 ===================================================== */
 .animator-manager{
@@ -13777,6 +13822,202 @@ setTimeout(()=>synchronizeAll().catch(console.error),250);
   .animator-grid{grid-template-columns:1fr}
 }
 </style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — UI SYSTEM v2
+===================================================== */
+(function(){
+"use strict";
+
+const STORE="snake_ui_system_v2:";
+const state={screens:[],selectedScreen:null,selectedNode:null};
+
+function pid(){return window.currentProjectId||window.currentProject?.id||"default"}
+function key(){return STORE+pid()}
+function uid(p="ui"){return p+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7)}
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function save(){try{localStorage.setItem(key(),JSON.stringify({version:2,screens:state.screens}))}catch(_){}}
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(key())||"null");state.screens=Array.isArray(d?.screens)?d.screens:[]}
+  catch(_){state.screens=[]}
+  if(!state.selectedScreen)state.selectedScreen=state.screens[0]?.id||null
+}
+function screen(){return state.screens.find(x=>x.id===state.selectedScreen)||null}
+function node(){return screen()?.nodes?.find(x=>x.id===state.selectedNode)||null}
+function defaultNode(type){
+  const base={id:uid("node"),type,name:type[0].toUpperCase()+type.slice(1),x:20,y:20,w:120,h:42,anchor:"tl",visible:true,action:"",text:"",value:.5,assetId:""};
+  if(type==="label"){base.text="Label";base.h=30}
+  if(type==="button"){base.text="Button"}
+  if(type==="progress"){base.value=.65;base.h=20}
+  if(type==="image"){base.w=96;base.h=96}
+  if(type==="container"){base.w=200;base.h=160}
+  return base
+}
+
+const Runtime={
+  screens:new Map(),
+  actions:new Map(),
+
+  registerScreen(s){this.screens.set(s.name,s)},
+  sync(){this.screens.clear();for(const s of state.screens)this.registerScreen(clone(s))},
+  getScreen(name){return this.screens.get(name)||null},
+  findNode(idOrName){
+    for(const s of this.screens.values()){
+      const n=s.nodes?.find(x=>x.id===idOrName||x.name===idOrName);
+      if(n)return n
+    }
+    return null
+  },
+  show(name){const s=this.getScreen(name);if(!s)return false;s.visible=true;this.emit("show",{screen:s});return true},
+  hide(name){const s=this.getScreen(name);if(!s)return false;s.visible=false;this.emit("hide",{screen:s});return true},
+  visible(id,v){const n=this.findNode(id);if(!n)return false;n.visible=!!v;return true},
+  text(id,v){const n=this.findNode(id);if(!n)return false;n.text=String(v);return true},
+  progress(id,v){const n=this.findNode(id);if(!n)return false;n.value=Math.max(0,Math.min(1,Number(v)||0));return true},
+  on(action,fn){if(!this.actions.has(action))this.actions.set(action,new Set());this.actions.get(action).add(fn);return fn},
+  off(action,fn){return this.actions.get(action)?.delete(fn)||false},
+  trigger(action,payload){
+    for(const fn of [...(this.actions.get(action)||[])]){try{fn(payload)}catch(e){console.error(e)}}
+    this.emit("action",{action,payload})
+  },
+  emit(name,data){try{window.ScriptRuntimeV2?.emitSignal?.("ui:"+name,data)}catch(_){}}
+};
+
+function ensureUI(){
+  if(document.getElementById("uiSystemV2"))return;
+  const root=document.createElement("section");root.id="uiSystemV2";root.className="ui2-screen";root.setAttribute("aria-hidden","true");
+  root.innerHTML=`
+    <header class="ui2-head">
+      <button data-ui-close>‹</button>
+      <div style="flex:1"><strong>UI SYSTEM v2</strong><small>Responsive HUD · Buttons · Labels · Images · Progress · Containers</small></div>
+      <button data-ui-save>SAVE</button>
+    </header>
+    <div class="ui2-body">
+      <aside class="ui2-side" id="ui2Left">
+        <div class="ui2-panel-title">SCREENS</div><div class="ui2-pad">
+          <button class="ui2-btn ui2-green" style="width:100%" data-new-screen>+ SCREEN</button>
+          <div id="ui2Screens" style="margin-top:8px"></div>
+        </div>
+        <div class="ui2-panel-title">ELEMENTS</div><div class="ui2-pad">
+          <div class="ui2-grid2">
+            <button class="ui2-btn" data-add-node="button">Button</button>
+            <button class="ui2-btn" data-add-node="label">Label</button>
+            <button class="ui2-btn" data-add-node="image">Image</button>
+            <button class="ui2-btn" data-add-node="progress">Progress</button>
+            <button class="ui2-btn" data-add-node="container">Container</button>
+          </div>
+          <div id="ui2Nodes" style="margin-top:8px"></div>
+        </div>
+      </aside>
+      <main class="ui2-center"><div class="ui2-canvas-wrap"><div id="ui2Canvas" class="ui2-canvas"></div></div></main>
+      <aside class="ui2-inspector" id="ui2Right">
+        <div class="ui2-panel-title">INSPECTOR</div><div id="ui2Inspector" class="ui2-pad"></div>
+      </aside>
+    </div>
+    <footer class="ui2-bottom">
+      <button data-ui-mobile="left">ELEMENTS</button><button data-ui-mobile="canvas" class="active">CANVAS</button><button data-ui-mobile="right">INSPECTOR</button>
+    </footer>`;
+  document.body.appendChild(root);
+
+  root.addEventListener("click",e=>{
+    if(e.target.closest("[data-ui-close]"))return close();
+    if(e.target.closest("[data-ui-save]")){save();Runtime.sync();return render()}
+    if(e.target.closest("[data-new-screen]")){
+      const s={id:uid("screen"),name:"Screen "+(state.screens.length+1),visible:true,nodes:[]};state.screens.push(s);state.selectedScreen=s.id;state.selectedNode=null;save();render();return
+    }
+    const add=e.target.closest("[data-add-node]");if(add){
+      const s=screen();if(!s)return;const n=defaultNode(add.dataset.addNode);s.nodes.push(n);state.selectedNode=n.id;save();render();return
+    }
+    const sb=e.target.closest("[data-screen-id]");if(sb){state.selectedScreen=sb.dataset.screenId;state.selectedNode=null;render();return}
+    const nb=e.target.closest("[data-node-id]");if(nb){state.selectedNode=nb.dataset.nodeId;render();return}
+    const ab=e.target.closest("[data-anchor]");if(ab){const n=node();if(n){n.anchor=ab.dataset.anchor;save();render()}return}
+    const mobile=e.target.closest("[data-ui-mobile]");if(mobile){
+      const v=mobile.dataset.uiMobile;
+      document.getElementById("ui2Left")?.classList.toggle("show",v==="left");
+      document.getElementById("ui2Right")?.classList.toggle("show",v==="right");
+      root.querySelectorAll("[data-ui-mobile]").forEach(b=>b.classList.toggle("active",b===mobile));
+    }
+  });
+
+  root.addEventListener("input",e=>{
+    const s=screen(),n=node();
+    if(e.target.dataset.screenName&&s)s.name=e.target.value;
+    if(!n)return;
+    for(const k of ["name","text","action","assetId"])if(e.target.dataset[k]!=null)n[k]=e.target.value;
+    for(const k of ["x","y","w","h","value"])if(e.target.dataset[k]!=null)n[k]=Number(e.target.value)||0;
+    if(e.target.dataset.visible!=null)n.visible=e.target.checked;
+    save();renderCanvas();renderLists()
+  });
+
+  ensureMenu()
+}
+
+function renderLists(){
+  const ss=document.getElementById("ui2Screens"),ns=document.getElementById("ui2Nodes"),s=screen();
+  if(ss)ss.innerHTML=state.screens.map(x=>`<button class="ui2-element ${x.id===state.selectedScreen?"active":""}" data-screen-id="${x.id}" style="width:100%"><span class="ui2-element-main"><strong>${x.name}</strong><small>${x.nodes.length} element(s)</small></span></button>`).join("")||'<div class="ui2-element"><small>No screens.</small></div>';
+  if(ns)ns.innerHTML=(s?.nodes||[]).map(x=>`<button class="ui2-element ${x.id===state.selectedNode?"active":""}" data-node-id="${x.id}" style="width:100%"><span class="ui2-element-main"><strong>${x.name}</strong><small>${x.type}</small></span></button>`).join("")||'<div class="ui2-element"><small>No elements.</small></div>'
+}
+function renderCanvas(){
+  const c=document.getElementById("ui2Canvas"),s=screen();if(!c)return;
+  c.innerHTML=(s?.nodes||[]).filter(n=>n.visible!==false).map(n=>{
+    const style=`left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px;`;
+    const cls=`ui2-node ${n.type} ${n.id===state.selectedNode?"selected":""}`;
+    let body="";
+    if(n.type==="button")body=n.text||"Button";
+    else if(n.type==="label")body=n.text||"Label";
+    else if(n.type==="progress")body=`<span style="width:${Math.max(0,Math.min(1,n.value))*100}%"></span>`;
+    else if(n.type==="image")body="";
+    return `<div class="${cls}" data-node-id="${n.id}" style="${style}${n.type==="image"&&n.assetId?`background-image:url('${n.assetId}')`:""}">${body}</div>`
+  }).join("");
+
+  c.querySelectorAll("[data-node-id]").forEach(el=>{
+    el.onpointerdown=e=>{
+      e.preventDefault();const n=screen()?.nodes.find(x=>x.id===el.dataset.nodeId);if(!n)return;
+      state.selectedNode=n.id;const sx=e.clientX,sy=e.clientY,ox=n.x,oy=n.y;
+      const move=ev=>{n.x=Math.round(ox+ev.clientX-sx);n.y=Math.round(oy+ev.clientY-sy);el.style.left=n.x+"px";el.style.top=n.y+"px"};
+      const up=()=>{document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);save();render()};
+      document.addEventListener("pointermove",move);document.addEventListener("pointerup",up,{once:true})
+    }
+  })
+}
+function renderInspector(){
+  const r=document.getElementById("ui2Inspector"),s=screen(),n=node();if(!r)return;
+  if(!s){r.innerHTML='<div class="ui2-element"><small>Create a screen first.</small></div>';return}
+  if(!n){r.innerHTML=`<div class="ui2-row"><label>Screen name</label><input data-screen-name value="${s.name}"></div><div class="ui2-element"><small>Select an element to edit it.</small></div>`;return}
+  const anchors=["tl","tc","tr","cl","cc","cr","bl","bc","br"];
+  r.innerHTML=`
+    <div class="ui2-row"><label>Name</label><input data-name value="${n.name}"></div>
+    ${["button","label"].includes(n.type)?`<div class="ui2-row"><label>Text</label><input data-text value="${n.text||""}"></div>`:""}
+    ${n.type==="button"?`<div class="ui2-row"><label>Action</label><input data-action value="${n.action||""}" placeholder="start / attack / pause"></div>`:""}
+    ${n.type==="image"?`<div class="ui2-row"><label>Asset</label><input data-asset-id value="${n.assetId||""}" placeholder="Asset id/data URL"></div>`:""}
+    ${n.type==="progress"?`<div class="ui2-row"><label>Value</label><input data-value type="range" min="0" max="1" step=".01" value="${n.value}"></div>`:""}
+    <div class="ui2-grid2">
+      <div class="ui2-row"><label>X</label><input data-x type="number" value="${n.x}"></div><div class="ui2-row"><label>Y</label><input data-y type="number" value="${n.y}"></div>
+      <div class="ui2-row"><label>W</label><input data-w type="number" value="${n.w}"></div><div class="ui2-row"><label>H</label><input data-h type="number" value="${n.h}"></div>
+    </div>
+    <div class="ui2-row"><label>Visible</label><input data-visible type="checkbox" ${n.visible!==false?"checked":""}></div>
+    <div class="ui2-panel-title" style="padding-left:0">ANCHOR</div>
+    <div class="ui2-anchor-grid">${anchors.map(a=>`<button data-anchor="${a}" class="${n.anchor===a?"active":""}">${a.toUpperCase()}</button>`).join("")}</div>`
+}
+function render(){renderLists();renderCanvas();renderInspector()}
+
+function ensureMenu(){
+  const menu=document.getElementById("editorMoreMenu");if(!menu||document.getElementById("editorMoreUIV2"))return;
+  const btn=document.createElement("button");btn.id="editorMoreUIV2";btn.type="button";btn.className="editor-more-item";
+  btn.innerHTML='<svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg><span>UI System v2</span>';
+  btn.onclick=()=>{menu.classList.remove("show");open()};
+  const anim=document.getElementById("editorMoreAnimationV2");if(anim)anim.insertAdjacentElement("afterend",btn);else menu.insertBefore(btn,menu.firstChild)
+}
+function open(){load();ensureUI();ensureMenu();Runtime.sync();const el=document.getElementById("uiSystemV2");el.style.removeProperty("display");el.style.removeProperty("pointer-events");el.removeAttribute("aria-hidden");el.classList.add("show");render()}
+function close(){const el=document.getElementById("uiSystemV2");if(el){el.classList.remove("show");el.style.setProperty("display","none","important");el.style.setProperty("pointer-events","none","important");el.setAttribute("aria-hidden","true")}}
+
+window.UISystemV2={version:"2.0.0",state,Runtime,open,close,save,load};
+window.uiRuntime=Runtime;
+
+document.addEventListener("DOMContentLoaded",()=>{ensureUI();ensureMenu()});
+new MutationObserver(()=>ensureMenu()).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 
 <script>
 /* =====================================================
@@ -14640,6 +14881,29 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
 
 <style>
 /* =====================================================
+   SNAKE ENGINE — ANIMATION SYSTEM v2
+===================================================== */
+.anim2-screen{position:fixed;inset:0;z-index:875;background:#0a0f13;display:none;flex-direction:column;color:#dce3e8}
+.anim2-screen.show{display:flex}
+.anim2-head{height:58px;min-height:58px;display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid #26323a;background:#0d1217}
+.anim2-head button,.anim2-btn{min-height:38px;border:1px solid #2c3942;border-radius:8px;background:#121a20;color:#9aa8b2;padding:0 11px;font-weight:700}
+.anim2-head strong{font-size:13px;letter-spacing:.7px}.anim2-head small{display:block;color:#65737d;font-size:8px;margin-top:3px}
+.anim2-body{flex:1;min-height:0;overflow:auto;padding:12px;padding-bottom:90px}
+.anim2-panel{border:1px solid #29353d;border-radius:10px;background:#0e151a;margin-bottom:10px;overflow:hidden}
+.anim2-panel h3{margin:0;padding:10px 12px;border-bottom:1px solid #26323a;font-size:9px;letter-spacing:1.5px;color:#8997a1}
+.anim2-pad{padding:10px}.anim2-row{display:grid;grid-template-columns:105px minmax(0,1fr);gap:8px;align-items:center;margin-bottom:8px;color:#7d8b95;font-size:9px}
+.anim2-row input,.anim2-row select{width:100%;min-height:36px;border:1px solid #2b3841;border-radius:7px;background:#0a1014;color:#d8e0e5;padding:0 9px}
+.anim2-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.anim2-list{display:flex;flex-direction:column;gap:6px}
+.anim2-item{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #28343c;border-radius:8px;background:#11181e}
+.anim2-item.active{border-color:#76d957}.anim2-item-main{flex:1;min-width:0}.anim2-item strong{font-size:9px}.anim2-item small{display:block;color:#66747e;font-size:7px;margin-top:2px}
+.anim2-code{white-space:pre-wrap;background:#090e12;border:1px solid #26323a;border-radius:7px;padding:8px;color:#91a0aa;font:8px/1.55 ui-monospace,monospace}
+.anim2-green{border-color:#4b743e!important;color:#8be866!important;background:#112015!important}
+@media(max-width:700px){.anim2-body{padding:10px}.anim2-row{grid-template-columns:92px minmax(0,1fr)}}
+</style>
+
+<style>
+/* =====================================================
    SNAKE ENGINE — PHYSICS SYSTEM v2
 
 /* PHYSICS v3 additions */
@@ -14813,6 +15077,212 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
   .physics-grid{grid-template-columns:1fr}
 }
 </style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — ANIMATION SYSTEM v2
+===================================================== */
+(function(){
+"use strict";
+
+const STORE="snake_animation_v2:";
+const state={clips:[],machines:[],selectedClip:null,selectedMachine:null};
+
+function projectId(){return window.currentProjectId||window.currentProject?.id||"default"}
+function key(){return STORE+projectId()}
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function uid(p="anim"){return p+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7)}
+function save(){try{localStorage.setItem(key(),JSON.stringify({version:2,clips:state.clips,machines:state.machines}))}catch(_){}}
+function load(){
+  try{
+    const d=JSON.parse(localStorage.getItem(key())||"null");
+    state.clips=Array.isArray(d?.clips)?d.clips:[];
+    state.machines=Array.isArray(d?.machines)?d.machines:[]
+  }catch(_){state.clips=[];state.machines=[]}
+}
+
+const Runtime={
+  players:new Set(),
+
+  createPlayer(target,machineId){
+    const machine=state.machines.find(x=>x.id===machineId)||state.machines[0];
+    const p={
+      target,machineId:machine?.id||null,stateName:machine?.entry||machine?.states?.[0]?.name||null,
+      clip:null,time:0,frame:0,speed:1,playing:true,parameters:{},eventCursor:-1,
+      set(name,value){this.parameters[name]=value;return this},
+      trigger(name){this.parameters[name]=true;return this},
+      play(name){
+        const m=state.machines.find(x=>x.id===this.machineId);
+        const s=m?.states?.find(x=>x.name===name);
+        if(!s)return false;
+        this.stateName=name;this.clip=state.clips.find(x=>x.id===s.clipId)||null;
+        this.time=0;this.frame=0;this.eventCursor=-1;return true
+      },
+      stop(){this.playing=false},
+      resume(){this.playing=true}
+    };
+    p.play(p.stateName);
+    this.players.add(p);
+    return p
+  },
+
+  destroyPlayer(p){this.players.delete(p)},
+
+  conditionOK(p,c){
+    const v=p.parameters[c.parameter];
+    if(c.op==="==")return v==c.value;
+    if(c.op==="!=")return v!=c.value;
+    if(c.op===">")return Number(v)>Number(c.value);
+    if(c.op==="<")return Number(v)<Number(c.value);
+    if(c.op==="trigger")return !!v;
+    return !!v
+  },
+
+  update(dt){
+    for(const p of [...this.players]){
+      if(!p.playing)continue;
+      const m=state.machines.find(x=>x.id===p.machineId);
+      const s=m?.states?.find(x=>x.name===p.stateName);
+      if(!m||!s)continue;
+
+      for(const tr of m.transitions||[]){
+        if(tr.from!==p.stateName&&tr.from!=="*")continue;
+        if((tr.conditions||[]).every(c=>this.conditionOK(p,c))){
+          for(const c of tr.conditions||[])if(c.op==="trigger")p.parameters[c.parameter]=false;
+          p.play(tr.to);break
+        }
+      }
+
+      const clip=p.clip;if(!clip?.frames?.length)continue;
+      p.time+=Math.max(0,Number(dt)||0)*p.speed;
+
+      let total=0,nextFrame=clip.frames.length-1;
+      for(let i=0;i<clip.frames.length;i++){
+        total+=Math.max(.001,Number(clip.frames[i].duration)||.1);
+        if(p.time<total){nextFrame=i;break}
+      }
+
+      if(p.time>=total){
+        if(clip.loop){p.time%=Math.max(.001,total);p.eventCursor=-1}
+        else{p.time=total;p.playing=false;nextFrame=clip.frames.length-1}
+      }
+
+      if(nextFrame!==p.frame){
+        p.frame=nextFrame;
+        const frame=clip.frames[nextFrame];
+        try{p.target?.setAnimationFrame?.(frame.assetId,frame.frameIndex)}catch(_){}
+        try{window.ScriptRuntimeV2?.emitSignal?.("animation:frame",{player:p,clip,frame,index:nextFrame})}catch(_){}
+      }
+
+      for(const ev of clip.events||[]){
+        if(ev.frame===p.frame && ev.frame!==p.eventCursor){
+          p.eventCursor=ev.frame;
+          try{window.ScriptRuntimeV2?.emitSignal?.("animation:event",{name:ev.name,data:ev.data,player:p,clip})}catch(_){}
+        }
+      }
+    }
+  }
+};
+
+function ensureUI(){
+  if(document.getElementById("animationSystemV2"))return;
+  const el=document.createElement("section");
+  el.id="animationSystemV2";el.className="anim2-screen";el.setAttribute("aria-hidden","true");
+  el.innerHTML=`
+    <header class="anim2-head">
+      <button type="button" data-anim-close>‹</button>
+      <div style="flex:1"><strong>ANIMATION SYSTEM v2</strong><small>Clips · States · Transitions · Parameters · Events</small></div>
+      <button type="button" data-anim-save>SAVE</button>
+    </header>
+    <main class="anim2-body">
+      <section class="anim2-panel"><h3>CLIPS</h3><div class="anim2-pad">
+        <div class="anim2-grid"><button class="anim2-btn anim2-green" data-new-clip>NEW CLIP</button><button class="anim2-btn" data-add-frame>ADD FRAME</button></div>
+        <div id="anim2Clips" class="anim2-list" style="margin-top:8px"></div>
+      </div></section>
+      <section class="anim2-panel"><h3>CLIP EDITOR</h3><div id="anim2ClipEditor" class="anim2-pad"><div class="anim2-code">Select or create a clip.</div></div></section>
+      <section class="anim2-panel"><h3>STATE MACHINE</h3><div class="anim2-pad">
+        <div class="anim2-grid"><button class="anim2-btn anim2-green" data-new-machine>NEW MACHINE</button><button class="anim2-btn" data-add-state>ADD STATE</button></div>
+        <div id="anim2Machines" class="anim2-list" style="margin-top:8px"></div>
+        <div id="anim2MachineEditor" style="margin-top:8px"></div>
+      </div></section>
+      <section class="anim2-panel"><h3>SCRIPT API</h3><div class="anim2-pad"><div class="anim2-code">const anim = animation.create(entity, "Player");\nanim.set("speed", 1);\nanim.trigger("attack");\nanim.play("Idle");\n\nsignals.on("animation:event", e => log(e.name));</div></div></section>
+    </main>`;
+  document.body.appendChild(el);
+
+  el.addEventListener("click",e=>{
+    if(e.target.closest("[data-anim-close]"))return close();
+    if(e.target.closest("[data-anim-save]")){save();render();return}
+    if(e.target.closest("[data-new-clip]")){
+      const c={id:uid("clip"),name:"New Clip",loop:true,frames:[],events:[]};state.clips.push(c);state.selectedClip=c.id;save();render();return
+    }
+    if(e.target.closest("[data-add-frame]")){
+      const c=state.clips.find(x=>x.id===state.selectedClip);if(!c)return;
+      c.frames.push({assetId:"",frameIndex:c.frames.length,duration:.1});save();render();return
+    }
+    if(e.target.closest("[data-new-machine]")){
+      const m={id:uid("machine"),name:"Animator",entry:"Idle",parameters:{},states:[],transitions:[]};state.machines.push(m);state.selectedMachine=m.id;save();render();return
+    }
+    if(e.target.closest("[data-add-state]")){
+      const m=state.machines.find(x=>x.id===state.selectedMachine);if(!m)return;
+      const name="State "+(m.states.length+1);m.states.push({name,clipId:state.clips[0]?.id||null});if(!m.entry)m.entry=name;save();render();return
+    }
+    const clip=e.target.closest("[data-clip]");if(clip){state.selectedClip=clip.dataset.clip;render();return}
+    const machine=e.target.closest("[data-machine]");if(machine){state.selectedMachine=machine.dataset.machine;render();return}
+  });
+
+  el.addEventListener("change",e=>{
+    const c=state.clips.find(x=>x.id===state.selectedClip);
+    if(e.target.dataset.clipName&&c)c.name=e.target.value;
+    if(e.target.dataset.clipLoop&&c)c.loop=e.target.checked;
+    if(e.target.dataset.frameDuration&&c)c.frames[Number(e.target.dataset.frameDuration)].duration=Math.max(.001,Number(e.target.value)||.1);
+    const m=state.machines.find(x=>x.id===state.selectedMachine);
+    if(e.target.dataset.machineName&&m)m.name=e.target.value;
+    if(e.target.dataset.entry&&m)m.entry=e.target.value;
+    save();render()
+  });
+
+  ensureMenu()
+}
+
+function ensureMenu(){
+  const menu=document.getElementById("editorMoreMenu");if(!menu||document.getElementById("editorMoreAnimationV2"))return;
+  const btn=document.createElement("button");btn.id="editorMoreAnimationV2";btn.type="button";btn.className="editor-more-item";
+  btn.innerHTML='<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M8 5v14l11-7z"/></svg><span>Animation System v2</span>';
+  btn.addEventListener("click",()=>{menu.classList.remove("show");open()});
+  const physics=document.getElementById("editorMorePhysicsV3");
+  if(physics)physics.insertAdjacentElement("afterend",btn);else menu.insertBefore(btn,menu.firstChild)
+}
+
+function render(){
+  const clips=document.getElementById("anim2Clips"),ce=document.getElementById("anim2ClipEditor");
+  if(clips)clips.innerHTML=state.clips.map(c=>`<button class="anim2-item ${c.id===state.selectedClip?"active":""}" data-clip="${c.id}"><span class="anim2-item-main"><strong>${c.name}</strong><small>${c.frames.length} frame(s) · ${c.loop?"Loop":"Once"}</small></span></button>`).join("")||'<div class="anim2-code">No clips yet.</div>';
+  const c=state.clips.find(x=>x.id===state.selectedClip);
+  if(ce)ce.innerHTML=c?`
+    <div class="anim2-row"><label>Name</label><input data-clip-name value="${c.name.replace(/"/g,"&quot;")}"></div>
+    <div class="anim2-row"><label>Loop</label><input data-clip-loop type="checkbox" ${c.loop?"checked":""}></div>
+    <div class="anim2-list">${c.frames.map((f,i)=>`<div class="anim2-item"><span class="anim2-item-main"><strong>Frame ${i+1}</strong><small>Asset: ${f.assetId||"not assigned"}</small></span><input style="width:76px" type="number" step=".01" min=".001" data-frame-duration="${i}" value="${f.duration}"></div>`).join("")||'<div class="anim2-code">ADD FRAME to start the clip.</div>'}</div>`:'<div class="anim2-code">Select or create a clip.</div>';
+
+  const ml=document.getElementById("anim2Machines"),me=document.getElementById("anim2MachineEditor");
+  if(ml)ml.innerHTML=state.machines.map(m=>`<button class="anim2-item ${m.id===state.selectedMachine?"active":""}" data-machine="${m.id}"><span class="anim2-item-main"><strong>${m.name}</strong><small>${m.states.length} state(s)</small></span></button>`).join("")||'<div class="anim2-code">No state machines yet.</div>';
+  const m=state.machines.find(x=>x.id===state.selectedMachine);
+  if(me)me.innerHTML=m?`<div class="anim2-row"><label>Name</label><input data-machine-name value="${m.name}"></div><div class="anim2-row"><label>Entry State</label><select data-entry>${m.states.map(s=>`<option ${s.name===m.entry?"selected":""}>${s.name}</option>`).join("")}</select></div><div class="anim2-list">${m.states.map(s=>`<div class="anim2-item"><span class="anim2-item-main"><strong>${s.name}</strong><small>${state.clips.find(c=>c.id===s.clipId)?.name||"No clip"}</small></span></div>`).join("")}</div>`:"";
+}
+
+function open(){load();ensureUI();ensureMenu();const el=document.getElementById("animationSystemV2");el.style.removeProperty("display");el.style.removeProperty("pointer-events");el.removeAttribute("aria-hidden");el.classList.add("show");render()}
+function close(){const el=document.getElementById("animationSystemV2");if(el){el.classList.remove("show");el.style.setProperty("display","none","important");el.style.setProperty("pointer-events","none","important");el.setAttribute("aria-hidden","true")}}
+
+window.AnimationSystemV2={version:"2.0.0",state,Runtime,open,close,save,load,create:(target,machine)=>Runtime.createPlayer(target,machine)};
+window.animation=window.AnimationSystemV2;
+
+document.addEventListener("DOMContentLoaded",()=>{ensureUI();ensureMenu()});
+const mo=new MutationObserver(()=>ensureMenu());mo.observe(document.documentElement,{childList:true,subtree:true});
+
+const oldTick=window.runtimeTick;
+if(typeof oldTick==="function"&&!oldTick.__anim2){
+  const wrapped=function(dt){const r=oldTick.apply(this,arguments);Runtime.update(dt);return r};wrapped.__anim2=true;window.runtimeTick=wrapped
+}
+})();
+</script>
 
 <script>
 /* =====================================================
@@ -29184,6 +29654,8 @@ const ScriptRuntimeV2={
         stats:()=>window.Physics?.stats?.()||{}
       },
 
+      animation:window.AnimationSystemV2||window.animation,
+
       signals:{
         on:(name,fn)=>runtime.addSignal(name,fn,false),
         once:(name,fn)=>runtime.addSignal(name,fn,true),
@@ -29319,6 +29791,7 @@ ${record.source}
         "camera",
         "tilemap",
         "physics",
+        "animation",
         "signals",
         "time",
         "save",
@@ -29341,6 +29814,7 @@ ${record.source}
         this.api.camera,
         this.api.tilemap,
         this.api.physics,
+        this.api.animation,
         this.api.signals,
         this.api.time,
         this.api.save,
@@ -33398,10 +33872,12 @@ const API={
   ],
   ui:[
     {name:"show",sig:'ui.show("Screen")',desc:"Mostra uma tela de UI.",insert:'ui.show("HUD")'},
+    {name:"hide",sig:'ui.hide("Screen")',desc:"Oculta uma tela de UI.",insert:'ui.hide("HUD")'},
     {name:"text",sig:'ui.text("id", "Text")',desc:"Altera o texto de um elemento UI.",insert:'ui.text("Score", "0")'},
     {name:"progress",sig:'ui.progress("id", value)',desc:"Atualiza uma barra de progresso.",insert:'ui.progress("Health", hp / maxHp)'},
     {name:"visible",sig:'ui.visible("id", true)',desc:"Controla visibilidade de um elemento.",insert:'ui.visible("GameOver", true)'},
-    {name:"on",sig:'ui.on("action", fn)',desc:"Registra uma ação de interface.",insert:'ui.on("start", () => {\n  \n});'}
+    {name:"on",sig:'ui.on("action", fn)',desc:"Registra uma ação de interface.",insert:'ui.on("start", () => {\n  \n});'},
+    {name:"trigger",sig:'ui.trigger("action", data)',desc:"Dispara manualmente uma ação da UI.",insert:'ui.trigger("start")'}
   ],
   audio:[
     {name:"sfx",sig:'audio.sfx("sound.wav", options)',desc:"Reproduz um efeito sonoro.",insert:'audio.sfx("hit.wav", { volume: 0.8 })'},
@@ -33430,6 +33906,12 @@ const API={
     {name:"gravity",sig:"physics.gravity()",desc:"Retorna a gravidade atual.",insert:"physics.gravity()"},
     {name:"setGravity",sig:"physics.setGravity(x, y)",desc:"Altera a gravidade global.",insert:"physics.setGravity(0, 980)"}
   ],
+  animation:[
+    {name:"create",sig:'animation.create(target, machineId)',desc:"Cria um Animator Player ligado a uma entidade/objeto.",insert:'const anim = animation.create(player, "Player");'},
+    {name:"play",sig:'anim.play("State")',desc:"Toca imediatamente um estado da state machine.",insert:'anim.play("Idle");'},
+    {name:"set",sig:'anim.set("parameter", value)',desc:"Atualiza um parâmetro usado por transitions.",insert:'anim.set("speed", 1);'},
+    {name:"trigger",sig:'anim.trigger("name")',desc:"Dispara um trigger consumido por uma transition.",insert:'anim.trigger("attack");'}
+  ],
   signals:[
     {name:"on",sig:'signals.on("event", fn)',desc:"Escuta um evento global do gameplay.",insert:'signals.on("enemy:defeated", (data) => {\n  \n})'},
     {name:"once",sig:'signals.once("event", fn)',desc:"Escuta um evento somente uma vez.",insert:'signals.once("level:complete", () => {\n  \n})'},
@@ -33448,7 +33930,7 @@ const API={
   ]
 };
 
-const ROOTS=["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","signals","time","log"];
+const ROOTS=["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","animation","signals","time","log"];
 
 const snippets=[
   {
@@ -35270,7 +35752,7 @@ const KEYWORDS=new Set([
   "async","await","typeof","instanceof","in","of","import","export","default","this"
 ]);
 const BOOLS=new Set(["true","false","null","undefined","NaN","Infinity"]);
-const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","signals","time","log"]);
+const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","animation","signals","time","log"]);
 
 function escColor(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
 function tokenLine(line){
