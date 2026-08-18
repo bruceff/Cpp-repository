@@ -1402,6 +1402,7 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
     <button onclick="SnakeScriptProV3.open('api')">API</button>
     <button onclick="SnakeScriptProV3.open('snippets')">SNIPPETS</button>
     <button onclick="SnakeScriptProV3.open('entities')">ENTITIES</button>
+    <button onclick="SnakeScriptProV3.open('gameplay')">GAMEPLAY</button>
     <span class="snake-scriptbar-spacer"></span>
     <button id="snakeScriptDiagBtnV3" class="diag-ok" onclick="SnakeScriptProV3.open('diagnostics')">✓ CODE OK</button>
   </div>
@@ -2995,7 +2996,7 @@ function sceneAddAssetNode2(id,name,type){sceneSnapshot2();const n={id:Date.now(
 function sceneSaveResource2(){saveScene2()}
 function saveScene2(){
   const name=(document.getElementById('sceneName2')?.value||'Main Scene').trim()||'Main Scene';sceneRenameDoc2(name);
-  const payload={version:2,type:'scene',name,mode:'2D',grid:sceneGrid2,snap:sceneSnap2,nodes:sceneObjs2};
+  const payload={version:3,type:'scene',name,mode:'2D',grid:sceneGrid2,snap:sceneSnap2,nodes:sceneObjs2};
   localStorage.setItem('myengine_scene_resource',JSON.stringify(payload));
   try{if(typeof assets2!=='undefined'){assets2=assets2.filter(a=>a.source!=='scene-composer');assets2.push({id:'scene-composer',name:name+'.scene',type:'application/json',data:JSON.stringify(payload),folder:'root',source:'scene-composer'});saveAssets2();renderAssets2?.()}}catch(e){}
   showToast('Scene saved');
@@ -14518,6 +14519,59 @@ if(typeof oldRuntimeUpdate==="function"){
   };
 }
 
+
+const PHYSICS_MATERIALS_V3={
+  custom:null,
+  ice:{friction:.02,restitution:.02},
+  rubber:{friction:.85,restitution:.55},
+  bouncy:{friction:.25,restitution:.9},
+  metal:{friction:.35,restitution:.12}
+};
+
+window.PhysicsManagerV3={
+  version:"3.0.0",
+
+  applyMaterialPreset(name){
+    const p=PHYSICS_MATERIALS_V3[name];
+    if(!p)return;
+    const f=document.getElementById("physFriction");
+    const r=document.getElementById("physRestitution");
+    if(f)f.value=p.friction;
+    if(r)r.value=p.restitution;
+  },
+
+  testRaycast(){
+    const graph=window.snakeRuntime?.graph;
+    if(!graph)return this.showQuery("Runtime graph not active.");
+    let first=null,last=null;
+    graph.traverse?.(n=>{
+      if(n===graph.root||!n.active)return;
+      if(!first)first=n;
+      last=n
+    });
+    if(!first||!last)return this.showQuery("Need at least one runtime body.");
+    const a=first.transform||{},b=last.transform||{};
+    const hit=Physics2D.raycast(a.x||0,a.y||0,b.x||0,b.y||0);
+    this.showQuery(hit?`Hit: ${hit.node?.name||hit.node?.id} · ${hit.distance.toFixed(1)}px`:"No hit")
+  },
+
+  testOverlap(){
+    const graph=window.snakeRuntime?.graph;
+    if(!graph)return this.showQuery("Runtime graph not active.");
+    let first=null;
+    graph.traverse?.(n=>{if(!first&&n!==graph.root&&n.active)first=n});
+    if(!first)return this.showQuery("Need a runtime body.");
+    const t=first.transform||{};
+    const hits=Physics2D.queryAABB({x:(t.x||0)-32,y:(t.y||0)-32,w:64,h:64});
+    this.showQuery(`${hits.length} body(s): ${hits.map(n=>n.name||n.id).slice(0,4).join(", ")||"none"}`)
+  },
+
+  showQuery(text){
+    const el=document.getElementById("physQueryResult");
+    if(el)el.textContent=text
+  }
+};
+
 /* -----------------------------------------------------
    Public API
 ----------------------------------------------------- */
@@ -14552,6 +14606,27 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
 <style>
 /* =====================================================
    SNAKE ENGINE — PHYSICS SYSTEM v2
+
+/* PHYSICS v3 additions */
+.physics-query-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.physics-query-result{
+  margin-top:7px;padding:7px;border:1px solid #2b3740;border-radius:6px;
+  background:#0b1014;color:#70808a;font:7px/1.5 ui-monospace,monospace;
+  min-height:34px
+}
+.physics-layer-mask-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px
+}
+.physics-mask-chip{
+  min-height:31px;display:flex;align-items:center;gap:6px;padding:5px 7px;
+  border:1px solid #2b3740;border-radius:6px;background:#11171c;color:#77858f;
+  font-size:7px
+}
+.physics-mask-chip input{width:16px;height:16px}
+.physics-material-note{
+  margin-top:5px;color:#5f6d77;font-size:7px;line-height:1.45
+}
+
 ===================================================== */
 .physics-manager{
   position:absolute;
@@ -14717,7 +14792,7 @@ if(!window.SnakeEngine?.runtime){
   return;
 }
 
-const PHYSICS_CFG_PREFIX="snake_physics_v2:";
+const PHYSICS_CFG_PREFIX="snake_physics_v3:";
 const DEFAULT_LAYERS=[
   {id:0,name:"Default"},
   {id:1,name:"Player"},
@@ -14750,7 +14825,7 @@ function loadLocal(name){
     const raw=localStorage.getItem(key(name));
     if(raw){
       const cfg=JSON.parse(raw);
-      if(cfg?.version===2)return cfg;
+      if(cfg?.version===3||cfg?.version===2)return {...cfg,version:3};
     }
   }catch(_){}
   const cfg=defaultConfig();
@@ -14765,8 +14840,8 @@ async function loadConfig(name=project()){
     try{
       await SnakeDB.ready;
       const projectId=await SnakeDB.projectIdForName(name);
-      const row=await SnakeDB.get("preferences","physics:"+projectId);
-      if(row?.value?.version===2){
+      const row=await SnakeDB.get("preferences","physics:v3:"+projectId) || await SnakeDB.get("preferences","physics:"+projectId);
+      if(row?.value?.version===3||row?.value?.version===2){
         localStorage.setItem(key(name),JSON.stringify(row.value));
         return clone(row.value);
       }
@@ -14785,7 +14860,7 @@ async function saveConfig(cfg,name=project()){
     try{
       const projectId=await SnakeDB.projectIdForName(name);
       await SnakeDB.put("preferences",{
-        key:"physics:"+projectId,
+        key:"physics:v3:"+projectId,
         value:clone(cfg),
         updatedAt:cfg.updatedAt
       });
@@ -14805,6 +14880,8 @@ class SnakeRigidbody2D extends SnakeComponent{
     this.linearDamping=Math.max(0,Number(options.linearDamping||0));
     this.velocity={x:Number(options.vx||0),y:Number(options.vy||0)};
     this.force={x:0,y:0};
+    this.angularVelocity=Number(options.angularVelocity||0);
+    this.angularDamping=Math.max(0,Number(options.angularDamping||0));
     this.freezeX=!!options.freezeX;
     this.freezeY=!!options.freezeY;
     this.freezeRotation=!!options.freezeRotation;
@@ -14846,6 +14923,11 @@ class SnakeRigidbody2D extends SnakeComponent{
 
     if(!this.freezeX)this.node.transform.x+=this.velocity.x*dt;
     if(!this.freezeY)this.node.transform.y+=this.velocity.y*dt;
+    if(!this.freezeRotation){
+      const dampR=Math.max(0,1-this.angularDamping*dt);
+      this.angularVelocity*=dampR;
+      this.node.transform.rotation=(Number(this.node.transform.rotation)||0)+this.angularVelocity*dt;
+    }
   }
 }
 
@@ -14858,6 +14940,8 @@ class SnakeBoxCollider2D extends SnakeComponent{
     this.offsetX=Number(options.offsetX||0);
     this.offsetY=Number(options.offsetY||0);
     this.isTrigger=!!options.isTrigger;
+    this.isSensor=!!options.isSensor || this.isTrigger;
+    this.material=options.material||"custom";
     this.layer=Number(options.layer||0);
     this.mask=Number(options.mask==null?0xFFFFFFFF:options.mask)>>>0;
     this.restitution=Math.max(0,Math.min(1,Number(options.restitution||0)));
@@ -14873,6 +14957,8 @@ class SnakeCircleCollider2D extends SnakeComponent{
     this.offsetX=Number(options.offsetX||0);
     this.offsetY=Number(options.offsetY||0);
     this.isTrigger=!!options.isTrigger;
+    this.isSensor=!!options.isSensor || this.isTrigger;
+    this.material=options.material||"custom";
     this.layer=Number(options.layer||0);
     this.mask=Number(options.mask==null?0xFFFFFFFF:options.mask)>>>0;
     this.restitution=Math.max(0,Math.min(1,Number(options.restitution||0)));
@@ -14954,7 +15040,7 @@ const Physics2D={
   },
 
   resolve(aNode,bNode,aCol,bCol,contact){
-    if(aCol.isTrigger||bCol.isTrigger)return;
+    if(aCol.isTrigger||bCol.isTrigger||aCol.isSensor||bCol.isSensor)return;
 
     const aBody=this.nodeBody(aNode);
     const bBody=this.nodeBody(bNode);
@@ -14995,6 +15081,12 @@ const Physics2D={
     const detail={a,b,contact,trigger};
 
     document.dispatchEvent(new CustomEvent("snake:"+type,{detail}));
+
+    try{
+      const runtime=window.ScriptRuntimeV2;
+      runtime?.emitSignal?.(`physics:${type}`,detail);
+      runtime?.emitSignal?.(type,detail);
+    }catch(_){}
 
     const hookMap={
       collisionenter:"onCollisionEnter",
@@ -15046,7 +15138,7 @@ const Physics2D={
         const c=this.test(A.bounds,B.bounds);
         if(!c)continue;
 
-        const trigger=A.col.isTrigger||B.col.isTrigger;
+        const trigger=A.col.isTrigger||B.col.isTrigger||A.col.isSensor||B.col.isSensor;
         if(trigger)this.stats.triggers++;
         else this.stats.contacts++;
 
@@ -15090,6 +15182,66 @@ const Physics2D={
     return hits;
   },
 
+
+  queryAABB(rect,mask=0xFFFFFFFF){
+    const graph=window.snakeRuntime?.graph;
+    const hits=[];
+    const q={
+      minX:Number(rect.x)||0,
+      minY:Number(rect.y)||0,
+      maxX:(Number(rect.x)||0)+(Number(rect.w)||0),
+      maxY:(Number(rect.y)||0)+(Number(rect.h)||0)
+    };
+    graph?.traverse?.(n=>{
+      if(n===graph.root||!n.active)return;
+      const c=this.nodeCollider(n);if(!c)return;
+      const bit=(1<<Math.max(0,Math.min(31,c.layer)))>>>0;
+      if(!(mask&bit))return;
+      const b=this.bounds(n,c);
+      if(b.maxX>=q.minX&&b.minX<=q.maxX&&b.maxY>=q.minY&&b.minY<=q.maxY)hits.push(n)
+    });
+    return hits
+  },
+
+  raycast(x1,y1,x2,y2,mask=0xFFFFFFFF){
+    x1=Number(x1)||0;y1=Number(y1)||0;x2=Number(x2)||0;y2=Number(y2)||0;
+    const dx=x2-x1,dy=y2-y1;
+    const len=Math.hypot(dx,dy);
+    if(len<.0001)return null;
+
+    const steps=Math.max(2,Math.ceil(len/4));
+    let lastNode=null;
+
+    for(let i=0;i<=steps;i++){
+      const t=i/steps,x=x1+dx*t,y=y1+dy*t;
+      const hits=this.point(x,y,mask);
+      const node=hits.find(n=>n!==lastNode)||hits[0];
+      if(node){
+        const col=this.nodeCollider(node);
+        return {
+          node,
+          collider:col,
+          point:{x,y},
+          distance:len*t,
+          fraction:t
+        }
+      }
+      lastNode=node||null
+    }
+    return null
+  },
+
+  sweepAABB(x,y,w,h,dx,dy,mask=0xFFFFFFFF){
+    const dist=Math.hypot(dx,dy);
+    const steps=Math.max(1,Math.ceil(dist/4));
+    for(let i=1;i<=steps;i++){
+      const t=i/steps;
+      const hits=this.queryAABB({x:x+dx*t,y:y+dy*t,w,h},mask);
+      if(hits.length)return {hits,point:{x:x+dx*t,y:y+dy*t},fraction:t}
+    }
+    return null
+  },
+
   statsNow(){
     return {
       pairs:this.stats.pairs,
@@ -15113,6 +15265,9 @@ window.Physics={
     Physics2D.gravity.x=Number(x)||0;
     Physics2D.gravity.y=Number(y)||0;
   },
+  raycast:(x1,y1,x2,y2,mask)=>Physics2D.raycast(x1,y1,x2,y2,mask),
+  overlap:(x,y,w,h,mask)=>Physics2D.queryAABB({x,y,w,h},mask),
+  sweep:(x,y,w,h,dx,dy,mask)=>Physics2D.sweepAABB(x,y,w,h,dx,dy,mask),
   point:(x,y,mask)=>Physics2D.point(x,y,mask),
   stats:()=>Physics2D.statsNow()
 };
@@ -15160,7 +15315,12 @@ function selectedPhysicsDefaults(){
       bodyType:"dynamic",
       mass:1,
       gravityScale:1,
-      linearDamping:0
+      linearDamping:0,
+      angularVelocity:0,
+      angularDamping:0,
+      freezeX:false,
+      freezeY:false,
+      freezeRotation:false
     },
     collider:{
       enabled:true,
@@ -15171,6 +15331,8 @@ function selectedPhysicsDefaults(){
       offsetX:0,
       offsetY:0,
       isTrigger:false,
+      isSensor:false,
+      material:"custom",
       layer:0,
       mask:0xFFFFFFFF,
       restitution:0,
@@ -15195,11 +15357,18 @@ async function loadSelectedIntoUI(){
   set("physMass",p.rigidbody?.mass??d.rigidbody.mass);
   set("physGravityScale",p.rigidbody?.gravityScale??d.rigidbody.gravityScale);
   set("physDamping",p.rigidbody?.linearDamping??d.rigidbody.linearDamping);
+  set("physAngularVelocity",p.rigidbody?.angularVelocity??d.rigidbody.angularVelocity);
+  set("physAngularDamping",p.rigidbody?.angularDamping??d.rigidbody.angularDamping);
+  set("physFreezeX",p.rigidbody?.freezeX??d.rigidbody.freezeX);
+  set("physFreezeY",p.rigidbody?.freezeY??d.rigidbody.freezeY);
+  set("physFreezeRotation",p.rigidbody?.freezeRotation??d.rigidbody.freezeRotation);
   set("physShape",p.collider?.shape??d.collider.shape);
   set("physWidth",p.collider?.width??d.collider.width);
   set("physHeight",p.collider?.height??d.collider.height);
   set("physRadius",p.collider?.radius??d.collider.radius);
   set("physTrigger",p.collider?.isTrigger??d.collider.isTrigger);
+  set("physSensor",p.collider?.isSensor??d.collider.isSensor);
+  set("physMaterial",p.collider?.material??d.collider.material);
   set("physLayer",p.collider?.layer??d.collider.layer);
   set("physMask",p.collider?.mask??d.collider.mask);
   set("physRestitution",p.collider?.restitution??d.collider.restitution);
@@ -15213,12 +15382,19 @@ async function applyPhysicsFromUI(){
   settings.rigidbody.mass=Number(document.getElementById("physMass")?.value||1);
   settings.rigidbody.gravityScale=Number(document.getElementById("physGravityScale")?.value||1);
   settings.rigidbody.linearDamping=Number(document.getElementById("physDamping")?.value||0);
+  settings.rigidbody.angularVelocity=Number(document.getElementById("physAngularVelocity")?.value||0);
+  settings.rigidbody.angularDamping=Number(document.getElementById("physAngularDamping")?.value||0);
+  settings.rigidbody.freezeX=!!document.getElementById("physFreezeX")?.checked;
+  settings.rigidbody.freezeY=!!document.getElementById("physFreezeY")?.checked;
+  settings.rigidbody.freezeRotation=!!document.getElementById("physFreezeRotation")?.checked;
 
   settings.collider.shape=document.getElementById("physShape")?.value||"box";
   settings.collider.width=Number(document.getElementById("physWidth")?.value||32);
   settings.collider.height=Number(document.getElementById("physHeight")?.value||32);
   settings.collider.radius=Number(document.getElementById("physRadius")?.value||16);
   settings.collider.isTrigger=!!document.getElementById("physTrigger")?.checked;
+  settings.collider.isSensor=!!document.getElementById("physSensor")?.checked;
+  settings.collider.material=document.getElementById("physMaterial")?.value||"custom";
   settings.collider.layer=Number(document.getElementById("physLayer")?.value||0);
   settings.collider.mask=Number(document.getElementById("physMask")?.value||0xFFFFFFFF)>>>0;
   settings.collider.restitution=Number(document.getElementById("physRestitution")?.value||0);
@@ -15323,8 +15499,8 @@ function ensureUI(){
         <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
       </button>
       <div class="physics-head-title">
-        <strong>PHYSICS 2D</strong>
-        <small>Rigidbody, Collider, Trigger and Layers</small>
+        <strong>PHYSICS 2D v3</strong>
+        <small>Rigidbody · Sensors · Queries · Layers/Mask · Materials</small>
       </div>
       <button class="icon-btn" type="button" data-phys-debug>
         <svg viewBox="0 0 24 24" stroke-width="1.8">
@@ -15355,6 +15531,11 @@ function ensureUI(){
             <div class="physics-row"><label>Mass</label><input id="physMass" type="number" step="0.1" value="1"></div>
             <div class="physics-row"><label>Gravity Scale</label><input id="physGravityScale" type="number" step="0.1" value="1"></div>
             <div class="physics-row"><label>Linear Damping</label><input id="physDamping" type="number" step="0.1" value="0"></div>
+            <div class="physics-row"><label>Angular Velocity</label><input id="physAngularVelocity" type="number" step="1" value="0"></div>
+            <div class="physics-row"><label>Angular Damping</label><input id="physAngularDamping" type="number" step="0.1" value="0"></div>
+            <div class="physics-row"><label>Freeze X</label><input id="physFreezeX" type="checkbox"></div>
+            <div class="physics-row"><label>Freeze Y</label><input id="physFreezeY" type="checkbox"></div>
+            <div class="physics-row"><label>Freeze Rotation</label><input id="physFreezeRotation" type="checkbox"></div>
           </div>
         </section>
 
@@ -15372,6 +15553,17 @@ function ensureUI(){
             <div class="physics-row"><label>Height</label><input id="physHeight" type="number" value="32"></div>
             <div class="physics-row"><label>Radius</label><input id="physRadius" type="number" value="16"></div>
             <div class="physics-row"><label>Trigger</label><input id="physTrigger" type="checkbox"></div>
+            <div class="physics-row"><label>Sensor</label><input id="physSensor" type="checkbox"></div>
+            <div class="physics-row">
+              <label>Material</label>
+              <select id="physMaterial" onchange="PhysicsManagerV3.applyMaterialPreset(this.value)">
+                <option value="custom">Custom</option>
+                <option value="ice">Ice</option>
+                <option value="rubber">Rubber</option>
+                <option value="bouncy">Bouncy</option>
+                <option value="metal">Metal</option>
+              </select>
+            </div>
             <div class="physics-row"><label>Layer</label><input id="physLayer" type="number" min="0" max="31" value="0"></div>
             <div class="physics-row"><label>Mask</label><input id="physMask" type="number" value="4294967295"></div>
             <div class="physics-row"><label>Restitution</label><input id="physRestitution" type="number" step="0.1" min="0" max="1" value="0"></div>
@@ -15385,6 +15577,17 @@ function ensureUI(){
             <div class="physics-row"><label>Gravity X</label><input id="physGravityX" type="number" step="10" value="0"></div>
             <div class="physics-row"><label>Gravity Y</label><input id="physGravityY" type="number" step="10" value="0"></div>
             <button class="prefab-primary" style="width:100%" type="button" data-phys-save-world>SAVE WORLD SETTINGS</button>
+          </div>
+        </section>
+
+        <section class="physics-panel">
+          <h3>PHYSICS QUERIES</h3>
+          <div class="physics-panel-body">
+            <div class="physics-query-grid">
+              <button class="tool-btn" type="button" onclick="PhysicsManagerV3.testRaycast()">TEST RAYCAST</button>
+              <button class="tool-btn" type="button" onclick="PhysicsManagerV3.testOverlap()">TEST OVERLAP</button>
+            </div>
+            <div id="physQueryResult" class="physics-query-result">Use Runtime/Preview para consultar corpos ativos.</div>
           </div>
         </section>
 
@@ -15550,6 +15753,9 @@ if(window.Scripts?.buildAPI){
         force(x,y){node?.getComponent?.(SnakeRigidbody2D)?.addForce(x,y)},
         impulse(x,y){node?.getComponent?.(SnakeRigidbody2D)?.addImpulse(x,y)},
         point(x,y,mask){return Physics2D.point(x,y,mask)},
+        raycast(x1,y1,x2,y2,mask){return Physics2D.raycast(x1,y1,x2,y2,mask)},
+        overlap(x,y,w,h,mask){return Physics2D.queryAABB({x,y,w,h},mask)},
+        sweep(x,y,w,h,dx,dy,mask){return Physics2D.sweepAABB(x,y,w,h,dx,dy,mask)},
         stats(){return Physics2D.statsNow()}
       }
     });
@@ -15578,7 +15784,7 @@ async function ensureSnakeDemoPhysics(){
    Public API
 ----------------------------------------------------- */
 window.PhysicsManager={
-  version:"2.0.0",
+  version:"3.0.0",
   load:loadConfig,
   save:saveConfig,
   applyToSelected:applyPhysicsFromUI,
@@ -28582,7 +28788,7 @@ if(document.readyState==="loading"){
 "use strict";
 
 const ScriptRuntimeV2={
-  version:"2.0.0",
+  version:"2.5.0",
   modules:new Map(),
   cache:new Map(),
   errors:[],
@@ -28593,6 +28799,10 @@ const ScriptRuntimeV2={
   lateUpdateHooks:[],
   startHooks:[],
   destroyHooks:[],
+  signalListeners:new Map(),
+  timers:new Map(),
+  nextTimerId:1,
+  gameTime:0,
   api:null,
 
   clearRuntimeState(){
@@ -28601,8 +28811,96 @@ const ScriptRuntimeV2={
     this.lateUpdateHooks=[];
     this.startHooks=[];
     this.destroyHooks=[];
+    this.signalListeners.clear();
+    this.timers.clear();
+    this.nextTimerId=1;
+    this.gameTime=0;
     this.errors=[];
     this.running=false;
+  },
+
+  emitSignal(name,payload){
+    name=String(name||"");
+    if(!name)return 0;
+    const list=this.signalListeners.get(name);
+    if(!list?.size)return 0;
+
+    let count=0;
+    for(const rec of [...list]){
+      try{
+        rec.fn(payload);
+        count++;
+      }catch(error){
+        this.reportError(`<signal:${name}>`,error);
+      }
+      if(rec.once)list.delete(rec);
+    }
+    if(!list.size)this.signalListeners.delete(name);
+    return count;
+  },
+
+  addSignal(name,fn,once=false){
+    name=String(name||"");
+    if(!name||typeof fn!=="function")return fn;
+    if(!this.signalListeners.has(name))this.signalListeners.set(name,new Set());
+    this.signalListeners.get(name).add({fn,once:!!once});
+    return fn;
+  },
+
+  removeSignal(name,fn){
+    const list=this.signalListeners.get(String(name||""));
+    if(!list)return false;
+    let removed=false;
+    for(const rec of [...list]){
+      if(rec.fn===fn){list.delete(rec);removed=true}
+    }
+    if(!list.size)this.signalListeners.delete(String(name||""));
+    return removed;
+  },
+
+  clearSignal(name){
+    if(name==null){this.signalListeners.clear();return true}
+    return this.signalListeners.delete(String(name))
+  },
+
+  addTimer(seconds,fn,repeat=false){
+    seconds=Math.max(0,Number(seconds)||0);
+    if(typeof fn!=="function")return null;
+    const id=this.nextTimerId++;
+    this.timers.set(id,{
+      id,
+      interval:seconds,
+      remaining:seconds,
+      repeat:!!repeat,
+      fn
+    });
+    return id;
+  },
+
+  cancelTimer(id){
+    return this.timers.delete(Number(id))
+  },
+
+  updateTimers(dt){
+    dt=Math.max(0,Number(dt)||0);
+    this.gameTime+=dt;
+    for(const [id,timer] of [...this.timers]){
+      timer.remaining-=dt;
+      if(timer.remaining>0)continue;
+
+      try{
+        timer.fn();
+      }catch(error){
+        this.reportError(`<timer:${id}>`,error);
+      }
+
+      if(timer.repeat && this.timers.has(id)){
+        timer.remaining+=Math.max(.0001,timer.interval);
+        if(timer.remaining<=0)timer.remaining=Math.max(.0001,timer.interval);
+      }else{
+        this.timers.delete(id);
+      }
+    }
   },
 
   normalizePath(path){
@@ -28767,6 +29065,32 @@ const ScriptRuntimeV2={
         scene:()=>SnakeTileMapRuntime?.scene||null
       },
 
+      physics:{
+        raycast:(x1,y1,x2,y2,mask)=>window.Physics?.raycast?.(x1,y1,x2,y2,mask)||null,
+        overlap:(x,y,w,h,mask)=>window.Physics?.overlap?.(x,y,w,h,mask)||[],
+        sweep:(x,y,w,h,dx,dy,mask)=>window.Physics?.sweep?.(x,y,w,h,dx,dy,mask)||null,
+        point:(x,y,mask)=>window.Physics?.point?.(x,y,mask)||[],
+        gravity:()=>cloneRuntimeValue(window.SnakeEngine?.runtime?.Physics?.gravity||window.Physics?.gravity||{x:0,y:0}),
+        setGravity:(x,y)=>window.Physics?.setGravity?.(x,y),
+        stats:()=>window.Physics?.stats?.()||{}
+      },
+
+      signals:{
+        on:(name,fn)=>runtime.addSignal(name,fn,false),
+        once:(name,fn)=>runtime.addSignal(name,fn,true),
+        off:(name,fn)=>runtime.removeSignal(name,fn),
+        emit:(name,payload)=>runtime.emitSignal(name,payload),
+        clear:name=>runtime.clearSignal(name)
+      },
+
+      time:{
+        after:(seconds,fn)=>runtime.addTimer(seconds,fn,false),
+        every:(seconds,fn)=>runtime.addTimer(seconds,fn,true),
+        cancel:id=>runtime.cancelTimer(id),
+        now:()=>runtime.gameTime,
+        wait:seconds=>new Promise(resolve=>runtime.addTimer(seconds,resolve,false))
+      },
+
       save:{
         get:(path,fallback)=>SaveGame?.get?.(path,fallback),
         set:(path,value)=>SaveGame?.set?.(path,value),
@@ -28885,6 +29209,9 @@ ${record.source}
         "entity",
         "camera",
         "tilemap",
+        "physics",
+        "signals",
+        "time",
         "save",
         "audio",
         "lifecycle",
@@ -28904,6 +29231,9 @@ ${record.source}
         this.api.entity,
         this.api.camera,
         this.api.tilemap,
+        this.api.physics,
+        this.api.signals,
+        this.api.time,
         this.api.save,
         this.api.audio,
         this.api.lifecycle,
@@ -28986,7 +29316,7 @@ ${record.source}
 
     try{
       addOutput?.(
-        `Scripting Runtime v2 started — ${this.modules.size} module(s).`,
+        `Scripting Runtime v2.5 started — ${this.modules.size} module(s) · Signals/Timers ready.`,
         "success"
       );
     }catch(_){}
@@ -28996,6 +29326,8 @@ ${record.source}
 
   update(dt){
     if(!this.running)return;
+
+    this.updateTimers(dt);
 
     for(const fn of [...this.updateHooks]){
       try{
@@ -33004,12 +33336,33 @@ const API={
     {name:"blocked",sig:"tilemap.blocked(x, y)",desc:"Consulta colisão do TileMap.",insert:"tilemap.blocked(tileX, tileY)"},
     {name:"world",sig:"tilemap.world()",desc:"Retorna os dados do TileMap carregado.",insert:"tilemap.world()"}
   ],
+  physics:[
+    {name:"raycast",sig:"physics.raycast(x1, y1, x2, y2, mask)",desc:"Dispara um raio e retorna a primeira colisão.",insert:"physics.raycast(x1, y1, x2, y2)"},
+    {name:"overlap",sig:"physics.overlap(x, y, w, h, mask)",desc:"Retorna corpos sobrepostos a uma região.",insert:"physics.overlap(x, y, width, height)"},
+    {name:"sweep",sig:"physics.sweep(x, y, w, h, dx, dy, mask)",desc:"Move uma AABB virtual e retorna a primeira região de impacto.",insert:"physics.sweep(x, y, width, height, dx, dy)"},
+    {name:"point",sig:"physics.point(x, y, mask)",desc:"Consulta corpos em um ponto.",insert:"physics.point(x, y)"},
+    {name:"gravity",sig:"physics.gravity()",desc:"Retorna a gravidade atual.",insert:"physics.gravity()"},
+    {name:"setGravity",sig:"physics.setGravity(x, y)",desc:"Altera a gravidade global.",insert:"physics.setGravity(0, 980)"}
+  ],
+  signals:[
+    {name:"on",sig:'signals.on("event", fn)',desc:"Escuta um evento global do gameplay.",insert:'signals.on("enemy:defeated", (data) => {\n  \n})'},
+    {name:"once",sig:'signals.once("event", fn)',desc:"Escuta um evento somente uma vez.",insert:'signals.once("level:complete", () => {\n  \n})'},
+    {name:"off",sig:'signals.off("event", fn)',desc:"Remove um listener específico.",insert:'signals.off("event", handler)'},
+    {name:"emit",sig:'signals.emit("event", data)',desc:"Dispara um evento para outros scripts.",insert:'signals.emit("enemy:defeated", { id: enemy.id })'},
+    {name:"clear",sig:'signals.clear("event")',desc:"Remove listeners daquele evento.",insert:'signals.clear("event")'}
+  ],
+  time:[
+    {name:"after",sig:"time.after(seconds, fn)",desc:"Executa uma função depois de um tempo usando o game loop.",insert:"time.after(1, () => {\n  \n})"},
+    {name:"every",sig:"time.every(seconds, fn)",desc:"Executa uma função repetidamente.",insert:"time.every(0.5, () => {\n  \n})"},
+    {name:"cancel",sig:"time.cancel(id)",desc:"Cancela um timer criado por after/every.",insert:"time.cancel(timerId)"},
+    {name:"wait",sig:"await time.wait(seconds)",desc:"Promise baseada no tempo do jogo.",insert:"await time.wait(1)"}
+  ],
   log:[
     {name:"log",sig:'log("message")',desc:"Envia uma mensagem ao Output.",insert:'log("Hello Snake")'}
   ]
 };
 
-const ROOTS=["engine","input","entity","scene","ui","audio","save","camera","tilemap","log"];
+const ROOTS=["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","signals","time","log"];
 
 const snippets=[
   {
@@ -33065,6 +33418,24 @@ const coins = save.get("player.coins", 0);`
     code:`ui.on("start", async () => {
   await scene.load("Main");
 });`
+  },
+  {
+    title:"Signals between scripts",
+    desc:"Um script emite um evento e qualquer outro pode reagir.",
+    code:`signals.on("enemy:defeated", ({ id }) => {
+  log("Enemy defeated:", id);
+});
+
+signals.emit("enemy:defeated", { id: enemy.id });`
+  },
+  {
+    title:"Gameplay timer",
+    desc:"Timer sincronizado com o game loop.",
+    code:`const timerId = time.every(1, () => {
+  log("One second passed");
+});
+
+// time.cancel(timerId);`
   }
 ];
 
@@ -33376,6 +33747,28 @@ function open(kind="api"){
     title.textContent="ENTITY REFERENCES";
     sub.textContent="Insert IDs and tags without typing";
     renderEntities()
+  }else if(kind==="gameplay"){
+    title.textContent="GAMEPLAY API";
+    sub.textContent="Signals · timers · physics";
+    body=document.getElementById("snakeScriptDrawerBodyV3");
+    if(body){
+      body.innerHTML=`
+        <article class="snake-snippet-card">
+          <strong>Signals</strong><small>Comunicação desacoplada entre scripts.</small>
+          <div class="snake-api-example">signals.on("enemy:defeated", data => {\n  log(data);\n});\n\nsignals.emit("enemy:defeated", { id: "enemy-1" });</div>
+          <button onclick="SnakeScriptProV3.insert('signals.on(\\\"enemy:defeated\\\", (data) => {\\n  \\n});')">INSERT SIGNAL</button>
+        </article>
+        <article class="snake-snippet-card">
+          <strong>Game-loop timers</strong><small>Timers são atualizados pelo runtime, não pelo relógio do navegador.</small>
+          <div class="snake-api-example">const id = time.every(1, () => {\n  log("tick");\n});\n\ntime.cancel(id);</div>
+          <button onclick="SnakeScriptProV3.insert('const timerId = time.every(1, () => {\\n  \\n});')">INSERT TIMER</button>
+        </article>
+        <article class="snake-snippet-card">
+          <strong>Physics queries</strong><small>Raycast, overlap e point usando o Physics runtime.</small>
+          <div class="snake-api-example">const hit = physics.raycast(x1, y1, x2, y2);\nconst nearby = physics.overlap(x, y, 64, 64);</div>
+          <button onclick="SnakeScriptProV3.insert('const hit = physics.raycast(x1, y1, x2, y2);')">INSERT RAYCAST</button>
+        </article>`;
+    }
   }else{
     title.textContent="DIAGNOSTICS";
     sub.textContent="Syntax checks for the active file";
@@ -34789,7 +35182,7 @@ const KEYWORDS=new Set([
   "async","await","typeof","instanceof","in","of","import","export","default","this"
 ]);
 const BOOLS=new Set(["true","false","null","undefined","NaN","Infinity"]);
-const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","log"]);
+const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","signals","time","log"]);
 
 function escColor(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
 function tokenLine(line){
