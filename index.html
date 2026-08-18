@@ -14672,6 +14672,7 @@ Promise.resolve(window.SnakeDB?.ready).then(ensureUI).catch(ensureUI);
   background:#0a0d10;
 }
 .physics-manager.show{display:flex}
+.physics-manager[aria-hidden="true"]{display:none!important;pointer-events:none!important}
 
 .physics-head{
   min-height:58px;
@@ -15522,6 +15523,7 @@ async function applyPhysicsConfigToGraph(){
    UI
 ----------------------------------------------------- */
 function ensureUI(){
+  document.getElementById("physicsHeaderBtn")?.remove();
   const editor=document.getElementById("editor");
   if(!editor||document.getElementById("physicsManager"))return;
 
@@ -15530,13 +15532,14 @@ function ensureUI(){
   ui.className="physics-manager";
   ui.innerHTML=`
     <header class="physics-head">
-      <button class="icon-btn" type="button" data-phys-close onclick="window.closePhysicsManagerV3?.();return false;">
+      <button class="icon-btn" type="button" data-phys-close onclick="const p=this.closest('#physicsManager');if(p){p.classList.remove('show','active','open');p.style.setProperty('display','none','important');p.style.setProperty('pointer-events','none','important');}window.closePhysicsManagerV3?.();return false;">
         <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
       </button>
       <div class="physics-head-title">
         <strong>PHYSICS 2D v3</strong>
         <small>Rigidbody · Sensors · Queries · Layers/Mask · Materials</small>
       </div>
+      <button class="tool-btn" type="button" data-phys-close style="width:auto;padding:0 10px" onclick="const p=this.closest('#physicsManager');if(p){p.classList.remove('show','active','open');p.style.setProperty('display','none','important');p.style.setProperty('pointer-events','none','important');}window.closePhysicsManagerV3?.();return false;">FECHAR</button>
       <button class="icon-btn" type="button" data-phys-debug>
         <svg viewBox="0 0 24 24" stroke-width="1.8">
           <path d="M4 12h16M12 4v16"/>
@@ -15637,26 +15640,7 @@ function ensureUI(){
   `;
   editor.appendChild(ui);
 
-  const header=document.querySelector("#editor .editor-header");
-  const animatorBtn=document.getElementById("animatorHeaderBtn");
-
-  if(header&&!document.getElementById("physicsHeaderBtn")){
-    const btn=document.createElement("button");
-    btn.id="physicsHeaderBtn";
-    btn.className="icon-btn";
-    btn.type="button";
-    btn.setAttribute("aria-label","Physics 2D");
-    btn.innerHTML=`
-      <svg viewBox="0 0 24 24" stroke-width="1.8">
-        <circle cx="8" cy="12" r="3"/>
-        <circle cx="16" cy="12" r="3"/>
-        <path d="M11 12h2M8 9V5M16 9V5"/>
-      </svg>`;
-    btn.addEventListener("click",openManager);
-
-    if(animatorBtn)animatorBtn.insertAdjacentElement("afterend",btn);
-    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
-  }
+  document.getElementById("physicsHeaderBtn")?.remove();
 
   ui.addEventListener("click",async e=>{
     if(e.target.closest("[data-phys-close]"))return closeManager();
@@ -15698,11 +15682,42 @@ async function renderLayers(){
   document.getElementById("physGravityY").value=cfg.gravity?.y||0;
 }
 
+
+  const menu=document.getElementById("editorMoreMenu");
+  if(menu && !document.getElementById("editorMorePhysicsV3")){
+    const btn=document.createElement("button");
+    btn.id="editorMorePhysicsV3";
+    btn.type="button";
+    btn.className="editor-more-item";
+    btn.innerHTML=
+      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
+        '<circle cx="8" cy="12" r="3"/>'+
+        '<circle cx="16" cy="12" r="3"/>'+
+        '<path d="M11 12h2M8 9V5M16 9V5"/>'+
+      '</svg>'+
+      '<span>Physics 2D v3</span>';
+
+    btn.addEventListener("click",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      menu.classList.remove("show");
+      openManager();
+    });
+
+    const sceneEditorBtn=document.getElementById("editorMoreSceneEditorMobileV2");
+    if(sceneEditorBtn){
+      sceneEditorBtn.insertAdjacentElement("afterend",btn);
+    }else{
+      menu.insertBefore(btn,menu.firstChild);
+    }
+  }
+
 async function openManager(){
   ensureUI();
   const panel=document.getElementById("physicsManager");
   if(panel){
     panel.style.removeProperty("display");
+    panel.style.removeProperty("pointer-events");
     panel.removeAttribute("aria-hidden");
     panel.classList.add("show");
   }
@@ -15714,22 +15729,45 @@ function closeManager(){
   const panel=document.getElementById("physicsManager");
   if(panel){
     panel.classList.remove("show","active","open");
-    panel.style.removeProperty("display");
+    panel.style.setProperty("display","none","important");
+    panel.style.setProperty("pointer-events","none","important");
     panel.setAttribute("aria-hidden","true");
   }
 
   document.querySelectorAll(".physics-collider-box,.physics-collider-circle").forEach(x=>x.remove());
 
-  // Return interaction to the editor/code immediately on mobile.
   const codeArea=document.getElementById("codeArea");
   const editor=document.getElementById("editor");
-  if(editor)editor.style.pointerEvents="";
-  if(codeArea)codeArea.style.pointerEvents="";
+  if(editor)editor.style.removeProperty("pointer-events");
+  if(codeArea)codeArea.style.removeProperty("pointer-events");
 
   return true;
 }
 
+
 window.closePhysicsManagerV3=closeManager;
+
+function closePhysicsBeforeEditorNavigationV3(target){
+  const panel=document.getElementById("physicsManager");
+  if(!panel)return;
+
+  const nav=target.closest?.(
+    '[data-tab], .editor-tab, .main-tab, [data-editor-tab], button'
+  );
+  if(!nav)return;
+
+  const text=(nav.textContent||"").trim().toUpperCase();
+  const isEditorNav=
+    text==="CODE"||text==="SCENE"||text==="ASSETS"||text==="PROJECT"||
+    nav.matches?.('[data-tab="code"],[data-tab="scene"],[data-tab="assets"],[data-tab="project"]');
+
+  if(isEditorNav)closeManager();
+}
+
+document.addEventListener("pointerdown",e=>{
+  closePhysicsBeforeEditorNavigationV3(e.target);
+},true);
+
 
 document.addEventListener("pointerup",e=>{
   const btn=e.target.closest?.("[data-phys-close]");
@@ -15851,7 +15889,7 @@ async function ensureSnakeDemoPhysics(){
    Public API
 ----------------------------------------------------- */
 window.PhysicsManager={
-  version:"3.0.2",
+  version:"3.1.0",
 
   close(){
     return window.closePhysicsManagerV3?.() ?? closeManager();
@@ -30843,31 +30881,8 @@ onTriggerExit(other)</div>
     }
   });
 
-  const menu=document.getElementById("editorMoreMenu");
+  /* Physics v2 menu shortcut removed; Physics 2D v3 replaces it. */
 
-  if(menu && !document.getElementById("editorMorePhysicsV2")){
-    const btn=document.createElement("button");
-    btn.id="editorMorePhysicsV2";
-    btn.type="button";
-    btn.className="editor-more-item";
-
-    btn.innerHTML=
-      '<svg viewBox="0 0 24 24" stroke-width="1.8">'+
-        '<circle cx="8" cy="12" r="3"/>'+
-        '<circle cx="16" cy="12" r="3"/>'+
-        '<path d="M11 12h2"/>'+
-      '</svg>'+
-      '<span>Physics Integration v2</span>';
-
-    btn.addEventListener("click",e=>{
-      e.preventDefault();
-      e.stopPropagation();
-      menu.classList.remove("show");
-      openManager();
-    });
-
-    menu.insertBefore(btn,menu.firstChild);
-  }
 }
 
 function renderManager(){
@@ -35155,6 +35170,8 @@ function ensureUI(){
     });
 
     menu.insertBefore(btn,menu.firstChild);
+    const physicsV3Btn=document.getElementById("editorMorePhysicsV3");
+    if(physicsV3Btn)btn.insertAdjacentElement("afterend",physicsV3Btn);
   }
 }
 
