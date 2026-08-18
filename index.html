@@ -2,15 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-
-<meta name="theme-color" content="#090b12">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Snake Engine">
-<meta name="format-detection" content="telephone=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Snake Engine</title>
 
 <style>
@@ -1211,412 +1203,145 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 }
 @media(max-width:900px){.project-contextbar{padding-right:4px}.editor-sidebar-head{height:42px}.editor-shell{display:block}.editor-main{display:block}.editor-main .explorer,.editor-main .inspector{top:0;bottom:0}.project-modal{align-items:flex-end;padding:0}.project-modal-card{max-height:88%;border-radius:12px 12px 0 0}.project-setting-grid{grid-template-columns:1fr}.project-setting.full{grid-column:auto}.editor-statusbar .right{display:none}}
 </style>
-
-<style id="snakeReimaginedMobileV1">
+<style id="snakePremiumRedesignV6">
 :root{
-  --sn-bg:#070a10;
-  --sn-surface:#0d121a;
-  --sn-surface-2:#111824;
-  --sn-surface-3:#151d2a;
-  --sn-line:#263244;
-  --sn-text:#edf2f7;
-  --sn-muted:#7f8ca0;
-  --sn-purple:#7c3cff;
-  --sn-purple-2:#9b5cff;
-  --sn-cyan:#22d3ee;
-  --sn-green:#83e85e;
-  --sn-yellow:#e4cf5a;
-  --sn-danger:#ff6b7a;
-  --sn-radius:14px;
-  --sn-shadow:0 18px 55px rgba(0,0,0,.38);
+ --bg:#060a11;--bg2:#090f18;--panel:#0d1420;--panel2:#111a27;--panel3:#151f2e;
+ --line:#253248;--line2:#33435c;--text:#eef3f8;--muted:#77869b;--soft:#a8b4c4;
+ --violet:#7c46e8;--violet2:#9a68ff;--cyan:#27d3e6;--green:#7de461;--amber:#e9aa4d;--danger:#ed6d7c;
+ --radius:11px;--radius2:15px;--shadow:0 16px 42px rgba(0,0,0,.38)
 }
+*{scrollbar-width:thin;scrollbar-color:#34445b #0a1019}
+html,body{background:var(--bg)!important;color:var(--text)!important}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;overscroll-behavior:none}
+button,input,select,textarea{font:inherit}button{touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid rgba(39,211,230,.75)!important;outline-offset:1px}
 
-html,body{
-  background:
-    radial-gradient(circle at 15% -10%,rgba(124,60,255,.16),transparent 34%),
-    radial-gradient(circle at 95% 5%,rgba(34,211,238,.08),transparent 24%),
-    var(--sn-bg)!important;
-  color:var(--sn-text)!important;
-  overscroll-behavior:none;
-}
+/* universal surface language */
+.screen,.engine-page,.guide-screen,.prefab-manager,.prefab-v2-manager,.physics-manager,.input-manager-v2,.audio-manager-v2,.save-manager-v1,.build-manager-v1,.flow2-screen,.anim2-screen,.ui2-screen,.sem2-screen,.tilemap-manager-v2{background:var(--bg)!important;color:var(--text)!important}
+.icon-btn,.tool-btn,.scene-tool,.art-mini-btn,.scn-icon-btn,.scn-small-btn,.tm-tool,.tm-v2-tool,.flow2-btn,.anim2-btn,.ui2-btn,.input-v2-mini,.audio-v2-mini,.save-v1-mini,.build-v1-mini,.prefab-secondary{border:1px solid var(--line)!important;background:var(--panel2)!important;color:#8796aa!important;border-radius:8px!important}
+.icon-btn:hover,.tool-btn:hover,.scene-tool:hover,.scn-icon-btn:hover,.tm-tool:hover{border-color:var(--line2)!important;color:#d9e1ea!important}
+.primary,.tool-btn.primary,.run-btn,.prefab-primary{background:linear-gradient(135deg,#6936d6,#8149ed)!important;border-color:#8b59ef!important;color:#fff!important;box-shadow:0 7px 20px rgba(124,70,232,.18)}
+input,select,textarea,.input,.tool-input{background:#080e16!important;border:1px solid var(--line)!important;color:#dce5ed!important;border-radius:7px!important}
+input::placeholder,textarea::placeholder{color:#536176!important}
 
-body{
-  padding-top:env(safe-area-inset-top);
-  padding-left:env(safe-area-inset-left);
-  padding-right:env(safe-area-inset-right);
-}
+/* HOME: reference hierarchy, existing real functions untouched */
+#dashboard{background:radial-gradient(circle at 50% -15%,rgba(124,70,232,.16),transparent 34%),linear-gradient(180deg,#080d15,#060a11)!important}
+#dashboard .home-header{background:transparent!important;border:0!important;padding:18px 18px 8px!important}
+#dashboard .brand-logo{background:linear-gradient(145deg,#2d1a58,#101925)!important;border:1px solid #55378a!important;color:#a878ff!important;box-shadow:0 0 25px rgba(124,70,232,.18)}
+#dashboard .home-content{padding:12px 14px 90px!important}
+#dashboard .hero-card,#dashboard .home-card,#dashboard .guide-home-card{background:linear-gradient(145deg,#101824,#0b121c)!important;border:1px solid var(--line)!important;border-radius:var(--radius2)!important;box-shadow:var(--shadow)}
+#dashboard .project-card{background:#0e1621!important;border:1px solid var(--line)!important;border-radius:10px!important;transition:.15s transform,.15s border-color}
+#dashboard .project-card:active{transform:scale(.985);border-color:#7045bd!important}
+#dashboard .bottom-nav{left:8px!important;right:8px!important;bottom:calc(7px + env(safe-area-inset-bottom))!important;border:1px solid var(--line)!important;border-radius:17px!important;background:rgba(9,14,22,.96)!important;backdrop-filter:blur(18px);box-shadow:var(--shadow)}
+#dashboard .bottom-nav button.active{color:var(--violet2)!important}
 
-/* ---------- HOME ---------- */
-.snake-home-v2{background:transparent!important}
-.snake-home-header{
-  min-height:64px;
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px 8px;
-  background:linear-gradient(180deg,rgba(7,10,16,.96),rgba(7,10,16,.76));
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(120,137,162,.10);
-  z-index:20;
-}
-.snake-home-brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
-.snake-home-logo{
-  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
-  background:linear-gradient(145deg,rgba(124,60,255,.30),rgba(34,211,238,.10));
-  border:1px solid rgba(139,92,246,.38);
-  box-shadow:0 8px 24px rgba(124,60,255,.18);
-}
-.snake-home-logo svg{width:23px;color:#9b6cff}
-.snake-home-brand strong{display:block;font-size:14px;letter-spacing:.08em}
-.snake-home-brand small{display:block;margin-top:2px;color:#66758b;font-size:8px}
-.snake-home-actions{display:flex;align-items:center;gap:6px}
-.snake-home-actions button{
-  width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
-  background:#0f1621;border:1px solid #222e40;color:#8b98ab
-}
-.snake-home-actions button svg{width:17px}
-.snake-home-actions .snake-avatar{
-  font-size:9px;font-weight:800;color:#c9b6ff;
-  background:linear-gradient(145deg,#18152a,#111925)
-}
-.snake-home-scroll{
-  flex:1;min-height:0;overflow:auto;
-  padding:12px 12px calc(96px + env(safe-area-inset-bottom));
-  -webkit-overflow-scrolling:touch
-}
-.snake-home-hero{
-  position:relative;min-height:232px;overflow:hidden;
-  padding:22px 18px;border:1px solid #263149;border-radius:18px;
-  background:
-    radial-gradient(circle at 78% 34%,rgba(124,60,255,.24),transparent 28%),
-    linear-gradient(145deg,#101625 0%,#0c111b 55%,#0b1018 100%);
-  box-shadow:var(--sn-shadow)
-}
-.snake-home-hero:before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(115deg,rgba(255,255,255,.035),transparent 26%,transparent 72%,rgba(34,211,238,.025))
-}
-.snake-home-hero-copy{position:relative;z-index:2;max-width:66%}
-.snake-eyebrow{
-  display:inline-block;margin-bottom:11px;color:#9f7cff;
-  font:700 8px ui-monospace,monospace;letter-spacing:.11em
-}
-.snake-home-hero h1{margin:0;font-size:26px;line-height:1.05;letter-spacing:-.025em}
-.snake-home-hero p{margin:9px 0 0;color:#8a97aa;font-size:12px;line-height:1.45}
-.snake-home-hero-actions{display:grid;grid-template-columns:1fr;gap:7px;margin-top:18px;max-width:230px}
-.snake-home-hero-actions button{
-  min-height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:8px;
-  background:#111a26;border:1px solid #2a3548;color:#aeb9c8;font-size:8px;font-weight:850
-}
-.snake-home-hero-actions button svg{width:15px}
-.snake-home-hero-actions .primary{
-  background:linear-gradient(135deg,#6936df,#7f45ee);border-color:#8956f0;color:white;
-  box-shadow:0 10px 30px rgba(124,60,255,.27)
-}
-.snake-home-hero-orb{
-  position:absolute;right:-12px;top:34px;width:150px;height:150px;
-  display:grid;place-items:center
-}
-.snake-orb-ring{position:absolute;border-radius:50%;border:1px solid rgba(147,105,255,.25)}
-.snake-orb-ring.one{inset:8px;animation:snakeOrb 9s linear infinite}
-.snake-orb-ring.two{inset:27px;border-style:dashed;animation:snakeOrb 6s linear reverse infinite}
-.snake-orb-core{
-  width:74px;height:74px;border-radius:50%;display:grid;place-items:center;
-  background:radial-gradient(circle at 35% 30%,#8d5cf6,#392066 70%);
-  box-shadow:0 0 40px rgba(124,60,255,.42),inset 0 0 28px rgba(255,255,255,.08)
-}
-.snake-orb-core svg{width:44px;color:#efe8ff}
-@keyframes snakeOrb{to{transform:rotate(360deg)}}
+/* project list/settings */
+#projectsScreen,#settingsScreen{background:var(--bg)!important}
+#projectsScreen .screen-header,#settingsScreen .screen-header{background:#0b121c!important;border-bottom:1px solid var(--line)!important}
+#projectsScreen .project-row,#settingsScreen .settings-card,#settingsScreen .setting-row{background:var(--panel)!important;border-color:var(--line)!important;border-radius:10px!important}
 
-.snake-status-row{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px
-}
-.snake-status-card{
-  min-width:0;padding:9px;border:1px solid #222e3f;border-radius:11px;
-  background:linear-gradient(145deg,#0e151f,#0b1119);display:flex;align-items:center;gap:7px
-}
-.snake-status-card .dot{width:8px;height:8px;border-radius:50%;background:#71e765;box-shadow:0 0 14px #71e765}
-.snake-status-card .metric{min-width:24px;color:#9b6cff;font-size:14px;font-weight:900}
-.snake-status-card strong{display:block;font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.snake-status-card small{display:block;margin-top:2px;color:#5f6d80;font-size:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* MAIN PROJECT IDE */
+#editor{background:var(--bg)!important}
+#editor .editor-header{min-height:54px!important;height:54px!important;padding:6px 8px!important;background:#0b121c!important;border-bottom:1px solid var(--line)!important;box-shadow:0 5px 18px rgba(0,0,0,.16)}
+#editor .editor-title strong{font-size:12px!important;letter-spacing:.02em}#editor .editor-title small{font-size:8px!important;color:var(--muted)!important}
+#editor .project-contextbar{min-height:42px!important;height:42px!important;padding:4px 6px!important;background:#0d151f!important;border-bottom:1px solid var(--line)!important;gap:3px!important}
+#editor .project-contextbar .ctx{height:33px!important;border-radius:7px!important;color:#718096!important;font-size:8px!important;padding:0 10px!important}
+#editor .project-contextbar .ctx.active{background:#241743!important;color:#c9aeff!important;box-shadow:inset 0 -2px var(--violet)!important}
+#editor .editor-main{background:#080e16!important}
+#editor .explorer{background:#0b121c!important;border-right:1px solid var(--line)!important}
+#editor .explorer-head,#editor .inspector-head{background:#0e1621!important;border-bottom:1px solid var(--line)!important;color:#9ba8b9!important}
+#editor .file{border-radius:6px!important;color:#718095!important}.file.active{background:linear-gradient(90deg,#6032c7,#42228c)!important;color:white!important}
+#editor .scene-area,#editor .code-area{background:#080e16!important}
+#editor .scene-toolbar{min-height:40px!important;height:40px!important;padding:4px 6px!important;background:#0d151f!important;border-bottom:1px solid var(--line)!important}
+#editor .scene-tool{height:30px!important;min-width:31px!important}.scene-tool.active{background:#6334cf!important;border-color:#7d4be4!important;color:#fff!important}
+#editor .scene-workspace{background:linear-gradient(rgba(45,91,121,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(45,91,121,.17) 1px,transparent 1px),#08111a!important;background-size:24px 24px!important}
+#editor .scene-object.selected{outline-color:var(--cyan)!important;box-shadow:0 0 0 2px rgba(39,211,230,.2)!important}
+#editor .inspector{background:#0b121c!important;border-left:1px solid var(--line)!important}
+#editor .inspector-section{border-color:#202d40!important}.inspector-section-title{color:#8f9caf!important}
+#editor .property input,#editor .property select{min-height:31px!important;background:#080e16!important;border-color:var(--line)!important}
+#editor .bottom-panel{background:#0a111a!important;border-top:1px solid var(--line)!important}
+#editor .panel-tabs{background:#0d151f!important;border-bottom:1px solid var(--line)!important}.panel-tab.active{color:var(--green)!important}
+#codeArea .tabs{background:#0d151f!important;border-bottom:1px solid var(--line)!important}.tab.active{color:#bd98ff!important;box-shadow:inset 0 -2px var(--violet)!important}
+#codeArea .code-editor{background:#070d14!important}.snake-code-highlight-v4{background:#070d14!important}.snake-code-highlight-v4 .tok-keyword{color:#c17aff!important}.snake-code-highlight-v4 .tok-string{color:#84d56d!important}.snake-code-highlight-v4 .tok-number{color:#e8b65a!important}.snake-code-highlight-v4 .tok-fn{color:#56b9ff!important}
 
-.snake-home-section{margin-top:17px}
-.snake-home-section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:9px;padding:0 2px}
-.snake-home-section-head span{display:block;color:#c8d0dc;font-size:9px;font-weight:850;letter-spacing:.08em}
-.snake-home-section-head small{display:block;margin-top:2px;color:#59677a;font-size:7px}
-.snake-home-section-head button{background:none;color:#8e68ff;font-size:7px;font-weight:800}
-.snake-recent-projects{
-  display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,44vw);
-  gap:8px;overflow:auto;padding-bottom:2px;scroll-snap-type:x proximity
-}
-.snake-recent-projects .project-card,.snake-empty-project{
-  min-height:124px!important;margin:0!important;padding:10px!important;border-radius:12px!important;
-  scroll-snap-align:start;background:linear-gradient(145deg,#111924,#0d141d)!important;
-  border:1px solid #263246!important;display:flex!important;flex-direction:column!important;
-  align-items:flex-start!important;justify-content:flex-end!important;gap:4px!important;text-align:left
-}
-.snake-recent-projects .project-icon{width:42px;height:42px;margin-bottom:auto}
-.snake-recent-projects .arrow{display:none}
-.snake-recent-projects .project-name{font-size:10px}
-.snake-recent-projects .project-meta{font-size:7px;margin-top:1px}
-.snake-empty-project span{font-size:28px;color:#8960f4;margin-bottom:auto}
-.snake-empty-project strong{font-size:10px}.snake-empty-project small{font-size:7px;color:#647287}
+/* ENGINE TOOLS shell */
+#engineTools{background:var(--bg)!important}#engineTools>.tool-header{background:#0b121c!important;border-bottom:1px solid var(--line)!important}
+.engine-page{padding-bottom:calc(70px + env(safe-area-inset-bottom))!important}
+.engine-page>.tool-topbar,.art-topbar,.scn-topbar,.snd-header{background:#0b121c!important;border-bottom:1px solid var(--line)!important}
+.tool-panel,.art-panel,.tm-section,.snd-section,.scn-dock,.scn-asset-tray{background:var(--panel)!important;border-color:var(--line)!important;border-radius:10px!important}
+.tool-panel-title,.art-panel-title,.tm-panel-title,.snd-section-head,.scn-dock-head{color:#94a2b5!important;letter-spacing:.08em!important}
 
-.snake-quick-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:7px
-}
-.snake-quick-grid button{
-  min-width:0;aspect-ratio:1/1.02;border-radius:11px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
-  background:linear-gradient(145deg,#101720,#0c1219);border:1px solid #233043;color:#8d9aab
-}
-.snake-quick-grid b{
-  width:33px;height:33px;border-radius:10px;display:grid;place-items:center;
-  background:#151c29;font-size:16px;font-weight:700
-}
-.snake-quick-grid span{font-size:7px;font-weight:700}
-.snake-quick-grid .purple{color:#a06cff}.snake-quick-grid .violet{color:#8b7aff}
-.snake-quick-grid .blue{color:#56a8ff}.snake-quick-grid .pink{color:#db63d9}
-.snake-quick-grid .green{color:#5ce398}.snake-quick-grid .yellow{color:#e7d15c}
-.snake-quick-grid .cyan{color:#35d9e7}.snake-quick-grid .orange{color:#f0a04c}
+/* ART creator */
+.art-studio{background:var(--bg)!important}.art-topbar{border-radius:0!important}.art-main{gap:8px!important;padding:8px!important}.art-side{background:#0b121c!important;border-color:var(--line)!important}.art-stage{border:1px solid var(--line)!important;border-radius:10px!important;box-shadow:var(--shadow)}
+.art-toolstrip{background:#0d151f!important;border:1px solid var(--line)!important;border-radius:9px!important}.art-tool.active,.art-mini-btn.active{background:#6334cf!important;color:white!important;border-color:#8150e8!important}.art-frame-v4{background:#101824!important;border-color:var(--line)!important}.art-frame-v4.active{border-color:var(--cyan)!important;box-shadow:0 0 0 1px var(--cyan)!important}
 
-.snake-resource-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.snake-resource-cards button{
-  position:relative;min-height:104px;padding:12px;border-radius:12px;text-align:left;overflow:hidden;
-  background:linear-gradient(145deg,#111824,#0d131c);border:1px solid #263145
-}
-.snake-resource-cards button:after{
-  content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-38px;bottom:-42px;
-  background:radial-gradient(circle,rgba(124,60,255,.19),transparent 70%)
-}
-.snake-resource-cards strong{display:block;font-size:10px}
-.snake-resource-cards span{display:block;margin-top:6px;color:#647287;font-size:7px;line-height:1.45}
-.snake-resource-cards i{
-  position:absolute;right:9px;top:9px;color:#8d64ff;font:700 6px ui-monospace,monospace;font-style:normal
-}
+/* SCENE CREATOR */
+.scn-shell{background:var(--bg)!important}.scn-topbar{height:54px!important}.scn-main{gap:0!important}.scn-dock{border-radius:0!important;background:#0b121c!important}.scn-viewport{background:linear-gradient(rgba(45,91,121,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(45,91,121,.16) 1px,transparent 1px),#08111a!important;background-size:24px 24px!important}.scn-toolbar{background:#0d151f!important;border-color:var(--line)!important;border-radius:9px!important}.scn-node.active{background:#251849!important;color:#c6a9ff!important}.scn-asset{background:#101824!important;border-color:var(--line)!important;border-radius:7px!important}
 
-.snake-app-nav{
-  position:absolute;left:8px;right:8px;bottom:calc(7px + env(safe-area-inset-bottom));
-  height:62px;z-index:60;display:grid;grid-template-columns:repeat(5,1fr);
-  padding:4px;border-radius:18px;background:rgba(12,17,25,.94);
-  backdrop-filter:blur(20px);border:1px solid #263145;box-shadow:0 16px 38px rgba(0,0,0,.42)
-}
-.snake-app-nav button{
-  position:relative;background:none;color:#657287;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:3px;font-size:6px;border-radius:12px
-}
-.snake-app-nav button svg{width:19px;height:19px}
-.snake-app-nav button.active{color:#9b6cff;background:rgba(124,60,255,.10)}
-.snake-app-nav .snake-nav-create span{
-  position:absolute;top:-19px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
-  background:linear-gradient(145deg,#7439e6,#8f4ff5);border:4px solid #090d14;
-  color:white;font-size:25px;box-shadow:0 0 28px rgba(124,60,255,.45)
-}
+/* TILEMAP creator */
+.tm-studio,.tilemap-manager-v2{background:var(--bg)!important}.tm-toolbar,.tm-v2-toolbar{background:#0d151f!important;border-color:var(--line)!important}.tm-left,.tm-right,.tm-v2-sidebar{background:#0b121c!important;border-color:var(--line)!important}.tm-viewport,.tm-v2-workspace{background:linear-gradient(rgba(45,91,121,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(45,91,121,.15) 1px,transparent 1px),#08111a!important;background-size:20px 20px!important}.tm-tile,.tm-v2-tile{border-color:var(--line)!important;border-radius:5px!important}.tm-tile.active,.tm-v2-tile.active{border-color:var(--cyan)!important;box-shadow:0 0 0 1px var(--cyan)!important}.tm-layer.active,.tm-v2-layer.active{background:#251849!important;color:#c5a7ff!important}
 
-/* ---------- PROJECTS / SETTINGS ---------- */
-#projectsScreen,#settingsScreen{background:transparent!important}
-#projectsScreen .topbar,#settingsScreen .topbar{
-  height:60px;min-height:60px;padding:0 14px;background:rgba(10,14,21,.94);
-  backdrop-filter:blur(18px);border-bottom:1px solid #202a3a
-}
-#projectsScreen .dashboard-content,#settingsScreen .dashboard-content{
-  padding:18px 12px calc(92px + env(safe-area-inset-bottom))
-}
-#projectsScreen .welcome h1,#settingsScreen .welcome h1{font-size:22px}
-#projectsScreen .welcome p,#settingsScreen .welcome p{font-size:11px}
-#projectsScreen .new-project{
-  height:48px;border-radius:10px;margin-top:15px;
-  background:linear-gradient(135deg,#6936df,#7f45ee);color:#fff
-}
-#projectsScreen .project-card,#settingsScreen .tool-card,#settingsScreen .dict-row{
-  background:linear-gradient(145deg,#101720,#0c1219)!important;
-  border-color:#253144!important;border-radius:12px!important
-}
-#projectsScreen .bottom-nav,#settingsScreen .bottom-nav{
-  height:65px;left:8px;right:8px;bottom:calc(7px + env(safe-area-inset-bottom));
-  border:1px solid #263145;border-radius:18px;background:rgba(12,17,25,.95);
-  backdrop-filter:blur(20px)
-}
-#projectsScreen .nav,#settingsScreen .nav{font-size:7px}
-#projectsScreen .nav.active,#settingsScreen .nav.active{color:#9b6cff}
+/* ASSET BROWSER */
+#tool-assets{background:var(--bg)!important}.asset-toolbar{background:#0b121c!important;border-color:var(--line)!important;border-radius:10px!important}.folder-row{gap:5px!important}.folder-row button{background:#101824!important;border:1px solid var(--line)!important;border-radius:7px!important;color:#7e8da1!important}.asset-grid2{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))!important;gap:8px!important}.asset-item{background:#0e1621!important;border:1px solid var(--line)!important;border-radius:10px!important;overflow:hidden!important}.asset-item.selected{border-color:var(--cyan)!important;box-shadow:0 0 0 1px var(--cyan)!important}.asset-preview2{background:#081019!important}.asset-name2{color:#dce4ec!important}.asset-meta{color:#647287!important}
 
-/* ---------- EDITOR APP SHELL ---------- */
-#editor{
-  background:
-    radial-gradient(circle at 50% -20%,rgba(124,60,255,.10),transparent 34%),
-    #080c12!important
-}
-#editor .editor-header{
-  height:60px;min-height:60px;padding:8px 8px;
-  background:rgba(11,16,24,.96);backdrop-filter:blur(18px);
-  border-bottom:1px solid #263145;gap:5px
-}
-#editor .editor-header .icon-btn{
-  width:38px;height:38px;border:1px solid #263145;border-radius:10px;background:#101722
-}
-#editor .editor-title strong{font-size:13px}
-#editor .editor-title small{font-size:7px;color:#617087}
-#editor .project-actions{display:flex;gap:5px}
-#editor .project-action{
-  width:38px;height:38px;border-radius:10px;background:#101722;border:1px solid #263145;color:#8492a6
-}
-#editor .project-action.primary{
-  background:linear-gradient(135deg,#5aa836,#74d34b)!important;color:#071007!important;border-color:#79d754!important
-}
-#editorMoreBtn{
-  width:38px!important;height:38px!important;border-radius:10px!important;
-  background:#101722!important;border:1px solid #263145!important
-}
-.editor-more-menu{
-  right:6px!important;top:48px!important;max-height:min(68vh,620px)!important;
-  overflow:auto!important;border:1px solid #2a3649!important;border-radius:13px!important;
-  background:rgba(13,19,29,.98)!important;backdrop-filter:blur(18px)!important;
-  box-shadow:var(--sn-shadow)!important
-}
-.editor-more-item{min-height:42px!important;border-bottom-color:#202c3d!important}
-.editor-more-item svg{color:#8f65ff!important}
+/* AUDIO creator */
+.snd-shell{background:var(--bg)!important}.snd-toolbar,.snd-transport,.snd-tabs,.snd-mobile-bar{background:#0d151f!important;border-color:var(--line)!important}.snd-section,.snd-channel{background:#0e1621!important;border:1px solid var(--line)!important;border-radius:10px!important}.snd-step{border-color:#29394f!important;background:#101824!important;border-radius:5px!important}.snd-step.on{background:#6a38d5!important;border-color:#8653eb!important;box-shadow:0 0 12px rgba(124,70,232,.28)!important}.snd-key{border-color:#26364a!important}.snd-pad{border-radius:9px!important}.audio-list .audio-item{background:#0e1621!important;border-color:var(--line)!important;border-radius:9px!important}
 
-/* editor nav becomes bottom mobile app bar */
-#editor .project-contextbar{
-  position:absolute!important;left:7px!important;right:7px!important;bottom:calc(7px + env(safe-area-inset-bottom))!important;
-  top:auto!important;height:58px!important;min-height:58px!important;z-index:180!important;
-  display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:3px!important;
-  padding:4px!important;border:1px solid #263145!important;border-radius:17px!important;
-  background:rgba(12,17,25,.96)!important;backdrop-filter:blur(20px)!important;
-  box-shadow:0 16px 38px rgba(0,0,0,.46)!important
-}
-#editor .project-contextbar .ctx{
-  min-width:0!important;height:49px!important;padding:0 3px!important;border-radius:11px!important;
-  display:flex!important;flex-direction:column!important;gap:2px!important;justify-content:center!important;
-  color:#66748a!important;font-size:6px!important;background:transparent!important
-}
-#editor .project-contextbar .ctx svg{width:18px!important;height:18px!important}
-#editor .project-contextbar .ctx.active{
-  color:#9d72ff!important;background:rgba(124,60,255,.12)!important;box-shadow:none!important
-}
-#editor .project-contextbar .ctx-spacer,#editor .project-contextbar .status{display:none!important}
-#editor .editor-main{padding-bottom:73px!important}
-#editor .code-area,#editor .scene-area{background:#090e15!important}
-#editor .tabs{
-  height:38px;min-height:38px;background:#0f1620!important;border-bottom:1px solid #222e40!important
-}
-#editor .tab{
-  height:38px;padding:0 12px;background:transparent!important;border-right:0!important;color:#657388!important;font-size:9px
-}
-#editor .tab.active{color:#cfc6ff!important;background:rgba(124,60,255,.08)!important;box-shadow:inset 0 -2px #7c3cff!important}
-#editor .snake-scriptbar-v3{
-  min-height:37px!important;background:#0c121a!important;border-bottom:1px solid #222e40!important
-}
-#editor .snake-scriptbar-v3 button{
-  background:#101824!important;border-color:#263246!important;color:#7b899e!important;border-radius:8px!important
-}
-#editor .snake-scriptbar-v3 .diag-ok{color:#83e85e!important;border-color:#31563b!important;background:#0f1a14!important}
-#editor .code-wrapper,.snake-code-highlight-v4{background:#080d13!important}
-#editor .line-numbers{color:#39475a!important}
-#editor .scene-toolbar{
-  background:#0e151f!important;border-bottom:1px solid #243044!important;height:40px!important
-}
-#editor .scene-tool{border-radius:8px!important;color:#6f7e93!important}
-#editor .scene-tool.active{color:#9b6cff!important;background:rgba(124,60,255,.12)!important}
-#editor .scene-workspace{
-  background:
-    linear-gradient(rgba(62,79,103,.15) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(62,79,103,.15) 1px,transparent 1px),
-    #091019!important;
-  background-size:24px 24px!important
-}
+/* PROJECT / DICTIONARY */
+#tool-project .tool-card,#tool-dictionary .tool-card{background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:11px!important}
 
-/* panels as polished mobile sheets */
-#editor .explorer,#editor .inspector{
-  top:auto!important;bottom:73px!important;width:calc(100% - 14px)!important;left:7px!important;right:7px!important;
-  max-height:72vh!important;border:1px solid #29364a!important;border-radius:16px 16px 12px 12px!important;
-  background:rgba(13,19,29,.98)!important;backdrop-filter:blur(18px)!important;
-  box-shadow:0 -16px 44px rgba(0,0,0,.42)!important;overflow:auto!important
-}
-#editor .explorer{
-  transform:translateY(calc(100% + 90px))!important;transition:.22s ease!important
-}
-#editor .explorer.open{transform:translateY(0)!important}
-#editor .inspector{
-  transform:translateY(calc(100% + 90px))!important;transition:.22s ease!important
-}
-#editor .inspector.open,#editor .inspector.show{transform:translateY(0)!important}
-#editor .explorer-head,#editor .inspector-head{
-  position:sticky;top:0;z-index:2;background:#111925!important;border-bottom:1px solid #273448!important;
-  border-radius:15px 15px 0 0
-}
-#editor .file.active{background:rgba(124,60,255,.12)!important;color:#a682ff!important}
-#editor .property input,#editor .property select{
-  background:#0b1119!important;border-color:#2a374a!important;border-radius:8px!important
-}
+/* REAL advanced systems: consistent premium windows */
+.physics-manager,.input-manager-v2,.audio-manager-v2,.save-manager-v1,.build-manager-v1,.flow2-screen,.anim2-screen,.ui2-screen,.sem2-screen,.prefab-manager,.prefab-v2-manager,.tilemap-manager-v2{z-index:900!important}
+.physics-head,.input-v2-head,.audio-v2-head,.save-v1-head,.build-v1-head,.flow2-head,.anim2-head,.ui2-head,.sem2-head,.prefab-head,.pfv2-head,.tm-v2-head{min-height:54px!important;height:54px!important;background:#0b121c!important;border-bottom:1px solid var(--line)!important;padding:6px 9px!important}
+.physics-body,.input-v2-body,.audio-v2-body,.save-v1-body,.build-v1-body,.flow2-body,.anim2-body,.sem2-body,.prefab-body,.pfv2-body{background:var(--bg)!important;padding:9px!important;padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
+.physics-panel,.input-v2-panel,.input-v3-section,.audio-v2-panel,.save-v1-panel,.build-v1-panel,.flow2-panel,.anim2-panel,.pfv2-panel{background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:10px!important;overflow:hidden!important}
+.physics-panel h3,.input-v2-panel h3,.input-v3-section h3,.audio-v2-panel h3,.save-v1-panel h3,.build-v1-panel h3,.flow2-panel h3,.anim2-panel h3,.pfv2-panel h3{background:#101824!important;border-bottom:1px solid #202e41!important;color:#95a3b6!important;letter-spacing:.09em!important}
+.physics-row,.input-v2-row,.audio-v2-row,.build-v1-row,.ui2-row,.sem2-row{color:#8391a4!important}
+.physics-row input,.physics-row select,.input-v2-row input,.input-v2-row select,.audio-v2-row input,.audio-v2-row select,.build-v1-row input,.build-v1-row select{background:#080e16!important;border-color:var(--line)!important}
 
-/* ---------- GENERIC ADVANCED TOOLS / RESOURCE SCREENS ---------- */
-.physics-manager,.save-manager-v1,.build-manager-v1,.input-manager-v2,
-.anim2-screen,.ui2-screen,.flow2-screen,.sem2-root,.sem2-editor,
-.tm-studio,.art-studio,.guide-screen{
-  background:
-    radial-gradient(circle at 100% -10%,rgba(124,60,255,.10),transparent 28%),
-    #080d13!important
-}
-.physics-v2-head,.save-v1-head,.build-v1-head,.input-v2-head,
-.anim2-head,.ui2-head,.flow2-head,.sem2-head,.tm-toolbar{
-  background:rgba(12,18,27,.96)!important;backdrop-filter:blur(18px)!important;
-  border-bottom-color:#263246!important
-}
-.physics-v2-panel,.save-v1-panel,.build-v1-panel,.input-v2-panel,
-.anim2-panel,.flow2-panel,.ui2-panel,.tm-section{
-  background:linear-gradient(145deg,#101720,#0c1219)!important;
-  border-color:#263246!important;border-radius:12px!important
-}
-.physics-v2-row input,.physics-v2-row select,.save-v1-row input,
-.build-v1-row input,.build-v1-row select,.input-v2-row input,.input-v2-row select,
-.anim2-row input,.anim2-row select,.flow2-row input,.flow2-row select,
-.ui2-row input,.ui2-row select{
-  background:#090f16!important;border-color:#2a374a!important;border-radius:8px!important
-}
+/* visual scripting / state */
+.flow2-code,.anim2-code{background:#070d14!important;border:1px solid var(--line)!important;border-radius:8px!important;color:#aab6c5!important}.flow2-state-pill{background:#251849!important;border-color:#6641ad!important;color:#c6a8ff!important}.flow2-scene.active,.anim2-item.active{background:#211641!important;border-color:#6c43b8!important}
 
-/* common accent replacement */
-.prefab-primary,.tm-v2-btn.primary,.sem2-tool.primary,.save-v1-actions button.primary,
-.build-v1-actions button.primary,.input-v2-actions button.primary{
-  background:linear-gradient(135deg,#6936df,#7f45ee)!important;
-  border-color:#8857ed!important;color:#fff!important
-}
+/* UI editor */
+.ui2-side,.ui2-inspector{background:#0b121c!important;border-color:var(--line)!important}.ui2-center{background:linear-gradient(rgba(45,91,121,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(45,91,121,.14) 1px,transparent 1px),#08111a!important;background-size:20px 20px!important}.ui2-canvas{background:#101824!important;border:1px solid var(--line2)!important;border-radius:10px!important;box-shadow:var(--shadow)}.ui2-element.selected{border-color:var(--violet2)!important;box-shadow:0 0 0 1px var(--violet2)!important}.ui2-bottom{background:#0b121c!important;border-color:var(--line)!important}
 
-/* overlays/sheets */
-.overlay,.snake-asset-delete-overlay,.tm-template-dialog,.tm-autotile-dialog{
-  backdrop-filter:blur(9px)!important;background:rgba(3,6,10,.78)!important
-}
-.sheet,.snake-asset-delete-sheet,.tm-template-sheet,.tm-autotile-sheet{
-  background:#0f1620!important;border-color:#2a3649!important;box-shadow:var(--sn-shadow)!important
-}
+/* mobile scene editor v3 */
+.sem2-side,.sem2-inspector{background:#0b121c!important;border-color:var(--line)!important}.sem2-toolbar,.sem2-bottom,.sem2-mobile-tabs{background:#0d151f!important;border-color:var(--line)!important}.sem2-workspace{background:linear-gradient(rgba(45,91,121,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(45,91,121,.15) 1px,transparent 1px),#08111a!important;background-size:22px 22px!important}.sem2-tool.active,.sem2-mobile-tabs button.active{background:#6334cf!important;color:#fff!important}.sem2-entity.active{background:#251849!important;color:#c6a9ff!important}
 
-/* Remove anything that visually resembles browser chrome inside the app. */
-.browser-tabs,.browser-bar,.url-bar,.address-bar,.fake-browser,.browser-toolbar{
-  display:none!important
-}
+/* prefabs */
+.prefab-card,.pfv2-card{background:#0e1621!important;border:1px solid var(--line)!important;border-radius:10px!important}.prefab-icon{background:#211640!important;color:#b891ff!important}.prefab-sheet,.input-v2-sheet{background:rgba(0,0,0,.72)!important;backdrop-filter:blur(7px)}.prefab-sheet-card,.input-v2-sheet-card{background:#101824!important;border-color:var(--line2)!important;box-shadow:var(--shadow)}
 
-/* tablet/desktop adapts without abandoning mobile hierarchy */
-@media(min-width:760px){
-  .snake-home-scroll{padding:18px 22px 105px;max-width:1180px;width:100%;margin:auto}
-  .snake-home-hero{min-height:270px;padding:30px}
-  .snake-home-hero-copy{max-width:52%}.snake-home-hero h1{font-size:34px}
-  .snake-home-hero-orb{width:230px;height:230px;right:5%;top:18px}
-  .snake-orb-core{width:104px;height:104px}.snake-orb-core svg{width:58px}
-  .snake-quick-grid{grid-template-columns:repeat(8,1fr)}
-  .snake-resource-cards{grid-template-columns:repeat(4,1fr)}
-  .snake-recent-projects{grid-auto-columns:minmax(190px,24%)}
-  #editor .explorer{
-    top:0!important;bottom:73px!important;left:0!important;right:auto!important;width:260px!important;
-    max-height:none!important;border-radius:0 14px 14px 0!important;transform:translateX(-100%)!important
-  }
-  #editor .explorer.open{transform:translateX(0)!important}
-  #editor .inspector{
-    top:0!important;bottom:73px!important;right:0!important;left:auto!important;width:300px!important;
-    max-height:none!important;border-radius:14px 0 0 14px!important;transform:translateX(100%)!important
-  }
-  #editor .inspector.open,#editor .inspector.show{transform:translateX(0)!important}
-  #editor .project-contextbar{left:50%!important;right:auto!important;width:480px!important;transform:translateX(-50%)!important}
+/* overlays/modals */
+.overlay,.project-modal,.snake-delete-overlay,.snake-asset-delete-overlay{background:rgba(0,0,0,.72)!important;backdrop-filter:blur(8px)}
+.modal,.project-modal-card,.snake-delete-sheet,.snake-asset-delete-sheet{background:#101824!important;border:1px solid var(--line2)!important;border-radius:15px!important;box-shadow:var(--shadow)}
+.toast{background:#151f2d!important;border:1px solid var(--line2)!important;color:#dce5ed!important;border-radius:9px!important;box-shadow:var(--shadow)}
+
+/* guide */
+.guide-screen{background:var(--bg)!important}.guide-top{background:#0b121c!important;border-color:var(--line)!important}.guide-index{background:#0b121c!important;border-color:var(--line)!important}.guide-index button.active{background:#251849!important;color:#c6a9ff!important}.guide-content{background:#080e16!important}.guide-card{background:var(--panel)!important;border-color:var(--line)!important;border-radius:10px!important}
+
+/* more menu becomes professional bottom sheet on mobile */
+.editor-more-menu{border:1px solid var(--line2)!important;background:rgba(12,19,29,.98)!important;backdrop-filter:blur(18px)!important;border-radius:12px!important;box-shadow:var(--shadow)!important}.editor-more-item{color:#8d9bae!important;border-radius:7px!important}.editor-more-item:hover{background:#151f2d!important;color:#dce5ed!important}
+
+/* responsive strategy: workspace first */
+@media(max-width:760px){
+ #editor .editor-header{height:50px!important;min-height:50px!important}
+ #editor .project-contextbar{overflow-x:auto!important;scrollbar-width:none}.project-contextbar::-webkit-scrollbar{display:none}
+ #editor .project-contextbar .ctx{flex:0 0 auto!important}
+ #editor .explorer,#editor .inspector{position:absolute!important;top:0!important;bottom:0!important;width:min(86vw,330px)!important;z-index:180!important;box-shadow:var(--shadow)}
+ #editor .explorer{left:0!important}#editor .inspector{right:0!important}
+ .asset-grid2{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .art-main{grid-template-columns:1fr!important}.art-side{position:absolute!important;z-index:30!important;top:0!important;bottom:0!important;width:82vw!important;max-width:330px!important}
+ .scn-hierarchy,.scn-inspector2{position:absolute!important;z-index:35!important;top:0!important;bottom:0!important;width:82vw!important;max-width:330px!important}.scn-hierarchy{left:0!important}.scn-inspector2{right:0!important}
+ .tm-studio{grid-template-columns:minmax(0,1fr)!important}.tm-left,.tm-right{position:absolute!important;z-index:40!important;top:0!important;bottom:0!important;width:82vw!important;max-width:330px!important}.tm-left{left:0!important}.tm-right{right:0!important}
+ .physics-grid,.input-v2-grid,.audio-v2-grid,.save-v1-grid,.build-v1-grid,.flow2-grid,.anim2-grid{grid-template-columns:1fr!important}
+ .ui2-body,.sem2-body{grid-template-columns:1fr!important}.ui2-side,.ui2-inspector,.sem2-side,.sem2-inspector{position:absolute!important;z-index:40!important;top:54px!important;bottom:0!important;width:84vw!important;max-width:330px!important}.ui2-side,.sem2-side{left:0!important}.ui2-inspector,.sem2-inspector{right:0!important}
+ .editor-more-menu{position:fixed!important;left:8px!important;right:8px!important;top:auto!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;width:auto!important;max-height:78vh!important;overflow:auto!important}
+}
+@media(min-width:761px){
+ #editor .explorer{min-width:190px!important;max-width:240px!important}#editor .inspector{min-width:245px!important;max-width:310px!important}
+ .physics-body,.input-v2-body,.audio-v2-body,.save-v1-body,.build-v1-body,.flow2-body,.anim2-body,.prefab-body,.pfv2-body{max-width:1400px!important;margin:0 auto!important;width:100%!important}
 }
 </style>
-
 </head>
 
 <body>
@@ -1625,124 +1350,28 @@ body{
      DASHBOARD
 ===================================================== -->
 
-
-<section id="dashboard" class="screen active snake-home-v2">
-  <header class="snake-home-header">
-    <div class="snake-home-brand">
-      <div class="snake-home-logo">
-        <svg viewBox="0 0 24 24" stroke-width="1.8">
-          <path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/>
-          <path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/>
-          <circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/>
-        </svg>
-      </div>
-      <div>
-        <strong>SNAKE ENGINE</strong>
-        <small>Mobile Game Studio</small>
-      </div>
-    </div>
-    <div class="snake-home-actions">
-      <button onclick="showProjectsScreen()" aria-label="Pesquisar projetos">
-        <svg class="ui-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
-      </button>
-      <button onclick="showSettingsScreen()" aria-label="Configurações">
-        <svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1 2.3-2 1.2-1.9-1.3a7.8 7.8 0 0 1-2.2.9L12.7 20h-2.4l-.7-2a7.8 7.8 0 0 1-2.2-.9l-1.9 1.3-2-1.2.1-2.3a7.8 7.8 0 0 1-1.1-1.9L.8 13.7v-2.4l1.7-.9A7.8 7.8 0 0 1 3.6 8.5L3.5 6.2l2-1.2 1.9 1.3a7.8 7.8 0 0 1 2.2-.9l.7-2h2.4l.7 2a7.8 7.8 0 0 1 2.2.9l1.9-1.3 2 1.2-.1 2.3a7.8 7.8 0 0 1 1.1 1.9l1.7.9v2.4l-1.7.9a7.8 7.8 0 0 1-1.1 1.9Z"/></svg>
-      </button>
-      <button class="snake-avatar" onclick="showSettingsScreen()">SE</button>
-    </div>
-  </header>
-
-  <main class="snake-home-scroll">
-    <section class="snake-home-hero">
-      <div class="snake-home-hero-copy">
-        <span class="snake-eyebrow">100% MOBILE · TOUCH FIRST</span>
-        <h1>Bem-vindo de volta.</h1>
-        <p>Crie jogos completos no celular com todas as ferramentas da Snake Engine.</p>
-        <div class="snake-home-hero-actions">
-          <button class="primary" onclick="openNewProject()">
-            <svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-            NOVO PROJETO
-          </button>
-          <button onclick="showProjectsScreen()">
-            <svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg>
-            ABRIR PROJETO
-          </button>
-        </div>
-      </div>
-      <div class="snake-home-hero-orb">
-        <div class="snake-orb-ring one"></div>
-        <div class="snake-orb-ring two"></div>
-        <div class="snake-orb-core">
-          <svg viewBox="0 0 24 24" stroke-width="1.6"><path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/><path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/><circle cx="17" cy="5" r="1.4" fill="currentColor" stroke="none"/></svg>
-        </div>
-      </div>
-    </section>
-
-    <section class="snake-status-row">
-      <article class="snake-status-card">
-        <span class="dot"></span>
-        <div><strong>ENGINE ONLINE</strong><small>Todos os sistemas prontos</small></div>
-      </article>
-      <article class="snake-status-card">
-        <span class="metric">60</span>
-        <div><strong>FPS TARGET</strong><small>Runtime otimizado</small></div>
-      </article>
-      <article class="snake-status-card">
-        <span class="metric">M</span>
-        <div><strong>MOBILE FIRST</strong><small>Touch + multitouch</small></div>
-      </article>
-    </section>
-
-    <section class="snake-home-section">
-      <div class="snake-home-section-head">
-        <div><span>PROJETOS RECENTES</span><small>Continue de onde parou</small></div>
-        <button onclick="showProjectsScreen()">VER TODOS</button>
-      </div>
-      <div id="homeRecentProjects" class="snake-recent-projects">
-        <button class="snake-empty-project" onclick="openNewProject()">
-          <span>+</span><strong>Novo projeto</strong><small>Começar do zero</small>
-        </button>
-      </div>
-    </section>
-
-    <section class="snake-home-section">
-      <div class="snake-home-section-head">
-        <div><span>ACESSO RÁPIDO</span><small>Todos os módulos da engine</small></div>
-      </div>
-      <div class="snake-quick-grid">
-        <button onclick="SnakeGuideV1.open()"><b class="purple">⌘</b><span>Guia</span></button>
-        <button onclick="openResource('scene')"><b class="violet">◈</b><span>Cenas</span></button>
-        <button onclick="showProjectsScreen()"><b class="blue">&lt;/&gt;</b><span>Scripts</span></button>
-        <button onclick="openResource('art')"><b class="pink">✦</b><span>Arte</span></button>
-        <button onclick="openResource('tilemap')"><b class="green">▦</b><span>Tilemap</span></button>
-        <button onclick="openResource('audio')"><b class="yellow">♫</b><span>Áudio</span></button>
-        <button onclick="openResource('assets')"><b class="cyan">◇</b><span>Assets</span></button>
-        <button onclick="showSettingsScreen()"><b class="orange">⚙</b><span>Config.</span></button>
-      </div>
-    </section>
-
-    <section class="snake-home-section">
-      <div class="snake-home-section-head">
-        <div><span>RECURSOS</span><small>Criação fora do projeto</small></div>
-      </div>
-      <div class="snake-resource-cards">
-        <button onclick="openResource('art')"><strong>Sprite Studio</strong><span>Desenhe, anime e organize frames</span><i>ARTE</i></button>
-        <button onclick="openResource('tilemap')"><strong>Tilemap Studio</strong><span>Mapas, autotile, layers e brushes</span><i>MAPAS</i></button>
-        <button onclick="openResource('audio')"><strong>Sound Studio</strong><span>Crie músicas, instrumentos e SFX</span><i>ÁUDIO</i></button>
-        <button onclick="openResource('assets')"><strong>Asset Library</strong><span>Recursos compartilhados entre projetos</span><i>ASSETS</i></button>
-      </div>
-    </section>
-  </main>
-
-  <nav class="snake-app-nav">
-    <button class="active" onclick="showDashboard()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg><span>Início</span></button>
-    <button onclick="showProjectsScreen()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8h8v3H8zM8 14h5"/></svg><span>Projetos</span></button>
-    <button class="snake-nav-create" onclick="openNewProject()"><span>+</span></button>
-    <button onclick="openResource('assets')"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m12 3 8 4.2v9.6L12 21l-8-4.2V7.2L12 3Z"/></svg><span>Recursos</span></button>
-    <button onclick="showSettingsScreen()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1 2.3-2 1.2-1.9-1.3a7.8 7.8 0 0 1-2.2.9L12.7 20h-2.4l-.7-2a7.8 7.8 0 0 1-2.2-.9l-1.9 1.3-2-1.2.1-2.3a7.8 7.8 0 0 1-1.1-1.9L.8 13.7v-2.4l1.7-.9A7.8 7.8 0 0 1 3.6 8.5L3.5 6.2l2-1.2 1.9 1.3a7.8 7.8 0 0 1 2.2-.9l.7-2h2.4l.7 2a7.8 7.8 0 0 1 2.2.9l1.9-1.3 2 1.2-.1 2.3a7.8 7.8 0 0 1 1.1 1.9l1.7.9v2.4l-1.7.9a7.8 7.8 0 0 1-1.1 1.9Z"/></svg><span>Menu</span></button>
-  </nav>
-</section>
-
+<section id="dashboard" class="screen active">
+<header class="topbar"><div class="brand"><div class="logo"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M6 5c5-3 11 0 11 5 0 5-5 8-9 5"/><path d="M8 8c2-1 5 0 5 2 0 2-2 3-4 2"/><circle cx="17" cy="5" r="1.5" fill="currentColor" stroke="none"/></svg></div>Snake Engine</div><button class="menu" onclick="showToast('Snake Engine')">⋮</button></header>
+<main class="dashboard-content">
+<div class="welcome"><h1>Crie seus recursos</h1><p>Arte, tilemaps, sons, assets e cenários ficam disponíveis para importar em qualquer projeto.</p></div>
+<div class="resource-grid">
+<button class="resource-card wide guide-home-card" onclick="SnakeGuideV1.open()">
+  <b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5v-16Z"/></svg></b>
+  <strong>Guia Snake Engine</strong>
+  <span id="snakeGuideHomeStatus">Aprenda a engine e programação do zero</span>
+</button>
+<button class="resource-card" onclick="openResource('art')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 0 16h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h2a6 6 0 0 0 0-12Z"/><circle cx="7.5" cy="11" r=".8"/><circle cx="11" cy="7.5" r=".8"/><circle cx="16" cy="8" r=".8"/></svg></b><strong>Arte</strong><span>Sprite Studio profissional</span></button>
+<button class="resource-card" onclick="openResource('tilemap')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 5.5 12 2l9 3.5-9 3-9-3Z"/><path d="M3 5.5v13L12 22V8.5M21 5.5v13L12 22"/><path d="M7.5 4l9 3"/></svg></b><strong>Tilemap</strong><span>Crie mapas e tiles reutilizáveis</span></button>
+<button class="resource-card" onclick="openResource('audio')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="3"/><circle cx="16.5" cy="16" r="3"/></svg></b><strong>Sound</strong><span>Biblioteca e recursos de áudio</span></button>
+<button class="resource-card" onclick="openResource('assets')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="m12 3 8 4.2v9.6L12 21l-8-4.2V7.2L12 3Z"/><path d="m4 7.2 8 4.1 8-4.1M12 11.3V21"/></svg></b><strong>Assets</strong><span>Biblioteca global de recursos</span></button>
+<button class="resource-card wide" onclick="openResource('scene')"><b><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5v-13Z"/><path d="M8 4v13M16 7v13"/></svg></b><strong>Cenário</strong><span>Crie props e cenários para reutilizar</span></button>
+</div>
+</main>
+<nav class="bottom-nav">
+<button class="nav active" onclick="showDashboard()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg><span>Home</span></button>
+<button class="nav" onclick="showProjectsScreen()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8h8v3H8zM8 14h5"/></svg><span>Projects</span></button>
+<button class="nav" onclick="showSettingsScreen()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1 2.3-2 1.2-1.9-1.3a7.8 7.8 0 0 1-2.2.9L12.7 20h-2.4l-.7-2a7.8 7.8 0 0 1-2.2-.9l-1.9 1.3-2-1.2.1-2.3a7.8 7.8 0 0 1-1.1-1.9L.8 13.7v-2.4l1.7-.9A7.8 7.8 0 0 1 3.6 8.5L3.5 6.2l2-1.2 1.9 1.3a7.8 7.8 0 0 1 2.2-.9l.7-2h2.4l.7 2a7.8 7.8 0 0 1 2.2.9l1.9-1.3 2 1.2-.1 2.3a7.8 7.8 0 0 1 1.1 1.9l1.7.9v2.4l-1.7.9a7.8 7.8 0 0 1-1.1 1.9Z"/></svg><span>Settings</span></button>
+</nav></section>
 
 <section id="projectsScreen" class="screen">
 <header class="topbar"><div class="brand"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg> Projects</div><button class="menu" onclick="openNewProject()"><svg class="ui-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button></header>
@@ -4133,10 +3762,7 @@ function tmPreviewRuntime(){
       else if(t.color)cells+=`<div style="position:absolute;left:${x*payload.size}px;top:${y*payload.size}px;width:${payload.size}px;height:${payload.size}px;background:${t.color};opacity:${L.opacity??1}"></div>`;
     }
   });
-  w.document.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${payload.name}</title><style>html,body{margin:0;background:#111;color:#fff;font-family:system-ui}#wrap{padding:16px;overflow:auto}.map{position:relative;width:${payload.w*payload.size}px;height:${payload.h*payload.size}px;background:#0d1115;box-shadow:0 0 0 1px #333}</style></head><body><div id="wrap"><div class="map">${cells}</div></div>
-
-
-</body></html>`);
+  w.document.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${payload.name}</title><style>html,body{margin:0;background:#111;color:#fff;font-family:system-ui}#wrap{padding:16px;overflow:auto}.map{position:relative;width:${payload.w*payload.size}px;height:${payload.h*payload.size}px;background:#0d1115;box-shadow:0 0 0 1px #333}</style></head><body><div id="wrap"><div class="map">${cells}</div></div></body></html>`);
   w.document.close()
 }
 
@@ -38070,94 +37696,23 @@ if(document.readyState==="loading"){
 })();
 </script>
 
-<script>
-/* =====================================================
-   SNAKE ENGINE — REIMAGINED MOBILE UI v1
-   Visual shell only: existing engine systems/functions remain intact.
-===================================================== */
+<script id="snakePremiumRedesignV6JS">
 (function(){
-"use strict";
-
-function refreshHomeProjects(){
-  const target=document.getElementById("homeRecentProjects");
-  if(!target)return;
-
-  try{ window.renderProjects?.(); }catch(_){}
-
-  setTimeout(()=>{
-    const source=document.getElementById("projectsList");
-    const cards=source?[...source.querySelectorAll(".project-card")].slice(0,4):[];
-
-    target.innerHTML="";
-    if(cards.length){
-      cards.forEach(card=>{
-        const copy=card.cloneNode(true);
-        copy.removeAttribute("id");
-        target.appendChild(copy)
-      })
-    }
-
-    const add=document.createElement("button");
-    add.className="snake-empty-project";
-    add.innerHTML="<span>+</span><strong>Novo projeto</strong><small>Começar do zero</small>";
-    add.onclick=()=>window.openNewProject?.();
-    target.appendChild(add)
-  },80)
-}
-
-function refreshHomeStatus(){
-  const dashboard=document.getElementById("dashboard");
-  if(!dashboard?.classList.contains("active"))return;
-  refreshHomeProjects()
-}
-
-/* Keep the new home synced after navigation/project changes. */
-const oldShowDashboard=window.showDashboard;
-if(typeof oldShowDashboard==="function"&&!oldShowDashboard.__snakeReimaginedV1){
-  const wrapped=function(){
-    const r=oldShowDashboard.apply(this,arguments);
-    requestAnimationFrame(refreshHomeStatus);
-    return r
-  };
-  wrapped.__snakeReimaginedV1=true;
-  window.showDashboard=wrapped
-}
-
-const oldCreateProject=window.createProject;
-if(typeof oldCreateProject==="function"&&!oldCreateProject.__snakeReimaginedV1){
-  const wrapped=async function(){
-    const r=await oldCreateProject.apply(this,arguments);
-    setTimeout(refreshHomeProjects,100);
-    return r
-  };
-  wrapped.__snakeReimaginedV1=true;
-  window.createProject=wrapped
-}
-
-/* Advanced tools stay accessible from the existing project ⋮ menu. */
-function ensureEditorMenuLabel(){
-  const btn=document.getElementById("editorMoreBtn");
-  if(btn)btn.setAttribute("aria-label","Ferramentas do projeto")
-}
-
-/* Standalone/PWA hint. Browser chrome cannot be removed by a webpage in normal Safari/Chrome,
-   but these settings make the app chrome-free when installed to the Home Screen. */
-window.SnakeReimaginedUI={
-  version:"1.0.0",
-  refreshHome:refreshHomeProjects,
-  standalone:matchMedia("(display-mode: standalone)").matches || !!navigator.standalone
-};
-
-function boot(){
-  refreshHomeProjects();
-  ensureEditorMenuLabel();
-}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});
-else boot();
-
-new MutationObserver(()=>{
-  ensureEditorMenuLabel();
-}).observe(document.documentElement,{childList:true,subtree:true});
+ 'use strict';
+ // Presentation-only enhancement. Existing actions remain the source of truth.
+ const root=document.documentElement;
+ root.dataset.snakeRedesign='premium-v6';
+ function title(el,text){if(el&&!el.dataset.v6Title){el.dataset.v6Title='1';el.title=el.title||text}}
+ function enhance(){
+   document.querySelectorAll('button').forEach(b=>{
+     const txt=(b.getAttribute('aria-label')||b.title||b.textContent||'').trim().replace(/\\s+/g,' ');
+     if(txt) title(b,txt.slice(0,90));
+   });
+   document.querySelectorAll('.engine-page,.physics-manager,.input-manager-v2,.audio-manager-v2,.save-manager-v1,.build-manager-v1,.flow2-screen,.anim2-screen,.ui2-screen,.sem2-screen,.prefab-manager,.prefab-v2-manager,.tilemap-manager-v2').forEach(x=>x.classList.add('snake-premium-module'));
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enhance,{once:true}); else enhance();
+ new MutationObserver(enhance).observe(document.documentElement,{subtree:true,childList:true});
+ window.SnakePremiumRedesignV6={refresh:enhance};
 })();
 </script>
 </body>
