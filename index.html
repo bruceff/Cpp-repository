@@ -38043,7 +38043,15 @@ function renderPremiumRecent(){
       <b>＋</b><strong>Novo projeto</strong>
     </button>`;
   host.querySelectorAll("[data-premium-project]").forEach(btn=>{
-    btn.onclick=()=>window.openProjectById?.(btn.dataset.premiumProject);
+    btn.onclick=()=>{
+      const id=btn.dataset.premiumProject;
+      if(typeof window.openProjectById==="function")return window.openProjectById(id);
+      if(typeof window.openProject==="function"){
+        let item=null;
+        try{item=(typeof getProjects==="function"?getProjects():[]).find(p=>String(p.id)===String(id))}catch(_){}
+        return window.openProject(item?.name||id);
+      }
+    };
   });
   host.querySelector("[data-premium-new]")?.addEventListener("click",()=>window.openNewProject?.());
 }
@@ -38054,8 +38062,6 @@ function decoratePremium(){
     if(btn.dataset.premiumTouch)return;
     btn.dataset.premiumTouch="1";
     btn.style.touchAction="manipulation";
-    const label=(btn.getAttribute("aria-label")||btn.title||btn.textContent||"").trim().replace(/\s+/g," ");
-    if(label&&!btn.title)btn.title=label.slice(0,90);
   });
 }
 
@@ -38073,9 +38079,25 @@ if(typeof oldRenderProjects==="function"&&!oldRenderProjects.__premiumGourmet){
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",decoratePremium,{once:true});
 else decoratePremium();
 
-new MutationObserver(()=>{
-  if(document.getElementById("premiumRecentProjects"))renderPremiumRecent();
-}).observe(document.documentElement,{childList:true,subtree:true});
+let premiumRefreshQueued=false;
+const premiumObserver=new MutationObserver(mutations=>{
+  if(premiumRefreshQueued)return;
+
+  // Ignore mutations caused inside the premium recent-project list itself.
+  const onlyRecent=mutations.every(m=>{
+    const t=m.target;
+    return t?.id==="premiumRecentProjects" || t?.closest?.("#premiumRecentProjects");
+  });
+  if(onlyRecent)return;
+
+  premiumRefreshQueued=true;
+  requestAnimationFrame(()=>{
+    premiumRefreshQueued=false;
+    const host=document.getElementById("premiumRecentProjects");
+    if(host && !host.children.length)renderPremiumRecent();
+  });
+});
+premiumObserver.observe(document.documentElement,{childList:true,subtree:true});
 
 window.SnakePremiumGourmetV1={refresh:decoratePremium};
 })();
