@@ -22145,6 +22145,643 @@ button.ui{border:1px solid #91e864;background:#91e864;color:#091006;border-radiu
 .progress>i{display:block;height:100%;background:#91e864}
 #msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#84919a;font-size:12px;text-align:center}
 </style>
+
+<style id="snakeAllModulesV2">
+/* =====================================================
+   SNAKE ENGINE — ALL FUNCTIONS REIMAGINED v2
+   Same visual language as the new Home: mobile-first,
+   dark neon, rounded cards, clear hierarchy, touch-sized controls.
+===================================================== */
+
+:root{
+  --m-bg:#080c13;
+  --m-surface:#0e151f;
+  --m-surface2:#111a26;
+  --m-surface3:#151f2d;
+  --m-line:#26344a;
+  --m-line2:#31415a;
+  --m-text:#edf3f8;
+  --m-muted:#7f8da2;
+  --m-purple:#7c3cff;
+  --m-purple2:#9a65ff;
+  --m-cyan:#2ad8e8;
+  --m-green:#83e85e;
+  --m-yellow:#ebd866;
+  --m-orange:#f3a14b;
+  --m-red:#ff7180;
+  --m-radius:13px;
+  --m-shadow:0 18px 48px rgba(0,0,0,.42);
+}
+
+/* ---------- universal module shell ---------- */
+.physics-manager,.physics-integration-v2,
+.animator-manager,.anim2-screen,
+.ui-manager-v2,.ui2-screen,
+.save-manager-v1,.build-manager-v1,
+.input-manager-v2,.flow2-screen,
+.scene-manager-v1,.scene-editor-mobile-v2,
+.hierarchy-manager-v2,.component-manager-v1,
+.lifecycle-manager-v2,.camera-manager-v1,
+.scripting-manager-v2,.project-settings-v1,
+.prefab-manager,.prefab-v2-manager,
+.tilemap-manager-v2,.tm-studio,
+.audio-manager-v2,.art-studio,
+.guide-screen,.entity-manager-v1{
+  color:var(--m-text)!important;
+  background:
+    radial-gradient(circle at 85% -12%,rgba(124,60,255,.13),transparent 28%),
+    radial-gradient(circle at 8% 0%,rgba(42,216,232,.055),transparent 24%),
+    var(--m-bg)!important;
+}
+
+/* module heads */
+.physics-head,.physics-v2-head,
+.animator-head,.anim2-head,
+.ui-v2-head,.ui2-head,
+.save-v1-head,.build-v1-head,
+.input-v2-head,.flow2-head,
+.prefab-head,.sem2-head,
+.audio-v2-head,.art-topbar,
+.guide-top,.tm-toolbar,
+.project-settings-v1 .ps-v1-head,
+.scene-manager-v1 .sm-head,
+.hierarchy-manager-v2 .hm-v2-head,
+.component-manager-v1 .cm-v1-head,
+.lifecycle-manager-v2 .life-v2-head,
+.camera-manager-v1 .cam-v1-head,
+.scripting-manager-v2 .script-v2-head{
+  min-height:58px!important;
+  padding:8px 10px!important;
+  border-bottom:1px solid var(--m-line)!important;
+  background:linear-gradient(180deg,rgba(15,22,33,.98),rgba(10,15,23,.95))!important;
+  backdrop-filter:blur(18px)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.018) inset!important;
+}
+
+/* back / icon buttons */
+.physics-head button,.physics-v2-head button,
+.animator-head button,.anim2-head button,
+.ui-v2-head button,.ui2-head button,
+.save-v1-head button,.build-v1-head button,
+.input-v2-head button,.flow2-head button,
+.prefab-head button,.sem2-head button,
+.audio-v2-head button,.art-topbar button,
+.guide-top button,.tm-toolbar button,
+.project-settings-v1 button,.scene-manager-v1 button,
+.hierarchy-manager-v2 button,.component-manager-v1 button,
+.lifecycle-manager-v2 button,.camera-manager-v1 button,
+.scripting-manager-v2 button{
+  min-width:38px!important;min-height:38px!important;
+  border-radius:10px!important;
+  border:1px solid var(--m-line)!important;
+  background:#101823!important;
+  color:#8796ab!important;
+}
+
+/* headings */
+.physics-head strong,.physics-v2-head strong,
+.animator-head strong,.anim2-head strong,
+.ui-v2-head strong,.ui2-head strong,
+.save-v1-head strong,.build-v1-head strong,
+.input-v2-head strong,.flow2-head strong,
+.prefab-head strong,.sem2-head strong,
+.audio-v2-head strong,.art-topbar strong,
+.guide-top strong,.tm-toolbar strong{
+  color:#f1f5f8!important;
+  font-size:12px!important;
+  letter-spacing:.055em!important;
+}
+.physics-head small,.physics-v2-head small,
+.animator-head small,.anim2-head small,
+.ui-v2-head small,.ui2-head small,
+.save-v1-head small,.build-v1-head small,
+.input-v2-head small,.flow2-head small,
+.prefab-head small,.sem2-head small,
+.audio-v2-head small,.guide-top small{
+  color:#66758a!important;font-size:7px!important
+}
+
+/* universal panels/cards */
+.physics-panel,.phys-v2-panel,
+.animator-panel,.anim2-panel,
+.ui-v2-panel,.flow2-panel,
+.save-v1-panel,.build-v1-panel,
+.input-v2-panel,.input-v3-section,
+.prefab-card,.prefab-section,
+.cam-v1-panel,.life-v2-panel,
+.script-v2-panel,.ps-v1-panel,
+.se-anim-panel,.se-audio-panel,
+.se-input-panel,.se-physics-panel,
+.se-script-panel,.se-debug-card,
+.tm-section,.art-panel,
+.audio-v2-panel{
+  border:1px solid var(--m-line)!important;
+  border-radius:var(--m-radius)!important;
+  background:linear-gradient(145deg,#101722 0%,#0c131c 100%)!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.18)!important;
+  overflow:hidden!important;
+}
+
+/* section titles */
+.physics-panel h3,.phys-v2-panel h3,
+.animator-panel h3,.anim2-panel h3,
+.ui-v2-panel h3,.flow2-panel h3,
+.save-v1-panel h3,.build-v1-panel h3,
+.input-v2-panel h3,.input-v3-section h3,
+.cam-v1-panel h3,.life-v2-panel h3,
+.script-v2-panel h3,.ps-v1-panel h3,
+.tm-panel-title,.art-panel-title{
+  min-height:36px!important;display:flex!important;align-items:center!important;
+  margin:0!important;padding:0 11px!important;
+  border-bottom:1px solid #202d40!important;
+  background:linear-gradient(180deg,rgba(20,29,42,.72),rgba(14,21,31,.4))!important;
+  color:#aeb9c8!important;font-size:7px!important;font-weight:900!important;
+  letter-spacing:.12em!important
+}
+
+/* all common form controls */
+.physics-row input,.physics-row select,
+.phys-v2-row input,.phys-v2-row select,
+.animator-param input,.animator-param select,
+.anim2-row input,.anim2-row select,
+.ui2-row input,.ui2-row select,
+.save-v1-row input,.save-v2-config input,.save-v2-config select,
+.build-v1-row input,.build-v1-row select,
+.input-v2-row input,.input-v2-row select,
+.input-v3-profiles input,.input-v3-profiles select,
+.input-v3-control-grid input,.input-v3-control-grid select,
+.flow2-row input,.flow2-row select,
+.prefab-sheet input,.prefab-sheet select,
+.ps-v1-row input,.ps-v1-row select,
+.cam-v1-row input,.cam-v1-row select,
+.life-v2-row input,.life-v2-row select,
+.script-v2-row input,.script-v2-row select,
+.art-work-bg-row input,.art-work-bg-row select{
+  min-height:36px!important;
+  border-radius:8px!important;
+  border:1px solid #2b3a50!important;
+  background:#091019!important;
+  color:#dce4eb!important;
+  outline:none!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important
+}
+.physics-row input:focus,.physics-row select:focus,
+.anim2-row input:focus,.anim2-row select:focus,
+.ui2-row input:focus,.ui2-row select:focus,
+.input-v2-row input:focus,.input-v2-row select:focus,
+.flow2-row input:focus,.flow2-row select:focus{
+  border-color:#6d49bd!important;
+  box-shadow:0 0 0 2px rgba(124,60,255,.12)!important
+}
+
+/* checkboxes/toggles */
+input[type="checkbox"]{
+  accent-color:var(--m-purple)!important;
+  min-width:20px!important;min-height:20px!important
+}
+
+/* primary, secondary, destructive */
+.prefab-primary,.anim2-green,.save-v1-actions .primary,
+.build-v1-actions .primary,.input-v2-actions .primary,
+.tm-v2-btn.primary,.sem2-tool.primary,
+.physics-actions .primary,.ui2-btn.primary{
+  background:linear-gradient(135deg,#6937df,#8350f4)!important;
+  color:#fff!important;border-color:#8b5cf2!important;
+  box-shadow:0 8px 24px rgba(124,60,255,.20)!important
+}
+.prefab-secondary,.anim2-btn,.ui2-btn,.save-v1-actions button,
+.build-v1-actions button,.input-v2-actions button,
+.flow2-btn,.physics-actions button{
+  border-color:#2a394e!important;background:#111a26!important;color:#8f9db0!important;
+  border-radius:9px!important
+}
+.danger,.save-v2-tools .danger,.asset-del,.prefab-mini.danger{
+  color:#ff8995!important;border-color:#5e3440!important;background:#20131a!important
+}
+
+/* content scrolling + safe area */
+.physics-body,.physics-v2-body,.animator-body,.anim2-body,
+.ui-v2-body,.save-v1-body,.build-v1-body,.input-v2-body,.flow2-body,
+.prefab-body,.audio-v2-body,.art-main,.guide-content,
+.tm-body,.sem2-body{
+  padding-bottom:calc(88px + env(safe-area-inset-bottom))!important;
+  -webkit-overflow-scrolling:touch!important
+}
+
+/* ---------- ART STUDIO ---------- */
+.art-studio{
+  --art-accent:#db63d9;
+}
+.art-topbar{
+  position:sticky!important;top:0!important;z-index:40!important;
+}
+.art-main{
+  background:#080d13!important;
+}
+.art-side{
+  background:#0d141e!important;border-color:#26344a!important
+}
+.art-toolstrip{
+  position:sticky!important;bottom:0!important;z-index:35!important;
+  padding:6px!important;
+  background:rgba(12,18,27,.96)!important;backdrop-filter:blur(18px)!important;
+  border-top:1px solid var(--m-line)!important;
+  display:flex!important;gap:5px!important;overflow-x:auto!important
+}
+.art-mini-btn,.art-toolstrip button{
+  min-width:42px!important;min-height:42px!important;border-radius:10px!important;
+  background:#111a26!important;border:1px solid #2a394e!important;color:#8796aa!important
+}
+.art-mini-btn.active,.art-toolstrip button.active{
+  color:#ef8ce8!important;border-color:#73416f!important;background:#211421!important
+}
+.art-stage{
+  border:1px solid #2b394d!important;border-radius:12px!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.35)!important;
+  background:#0b1119!important
+}
+.art-checker{
+  opacity:.34!important
+}
+.art-frames{
+  gap:6px!important;padding:7px!important;background:#0c131d!important;border-top:1px solid #26344a!important
+}
+.art-frame-v4{
+  border-radius:9px!important;border-color:#2b394d!important;background:#111924!important
+}
+.art-frame-v4.active{border-color:#cf61c7!important;box-shadow:0 0 0 2px rgba(219,99,217,.15)!important}
+
+/* ---------- TILEMAP ---------- */
+.tm-studio{--tm-accent:#2ad8e8}
+.tm-toolbar{
+  position:sticky!important;top:0!important;z-index:40!important;
+}
+.tm-left,.tm-right{
+  background:#0d141e!important;border-color:#26344a!important
+}
+.tm-viewport{
+  background:
+    linear-gradient(rgba(49,73,96,.18) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(49,73,96,.18) 1px,transparent 1px),
+    #081019!important;
+  background-size:24px 24px!important
+}
+.tm-tile,.tm-v2-tile{
+  border-radius:9px!important;border-color:#2b394d!important;background:#111924!important
+}
+.tm-tile.active,.tm-v2-tile.active{
+  border-color:#2ad8e8!important;box-shadow:0 0 0 2px rgba(42,216,232,.13)!important
+}
+.tm-active-tile-info{
+  background:#0c181c!important;border-color:#27515a!important;color:#65e4ef!important
+}
+.tm-asset-card{
+  border-radius:10px!important;border-color:#2b394d!important;background:#111924!important
+}
+
+/* ---------- AUDIO / SOUND ---------- */
+.audio-manager-v2{--audio-accent:#ebd866}
+.audio-v2-head{
+  position:sticky!important;top:0!important;z-index:30!important
+}
+.audio-v2-bus,.audio-item{
+  border:1px solid #2b394d!important;border-radius:10px!important;background:#101824!important
+}
+.audio-v2-meter{
+  border-radius:999px!important;background:#17202b!important;overflow:hidden!important
+}
+.audio-v2-meter>span{background:linear-gradient(90deg,#83e85e,#ebd866)!important}
+.audio-v2-mini{
+  min-width:36px!important;min-height:34px!important;border-radius:8px!important;
+  background:#111a26!important;border:1px solid #2b394d!important
+}
+
+/* ---------- PREFABS ---------- */
+.prefab-manager,.prefab-v2-manager{--prefab-accent:#9a65ff}
+.prefab-card{
+  padding:10px!important;transition:.18s ease!important
+}
+.prefab-card:active{transform:scale(.985)!important}
+.prefab-icon{
+  border-radius:10px!important;background:linear-gradient(145deg,#1c1431,#121a28)!important;
+  border:1px solid #4d3476!important;color:#b38cff!important
+}
+.prefab-instance-badge{
+  border-radius:999px!important;background:#182312!important;color:#83e85e!important;border:1px solid #36552e!important
+}
+
+/* ---------- ANIMATION ---------- */
+.animator-manager,.anim2-screen{--anim-accent:#9a65ff}
+.animator-state,.anim2-item{
+  border:1px solid #2b394d!important;border-radius:9px!important;background:#111924!important
+}
+.animator-state.active,.anim2-item.active{
+  border-color:#8052d4!important;background:#171229!important;
+  box-shadow:0 0 0 2px rgba(124,60,255,.10)!important
+}
+.animator-param{
+  border-bottom-color:#202d40!important
+}
+.se-anim-key{
+  background:#8f5cff!important;box-shadow:0 0 10px rgba(143,92,255,.45)!important
+}
+
+/* ---------- PHYSICS ---------- */
+.physics-manager,.physics-integration-v2{--phys-accent:#2ad8e8}
+.physics-layer,.physics-query-result{
+  border-radius:8px!important;border-color:#2b394d!important;background:#0d151f!important
+}
+.physics-query-result{color:#73dce7!important}
+.physics-debug-badge{
+  border-color:#27515a!important;background:rgba(10,25,29,.92)!important;color:#67e2ee!important
+}
+
+/* ---------- INPUT ---------- */
+.input-manager-v2{--input-accent:#2ad8e8}
+.input-v2-map,.input-v3-control,.input-v3-gesture{
+  border:1px solid #2b394d!important;border-radius:9px!important;background:#111924!important
+}
+.input-v2-map-name,.input-v3-control strong{color:#e0e8ee!important}
+.input-v3-preview{
+  border:1px solid #2d4055!important;border-radius:12px!important;
+  background:
+    radial-gradient(circle at 20% 70%,rgba(42,216,232,.06),transparent 24%),
+    radial-gradient(circle at 82% 72%,rgba(124,60,255,.08),transparent 24%),
+    #091019!important
+}
+.input-v3-stick-preview,.input-v3-btn-preview{
+  border-color:#56677e!important;background:#15202c!important
+}
+
+/* ---------- UI SYSTEM ---------- */
+.ui2-screen{--ui-accent:#31dbc7}
+.ui2-side,.ui2-inspector{
+  background:#0c131c!important;border-color:#26344a!important
+}
+.ui2-center{
+  background:
+    linear-gradient(rgba(49,73,96,.12) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(49,73,96,.12) 1px,transparent 1px),
+    #080f17!important;
+  background-size:20px 20px!important
+}
+.ui2-canvas{
+  border:1px solid #304158!important;border-radius:14px!important;background:#101824!important;
+  box-shadow:0 18px 40px rgba(0,0,0,.32)!important
+}
+.ui2-node.selected{
+  border-color:#2ad8e8!important;box-shadow:0 0 0 2px rgba(42,216,232,.14)!important
+}
+.ui2-bottom{
+  border-top:1px solid #26344a!important;background:rgba(12,18,27,.97)!important;backdrop-filter:blur(18px)!important
+}
+.ui2-bottom button.active{color:#2ad8e8!important;background:rgba(42,216,232,.08)!important}
+
+/* ---------- SAVE ---------- */
+.save-manager-v1{--save-accent:#83e85e}
+.save-v1-slot,.save-v2-checkpoint{
+  border:1px solid #2b394d!important;border-radius:9px!important;background:#111924!important
+}
+.save-v2-status.ok{
+  border-color:#31563b!important;color:#83e85e!important;background:#0e1b13!important
+}
+.save-v1-mini{
+  border-radius:8px!important;background:#111a26!important;border-color:#2b394d!important
+}
+
+/* ---------- BUILD / EXPORT ---------- */
+.build-manager-v1{--build-accent:#9a65ff}
+.build-v1-summary,.build-v1-check,.build-v1-note,.build-v1-status{
+  border-radius:9px!important;border-color:#2b394d!important;background:#0d151f!important
+}
+.build-v1-progress{
+  height:6px!important;border-radius:999px!important;background:#18202c!important;overflow:hidden!important
+}
+.build-v1-progress>span{
+  background:linear-gradient(90deg,#6f3bdc,#9a65ff)!important
+}
+
+/* ---------- DEBUG / PROFILER ---------- */
+.se-debug-drawer{
+  border-color:#2a394e!important;background:#0b121b!important;box-shadow:var(--m-shadow)!important
+}
+.se-debug-head,.se-debug-toolbar{
+  background:#0f1722!important;border-color:#26344a!important
+}
+.se-debug-card,.se-debug-line{
+  border-color:#29384c!important;background:#101824!important;border-radius:9px!important
+}
+.se-debug-mini{
+  border-radius:7px!important;background:#111a26!important;border-color:#2b394d!important
+}
+.se-debug-line.error{color:#ff8793!important}
+.se-debug-line.warn{color:#e8cb65!important}
+
+/* ---------- SCENE MANAGER / EDITOR MOBILE ---------- */
+.scene-editor-mobile-v2,.scene-manager-v1{--scene-accent:#9a65ff}
+.sem2-root,.sem2-editor{background:#080d13!important}
+.sem2-toolbar{
+  position:sticky!important;top:0!important;z-index:20!important;
+  padding:6px!important;background:rgba(12,18,27,.96)!important;backdrop-filter:blur(18px)!important;
+  border-bottom:1px solid #26344a!important;display:flex!important;gap:5px!important;overflow-x:auto!important
+}
+.sem2-tool{
+  min-height:38px!important;min-width:62px!important;border-radius:9px!important;
+  border:1px solid #2b394d!important;background:#111a26!important;color:#7e8da1!important
+}
+.sem2-tool.active{
+  border-color:#6c45b7!important;background:#181229!important;color:#b59aff!important
+}
+.sem2-world{
+  background:
+    linear-gradient(rgba(48,66,88,.16) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(48,66,88,.16) 1px,transparent 1px),
+    #091019!important;
+  background-size:24px 24px!important
+}
+.sem2-object.selected{outline-color:#9a65ff!important}
+.sm-runtime-scene{
+  border-radius:9px!important;border-color:#2b394d!important;background:#111924!important
+}
+
+/* ---------- HIERARCHY / ENTITIES / COMPONENTS ---------- */
+.entity-manager-v1,.hierarchy-manager-v2,.component-manager-v1,.lifecycle-manager-v2{
+  --entity-accent:#83e85e
+}
+.entity-row,.hm-v2-row,.component-row,.life-v2-row{
+  border-color:#27364a!important;background:#101824!important;border-radius:8px!important
+}
+.entity-row.active,.hm-v2-row.active{
+  background:#151f18!important;border-color:#31563b!important;color:#8be66a!important
+}
+
+/* ---------- CAMERA ---------- */
+.camera-manager-v1{--camera-accent:#2ad8e8}
+.cam-v1-debug,.cam-v1-panel{
+  border-color:#29384c!important;background:#101824!important;border-radius:10px!important
+}
+
+/* ---------- SCRIPTING MANAGER ---------- */
+.scripting-manager-v2{--script-accent:#9a65ff}
+.script-v2-panel,.snake-script-drawer-v3{
+  border-color:#29384c!important;background:#0d151f!important
+}
+.snake-script-drawer-v3 header{
+  background:#111a26!important;border-bottom-color:#26344a!important
+}
+.snake-api-card,.snake-snippet-card,.snake-entity-ref{
+  border-color:#29384c!important;background:#101824!important;border-radius:9px!important
+}
+.snake-api-card-head button,.snake-snippet-card button{
+  border-color:#4d3579!important;background:#181229!important;color:#b59aff!important
+}
+
+/* ---------- PROJECT SETTINGS ---------- */
+.project-settings-v1{--settings-accent:#9a65ff}
+.project-setting,.dict-row{
+  border-color:#29384c!important;background:#101824!important;border-radius:9px!important
+}
+
+/* ---------- GUIDE ---------- */
+.guide-screen{
+  --guide-accent:#9a65ff;
+  background:
+    radial-gradient(circle at 86% -5%,rgba(124,60,255,.16),transparent 30%),
+    #080d13!important
+}
+.guide-index{
+  background:#0c131c!important;border-color:#26344a!important
+}
+.guide-chapter,.guide-block,.guide-task{
+  border-color:#29384c!important;background:#101824!important;border-radius:10px!important
+}
+.guide-chapter.active,.guide-lesson-btn.active{
+  border-color:#6542a8!important;background:#171229!important;color:#b99eff!important
+}
+.guide-code{
+  background:#070c12!important;border-color:#26344a!important;color:#aab6c5!important;border-radius:9px!important
+}
+.guide-progressbar{background:#18202c!important;border-radius:999px!important;overflow:hidden!important}
+.guide-progressbar>span{background:linear-gradient(90deg,#6937df,#9a65ff)!important}
+
+/* ---------- ASSET LIBRARY ---------- */
+.asset-toolbar{
+  position:sticky!important;top:0!important;z-index:25!important;
+  background:rgba(12,18,27,.96)!important;border-bottom:1px solid #26344a!important;
+  backdrop-filter:blur(18px)!important
+}
+.asset-grid2{gap:8px!important}
+.asset-item{
+  border:1px solid #29384c!important;border-radius:10px!important;
+  background:linear-gradient(145deg,#111924,#0c131c)!important
+}
+.asset-item.active{border-color:#7147c1!important;box-shadow:0 0 0 2px rgba(124,60,255,.11)!important}
+.asset-preview2{border-radius:8px!important;background:#091019!important}
+.asset-kind2{color:#a781ff!important}
+
+/* ---------- MODALS / SHEETS / PICKERS ---------- */
+.prefab-sheet,.animator-sheet,.input-v2-sheet,
+.sm-sheet,.snake-delete-sheet,.tm-asset-picker,
+.tm-template-dialog,.tm-autotile-dialog,.project-modal,
+.snake-asset-delete-overlay{
+  background:rgba(2,5,9,.76)!important;backdrop-filter:blur(10px)!important
+}
+.prefab-sheet-card,.animator-sheet-card,.input-v2-sheet-card,
+.sm-sheet-card,.tm-asset-sheet,.tm-template-sheet,.tm-autotile-sheet,
+.project-modal-card,.snake-asset-delete-sheet{
+  border:1px solid #2c3a50!important;border-radius:16px 16px 0 0!important;
+  background:linear-gradient(180deg,#111924,#0b1119)!important;
+  box-shadow:0 -20px 50px rgba(0,0,0,.48)!important
+}
+
+/* ---------- RUNTIME ---------- */
+#preview,.runtime-stage{
+  background:#070b10!important
+}
+.runtime-hud{
+  background:rgba(8,13,19,.82)!important;border-color:#26344a!important;
+  backdrop-filter:blur(14px)!important;border-radius:10px!important
+}
+.runtime-chip{
+  border-radius:8px!important;border-color:#2a394e!important;background:#0f1722!important
+}
+.runtime-btn{
+  border-color:#405167!important;background:rgba(16,25,36,.78)!important;color:#d6e0e7!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.24)!important
+}
+.runtime-action.primary,.runtime-btn.primary{
+  border-color:#4d793f!important;background:rgba(42,72,34,.78)!important;color:#92ec70!important
+}
+.runtime-dpad{
+  background:rgba(17,25,34,.74)!important;border-color:#405167!important
+}
+
+/* ---------- mobile layout behavior ---------- */
+@media(max-width:760px){
+  /* keep every function as a single-column touch flow */
+  .physics-grid,.phys-v2-grid,.animator-grid,.anim2-grid,
+  .ui-v2-grid,.save-v1-grid,.build-v1-grid,.input-v2-grid,
+  .flow2-grid,.prefab-grid,.se-debug-grid,.se-physics-grid,
+  .se-audio-grid,.se-input-grid,.se-anim-grid{
+    grid-template-columns:1fr!important
+  }
+
+  .physics-body,.physics-v2-body,.animator-body,.anim2-body,
+  .ui-v2-body,.save-v1-body,.build-v1-body,.input-v2-body,.flow2-body,
+  .prefab-body,.audio-v2-body{
+    padding:9px!important;padding-bottom:calc(90px + env(safe-area-inset-bottom))!important
+  }
+
+  /* compact panels */
+  .physics-panel,.phys-v2-panel,.animator-panel,.anim2-panel,
+  .save-v1-panel,.build-v1-panel,.input-v2-panel,.input-v3-section,
+  .flow2-panel,.audio-v2-panel{
+    margin-bottom:8px!important
+  }
+
+  /* horizontal action rows remain reachable */
+  .physics-actions,.build-v1-actions,.save-v1-actions,
+  .input-v2-actions,.animator-toolbar{
+    display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important
+  }
+
+  /* art and tilemap are canvas-first */
+  .art-main,.tm-studio{
+    min-height:0!important
+  }
+  .art-side,.tm-left,.tm-right{
+    border-radius:14px 14px 0 0!important;
+    box-shadow:0 -15px 40px rgba(0,0,0,.38)!important
+  }
+
+  /* guide becomes lesson-first */
+  .guide-layout{grid-template-columns:1fr!important}
+  .guide-index{
+    position:relative!important;width:100%!important;max-height:180px!important;
+    border-right:0!important;border-bottom:1px solid #26344a!important
+  }
+
+  /* advanced module text/inputs large enough for touch */
+  .physics-row,.phys-v2-row,.anim2-row,.save-v1-row,
+  .build-v1-row,.input-v2-row,.flow2-row,.ui2-row{
+    font-size:9px!important
+  }
+}
+
+/* tablet: side-by-side where useful, but still touch-sized */
+@media(min-width:761px) and (max-width:1180px){
+  .physics-grid,.animator-grid,.build-v1-grid,.input-v2-grid{
+    grid-template-columns:1fr 1fr!important
+  }
+}
+
+/* eliminate any internal fake-browser visual element */
+.browser-tabs,.browser-bar,.url-bar,.address-bar,.fake-browser,
+.browser-toolbar,.browser-chrome,.webview-toolbar{
+  display:none!important
+}
+</style>
+
 </head>
 <body>
 <div id="game">
@@ -38160,5 +38797,52 @@ new MutationObserver(()=>{
 }).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
+
+<script>
+/* Snake Engine — module visual decorator v2 */
+(function(){
+"use strict";
+
+const moduleRoots=[
+  ".physics-manager",".physics-integration-v2",".animator-manager",".anim2-screen",
+  ".ui-manager-v2",".ui2-screen",".save-manager-v1",".build-manager-v1",
+  ".input-manager-v2",".flow2-screen",".scene-manager-v1",".scene-editor-mobile-v2",
+  ".hierarchy-manager-v2",".component-manager-v1",".lifecycle-manager-v2",
+  ".camera-manager-v1",".scripting-manager-v2",".project-settings-v1",
+  ".prefab-manager",".prefab-v2-manager",".tilemap-manager-v2",".tm-studio",
+  ".audio-manager-v2",".art-studio",".guide-screen",".entity-manager-v1"
+];
+
+function decorate(){
+  for(const sel of moduleRoots){
+    document.querySelectorAll(sel).forEach(root=>{
+      root.classList.add("snake-module-shell-v2");
+      root.querySelectorAll("button").forEach(btn=>{
+        if(!btn.dataset.snakeTouchV2){
+          btn.dataset.snakeTouchV2="1";
+          btn.style.touchAction="manipulation";
+        }
+      });
+    })
+  }
+
+  /* Keep Project ⋮ as the single home for advanced tools. */
+  const menu=document.getElementById("editorMoreMenu");
+  if(menu)menu.classList.add("snake-advanced-menu-v2");
+
+  /* Never recreate obsolete top header shortcuts. */
+  [
+    "physicsHeaderBtn","inputV2HeaderBtn","saveV1HeaderBtn"
+  ].forEach(id=>document.getElementById(id)?.remove());
+}
+
+if(document.readyState==="loading"){
+  document.addEventListener("DOMContentLoaded",decorate,{once:true});
+}else decorate();
+
+new MutationObserver(decorate).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body>
 </html>
