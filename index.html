@@ -13602,6 +13602,78 @@ setTimeout(()=>synchronizeAll().catch(console.error),250);
 
 <style>
 /* =====================================================
+   SNAKE ENGINE — SCENE FLOW + GAME STATE v2
+===================================================== */
+.flow2-screen{
+  position:fixed;inset:0;z-index:890;display:none;flex-direction:column;
+  background:#0a0f13;color:#dce4e9
+}
+.flow2-screen.show{display:flex}
+.flow2-head{
+  height:58px;min-height:58px;display:flex;align-items:center;gap:9px;padding:0 11px;
+  border-bottom:1px solid #27323a;background:#0d1318
+}
+.flow2-head button,.flow2-btn{
+  min-height:38px;border:1px solid #2d3942;border-radius:8px;background:#121a20;
+  color:#98a6af;padding:0 11px;font-weight:750
+}
+.flow2-head strong{font-size:13px;letter-spacing:.6px}
+.flow2-head small{display:block;margin-top:3px;color:#63717b;font-size:8px}
+.flow2-body{flex:1;min-height:0;overflow:auto;padding:10px;padding-bottom:86px}
+.flow2-panel{
+  border:1px solid #29353d;border-radius:10px;background:#0e151a;
+  margin-bottom:10px;overflow:hidden
+}
+.flow2-panel h3{
+  margin:0;padding:10px 11px;border-bottom:1px solid #26323a;
+  color:#82909a;font-size:8px;letter-spacing:1.3px
+}
+.flow2-pad{padding:9px}
+.flow2-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.flow2-row{
+  display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;align-items:center;
+  margin-bottom:8px;color:#76848e;font-size:8px
+}
+.flow2-row input,.flow2-row select{
+  width:100%;min-height:35px;border:1px solid #2b3740;border-radius:7px;
+  background:#0a1014;color:#d7e0e5;padding:0 8px
+}
+.flow2-status{
+  padding:8px;border:1px solid #2c3941;border-radius:7px;background:#0b1014;
+  color:#72818b;font:7px/1.55 ui-monospace,monospace
+}
+.flow2-status.ok{border-color:#35563a;color:#91e864;background:#111a13}
+.flow2-list{display:grid;gap:6px}
+.flow2-scene{
+  padding:8px;border:1px solid #29353d;border-radius:8px;background:#11181e
+}
+.flow2-scene-head{display:flex;align-items:center;gap:7px}
+.flow2-scene-head>div{flex:1;min-width:0}
+.flow2-scene strong{display:block;font-size:9px}
+.flow2-scene small{display:block;margin-top:3px;color:#62717b;font-size:7px}
+.flow2-scene-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}
+.flow2-scene-actions button{
+  min-height:30px;border:1px solid #2d3942;border-radius:6px;background:#151d23;
+  color:#87949d;font-size:7px;font-weight:800
+}
+.flow2-scene-actions .primary{border-color:#416341;background:#132016;color:#91e864}
+.flow2-code{
+  white-space:pre-wrap;background:#090e12;border:1px solid #26323a;border-radius:7px;
+  padding:8px;color:#93a2ab;font:8px/1.55 ui-monospace,monospace
+}
+.flow2-state-pill{
+  display:inline-flex;align-items:center;min-height:25px;padding:0 8px;border-radius:999px;
+  border:1px solid #35563a;background:#111a13;color:#91e864;
+  font:7px ui-monospace,monospace
+}
+@media(max-width:700px){
+  .flow2-row{grid-template-columns:95px minmax(0,1fr)}
+  .flow2-grid{grid-template-columns:1fr}
+}
+</style>
+
+<style>
+/* =====================================================
    SNAKE ENGINE — UI SYSTEM v2
 ===================================================== */
 .ui2-screen{position:fixed;inset:0;z-index:880;background:#0a0f13;color:#dbe3e8;display:none;flex-direction:column}
@@ -13822,6 +13894,396 @@ setTimeout(()=>synchronizeAll().catch(console.error),250);
   .animator-grid{grid-template-columns:1fr}
 }
 </style>
+
+<script>
+/* =====================================================
+   SNAKE ENGINE — SCENE FLOW + GAME STATE v2
+===================================================== */
+(function(){
+"use strict";
+
+const FLOW_KEY="snake_scene_flow_v2:";
+const GameState={
+  state:"running",
+  previous:"running",
+  paused:false,
+  reason:null,
+  globals:{},
+  listeners:new Set(),
+
+  set(next,detail={}){
+    next=String(next||"running");
+    if(next===this.state)return this.state;
+
+    const from=this.state;
+    this.previous=from;
+    this.state=next;
+    this.paused=next==="paused"||next==="gameover";
+    this.reason=detail.reason||null;
+
+    const payload={from,to:next,detail,paused:this.paused};
+    for(const fn of [...this.listeners]){try{fn(payload)}catch(e){console.error(e)}}
+    try{window.ScriptRuntimeV2?.emitSignal?.("game:state",payload)}catch(_){}
+    try{window.dispatchEvent(new CustomEvent("snake:gamestate",{detail:payload}))}catch(_){}
+
+    FlowRuntime.renderOverlay();
+    return next
+  },
+
+  pause(reason="manual"){return this.set("paused",{reason})},
+  resume(){return this.set("running")},
+  gameOver(data={}){this.globals.gameOver=data;return this.set("gameover",{data})},
+  loading(scene){return this.set("loading",{scene})},
+  is(name){return this.state===name},
+  on(fn){if(typeof fn==="function")this.listeners.add(fn);return fn},
+  off(fn){return this.listeners.delete(fn)},
+  setGlobal(key,value){this.globals[String(key)]=value;return value},
+  getGlobal(key,fallback=null){return key in this.globals?this.globals[key]:fallback}
+};
+
+function pid(){return window.currentProjectId||window.currentProject?.id||window.currentProject||"default"}
+function key(){return FLOW_KEY+pid()}
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function loadCfg(){
+  try{
+    const d=JSON.parse(localStorage.getItem(key())||"null");
+    return {
+      transitionMs:Math.max(0,Number(d?.transitionMs)||180),
+      loadingText:d?.loadingText||"LOADING",
+      preload:Array.isArray(d?.preload)?d.preload:[],
+      pauseOverlay:d?.pauseOverlay!==false,
+      gameOverOverlay:d?.gameOverOverlay!==false
+    }
+  }catch{
+    return {transitionMs:180,loadingText:"LOADING",preload:[],pauseOverlay:true,gameOverOverlay:true}
+  }
+}
+let config=loadCfg();
+function saveCfg(){try{localStorage.setItem(key(),JSON.stringify(config))}catch(_){}}
+
+const FlowRuntime={
+  cache:new Map(),
+  preloaded:new Set(),
+
+  async scenes(){
+    try{return await window.SceneManager?.list?.() || await window.SM?.list?.() || []}
+    catch{return []}
+  },
+
+  async preload(names=config.preload){
+    const list=await this.scenes();
+    const wanted=new Set((names||[]).map(String));
+    let count=0;
+    for(const s of list){
+      if(!wanted.has(s.id)&&!wanted.has(s.name))continue;
+      this.cache.set(s.id,clone(s));
+      this.cache.set(s.name,clone(s));
+      this.preloaded.add(s.id);
+      this.preloaded.add(s.name);
+      count++
+    }
+    try{window.ScriptRuntimeV2?.emitSignal?.("scene:preloaded",{count,names:[...wanted]})}catch(_){}
+    return count
+  },
+
+  async load(nameOrId,options={}){
+    const runtime=window.RuntimeScenes;
+    if(!runtime?.load)return false;
+
+    const label=String(nameOrId);
+    GameState.loading(label);
+
+    const previous=runtime.transitionMs;
+    runtime.transitionMs=Math.max(0,Number(options.transitionMs??config.transitionMs));
+
+    try{
+      if(config.loadingText){
+        runtime.ensureTransitionUI?.();
+        const info=document.getElementById("smTransitionInfo");
+        if(info)info.textContent=config.loadingText+" · "+label.toUpperCase();
+      }
+
+      const ok=await runtime.load(nameOrId,{
+        ...options,
+        fade:options.fade!==false
+      });
+
+      if(ok){
+        GameState.set("running",{scene:nameOrId});
+        try{window.ScriptRuntimeV2?.emitSignal?.("scene:changed",{scene:nameOrId})}catch(_){}
+      }else{
+        GameState.set(GameState.previous==="loading"?"running":GameState.previous,{loadFailed:true});
+      }
+      return ok
+    }finally{
+      runtime.transitionMs=previous
+    }
+  },
+
+  async reload(options={}){
+    const runtime=window.RuntimeScenes;
+    const current=runtime?.current;
+    if(!current)return false;
+    return this.load(current.id,options)
+  },
+
+  async startup(options={}){
+    const scene=await window.SceneManager?.startup?.();
+    if(!scene)return false;
+    return this.load(scene.id,{fade:false,...options})
+  },
+
+  persist(target){
+    window.RuntimeScenes?.markPersistent?.(target);
+    return target
+  },
+
+  unpersist(target){
+    if(!target)return false;
+    target.meta=target.meta||{};
+    target.meta.persistent=false;
+    window.RuntimeScenes?.persistentNodes?.delete?.(target.id);
+    return true
+  },
+
+  async restart(){
+    GameState.set("restarting");
+    try{
+      if(window.SaveGame?.dirty)await window.SaveGame.commit(window.SaveGame.activeSlot,{restart:true});
+    }catch(_){}
+    const ok=await this.reload({fade:true});
+    if(ok)GameState.set("running");
+    return ok
+  },
+
+  async checkpointRestart(index=-1){
+    try{await window.SaveGame?.restoreCheckpoint?.(index)}catch(_){}
+    return this.restart()
+  },
+
+  renderOverlay(){
+    const host=document.querySelector("#preview .game-screen")||document.querySelector("#preview .runtime-stage")||document.getElementById("preview");
+    if(!host)return;
+
+    let overlay=document.getElementById("flow2RuntimeOverlay");
+    if(!overlay){
+      overlay=document.createElement("div");
+      overlay.id="flow2RuntimeOverlay";
+      overlay.style.cssText="position:absolute;inset:0;z-index:80;display:none;place-items:center;background:rgba(8,11,14,.72);backdrop-filter:blur(3px);color:#e2e8eb;font-family:system-ui";
+      overlay.innerHTML='<div style="text-align:center"><strong id="flow2RuntimeTitle" style="display:block;font-size:18px"></strong><small id="flow2RuntimeSub" style="display:block;margin-top:7px;color:#89969f"></small></div>';
+      host.appendChild(overlay)
+    }
+
+    const title=document.getElementById("flow2RuntimeTitle");
+    const sub=document.getElementById("flow2RuntimeSub");
+    const visible=(GameState.state==="paused"&&config.pauseOverlay)||(GameState.state==="gameover"&&config.gameOverOverlay);
+
+    overlay.style.display=visible?"grid":"none";
+    if(title)title.textContent=GameState.state==="gameover"?"GAME OVER":"PAUSED";
+    if(sub)sub.textContent=GameState.state==="gameover"?"Use game.restart() to retry":"Use game.resume() to continue"
+  }
+};
+
+function ensureUI(){
+  if(document.getElementById("sceneFlowGameStateV2"))return;
+  const root=document.createElement("section");
+  root.id="sceneFlowGameStateV2";
+  root.className="flow2-screen";
+  root.setAttribute("aria-hidden","true");
+  root.innerHTML=`
+    <header class="flow2-head">
+      <button type="button" data-flow-close>‹</button>
+      <div style="flex:1"><strong>SCENE FLOW / GAME STATE v2</strong><small>Preload · Loading · Pause · Restart · Game Over · Persistent entities</small></div>
+      <span id="flow2StatePill" class="flow2-state-pill">RUNNING</span>
+    </header>
+
+    <main class="flow2-body">
+      <section class="flow2-panel"><h3>GAME STATE</h3><div class="flow2-pad">
+        <div class="flow2-grid">
+          <button class="flow2-btn" data-flow-pause>PAUSE</button>
+          <button class="flow2-btn" data-flow-resume>RESUME</button>
+          <button class="flow2-btn" data-flow-gameover>GAME OVER</button>
+          <button class="flow2-btn" data-flow-restart>RESTART SCENE</button>
+        </div>
+        <div id="flow2Status" class="flow2-status ok" style="margin-top:8px">Runtime state: running</div>
+      </div></section>
+
+      <section class="flow2-panel"><h3>TRANSITION / LOADING</h3><div class="flow2-pad">
+        <div class="flow2-row"><label>Transition ms</label><input id="flow2TransitionMs" type="number" min="0" max="3000" step="50"></div>
+        <div class="flow2-row"><label>Loading text</label><input id="flow2LoadingText"></div>
+        <div class="flow2-row"><label>Pause overlay</label><input id="flow2PauseOverlay" type="checkbox"></div>
+        <div class="flow2-row"><label>GameOver overlay</label><input id="flow2GameOverOverlay" type="checkbox"></div>
+      </div></section>
+
+      <section class="flow2-panel"><h3>SCENES / PRELOAD</h3><div class="flow2-pad">
+        <div class="flow2-grid">
+          <button class="flow2-btn" data-flow-preload>PRELOAD SELECTED</button>
+          <button class="flow2-btn" data-flow-startup>LOAD STARTUP</button>
+        </div>
+        <div id="flow2Scenes" class="flow2-list" style="margin-top:8px"></div>
+      </div></section>
+
+      <section class="flow2-panel"><h3>SCRIPT API</h3><div class="flow2-pad">
+        <div class="flow2-code">await scene.preload(["Level 2"]);
+await scene.load("Level 2");
+
+game.pause();
+game.resume();
+game.gameOver({ score });
+await game.restart();
+
+scene.persist(player);</div>
+      </div></section>
+    </main>`;
+  document.body.appendChild(root);
+
+  root.addEventListener("click",async e=>{
+    if(e.target.closest("[data-flow-close]"))return close();
+    if(e.target.closest("[data-flow-pause]")){GameState.pause();render();return}
+    if(e.target.closest("[data-flow-resume]")){GameState.resume();render();return}
+    if(e.target.closest("[data-flow-gameover]")){GameState.gameOver();render();return}
+    if(e.target.closest("[data-flow-restart]")){await FlowRuntime.restart();render();return}
+    if(e.target.closest("[data-flow-startup]")){await FlowRuntime.startup();render();return}
+    if(e.target.closest("[data-flow-preload]")){
+      const count=await FlowRuntime.preload(config.preload);
+      setStatus(`${count} scene(s) preloaded`,true);renderScenes();return
+    }
+
+    const load=e.target.closest("[data-flow-load]");
+    if(load){await FlowRuntime.load(load.dataset.flowLoad);render();return}
+    const toggle=e.target.closest("[data-flow-toggle-preload]");
+    if(toggle){
+      const id=toggle.dataset.flowTogglePreload;
+      const set=new Set(config.preload);
+      set.has(id)?set.delete(id):set.add(id);
+      config.preload=[...set];saveCfg();renderScenes();return
+    }
+  });
+
+  root.addEventListener("change",e=>{
+    if(e.target.id==="flow2TransitionMs"){config.transitionMs=Math.max(0,Number(e.target.value)||0);saveCfg()}
+    if(e.target.id==="flow2LoadingText"){config.loadingText=e.target.value||"LOADING";saveCfg()}
+    if(e.target.id==="flow2PauseOverlay"){config.pauseOverlay=e.target.checked;saveCfg();FlowRuntime.renderOverlay()}
+    if(e.target.id==="flow2GameOverOverlay"){config.gameOverOverlay=e.target.checked;saveCfg();FlowRuntime.renderOverlay()}
+  });
+
+  ensureMenu()
+}
+
+async function renderScenes(){
+  const root=document.getElementById("flow2Scenes");if(!root)return;
+  const scenes=await FlowRuntime.scenes();
+  const startup=await window.SceneManager?.startup?.();
+  root.innerHTML=scenes.map(s=>{
+    const selected=config.preload.includes(s.id)||config.preload.includes(s.name);
+    return `<article class="flow2-scene">
+      <div class="flow2-scene-head"><div><strong>${s.name}</strong><small>${s.id===startup?.id?"Startup · ":""}${FlowRuntime.preloaded.has(s.id)?"Preloaded":"Not preloaded"}</small></div></div>
+      <div class="flow2-scene-actions">
+        <button class="primary" data-flow-load="${s.id}">LOAD</button>
+        <button data-flow-toggle-preload="${s.id}">${selected?"UNSELECT":"PRELOAD"}</button>
+        <button onclick="window.SceneFlowV2.persistCurrent?.()">PERSIST</button>
+      </div>
+    </article>`
+  }).join("")||'<div class="flow2-status">No scenes found.</div>'
+}
+function setStatus(text,ok=true){
+  const el=document.getElementById("flow2Status");if(!el)return;
+  el.textContent=text;el.className="flow2-status"+(ok?" ok":"")
+}
+async function render(){
+  const p=document.getElementById("flow2StatePill");if(p)p.textContent=GameState.state.toUpperCase();
+  const ms=document.getElementById("flow2TransitionMs");if(ms)ms.value=config.transitionMs;
+  const lt=document.getElementById("flow2LoadingText");if(lt)lt.value=config.loadingText;
+  const po=document.getElementById("flow2PauseOverlay");if(po)po.checked=config.pauseOverlay;
+  const go=document.getElementById("flow2GameOverOverlay");if(go)go.checked=config.gameOverOverlay;
+  setStatus(`Runtime state: ${GameState.state}`,true);
+  await renderScenes()
+}
+
+function ensureMenu(){
+  const menu=document.getElementById("editorMoreMenu");
+  if(!menu||document.getElementById("editorMoreSceneFlowV2"))return;
+  const btn=document.createElement("button");
+  btn.id="editorMoreSceneFlowV2";btn.type="button";btn.className="editor-more-item";
+  btn.innerHTML='<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 6h6v5H4zM14 13h6v5h-6z"/><path d="M10 8.5h3a3 3 0 0 1 3 3V13"/></svg><span>Scene Flow / Game State v2</span>';
+  btn.onclick=()=>{menu.classList.remove("show");open()};
+  const save=document.getElementById("editorMoreSaveV2");
+  if(save)save.insertAdjacentElement("afterend",btn);else menu.insertBefore(btn,menu.firstChild)
+}
+function open(){
+  config=loadCfg();ensureUI();ensureMenu();
+  const el=document.getElementById("sceneFlowGameStateV2");
+  el.style.removeProperty("display");el.style.removeProperty("pointer-events");
+  el.removeAttribute("aria-hidden");el.classList.add("show");
+  render()
+}
+function close(){
+  const el=document.getElementById("sceneFlowGameStateV2");
+  if(el){
+    el.classList.remove("show");
+    el.style.setProperty("display","none","important");
+    el.style.setProperty("pointer-events","none","important");
+    el.setAttribute("aria-hidden","true")
+  }
+}
+
+/* Pause the complete runtime update chain while paused/game-over.
+   Rendering remains active because runtimeRender is a separate pipeline. */
+const previousRuntimeUpdate=window.runtimeUpdate;
+if(typeof previousRuntimeUpdate==="function"&&!previousRuntimeUpdate.__gameStateV2){
+  const wrapped=function(dt){
+    if(GameState.paused)return;
+    return previousRuntimeUpdate.apply(this,arguments)
+  };
+  wrapped.__gameStateV2=true;
+  window.runtimeUpdate=wrapped
+}
+
+const previousOpenPreview=window.openPreview;
+if(typeof previousOpenPreview==="function"&&!previousOpenPreview.__gameStateV2){
+  const wrapped=function(){
+    GameState.set("running",{preview:true});
+    const r=previousOpenPreview.apply(this,arguments);
+    setTimeout(()=>FlowRuntime.preload(config.preload),120);
+    return r
+  };
+  wrapped.__gameStateV2=true;
+  window.openPreview=wrapped
+}
+const previousClosePreview=window.closePreview;
+if(typeof previousClosePreview==="function"&&!previousClosePreview.__gameStateV2){
+  const wrapped=function(){
+    GameState.set("running",{previewClosed:true});
+    FlowRuntime.cache.clear();FlowRuntime.preloaded.clear();
+    return previousClosePreview.apply(this,arguments)
+  };
+  wrapped.__gameStateV2=true;
+  window.closePreview=wrapped
+}
+
+window.GameStateV2=GameState;
+window.SceneFlowV2={
+  version:"2.0.0",
+  GameState,
+  Runtime:FlowRuntime,
+  open,close,
+  preload:n=>FlowRuntime.preload(n),
+  load:(n,o)=>FlowRuntime.load(n,o),
+  reload:o=>FlowRuntime.reload(o),
+  restart:()=>FlowRuntime.restart(),
+  persist:t=>FlowRuntime.persist(t),
+  persistCurrent(){
+    const graph=window.snakeRuntime?.graph;
+    let first=null;graph?.traverse?.(n=>{if(!first&&n!==graph.root)first=n});
+    if(first){FlowRuntime.persist(first);setStatus(`Persistent: ${first.name||first.id}`,true)}
+  }
+};
+window.game=GameState;
+
+document.addEventListener("DOMContentLoaded",()=>{ensureUI();ensureMenu()});
+new MutationObserver(()=>ensureMenu()).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 
 <script>
 /* =====================================================
@@ -19586,7 +20048,29 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
   padding:9px;
   font:9px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-@media(max-width:700px){.save-v1-grid{grid-template-columns:1fr}}
+
+.save-v2-config{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
+.save-v2-config label{display:grid;gap:4px;color:#7e8b94;font-size:8px}
+.save-v2-config input,.save-v2-config select{
+  min-height:34px;border:1px solid #2c353e;border-radius:6px;background:#090d11;
+  color:#dce2e6;padding:0 8px
+}
+.save-v2-status{
+  margin-bottom:9px;padding:7px 8px;border:1px solid #2b3740;border-radius:7px;
+  background:#0b1014;color:#6f7d87;font:7px/1.45 ui-monospace,monospace
+}
+.save-v2-status.ok{border-color:#35553c;color:#91e864;background:#111a13}
+.save-v2-tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.save-v2-tools button{
+  min-height:34px;border:1px solid #2d3740;border-radius:7px;background:#151b21;
+  color:#8d99a2;font-size:8px;font-weight:750
+}
+.save-v2-checkpoint{
+  padding:7px;border:1px solid #2a343d;border-radius:7px;background:#11181e;margin-top:5px
+}
+.save-v2-checkpoint strong{display:block;font-size:8px}.save-v2-checkpoint small{display:block;margin-top:3px;color:#65737d;font-size:7px}
+.save-v2-checkpoint button{margin-top:6px;width:100%;height:29px;border:1px solid #2d3942;border-radius:6px;background:#151d23;color:#87949d;font-size:7px}
+@media(max-width:700px){.save-v1-grid{grid-template-columns:1fr}.save-v2-config{grid-template-columns:1fr}}
 </style>
 
 <script>
@@ -19598,7 +20082,7 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 (function(){
 "use strict";
 
-const SAVE_PREFIX="snake_game_save_v1:";
+const SAVE_PREFIX="snake_game_save_v1:"; // keep key for backwards compatibility
 const AUTOSAVE_SLOT="autosave";
 
 function project(){
@@ -19612,7 +20096,7 @@ function now(){return new Date().toISOString()}
 function key(projectName,slot){return `${SAVE_PREFIX}${projectName}:${slot}`}
 
 const SaveGame={
-  version:"1.0.0",
+  version:"2.0.0",
   activeSlot:"slot1",
   data:{},
   dirty:false,
@@ -19664,7 +20148,7 @@ const SaveGame={
     if(!p)return false;
 
     const payload={
-      version:1,
+      version:2,
       project:p,
       slot,
       data:clone(this.data),
@@ -19741,6 +20225,12 @@ const SaveGame={
     return ok;
   },
 
+  settings:{
+    get(path,fallback=null){return SaveGame.get("_settings."+path,fallback)},
+    set(path,value){return SaveGame.set("_settings."+path,value)},
+    delete(path){return SaveGame.delete("_settings."+path)}
+  },
+
   markDirty(){
     this.dirty=true;
     if(this.autosave){
@@ -19771,6 +20261,32 @@ const SaveGame={
     this.dirty=true;
     await this.commit(this.activeSlot,{restoredCheckpoint:cp.name});
     return true;
+  },
+
+  async exportSlot(slot=this.activeSlot){
+    slot=this.slotName(slot);
+    const p=project();
+    if(!p)return null;
+    const currentSlot=this.activeSlot,currentData=clone(this.data),currentDirty=this.dirty;
+    await this.load(slot);
+    const payload={
+      version:2,
+      project:p,
+      slot,
+      data:clone(this.data),
+      exportedAt:now()
+    };
+    this.activeSlot=currentSlot;this.data=currentData;this.dirty=currentDirty;
+    return payload
+  },
+
+  async importSlot(slot,payload){
+    if(!payload || typeof payload!=="object" || typeof payload.data!=="object")throw new Error("Invalid save payload");
+    slot=this.slotName(slot);
+    this.activeSlot=slot;
+    this.data=clone(payload.data);
+    this.dirty=true;
+    return this.commit(slot,{imported:true,sourceVersion:payload.version||1})
   },
 
   async clear(slot=this.activeSlot){
@@ -19844,7 +20360,15 @@ if(window.Scripts?.buildAPI){
         load(slot){return SaveGame.load(slot)},
         checkpoint(name,extra){return SaveGame.checkpoint(name,extra)},
         restoreCheckpoint(index){return SaveGame.restoreCheckpoint(index)},
-        clear(slot){return SaveGame.clear(slot)}
+        clear(slot){return SaveGame.clear(slot)},
+        list(){return SaveGame.listSlots()},
+        export(slot){return SaveGame.exportSlot(slot)},
+        import(slot,payload){return SaveGame.importSlot(slot,payload)},
+        settings:{
+          get(path,fallback){return SaveGame.settings.get(path,fallback)},
+          set(path,value){return SaveGame.settings.set(path,value)},
+          delete(path){return SaveGame.settings.delete(path)}
+        }
       }
     });
   };
@@ -19868,8 +20392,8 @@ function ensureUI(){
         <svg viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
       </button>
       <div class="save-v1-head-title">
-        <strong>SAVE GAME</strong>
-        <small>Runtime progress, slots and checkpoints</small>
+        <strong>SAVE SYSTEM v2</strong>
+        <small>Slots · Autosave · Checkpoints · Settings · Import/Export</small>
       </div>
       <button class="icon-btn" type="button" data-save-v1-refresh>
         <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20 12a8 8 0 1 1-2-5.3"/><path d="M20 4v6h-6"/></svg>
@@ -19877,6 +20401,23 @@ function ensureUI(){
     </header>
 
     <main class="save-v1-body">
+      <div class="save-v2-config">
+        <label>Active Slot
+          <select id="saveV2ActiveSlot">
+            <option value="slot1">Slot 1</option><option value="slot2">Slot 2</option><option value="slot3">Slot 3</option>
+          </select>
+        </label>
+        <label>Autosave delay (ms)
+          <input id="saveV2AutosaveDelay" type="number" min="250" max="30000" step="250" value="1200">
+        </label>
+      </div>
+      <div class="save-v2-config">
+        <label style="display:flex;align-items:center;grid-template-columns:auto 1fr;gap:7px">
+          <input id="saveV2Autosave" type="checkbox" style="width:18px;height:18px"> Autosave
+        </label>
+      </div>
+      <div id="saveV2Status" class="save-v2-status">Ready</div>
+
       <div class="save-v1-actions">
         <button type="button" class="primary" data-save-v1-commit>SAVE CURRENT</button>
         <button type="button" data-save-v1-checkpoint>CHECKPOINT</button>
@@ -19898,26 +20439,35 @@ function ensureUI(){
           </div>
         </section>
       </div>
+
+      <section class="save-v1-panel" style="margin-top:8px">
+        <h3>CHECKPOINTS</h3>
+        <div class="save-v1-panel-body" id="saveV2Checkpoints"></div>
+      </section>
+
+      <section class="save-v1-panel" style="margin-top:8px">
+        <h3>TOOLS</h3>
+        <div class="save-v1-panel-body">
+          <div class="save-v2-tools">
+            <button type="button" data-save-v2-export>EXPORT SLOT</button>
+            <button type="button" data-save-v2-import>IMPORT JSON</button>
+          </div>
+        </div>
+      </section>
     </main>
   `;
   editor.appendChild(ui);
 
-  const header=document.querySelector("#editor .editor-header");
-  const inputBtn=document.getElementById("inputV2HeaderBtn");
+  document.getElementById("saveV1HeaderBtn")?.remove();
 
-  if(header&&!document.getElementById("saveV1HeaderBtn")){
+  const menu=document.getElementById("editorMoreMenu");
+  if(menu&&!document.getElementById("editorMoreSaveV2")){
     const btn=document.createElement("button");
-    btn.id="saveV1HeaderBtn";
-    btn.className="icon-btn";
-    btn.type="button";
-    btn.setAttribute("aria-label","Save Game");
-    btn.innerHTML=`<svg viewBox="0 0 24 24" stroke-width="1.8">
-      <path d="M5 4h12l2 2v14H5z"/>
-      <path d="M8 4v6h8V4M8 16h8"/>
-    </svg>`;
-    btn.addEventListener("click",openManager);
-    if(inputBtn)inputBtn.insertAdjacentElement("afterend",btn);
-    else header.querySelector(".run-btn")?.insertAdjacentElement("beforebegin",btn);
+    btn.id="editorMoreSaveV2";btn.type="button";btn.className="editor-more-item";
+    btn.innerHTML='<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M5 4h12l2 2v14H5z"/><path d="M8 4v6h8V4M8 16h8"/></svg><span>Save System v2</span>';
+    btn.addEventListener("click",()=>{menu.classList.remove("show");openManager()});
+    const uiV2=document.getElementById("editorMoreUIV2");
+    if(uiV2)uiV2.insertAdjacentElement("afterend",btn);else menu.insertBefore(btn,menu.firstChild)
   }
 
   ui.addEventListener("click",async e=>{
@@ -19955,6 +20505,38 @@ function ensureUI(){
       return;
     }
 
+    if(e.target.closest("[data-save-v2-export]")){
+      try{
+        const payload=await SaveGame.exportSlot(selectedSlot);
+        const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+        const url=URL.createObjectURL(blob),a=document.createElement("a");
+        a.href=url;a.download=`${project()||"project"}_${selectedSlot}.save.json`;a.click();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+        setSaveV2Status("Save exported",true)
+      }catch(err){setSaveV2Status("Export failed",false)}
+      return
+    }
+
+    if(e.target.closest("[data-save-v2-import]")){
+      const input=document.createElement("input");input.type="file";input.accept="application/json,.json";
+      input.onchange=async()=>{
+        const f=input.files?.[0];if(!f)return;
+        try{
+          const payload=JSON.parse(await f.text());
+          await SaveGame.importSlot(selectedSlot,payload);
+          setSaveV2Status("Save imported",true);renderManager()
+        }catch(err){setSaveV2Status("Invalid save file",false)}
+      };
+      input.click();return
+    }
+
+    const cp=e.target.closest("[data-save-v2-restore]");
+    if(cp){
+      const index=Number(cp.dataset.saveV2Restore);
+      if(await SaveGame.restoreCheckpoint(index)){setSaveV2Status("Checkpoint restored",true);renderManager()}
+      return
+    }
+
     const load=e.target.closest("[data-save-v1-load]");
     if(load){
       selectedSlot=load.dataset.saveV1Load;
@@ -19972,6 +20554,27 @@ function ensureUI(){
       }
     }
   });
+
+  ui.addEventListener("change",async e=>{
+    if(e.target.id==="saveV2ActiveSlot"){
+      selectedSlot=e.target.value;SaveGame.activeSlot=selectedSlot;
+      await SaveGame.load(selectedSlot);renderManager();return
+    }
+    if(e.target.id==="saveV2Autosave"){
+      SaveGame.autosave=e.target.checked;
+      setSaveV2Status(SaveGame.autosave?"Autosave enabled":"Autosave disabled",true);
+      return
+    }
+    if(e.target.id==="saveV2AutosaveDelay"){
+      SaveGame.autosaveDelay=Math.max(250,Number(e.target.value)||1200);
+      setSaveV2Status(`Autosave delay ${SaveGame.autosaveDelay}ms`,true)
+    }
+  });
+}
+
+function setSaveV2Status(text,ok=true){
+  const el=document.getElementById("saveV2Status");if(!el)return;
+  el.textContent=text;el.className="save-v2-status"+(ok?" ok":"")
 }
 
 async function renderManager(){
@@ -19997,16 +20600,36 @@ async function renderManager(){
 
   const json=document.getElementById("saveV1Json");
   if(json)json.value=JSON.stringify(SaveGame.data,null,2);
+
+  const active=document.getElementById("saveV2ActiveSlot");
+  if(active)active.value=selectedSlot;
+  const autosave=document.getElementById("saveV2Autosave");
+  if(autosave)autosave.checked=!!SaveGame.autosave;
+  const delay=document.getElementById("saveV2AutosaveDelay");
+  if(delay)delay.value=SaveGame.autosaveDelay;
+
+  const cpRoot=document.getElementById("saveV2Checkpoints");
+  if(cpRoot){
+    const cps=SaveGame.get("_checkpoints",[]);
+    cpRoot.innerHTML=cps.length?cps.map((cp,i)=>`
+      <div class="save-v2-checkpoint">
+        <strong>${String(cp.name||"Checkpoint").replace(/</g,"&lt;")}</strong>
+        <small>${cp.at?new Date(cp.at).toLocaleString():""} · index ${i}</small>
+        <button type="button" data-save-v2-restore="${i}">RESTORE</button>
+      </div>`).join(""):'<div class="save-v1-slot-meta">No checkpoints.</div>'
+  }
 }
 
 async function openManager(){
   ensureUI();
-  document.getElementById("saveManagerV1")?.classList.add("show");
+  const panel=document.getElementById("saveManagerV1");
+  if(panel){panel.style.removeProperty("display");panel.style.removeProperty("pointer-events");panel.classList.add("show")}
   await SaveGame.load(selectedSlot);
   await renderManager();
 }
 function closeManager(){
-  document.getElementById("saveManagerV1")?.classList.remove("show");
+  const panel=document.getElementById("saveManagerV1");
+  if(panel){panel.classList.remove("show");panel.style.setProperty("display","none","important");panel.style.setProperty("pointer-events","none","important")}
 }
 
 /* -----------------------------------------------------
@@ -20063,7 +20686,7 @@ window.addEventListener("pagehide",()=>{
 });
 
 window.SaveGameManager={
-  version:"1.0.0",
+  version:"2.0.0",
   open:openManager,
   runtime:SaveGame
 };
@@ -25970,7 +26593,10 @@ const RPGCodeRuntime={
       },
 
       scene:{
-        load:name=>RuntimeScenes?.load?.(name,{fade:true}),
+        load:(name,options)=>window.SceneFlowV2?.load?.(name,options) ?? RuntimeScenes?.load?.(name,{fade:true}),
+        preload:names=>window.SceneFlowV2?.preload?.(names),
+        reload:options=>window.SceneFlowV2?.reload?.(options),
+        persist:target=>window.SceneFlowV2?.persist?.(target),
         name:()=>RuntimeScenes?.current?.name||null
       },
 
@@ -29656,6 +30282,17 @@ const ScriptRuntimeV2={
 
       animation:window.AnimationSystemV2||window.animation,
 
+      game:{
+        pause:reason=>window.GameStateV2?.pause?.(reason),
+        resume:()=>window.GameStateV2?.resume?.(),
+        gameOver:data=>window.GameStateV2?.gameOver?.(data),
+        restart:()=>window.SceneFlowV2?.restart?.(),
+        is:name=>window.GameStateV2?.is?.(name),
+        state:()=>window.GameStateV2?.state,
+        setGlobal:(k,v)=>window.GameStateV2?.setGlobal?.(k,v),
+        getGlobal:(k,f)=>window.GameStateV2?.getGlobal?.(k,f)
+      },
+
       signals:{
         on:(name,fn)=>runtime.addSignal(name,fn,false),
         once:(name,fn)=>runtime.addSignal(name,fn,true),
@@ -29792,6 +30429,7 @@ ${record.source}
         "tilemap",
         "physics",
         "animation",
+        "game",
         "signals",
         "time",
         "save",
@@ -29815,6 +30453,7 @@ ${record.source}
         this.api.tilemap,
         this.api.physics,
         this.api.animation,
+        this.api.game,
         this.api.signals,
         this.api.time,
         this.api.save,
@@ -33867,7 +34506,10 @@ const API={
     {name:"destroy",sig:"entity.destroy(target)",desc:"Remove uma entidade do runtime.",insert:"entity.destroy(target)"}
   ],
   scene:[
-    {name:"load",sig:'scene.load("Scene")',desc:"Carrega uma cena.",insert:'scene.load("Main")'},
+    {name:"load",sig:'scene.load("Scene")',desc:"Carrega uma cena com transição.",insert:'await scene.load("Main")'},
+    {name:"preload",sig:'scene.preload(["Scene"])',desc:"Pré-carrega metadados de cenas.",insert:'await scene.preload(["Level 2"])'},
+    {name:"reload",sig:"scene.reload()",desc:"Recarrega a cena atual.",insert:"await scene.reload()"},
+    {name:"persist",sig:"scene.persist(entity)",desc:"Mantém uma entidade entre trocas de cena.",insert:"scene.persist(player)"},
     {name:"name",sig:"scene.name()",desc:"Retorna o nome da cena atual.",insert:"scene.name()"}
   ],
   ui:[
@@ -33887,7 +34529,9 @@ const API={
     {name:"get",sig:'save.get("path", fallback)',desc:"Lê um valor do save.",insert:'save.get("player.hp", 100)'},
     {name:"set",sig:'save.set("path", value)',desc:"Define um valor.",insert:'save.set("player.hp", hp)'},
     {name:"commit",sig:'await save.commit("slot1")',desc:"Persiste o estado no slot.",insert:'await save.commit("slot1")'},
-    {name:"load",sig:'await save.load("slot1")',desc:"Carrega um slot.",insert:'await save.load("slot1")'}
+    {name:"load",sig:'await save.load("slot1")',desc:"Carrega um slot.",insert:'await save.load("slot1")'},
+    {name:"checkpoint",sig:'await save.checkpoint("Boss")',desc:"Cria um checkpoint versionado do progresso atual.",insert:'await save.checkpoint("Boss")'},
+    {name:"settings",sig:'save.settings.set("audio.music", 0.7)',desc:"Armazena configurações dentro do save separadas por path.",insert:'save.settings.set("audio.music", 0.7)'}
   ],
   camera:[
     {name:"follow",sig:"camera.follow(target)",desc:"Faz a câmera seguir uma entidade.",insert:"camera.follow(player)"},
@@ -33912,6 +34556,13 @@ const API={
     {name:"set",sig:'anim.set("parameter", value)',desc:"Atualiza um parâmetro usado por transitions.",insert:'anim.set("speed", 1);'},
     {name:"trigger",sig:'anim.trigger("name")',desc:"Dispara um trigger consumido por uma transition.",insert:'anim.trigger("attack");'}
   ],
+  game:[
+    {name:"pause",sig:"game.pause()",desc:"Pausa o game loop completo.",insert:"game.pause()"},
+    {name:"resume",sig:"game.resume()",desc:"Retoma o game loop.",insert:"game.resume()"},
+    {name:"gameOver",sig:"game.gameOver(data)",desc:"Entra no estado de Game Over.",insert:"game.gameOver({ score })"},
+    {name:"restart",sig:"await game.restart()",desc:"Recarrega a cena atual.",insert:"await game.restart()"},
+    {name:"is",sig:'game.is("paused")',desc:"Consulta o estado atual.",insert:'game.is("paused")'}
+  ],
   signals:[
     {name:"on",sig:'signals.on("event", fn)',desc:"Escuta um evento global do gameplay.",insert:'signals.on("enemy:defeated", (data) => {\n  \n})'},
     {name:"once",sig:'signals.once("event", fn)',desc:"Escuta um evento somente uma vez.",insert:'signals.once("level:complete", () => {\n  \n})'},
@@ -33930,7 +34581,7 @@ const API={
   ]
 };
 
-const ROOTS=["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","animation","signals","time","log"];
+const ROOTS=["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","animation","game","signals","time","log"];
 
 const snippets=[
   {
@@ -35752,7 +36403,7 @@ const KEYWORDS=new Set([
   "async","await","typeof","instanceof","in","of","import","export","default","this"
 ]);
 const BOOLS=new Set(["true","false","null","undefined","NaN","Infinity"]);
-const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","animation","signals","time","log"]);
+const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","physics","animation","game","signals","time","log"]);
 
 function escColor(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
 function tokenLine(line){
