@@ -14528,6 +14528,41 @@ const PHYSICS_MATERIALS_V3={
   metal:{friction:.35,restitution:.12}
 };
 
+
+(function bindPhysicsCloseV3(){
+  function bind(){
+    const root=document.getElementById("physicsManager")||
+      document.getElementById("physicsScreen")||
+      document.querySelector(".physics-manager")||
+      document.querySelector(".physics-screen");
+    if(!root)return;
+
+    root.querySelectorAll("[data-close],.physics-close,.close-btn").forEach(btn=>{
+      if(btn.dataset.physicsCloseBound==="1")return;
+      btn.dataset.physicsCloseBound="1";
+      btn.addEventListener("click",e=>{
+        e.preventDefault();e.stopPropagation();
+        window.PhysicsManager?.close?.();
+      });
+    });
+  }
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape")window.PhysicsManager?.close?.();
+  });
+
+  document.addEventListener("click",e=>{
+    const root=e.target.closest?.(".physics-screen,.physics-modal");
+    if(root && e.target===root)window.PhysicsManager?.close?.();
+  });
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind);
+  else bind();
+
+  const obs=new MutationObserver(bind);
+  obs.observe(document.documentElement,{childList:true,subtree:true});
+})();
+
 window.PhysicsManagerV3={
   version:"3.0.0",
 
@@ -15784,7 +15819,28 @@ async function ensureSnakeDemoPhysics(){
    Public API
 ----------------------------------------------------- */
 window.PhysicsManager={
-  version:"3.0.0",
+  version:"3.0.1",
+
+  close(){
+    const candidates=[
+      document.getElementById("physicsManager"),
+      document.getElementById("physicsScreen"),
+      document.getElementById("physicsModal"),
+      document.querySelector(".physics-manager"),
+      document.querySelector(".physics-screen"),
+      document.querySelector(".physics-modal")
+    ].filter(Boolean);
+
+    for(const el of candidates){
+      el.classList.remove("show","active","open");
+      el.style.display="none";
+      el.setAttribute("aria-hidden","true");
+    }
+
+    document.body.classList.remove("physics-open");
+    try{ history.replaceState?.(history.state,"",location.href); }catch(_){}
+    return true;
+  },
   load:loadConfig,
   save:saveConfig,
   applyToSelected:applyPhysicsFromUI,
