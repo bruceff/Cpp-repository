@@ -1410,9 +1410,11 @@ button>.ui-icon{margin-right:5px}.resource-card>.ui-icon{margin:0}
 
     <div id="lineNumbers" class="line-numbers"></div>
 
+    <pre id="snakeCodeHighlightV4" class="snake-code-highlight-v4" aria-hidden="true"></pre>
+
     <textarea
       id="code"
-      class="code"
+      class="code snake-code-input-v4"
       spellcheck="false"
       autocapitalize="off"
       autocorrect="off"
@@ -32948,8 +32950,6 @@ if(document.readyState==="loading"){
 </script>
 
 
-<style>
-
 <script>
 /* =====================================================
    SNAKE SCRIPTING / API v3
@@ -33432,6 +33432,7 @@ if(document.readyState==="loading"){
 })();
 </script>
 
+<style>
 /* =====================================================
    SNAKE ENGINE — SCENE EDITOR MOBILE v2
    Touch-first scene editing + Undo/Redo
@@ -34730,8 +34731,6 @@ if(document.readyState==="loading"){
 
 
 <style>
-
-<style>
 /* SCENE EDITOR MOBILE v3 — FINAL TOUCH WORKFLOW */
 .sem3-gizmo{
   position:absolute;z-index:25;pointer-events:none;display:none;
@@ -34777,8 +34776,145 @@ if(document.readyState==="loading"){
 </style>
 
 
+<script>
+/* =====================================================
+   SNAKE CODE COLORS v4
+===================================================== */
+(function(){
+"use strict";
+
+const KEYWORDS=new Set([
+  "const","let","var","function","return","if","else","for","while","do","switch",
+  "case","break","continue","try","catch","finally","throw","new","class","extends",
+  "async","await","typeof","instanceof","in","of","import","export","default","this"
+]);
+const BOOLS=new Set(["true","false","null","undefined","NaN","Infinity"]);
+const API_ROOTS=new Set(["engine","input","entity","scene","ui","audio","save","camera","tilemap","log"]);
+
+function escColor(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function tokenLine(line){
+  let out="",i=0;
+  const span=(cls,text)=>{out+=`<span class="${cls}">${escColor(text)}</span>`};
+  while(i<line.length){
+    const ch=line[i],n=line[i+1];
+
+    if(ch==="/"&&n==="/"){span("tok-comment",line.slice(i));break}
+
+    if(ch==="'"||ch==='"'||ch==="`"){
+      const q=ch;let j=i+1,slash=false;
+      while(j<line.length){
+        const c=line[j];
+        if(slash){slash=false;j++;continue}
+        if(c==="\\"){slash=true;j++;continue}
+        if(c===q){j++;break}
+        j++
+      }
+      span("tok-string",line.slice(i,j));i=j;continue
+    }
+
+    if(/[0-9]/.test(ch)){
+      let j=i+1;while(j<line.length&&/[0-9a-fA-FxX._]/.test(line[j]))j++;
+      span("tok-number",line.slice(i,j));i=j;continue
+    }
+
+    if(/[A-Za-z_$]/.test(ch)){
+      let j=i+1;while(j<line.length&&/[A-Za-z0-9_$]/.test(line[j]))j++;
+      const word=line.slice(i,j),prev=line.slice(0,i).trimEnd();
+      let k=j;while(k<line.length&&/\s/.test(line[k]))k++;
+      if(KEYWORDS.has(word))span("tok-keyword",word);
+      else if(BOOLS.has(word))span("tok-bool",word);
+      else if(API_ROOTS.has(word))span("tok-api",word);
+      else if(prev.endsWith("."))span("tok-property",word);
+      else if(line[k]==="(")span("tok-fn",word);
+      else span("tok-plain",word);
+      i=j;continue
+    }
+
+    if(/[+\-*%=!<>?:&|]/.test(ch)){
+      let j=i+1;while(j<line.length&&/[+\-*%=!<>?:&|]/.test(line[j]))j++;
+      span("tok-operator",line.slice(i,j));i=j;continue
+    }
+
+    if(/[()[\]{},.;]/.test(ch)){span("tok-punct",ch);i++;continue}
+    out+=escColor(ch);i++
+  }
+  return out||" "
+}
+
+function highlight(){
+  const input=document.getElementById("code"),pre=document.getElementById("snakeCodeHighlightV4");
+  if(!input||!pre)return;
+  pre.innerHTML=input.value.split("\n").map(tokenLine).join("\n")+"\n";
+  pre.scrollTop=input.scrollTop;pre.scrollLeft=input.scrollLeft
+}
+function sync(){
+  const input=document.getElementById("code"),pre=document.getElementById("snakeCodeHighlightV4");
+  if(!input||!pre)return;
+  pre.scrollTop=input.scrollTop;pre.scrollLeft=input.scrollLeft
+}
+function bind(){
+  const input=document.getElementById("code");
+  if(!input||input.dataset.syntaxColorsV4==="1")return;
+  input.dataset.syntaxColorsV4="1";
+  input.addEventListener("input",highlight);
+  input.addEventListener("scroll",sync);
+  input.addEventListener("keyup",highlight);
+  input.addEventListener("paste",()=>setTimeout(highlight,0));
+  setTimeout(highlight,0)
+}
+
+const oldUpdate=window.updateEditor;
+if(typeof oldUpdate==="function"&&!oldUpdate.__syntaxColorsV4){
+  const wrapped=function(){const r=oldUpdate.apply(this,arguments);requestAnimationFrame(highlight);return r};
+  wrapped.__syntaxColorsV4=true;window.updateEditor=wrapped
+}
+const oldOpen=window.openProject;
+if(typeof oldOpen==="function"&&!oldOpen.__syntaxColorsV4){
+  const wrapped=async function(){const r=await oldOpen.apply(this,arguments);setTimeout(()=>{bind();highlight()},0);return r};
+  wrapped.__syntaxColorsV4=true;window.openProject=wrapped
+}
+
+window.SnakeCodeColorsV4={highlight,sync,bind};
+
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind,{once:true});
+else bind();
+})();
+</script>
+
 <style>
 /* SNAKE SCRIPTING / API v3 */
+
+/* SNAKE CODE COLORS v4 */
+.code-wrapper{position:relative}
+.snake-code-highlight-v4,.snake-code-input-v4{
+  position:absolute!important;inset:0!important;margin:0!important;
+  padding:12px 12px 12px 54px!important;border:0!important;
+  width:100%!important;height:100%!important;box-sizing:border-box!important;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace!important;
+  font-size:13px!important;line-height:1.55!important;tab-size:2!important;
+  white-space:pre!important;overflow:auto!important
+}
+.snake-code-highlight-v4{z-index:1;pointer-events:none;color:#c7d0d8;background:#0a0f13}
+.snake-code-input-v4{
+  z-index:2;resize:none!important;background:transparent!important;color:transparent!important;
+  caret-color:#f2f5f7!important;-webkit-text-fill-color:transparent!important
+}
+.snake-code-input-v4::selection{background:rgba(80,140,210,.34)}
+.snake-code-highlight-v4 .tok-keyword{color:#c792ea}
+.snake-code-highlight-v4 .tok-string{color:#c3e88d}
+.snake-code-highlight-v4 .tok-number{color:#f78c6c}
+.snake-code-highlight-v4 .tok-comment{color:#607080;font-style:italic}
+.snake-code-highlight-v4 .tok-fn{color:#82aaff}
+.snake-code-highlight-v4 .tok-api{color:#89ddff}
+.snake-code-highlight-v4 .tok-property{color:#ffcb6b}
+.snake-code-highlight-v4 .tok-operator{color:#89ddff}
+.snake-code-highlight-v4 .tok-bool{color:#ff5874}
+.snake-code-highlight-v4 .tok-punct{color:#a9b4bd}
+.snake-code-highlight-v4 .tok-plain{color:#c7d0d8}
+@media(max-width:700px){
+  .snake-code-highlight-v4,.snake-code-input-v4{font-size:12px!important;padding-left:48px!important}
+}
+
 #codeArea{position:relative}
 .snake-scriptbar-v3{
   min-height:39px;display:flex;align-items:center;gap:5px;padding:5px 7px;
@@ -34867,6 +35003,7 @@ if(document.readyState==="loading"){
 }
 </style>
 
+<style>
 /* =====================================================
    SNAKE ENGINE — GUIA v1
 ===================================================== */
