@@ -19018,6 +19018,74 @@ setTimeout(()=>{
 
 <style>
 /* =====================================================
+   SNAKE ENGINE — INPUT SYSTEM v3
+===================================================== */
+.input-v3-section{
+  border:1px solid #252e36;border-radius:10px;background:#10151a;
+  overflow:hidden;margin-top:8px
+}
+.input-v3-section h3{
+  margin:0;padding:10px;border-bottom:1px solid #202831;
+  color:#8c98a1;font-size:9px;letter-spacing:.09em
+}
+.input-v3-pad{padding:9px}
+.input-v3-profiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.input-v3-profiles select,.input-v3-profiles input,
+.input-v3-control-grid input,.input-v3-control-grid select{
+  min-height:34px;border:1px solid #2c353e;border-radius:6px;background:#090d11;
+  color:#dce2e6;padding:0 8px;font-size:9px
+}
+.input-v3-profile-actions,.input-v3-two{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px
+}
+.input-v3-profile-actions button,.input-v3-two button{
+  min-height:36px;border:1px solid #2d3740;border-radius:7px;background:#151b21;
+  color:#95a1aa;font-size:8px;font-weight:750
+}
+.input-v3-profile-actions .primary{background:#91e864;border-color:#91e864;color:#091006}
+.input-v3-controls{display:grid;gap:7px}
+.input-v3-control{
+  padding:8px;border:1px solid #2a343d;border-radius:8px;background:#12181e
+}
+.input-v3-control-head{display:flex;align-items:center;gap:7px}
+.input-v3-control-head>div{flex:1;min-width:0}
+.input-v3-control strong{display:block;color:#dce2e6;font-size:9px}
+.input-v3-control small{display:block;margin-top:3px;color:#68747e;font-size:7px}
+.input-v3-control-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}
+.input-v3-control-grid label{
+  min-height:34px;display:flex;align-items:center;gap:6px;color:#7f8b94;font-size:8px
+}
+.input-v3-preview{
+  position:relative;min-height:220px;margin-top:8px;border:1px solid #2b3740;
+  border-radius:9px;background:#0b1115;overflow:hidden
+}
+.input-v3-stick-preview{
+  position:absolute;border:1px solid #3a4852;border-radius:50%;
+  background:rgba(255,255,255,.03);transform:translate(-50%,-50%)
+}
+.input-v3-stick-preview:after{
+  content:"";position:absolute;width:42%;height:42%;left:29%;top:29%;
+  border-radius:50%;background:#182129;border:1px solid #4b5a64
+}
+.input-v3-btn-preview{
+  position:absolute;border-radius:50%;display:grid;place-items:center;
+  transform:translate(-50%,-50%);background:#182129;border:1px solid #4b5a64;
+  color:#b7c2c9;font-size:9px;font-weight:800
+}
+.input-v3-gesture{padding:8px;border:1px solid #2a343d;border-radius:8px;background:#12181e;margin-bottom:6px}
+.input-v3-gesture-head{display:flex;align-items:center;gap:7px}
+.input-v3-gesture-head strong{flex:1;font-size:8px}
+.input-v3-status{
+  margin-top:8px;padding:7px 8px;border:1px solid #35563a;border-radius:7px;
+  background:#111a13;color:#91e864;font:7px/1.5 ui-monospace,monospace
+}
+@media(max-width:700px){
+  .input-v3-profiles,.input-v3-profile-actions,.input-v3-two{grid-template-columns:1fr}
+}
+</style>
+
+<style>
+/* =====================================================
    SNAKE ENGINE — INPUT SYSTEM v2
 ===================================================== */
 .input-manager-v2{
@@ -19929,6 +19997,444 @@ Promise.resolve(window.SnakeDB?.ready).then(async()=>{
 
 })();
 </script>
+<script>
+/* =====================================================
+   SNAKE ENGINE — INPUT SYSTEM v3
+   Profiles · Multitouch · Custom virtual layout · Gestures
+===================================================== */
+(function(){
+"use strict";
+
+const META_PREFIX="snake_input_v3_meta:";
+let boundPreview=null;
+
+function projectName(){
+  try{return currentProject||"default"}catch{return "default"}
+}
+function metaKey(){return META_PREFIX+projectName()}
+function clone(v){try{return structuredClone(v)}catch{return JSON.parse(JSON.stringify(v))}}
+
+function defaultMeta(){
+  return {
+    version:3,
+    activeProfile:"default",
+    profiles:{default:{name:"Default",actions:null}},
+    virtualLayout:{
+      joystick:{x:18,y:72,size:94,visible:true},
+      buttons:[
+        {id:"a",label:"A",action:"primary",x:82,y:72,size:58,visible:true},
+        {id:"b",label:"B",action:"secondary",x:68,y:83,size:58,visible:true}
+      ]
+    },
+    gestures:{
+      tap:{enabled:false,action:"primary"},
+      doubletap:{enabled:false,action:"secondary"},
+      swipe:{enabled:false,action:"primary",threshold:48}
+    }
+  }
+}
+function loadMeta(){
+  const d=defaultMeta();
+  try{
+    const saved=JSON.parse(localStorage.getItem(metaKey())||"null");
+    if(saved&&saved.version===3)return {
+      ...d,...saved,
+      profiles:{...d.profiles,...(saved.profiles||{})},
+      virtualLayout:{...d.virtualLayout,...(saved.virtualLayout||{})},
+      gestures:{...d.gestures,...(saved.gestures||{})}
+    }
+  }catch(_){}
+  return d
+}
+let meta=loadMeta();
+function saveMeta(){localStorage.setItem(metaKey(),JSON.stringify(meta))}
+
+function ensureProfileSeed(){
+  const input=window.InputV2;if(!input)return;
+  meta.profiles=meta.profiles||{};
+  if(!meta.profiles.default)meta.profiles.default={name:"Default",actions:null};
+  if(!meta.profiles.default.actions)meta.profiles.default.actions=clone(input.config?.actions||{});
+  if(!meta.profiles[meta.activeProfile])meta.activeProfile="default";
+}
+async function applyProfile(id){
+  const input=window.InputV2;if(!input)return false;
+  ensureProfileSeed();
+  const p=meta.profiles[id];if(!p)return false;
+  meta.activeProfile=id;
+  input.config.actions=clone(p.actions||{});
+  saveMeta();
+  try{await window.InputManagerV2?.save?.(input.config)}catch(_){}
+  renderV3();
+  return true
+}
+async function createProfile(name){
+  const input=window.InputV2;if(!input)return false;
+  name=String(name||"").trim();if(!name)return false;
+  ensureProfileSeed();
+  const id=name.toLowerCase().replace(/[^a-z0-9_]+/g,"_").replace(/^_+|_+$/g,"");
+  if(!id||meta.profiles[id])return false;
+  meta.profiles[id]={name,actions:clone(input.config.actions||{})};
+  meta.activeProfile=id;
+  saveMeta();
+  renderV3();
+  return true
+}
+async function syncActiveProfile(){
+  const input=window.InputV2;if(!input)return;
+  ensureProfileSeed();
+  const p=meta.profiles[meta.activeProfile];
+  if(p)p.actions=clone(input.config.actions||{});
+  saveMeta()
+}
+
+function setActionVirtual(action,active,virtualId){
+  const input=window.InputV2;if(!input)return;
+  const a=input.config.actions?.[action];if(!a)return;
+  a.virtual=a.virtual||[];
+  if(virtualId&&!a.virtual.includes(virtualId))a.virtual.push(virtualId);
+  const ids=virtualId?[virtualId]:a.virtual;
+  for(const id of ids)input.setVirtual(id,active)
+}
+
+function installVirtualControls(){
+  const input=window.InputV2;
+  const preview=document.getElementById("preview");
+  if(!input||!preview||input.config.virtualControls===false)return;
+
+  const host=preview.querySelector(".game-screen")||preview;
+  document.getElementById("inputV3VirtualLayer")?.remove();
+
+  const layer=document.createElement("div");
+  layer.id="inputV3VirtualLayer";
+  layer.style.cssText="position:absolute;inset:0;z-index:70;pointer-events:none;touch-action:none";
+
+  const j=meta.virtualLayout?.joystick||defaultMeta().virtualLayout.joystick;
+  if(j.visible!==false){
+    const stick=document.createElement("div");
+    stick.dataset.inputV3Stick="1";
+    stick.style.cssText=`position:absolute;left:${j.x}%;top:${j.y}%;width:${j.size}px;height:${j.size}px;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(255,255,255,.28);background:rgba(10,15,20,.25);pointer-events:auto;touch-action:none`;
+    const knob=document.createElement("div");
+    knob.style.cssText="position:absolute;width:42%;height:42%;left:29%;top:29%;border-radius:50%;background:rgba(40,50,58,.76);border:1px solid rgba(255,255,255,.18);pointer-events:none";
+    stick.appendChild(knob);
+    layer.appendChild(stick);
+
+    let pid=null;
+    const move=e=>{
+      if(pid!==e.pointerId)return;
+      const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,rad=Math.max(1,Math.min(r.width,r.height)/2);
+      let x=(e.clientX-cx)/rad,y=(e.clientY-cy)/rad;
+      const len=Math.hypot(x,y);if(len>1){x/=len;y/=len}
+      input.setVector(x,y);
+      knob.style.transform=`translate(${x*55}%,${y*55}%)`;
+      input.pointersV3?.set?.(e.pointerId,{x:e.clientX,y:e.clientY,type:"stick"})
+    };
+    stick.addEventListener("pointerdown",e=>{
+      e.preventDefault();pid=e.pointerId;stick.setPointerCapture?.(e.pointerId);move(e)
+    },{passive:false});
+    stick.addEventListener("pointermove",move,{passive:false});
+    const end=e=>{
+      if(pid!==e.pointerId)return;
+      pid=null;input.setVector(0,0);knob.style.transform="";
+      input.pointersV3?.delete?.(e.pointerId)
+    };
+    stick.addEventListener("pointerup",end);
+    stick.addEventListener("pointercancel",end)
+  }
+
+  for(const b of meta.virtualLayout?.buttons||[]){
+    if(b.visible===false)continue;
+    const btn=document.createElement("button");
+    btn.type="button";btn.textContent=b.label||b.id;
+    btn.dataset.inputV3Button=b.id;
+    btn.style.cssText=`position:absolute;left:${b.x}%;top:${b.y}%;width:${b.size}px;height:${b.size}px;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(255,255,255,.28);background:rgba(20,28,34,.68);color:#fff;font-weight:800;pointer-events:auto;touch-action:none`;
+    const on=e=>{
+      e.preventDefault();
+      setActionVirtual(b.action,true,b.id);
+      input.pointersV3?.set?.(e.pointerId,{x:e.clientX,y:e.clientY,type:"button",id:b.id})
+    };
+    const off=e=>{
+      e.preventDefault();
+      setActionVirtual(b.action,false,b.id);
+      input.pointersV3?.delete?.(e.pointerId)
+    };
+    btn.addEventListener("pointerdown",on,{passive:false});
+    btn.addEventListener("pointerup",off,{passive:false});
+    btn.addEventListener("pointercancel",off,{passive:false});
+    layer.appendChild(btn)
+  }
+
+  host.appendChild(layer);
+  boundPreview=preview
+}
+
+function bindGestures(){
+  const input=window.InputV2;
+  const preview=document.getElementById("preview");
+  if(!input||!preview||preview.dataset.inputGesturesV3==="1")return;
+  preview.dataset.inputGesturesV3="1";
+
+  input.pointersV3=input.pointersV3||new Map();
+  input.gestureStartsV3=input.gestureStartsV3||new Map();
+  input.lastTapV3=input.lastTapV3||0;
+
+  preview.addEventListener("pointerdown",e=>{
+    if(e.target.closest("#inputV3VirtualLayer"))return;
+    input.pointersV3.set(e.pointerId,{x:e.clientX,y:e.clientY,type:"gesture"});
+    input.gestureStartsV3.set(e.pointerId,{x:e.clientX,y:e.clientY,t:performance.now()})
+  },{passive:true});
+
+  preview.addEventListener("pointerup",e=>{
+    const s=input.gestureStartsV3.get(e.pointerId);
+    input.gestureStartsV3.delete(e.pointerId);
+    input.pointersV3.delete(e.pointerId);
+    if(!s)return;
+
+    const dx=e.clientX-s.x,dy=e.clientY-s.y,dist=Math.hypot(dx,dy),elapsed=performance.now()-s.t;
+    const g=meta.gestures||{};
+
+    if(g.swipe?.enabled&&dist>=Number(g.swipe.threshold||48)){
+      setActionVirtual(g.swipe.action,true,"gesture_swipe");
+      requestAnimationFrame(()=>setActionVirtual(g.swipe.action,false,"gesture_swipe"));
+      return
+    }
+
+    if(dist<18&&elapsed<350){
+      const now=performance.now();
+      if(g.doubletap?.enabled&&now-input.lastTapV3<330){
+        setActionVirtual(g.doubletap.action,true,"gesture_doubletap");
+        requestAnimationFrame(()=>setActionVirtual(g.doubletap.action,false,"gesture_doubletap"));
+        input.lastTapV3=0
+      }else{
+        if(g.tap?.enabled){
+          setActionVirtual(g.tap.action,true,"gesture_tap");
+          requestAnimationFrame(()=>setActionVirtual(g.tap.action,false,"gesture_tap"))
+        }
+        input.lastTapV3=now
+      }
+    }
+  },{passive:true})
+}
+
+function ensureV3UI(){
+  const manager=document.getElementById("inputManagerV2");
+  if(!manager||document.getElementById("inputV3ProfileSection"))return;
+
+  manager.querySelector(".input-v2-head-title strong").textContent="INPUT SYSTEM v3";
+  manager.querySelector(".input-v2-head-title small").textContent="Profiles · Multitouch · Custom virtual controls · Gestures";
+
+  const body=manager.querySelector(".input-v2-body");
+  const profile=document.createElement("section");
+  profile.id="inputV3ProfileSection";
+  profile.className="input-v3-section";
+  profile.innerHTML=`
+    <h3>CONTROL PROFILES</h3><div class="input-v3-pad">
+      <div class="input-v3-profiles">
+        <select id="inputV3ProfileSelect"></select>
+        <input id="inputV3ProfileName" placeholder="New profile name">
+      </div>
+      <div class="input-v3-profile-actions">
+        <button data-input-v3-create-profile>CREATE PROFILE</button>
+        <button class="primary" data-input-v3-apply-profile>APPLY PROFILE</button>
+      </div>
+    </div>`;
+  body.prepend(profile);
+
+  const controls=document.createElement("section");
+  controls.className="input-v3-section";
+  controls.innerHTML=`<h3>VIRTUAL CONTROLS</h3><div class="input-v3-pad"><div id="inputV3Controls" class="input-v3-controls"></div><div id="inputV3LayoutPreview" class="input-v3-preview"></div><div class="input-v3-two"><button data-input-v3-add-button>+ BUTTON</button><button data-input-v3-apply-layout>APPLY TO RUNTIME</button></div></div>`;
+  body.appendChild(controls);
+
+  const gestures=document.createElement("section");
+  gestures.className="input-v3-section";
+  gestures.innerHTML=`<h3>GESTURES / MULTITOUCH</h3><div class="input-v3-pad"><div id="inputV3Gestures"></div><div id="inputV3Status" class="input-v3-status">Multitouch ready · 0 active pointers</div></div>`;
+  body.appendChild(gestures);
+
+  manager.addEventListener("click",async e=>{
+    if(e.target.closest("[data-input-v3-create-profile]")){
+      if(await createProfile(document.getElementById("inputV3ProfileName")?.value)){
+        showToast?.("Control profile created");renderV3()
+      }else showToast?.("Profile name invalid or already used");
+      return
+    }
+    if(e.target.closest("[data-input-v3-apply-profile]")){
+      const id=document.getElementById("inputV3ProfileSelect")?.value;
+      if(await applyProfile(id))showToast?.("Control profile applied");
+      return
+    }
+    if(e.target.closest("[data-input-v3-add-button]")){
+      const i=(meta.virtualLayout.buttons||[]).length+1;
+      meta.virtualLayout.buttons.push({id:"v"+i,label:"V"+i,action:Object.keys(window.InputV2?.config?.actions||{})[0]||"primary",x:76,y:60,size:58,visible:true});
+      saveMeta();renderV3();return
+    }
+    if(e.target.closest("[data-input-v3-apply-layout]")){
+      installVirtualControls();bindGestures();showToast?.("Virtual controls applied");return
+    }
+    const del=e.target.closest("[data-input-v3-delete]");
+    if(del){
+      meta.virtualLayout.buttons=(meta.virtualLayout.buttons||[]).filter(b=>b.id!==del.dataset.inputV3Delete);
+      saveMeta();renderV3();return
+    }
+  });
+
+  manager.addEventListener("change",async e=>{
+    if(e.target.dataset.v3Stick){
+      const k=e.target.dataset.v3Stick;
+      meta.virtualLayout.joystick[k]=k==="visible"?e.target.checked:Number(e.target.value);
+      saveMeta();renderPreview();return
+    }
+    const bid=e.target.dataset.v3ButtonId,field=e.target.dataset.v3ButtonField;
+    if(bid&&field){
+      const b=(meta.virtualLayout.buttons||[]).find(x=>x.id===bid);
+      if(b){
+        b[field]=field==="visible"?e.target.checked:(["x","y","size"].includes(field)?Number(e.target.value):e.target.value);
+        saveMeta();renderPreview()
+      }
+      return
+    }
+    const g=e.target.dataset.v3Gesture,f=e.target.dataset.v3GestureField;
+    if(g&&f){
+      meta.gestures[g][f]=f==="enabled"?e.target.checked:(f==="threshold"?Number(e.target.value):e.target.value);
+      saveMeta();return
+    }
+  });
+
+  // Move Input into project three-dots, matching other advanced tools.
+  document.getElementById("inputV2HeaderBtn")?.remove();
+  ensureMenu()
+}
+
+function ensureMenu(){
+  const menu=document.getElementById("editorMoreMenu");
+  if(!menu||document.getElementById("editorMoreInputV3"))return;
+  const btn=document.createElement("button");
+  btn.id="editorMoreInputV3";btn.type="button";btn.className="editor-more-item";
+  btn.innerHTML='<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M7 8h10l3 4-3 4H7l-3-4z"/><path d="M9 12h6M12 9v6"/></svg><span>Input System v3</span>';
+  btn.onclick=()=>{menu.classList.remove("show");window.InputManagerV2?.open?.();setTimeout(()=>{ensureV3UI();renderV3()},0)};
+  const flow=document.getElementById("editorMoreSceneFlowV2");
+  if(flow)flow.insertAdjacentElement("afterend",btn);else menu.insertBefore(btn,menu.firstChild)
+}
+
+function renderPreview(){
+  const root=document.getElementById("inputV3LayoutPreview");if(!root)return;
+  const j=meta.virtualLayout.joystick||{};
+  root.innerHTML=`
+    ${j.visible!==false?`<div class="input-v3-stick-preview" style="left:${j.x}%;top:${j.y}%;width:${j.size}px;height:${j.size}px"></div>`:""}
+    ${(meta.virtualLayout.buttons||[]).filter(b=>b.visible!==false).map(b=>`<div class="input-v3-btn-preview" style="left:${b.x}%;top:${b.y}%;width:${b.size}px;height:${b.size}px">${b.label}</div>`).join("")}`
+}
+function renderV3(){
+  const input=window.InputV2;if(!input)return;
+  ensureProfileSeed();
+
+  const select=document.getElementById("inputV3ProfileSelect");
+  if(select)select.innerHTML=Object.entries(meta.profiles).map(([id,p])=>`<option value="${id}" ${id===meta.activeProfile?"selected":""}>${p.name||id}</option>`).join("");
+
+  const controls=document.getElementById("inputV3Controls");
+  if(controls){
+    const j=meta.virtualLayout.joystick;
+    const actions=Object.keys(input.config.actions||{});
+    controls.innerHTML=`
+      <div class="input-v3-control"><div class="input-v3-control-head"><div><strong>JOYSTICK</strong><small>Position / size / visibility</small></div></div>
+        <div class="input-v3-control-grid">
+          <input data-v3-stick="x" type="number" min="0" max="100" value="${j.x}">
+          <input data-v3-stick="y" type="number" min="0" max="100" value="${j.y}">
+          <input data-v3-stick="size" type="number" min="48" max="180" value="${j.size}">
+          <label><input data-v3-stick="visible" type="checkbox" ${j.visible!==false?"checked":""}> Visible</label>
+        </div>
+      </div>
+      ${(meta.virtualLayout.buttons||[]).map(b=>`<div class="input-v3-control">
+        <div class="input-v3-control-head"><div><strong>${b.label||b.id}</strong><small>${b.action}</small></div><button class="input-v2-mini danger" data-input-v3-delete="${b.id}">×</button></div>
+        <div class="input-v3-control-grid">
+          <input data-v3-button-id="${b.id}" data-v3-button-field="label" value="${b.label||b.id}">
+          <select data-v3-button-id="${b.id}" data-v3-button-field="action">${actions.map(a=>`<option ${a===b.action?"selected":""}>${a}</option>`).join("")}</select>
+          <input data-v3-button-id="${b.id}" data-v3-button-field="x" type="number" min="0" max="100" value="${b.x}">
+          <input data-v3-button-id="${b.id}" data-v3-button-field="y" type="number" min="0" max="100" value="${b.y}">
+          <input data-v3-button-id="${b.id}" data-v3-button-field="size" type="number" min="36" max="140" value="${b.size}">
+          <label><input data-v3-button-id="${b.id}" data-v3-button-field="visible" type="checkbox" ${b.visible!==false?"checked":""}> Visible</label>
+        </div>
+      </div>`).join("")}`
+  }
+
+  const gestures=document.getElementById("inputV3Gestures");
+  if(gestures){
+    const actions=Object.keys(input.config.actions||{});
+    gestures.innerHTML=["tap","doubletap","swipe"].map(name=>{
+      const g=meta.gestures[name];
+      return `<div class="input-v3-gesture"><div class="input-v3-gesture-head"><strong>${name.toUpperCase()}</strong><input data-v3-gesture="${name}" data-v3-gesture-field="enabled" type="checkbox" ${g.enabled?"checked":""}></div><div class="input-v3-control-grid"><select data-v3-gesture="${name}" data-v3-gesture-field="action">${actions.map(a=>`<option ${a===g.action?"selected":""}>${a}</option>`).join("")}</select>${name==="swipe"?`<input data-v3-gesture="${name}" data-v3-gesture-field="threshold" type="number" min="20" max="200" value="${g.threshold||48}">`:"<span></span>"}</div></div>`
+    }).join("")
+  }
+
+  const status=document.getElementById("inputV3Status");
+  if(status)status.textContent=`Multitouch ready · ${input.pointersV3?.size||0} active pointers · profile ${meta.activeProfile}`;
+  renderPreview()
+}
+
+// Keep profiles synchronized whenever legacy v2 manager saves/rebinds.
+const oldSave=window.InputManagerV2?.save;
+if(typeof oldSave==="function"&&!oldSave.__inputV3){
+  const wrapped=async function(){
+    const r=await oldSave.apply(this,arguments);
+    await syncActiveProfile();
+    renderV3();
+    return r
+  };
+  wrapped.__inputV3=true;
+  window.InputManagerV2.save=wrapped
+}
+
+const oldOpen=window.InputManagerV2?.open;
+if(typeof oldOpen==="function"&&!oldOpen.__inputV3){
+  const wrapped=async function(){
+    const r=await oldOpen.apply(this,arguments);
+    ensureV3UI();renderV3();
+    return r
+  };
+  wrapped.__inputV3=true;
+  window.InputManagerV2.open=wrapped
+}
+
+// Extend public input API.
+window.input=window.input||{};
+window.input.profile=function(name){
+  if(name){applyProfile(name);return name}
+  return meta.activeProfile
+};
+window.input.pointers=function(){
+  return window.InputV2?.pointersV3?.size||0
+};
+window.input.installVirtualControls=installVirtualControls;
+
+const oldPreview=window.openPreview;
+if(typeof oldPreview==="function"&&!oldPreview.__inputV3){
+  const wrapped=function(){
+    const r=oldPreview.apply(this,arguments);
+    setTimeout(()=>{
+      meta=loadMeta();
+      ensureProfileSeed();
+      applyProfile(meta.activeProfile);
+      installVirtualControls();
+      bindGestures()
+    },180);
+    return r
+  };
+  wrapped.__inputV3=true;
+  window.openPreview=wrapped
+}
+
+window.InputManagerV3={
+  version:"3.0.0",
+  get meta(){return meta},
+  createProfile,applyProfile,
+  installVirtualControls,
+  open(){window.InputManagerV2?.open?.();ensureV3UI();renderV3()}
+};
+
+document.addEventListener("DOMContentLoaded",()=>{
+  setTimeout(()=>{ensureV3UI();ensureMenu();renderV3()},0)
+});
+new MutationObserver(()=>{ensureMenu();document.getElementById("inputV2HeaderBtn")?.remove()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 
 
 <style>
