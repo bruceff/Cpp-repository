@@ -1,73 +1,98 @@
-<style id="dragon-red-theme">
-:root{
-  --accent:#e31324;
-  --accent2:#ff2638;
-  --accent-dark:#780812;
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dragon Engine</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0d0d0d;
+      color: #f2f2f2;
+    }
+    header {
+      background-color: #1a1a1a;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 3px solid #b30000;
+    }
+    header img {
+      height: 80px;
+    }
+    h1 {
+      color: #b30000;
+      margin: 10px 0;
+      font-size: 2.5em;
+    }
+    nav {
+      margin-top: 15px;
+    }
+    nav a {
+      color: #f2f2f2;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: #b30000;
+    }
+    section {
+      padding: 40px;
+      text-align: center;
+    }
+    section h2 {
+      color: #b30000;
+      margin-bottom: 20px;
+    }
+    footer {
+      background-color: #1a1a1a;
+      text-align: center;
+      padding: 15px;
+      border-top: 3px solid #b30000;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Substitua pelo logo do dragão vermelho -->
+    <img src="logo-dragao.png" alt="Logo Dragon Engine">
+    <h1>Dragon Engine</h1>
+    <nav>
+      <a href="#sobre">Sobre</a>
+      <a href="#documentacao">Documentação</a>
+      <a href="#downloads">Downloads</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </header>
 
-.logo{
-  background:#080808!important;
-  color:var(--accent2)!important;
-  border:1px solid #5b0b14!important;
-  box-shadow:0 0 20px rgba(227,19,36,.16)!important;
-}
+  <section id="sobre">
+    <h2>Sobre a Dragon Engine</h2>
+    <p>A Dragon Engine é uma engine de jogos poderosa e flexível, criada para desenvolvedores que buscam performance e liberdade criativa. Com suporte a múltiplas plataformas e integração moderna, ela é o coração dos seus projetos.</p>
+  </section>
 
-.rail button.active,
-.btn.primary,
-.play-btn,
-.market-categories button.active,
-.tree button.active,
-.creator-toolbar button.active,
-.tool-list button.active,
-.settings-nav button.active,
-.bottom-tabs button.active{
-  background:linear-gradient(135deg,var(--accent2),#b50718)!important;
-  color:#fff!important;
-  border-color:#e62a3b!important;
-}
+  <section id="documentacao">
+    <h2>Documentação</h2>
+    <p>Encontre tutoriais, guias e referências para começar a criar com a Dragon Engine.</p>
+    <p><a href="docs/index.html" style="color:#b30000;">Acessar Documentação</a></p>
+  </section>
 
-.hero{
-  background:
-    radial-gradient(circle at 80% 40%,rgba(227,19,36,.12),transparent 30%),
-    linear-gradient(145deg,#101010,#080808)!important;
-}
+  <section id="downloads">
+    <h2>Downloads</h2>
+    <p>Baixe a versão mais recente da Dragon Engine e comece a desenvolver agora.</p>
+    <p><a href="downloads/dragon-engine.zip" style="color:#b30000;">Download</a></p>
+  </section>
 
-.hero:before{
-  border-color:rgba(255,38,56,.16)!important;
-  box-shadow:
-    0 0 0 32px rgba(227,19,36,.02),
-    0 0 0 64px rgba(227,19,36,.01)!important;
-}
+  <section id="contato">
+    <h2>Contato</h2>
+    <p>Entre em contato para suporte, parcerias ou dúvidas.</p>
+    <p>Email: <a href="mailto:contato@dragonengine.dev" style="color:#b30000;">contato@dragonengine.dev</a></p>
+  </section>
 
-.hero-mark{
-  background:#090707!important;
-  border-color:#4c0a12!important;
-}
-
-.hero-mark svg{
-  color:var(--accent2)!important;
-  filter:drop-shadow(0 0 10px rgba(255,38,56,.24))!important;
-  image-rendering:pixelated;
-  shape-rendering:crispEdges;
-}
-
-.quick-icon,
-.status-icon{
-  background:#16090b!important;
-  color:var(--accent2)!important;
-}
-
-.frame.active,
-.scene-object{
-  border-color:var(--accent2)!important;
-}
-
-.chart-bars i{
-  background:linear-gradient(180deg,var(--accent2),var(--accent-dark))!important;
-}
-
-::selection{
-  background:var(--accent);
-  color:#fff;
-}
-</style>
+  <footer>
+    © 2026 Dragon Engine — Todos os direitos reservados
+  </footer>
+</body>
+</html>
